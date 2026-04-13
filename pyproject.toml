@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ssot-registry"
+version = "0.1.0"
+description = "Portable single-source-of-truth registry for features, tests, claims, evidence, issues, risks, boundaries, and releases."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+  { name = "OpenAI" }
+]
+keywords = [
+  "ssot",
+  "registry",
+  "claims",
+  "evidence",
+  "release-management",
+  "certification",
+  "governance"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Testing",
+  "Topic :: System :: Archiving",
+]
+
+[project.scripts]
+ssot-registry = "ssot_registry.cli.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"ssot_registry.schema" = ["*.json"]
+"ssot_registry.templates" = ["*.json"]
+"ssot_registry.templates.adr" = ["*.md"]
+"ssot_registry.templates.specs" = ["*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
