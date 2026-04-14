@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from ssot_registry.api import export_graph
+from ssot_registry.graph.export_dot import build_graph_dot
 from tests.helpers import temp_repo_from_fixture
 
 
@@ -29,6 +30,21 @@ class GraphExportTests(unittest.TestCase):
         dot_text = Path(result["output_path"]).read_text(encoding="utf-8")
         self.assertIn("digraph ssot_registry", dot_text)
         self.assertIn("feat:rfc.9000.connection-migration", dot_text)
+
+    def test_dot_export_escapes_newlines_in_ids(self) -> None:
+        registry = {
+            "features": [{"id": "feat:line\nbreak", "title": "Feature", "description": "", "implementation_status": "absent", "plan": {"horizon": "backlog"}, "lifecycle": {"stage": "active"}, "claim_ids": [], "test_ids": [], "requires": []}],
+            "tests": [],
+            "claims": [],
+            "evidence": [],
+            "issues": [],
+            "risks": [],
+            "boundaries": [],
+            "releases": [],
+        }
+        dot_text = build_graph_dot(registry)
+        self.assertNotIn('feat:line\nbreak" [label="feat:line\nbreak\n', dot_text)
+        self.assertIn('feat:line\\nbreak', dot_text)
 
 
 if __name__ == "__main__":

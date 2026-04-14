@@ -65,6 +65,7 @@ ssot-registry risk --help
 ssot-registry boundary --help
 ssot-registry release --help
 ssot-registry graph --help
+ssot-registry registry --help
 ```
 
 ---
@@ -73,7 +74,8 @@ ssot-registry graph --help
 
 - Most commands accept `[path]` as an optional positional argument. Default is current directory (`.`).
 - IDs are normalized prefixed identifiers (for example: `feat:*`, `clm:*`, `tst:*`, `evd:*`, `iss:*`, `rsk:*`, `bnd:*`, `rel:*`).
-- Commands emit JSON to stdout.
+- Commands emit JSON by default; use `--output-format {json,csv,df,yaml,toml}` for alternate renderings.
+- Use `--output-file PATH` to save rendered command output to disk.
 - Non-zero exit code indicates an operation failure or failed checks.
 
 ---
@@ -93,6 +95,7 @@ ssot-registry graph --help
 - `boundary`
 - `release`
 - `graph`
+- `registry`
 
 ### `init`
 
@@ -569,7 +572,19 @@ Subcommands:
 
 ```text
 ssot-registry graph export [path]
-  --format {json,dot} (required)
+  --format {json,dot,png,svg} (required)
+  --output OUTPUT
+```
+
+### `registry`
+
+Subcommands:
+
+- `export`
+
+```text
+ssot-registry registry export [path]
+  --format {json,csv,df,yaml,toml} (required)
   --output OUTPUT
 ```
 
@@ -630,9 +645,15 @@ ssot-registry claim evaluate . --claim-id clm:demo.login.t1
 # Verify one evidence row
 ssot-registry evidence verify . --evidence-id evd:demo.login.pytest
 
-# Export graph in JSON and DOT formats
+# Export graph in JSON, DOT, and PNG formats
 ssot-registry graph export . --format json --output .ssot/graphs/registry.graph.json
 ssot-registry graph export . --format dot --output .ssot/graphs/registry.graph.dot
+ssot-registry graph export . --format png --output .ssot/graphs/registry.graph.png
+
+# Render list output as YAML/CSV and export full registry as TOML
+ssot-registry --output-format yaml feature list .
+ssot-registry --output-format csv claim list .
+ssot-registry registry export . --format toml --output .ssot/exports/registry.toml
 ```
 
 ---
@@ -653,7 +674,7 @@ ssot-registry graph export . --format dot --output .ssot/graphs/registry.graph.d
   - Rationale and decision history for the model and release flow.
 
 - Examples (`docs/examples/`)
-  - Minimal repo walkthrough and advanced/e2e examples.
+  - Minimal repo walkthrough, advanced/e2e examples, and format/export workflows (`docs/examples/formats-and-exports.md`).
 
 - Root reference docs
   - Verification notes: `VERIFICATION.md`
@@ -663,7 +684,7 @@ ssot-registry graph export . --format dot --output .ssot/graphs/registry.graph.d
 
 - Canonical JSON registry: `.ssot/registry.json`
 - JSON Schema pack
-- Noun-scoped CLI emitting JSON
+- Noun-scoped CLI emitting JSON by default (with optional CSV/DF/YAML/TOML renderers)
 - Python API under `ssot_registry.api`
 - Derived graph, report, and snapshot artifacts
 

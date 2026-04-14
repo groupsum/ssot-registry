@@ -11,7 +11,7 @@ def register_graph(subparsers: argparse._SubParsersAction) -> None:
 
     export = graph_sub.add_parser("export", help="Export the registry graph.")
     export.add_argument("path", nargs="?", default=".", help="Registry file path or repository root.")
-    export.add_argument("--format", required=True, choices=["json", "dot"], help="Graph export format.")
+    export.add_argument("--format", required=True, choices=["json", "dot", "png", "svg"], help="Graph export format.")
     export.add_argument("--output", default=None, help="Output path. Defaults under .ssot/graphs.")
     export.set_defaults(func=run_export)
 

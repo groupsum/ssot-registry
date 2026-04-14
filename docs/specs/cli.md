@@ -14,3 +14,8 @@ Public commands:
 - `ssot-registry release publish`
 - `ssot-registry release revoke`
 - `ssot-registry graph export`
+- `ssot-registry registry export`
+
+Global options:
+- `--output-format {json,csv,df,yaml,toml}` to render command responses in alternate formats
+- `--output-file PATH` to save rendered command responses to disk
