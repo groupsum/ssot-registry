@@ -20,15 +20,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+
+      - name: Install Python 3.12
+        run: uv python install 3.12
+
+      - name: Install package
+        run: uv sync --python 3.12
 
       - name: Build package
         run: uv build
@@ -48,15 +49,13 @@ jobs:
       name: pypi
       url: https://pypi.org/p/ssot-registry
     steps:
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+
+      - name: Install Python 3.12
+        run: uv python install 3.12
 
       - name: Download distribution
         uses: actions/download-artifact@v4
