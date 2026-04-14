@@ -14,6 +14,8 @@ from .graph_cmd import register_graph
 from .init_cmd import register_init
 from .issue_cmd import register_issue
 from .release_cmd import register_release
+from .risk_cmd import register_risk
+from .test_cmd import register_test
 from .validate_cmd import register_validate
 
 
@@ -31,9 +33,11 @@ def main() -> int:
     register_init(subparsers)
     register_validate(subparsers)
     register_feature(subparsers)
+    register_test(subparsers)
     register_issue(subparsers)
     register_claim(subparsers)
     register_evidence(subparsers)
+    register_risk(subparsers)
     register_boundary(subparsers)
     register_release(subparsers)
     register_graph(subparsers)

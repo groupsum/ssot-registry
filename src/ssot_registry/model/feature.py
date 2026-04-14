@@ -12,3 +12,4 @@ class FeatureRow(TypedDict, total=False):
     plan: dict[str, object]
     claim_ids: list[str]
     test_ids: list[str]
+    requires: list[str]

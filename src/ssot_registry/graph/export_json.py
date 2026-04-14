@@ -22,6 +22,12 @@ def build_graph_json(registry: dict[str, object]) -> dict[str, object]:
         for evidence_id in release.get("evidence_ids", []):
             edges.append({"type": "INCLUDES", "from": release["id"], "to": evidence_id})
 
+    for feature in registry.get("features", []):
+        for required_feature_id in feature.get("requires", []):
+            edges.append({"type": "REQUIRES", "from": feature["id"], "to": required_feature_id})
+        for test_id in feature.get("test_ids", []):
+            edges.append({"type": "COVERED_BY", "from": feature["id"], "to": test_id})
+
     for claim in registry.get("claims", []):
         for feature_id in claim.get("feature_ids", []):
             edges.append({"type": "ASSERTS", "from": claim["id"], "to": feature_id})

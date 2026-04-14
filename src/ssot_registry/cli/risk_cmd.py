@@ -8,8 +8,7 @@ from ssot_registry.api import (
     get_entity,
     link_entities,
     list_entities,
-    plan_issues,
-    set_issue_status,
+    set_risk_status,
     unlink_entities,
     update_entity,
 )
@@ -21,41 +20,39 @@ _LINK_MAPPING = {
     "claim_ids": "claim_ids",
     "test_ids": "test_ids",
     "evidence_ids": "evidence_ids",
-    "risk_ids": "risk_ids",
+    "issue_ids": "issue_ids",
 }
 
 
-def register_issue(subparsers: argparse._SubParsersAction) -> None:
-    issue = subparsers.add_parser("issue", help="Issue operations.")
-    issue_sub = issue.add_subparsers(dest="issue_command", required=True)
+def register_risk(subparsers: argparse._SubParsersAction) -> None:
+    risk = subparsers.add_parser("risk", help="Risk operations.")
+    risk_sub = risk.add_subparsers(dest="risk_command", required=True)
 
-    create = issue_sub.add_parser("create", help="Create an issue.")
+    create = risk_sub.add_parser("create", help="Create a risk.")
     add_path_argument(create)
     create.add_argument("--id", required=True)
     create.add_argument("--title", required=True)
-    create.add_argument("--status", choices=["open", "in_progress", "blocked", "resolved", "closed"], default="open")
+    create.add_argument("--status", choices=["active", "mitigated", "accepted", "retired"], default="active")
     create.add_argument("--severity", choices=["low", "medium", "high", "critical"], default="medium")
     create.add_argument("--description", default="")
-    create.add_argument("--horizon", choices=["current", "next", "future", "explicit", "backlog", "out_of_bounds"], default="backlog")
-    create.add_argument("--slot", default=None)
     create.add_argument("--feature-ids", nargs="*", default=[])
     create.add_argument("--claim-ids", nargs="*", default=[])
     create.add_argument("--test-ids", nargs="*", default=[])
     create.add_argument("--evidence-ids", nargs="*", default=[])
-    create.add_argument("--risk-ids", nargs="*", default=[])
-    add_optional_bool_argument(create, "--release-blocking", default=False, help_text="Whether the issue blocks release.")
+    create.add_argument("--issue-ids", nargs="*", default=[])
+    add_optional_bool_argument(create, "--release-blocking", default=False, help_text="Whether the risk blocks release.")
     create.set_defaults(func=run_create)
 
-    get = issue_sub.add_parser("get", help="Get one issue.")
+    get = risk_sub.add_parser("get", help="Get one risk.")
     add_path_argument(get)
     get.add_argument("--id", required=True)
     get.set_defaults(func=run_get)
 
-    list_cmd = issue_sub.add_parser("list", help="List issues.")
+    list_cmd = risk_sub.add_parser("list", help="List risks.")
     add_path_argument(list_cmd)
     list_cmd.set_defaults(func=run_list)
 
-    update = issue_sub.add_parser("update", help="Update issue fields.")
+    update = risk_sub.add_parser("update", help="Update risk fields.")
     add_path_argument(update)
     update.add_argument("--id", required=True)
     update.add_argument("--title", default=None)
@@ -64,52 +61,45 @@ def register_issue(subparsers: argparse._SubParsersAction) -> None:
     add_optional_bool_argument(update, "--release-blocking", default=None, help_text="Set release blocking state.")
     update.set_defaults(func=run_update)
 
-    delete = issue_sub.add_parser("delete", help="Delete an issue.")
+    delete = risk_sub.add_parser("delete", help="Delete a risk.")
     add_path_argument(delete)
     delete.add_argument("--id", required=True)
     delete.set_defaults(func=run_delete)
 
-    link = issue_sub.add_parser("link", help="Link an issue to related entities.")
+    link = risk_sub.add_parser("link", help="Link a risk to related entities.")
     add_path_argument(link)
     link.add_argument("--id", required=True)
     link.add_argument("--feature-ids", nargs="*")
     link.add_argument("--claim-ids", nargs="*")
     link.add_argument("--test-ids", nargs="*")
     link.add_argument("--evidence-ids", nargs="*")
-    link.add_argument("--risk-ids", nargs="*")
+    link.add_argument("--issue-ids", nargs="*")
     link.set_defaults(func=run_link)
 
-    unlink = issue_sub.add_parser("unlink", help="Unlink an issue from related entities.")
+    unlink = risk_sub.add_parser("unlink", help="Unlink a risk from related entities.")
     add_path_argument(unlink)
     unlink.add_argument("--id", required=True)
     unlink.add_argument("--feature-ids", nargs="*")
     unlink.add_argument("--claim-ids", nargs="*")
     unlink.add_argument("--test-ids", nargs="*")
     unlink.add_argument("--evidence-ids", nargs="*")
-    unlink.add_argument("--risk-ids", nargs="*")
+    unlink.add_argument("--issue-ids", nargs="*")
     unlink.set_defaults(func=run_unlink)
 
-    plan = issue_sub.add_parser("plan", help="Plan issue horizons.")
-    add_path_argument(plan)
-    plan.add_argument("--ids", nargs="+", required=True, help="Issue ids to update.")
-    plan.add_argument(
-        "--horizon",
-        required=True,
-        choices=["current", "next", "future", "explicit", "backlog", "out_of_bounds"],
-        help="Planning horizon.",
-    )
-    plan.add_argument("--slot", default=None, help="Explicit slot or label when horizon is explicit.")
-    plan.set_defaults(func=run_plan)
+    mitigate = risk_sub.add_parser("mitigate", help="Mark a risk mitigated.")
+    add_path_argument(mitigate)
+    mitigate.add_argument("--id", required=True)
+    mitigate.set_defaults(func=run_mitigate)
 
-    close = issue_sub.add_parser("close", help="Close an issue.")
-    add_path_argument(close)
-    close.add_argument("--id", required=True)
-    close.set_defaults(func=run_close)
+    accept = risk_sub.add_parser("accept", help="Mark a risk accepted.")
+    add_path_argument(accept)
+    accept.add_argument("--id", required=True)
+    accept.set_defaults(func=run_accept)
 
-    reopen = issue_sub.add_parser("reopen", help="Reopen an issue.")
-    add_path_argument(reopen)
-    reopen.add_argument("--id", required=True)
-    reopen.set_defaults(func=run_reopen)
+    retire = risk_sub.add_parser("retire", help="Retire a risk.")
+    add_path_argument(retire)
+    retire.add_argument("--id", required=True)
+    retire.set_defaults(func=run_retire)
 
 
 def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
@@ -126,23 +116,22 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "status": args.status,
         "severity": args.severity,
         "description": args.description,
-        "plan": {"horizon": args.horizon, "slot": args.slot},
         "feature_ids": args.feature_ids,
         "claim_ids": args.claim_ids,
         "test_ids": args.test_ids,
         "evidence_ids": args.evidence_ids,
-        "risk_ids": args.risk_ids,
+        "issue_ids": args.issue_ids,
         "release_blocking": args.release_blocking,
     }
-    return create_entity(args.path, "issues", row)
+    return create_entity(args.path, "risks", row)
 
 
 def run_get(args: argparse.Namespace) -> dict[str, object]:
-    return get_entity(args.path, "issues", args.id)
+    return get_entity(args.path, "risks", args.id)
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "issues")
+    return list_entities(args.path, "risks")
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
@@ -156,28 +145,28 @@ def run_update(args: argparse.Namespace) -> dict[str, object]:
     )
     if not changes:
         raise ValueError("At least one update field is required")
-    return update_entity(args.path, "issues", args.id, changes)
+    return update_entity(args.path, "risks", args.id, changes)
 
 
 def run_delete(args: argparse.Namespace) -> dict[str, object]:
-    return delete_entity(args.path, "issues", args.id)
+    return delete_entity(args.path, "risks", args.id)
 
 
 def run_link(args: argparse.Namespace) -> dict[str, object]:
-    return link_entities(args.path, "issues", args.id, _build_links(args))
+    return link_entities(args.path, "risks", args.id, _build_links(args))
 
 
 def run_unlink(args: argparse.Namespace) -> dict[str, object]:
-    return unlink_entities(args.path, "issues", args.id, _build_links(args))
+    return unlink_entities(args.path, "risks", args.id, _build_links(args))
 
 
-def run_plan(args: argparse.Namespace) -> dict[str, object]:
-    return plan_issues(path=args.path, ids=args.ids, horizon=args.horizon, slot=args.slot)
+def run_mitigate(args: argparse.Namespace) -> dict[str, object]:
+    return set_risk_status(args.path, args.id, "mitigated")
 
 
-def run_close(args: argparse.Namespace) -> dict[str, object]:
-    return set_issue_status(args.path, args.id, "closed")
+def run_accept(args: argparse.Namespace) -> dict[str, object]:
+    return set_risk_status(args.path, args.id, "accepted")
 
 
-def run_reopen(args: argparse.Namespace) -> dict[str, object]:
-    return set_issue_status(args.path, args.id, "open")
+def run_retire(args: argparse.Namespace) -> dict[str, object]:
+    return set_risk_status(args.path, args.id, "retired")

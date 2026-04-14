@@ -71,7 +71,8 @@
       ],
       "test_ids": [
         "tst:pytest.rfc.9000.connection-migration"
-      ]
+      ],
+      "requires": []
     }
   ],
   "tests": [

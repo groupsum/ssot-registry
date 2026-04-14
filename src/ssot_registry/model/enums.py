@@ -187,6 +187,7 @@ REF_FIELD_TARGETS = {
     ("tests", "evidence_ids"): "evidence",
     ("features", "claim_ids"): "claims",
     ("features", "test_ids"): "tests",
+    ("features", "requires"): "features",
     ("claims", "feature_ids"): "features",
     ("claims", "test_ids"): "tests",
     ("claims", "evidence_ids"): "evidence",

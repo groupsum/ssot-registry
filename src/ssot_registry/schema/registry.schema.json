@@ -340,6 +340,9 @@
         },
         "test_ids": {
           "$ref": "#/$defs/stringList"
+        },
+        "requires": {
+          "$ref": "#/$defs/stringList"
         }
       },
       "additionalProperties": true

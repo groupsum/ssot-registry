@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ssot_registry.guards.feature_requirements import evaluate_required_feature_failures
 from ssot_registry.model.enums import CLAIM_STATUS_RANK, CLAIM_TIER_RANK
 
 
@@ -59,14 +60,21 @@ def evaluate_claim_guard(
             )
 
     feature_target_failures: list[str] = []
+    requirement_failures: list[str] = []
     for feature in linked_features:
         feature_target_tier = feature.get("plan", {}).get("target_claim_tier")
         if feature_target_tier is not None and CLAIM_TIER_RANK[claim["tier"]] < CLAIM_TIER_RANK[feature_target_tier]:
             feature_target_failures.append(
                 f"Claim {claim['id']} tier {claim['tier']} is below feature target tier {feature_target_tier} on {feature['id']}"
             )
+        requirement_failures.extend(
+            f"Claim {claim['id']} linked feature requirement failure: {failure}"
+            for failure in evaluate_required_feature_failures(feature["id"], index)
+        )
     checks["feature_target_alignment"] = not feature_target_failures
+    checks["required_features_passing"] = not requirement_failures
     failures.extend(feature_target_failures)
+    failures.extend(requirement_failures)
 
     current_status_rank = CLAIM_STATUS_RANK.get(claim.get("status"), -999)
     recommended_status = claim.get("status")

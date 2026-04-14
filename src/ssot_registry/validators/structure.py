@@ -73,6 +73,9 @@ def _validate_feature(feature: dict[str, Any], failures: list[str]) -> None:
         failures.append(f"features.{entity_id}.claim_ids must be a list of strings")
     if not _list_of_strings(feature.get("test_ids")):
         failures.append(f"features.{entity_id}.test_ids must be a list of strings")
+    requires = feature.get("requires")
+    if requires is not None and not _list_of_strings(requires):
+        failures.append(f"features.{entity_id}.requires must be a list of strings when present")
 
 
 def _validate_test(test: dict[str, Any], failures: list[str]) -> None:
