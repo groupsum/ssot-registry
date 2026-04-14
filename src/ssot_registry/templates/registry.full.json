@@ -29,6 +29,7 @@
       "forbid_failed_or_stale_evidence": true
     },
     "certification": {
+      "require_release_status_draft_or_candidate": true,
       "require_frozen_boundary": true,
       "require_release_claim_coverage_for_boundary_features": true,
       "require_boundary_features_current_or_explicit": true,
