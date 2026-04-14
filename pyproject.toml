@@ -34,6 +34,11 @@ classifiers = [
   "Topic :: System :: Archiving",
 ]
 
+[project.urls]
+Homepage = "https://github.com/groupsum/ssot-registry"
+Repository = "https://github.com/groupsum/ssot-registry"
+Issues = "https://github.com/groupsum/ssot-registry/issues"
+
 [project.scripts]
 ssot-registry = "ssot_registry.cli.main:main"
 
