@@ -2,8 +2,8 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -32,6 +32,35 @@ jobs:
       - name: Install package
         run: uv sync --python 3.12
 
+      - name: Determine release version and tag
+        id: release_meta
+        run: |
+          VERSION=$(python - <<'PY'
+          from pathlib import Path
+          import tomllib
+
+          pyproject = tomllib.loads(Path('pyproject.toml').read_text())
+          print(pyproject['project']['version'])
+          PY
+          )
+          TAG="ssot-registry==${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Create git tag from pyproject version
+        env:
+          TAG: ${{ steps.release_meta.outputs.tag }}
+        run: |
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+
       - name: Build package
         run: uv build
 
@@ -49,7 +78,10 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.release_meta.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ssot-registry ${{ steps.release_meta.outputs.version }}
           files: dist/*
           generate_release_notes: true
           draft: false
-          prerelease: ${{ contains(github.ref_name, '-') }}
+          prerelease: ${{ contains(steps.release_meta.outputs.version, '-') }}
