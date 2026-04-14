@@ -46,6 +46,10 @@ python -m pip install ssot-registry
 python -m pip install -e .
 ```
 
+## Community
+
+Please review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
+
 ## CLI quick reference
 
 ```bash
