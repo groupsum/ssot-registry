@@ -30,6 +30,7 @@ def default_guard_policies() -> dict[str, Any]:
             "forbid_failed_or_stale_evidence": True,
         },
         "certification": {
+            "require_release_status_draft_or_candidate": True,
             "require_frozen_boundary": True,
             "require_release_claim_coverage_for_boundary_features": True,
             "require_boundary_features_current_or_explicit": True,

@@ -18,7 +18,7 @@ def evaluate_release_publication_guard(
 
     publication_policy = registry.get("guard_policies", {}).get("publication", {})
     if publication_policy.get("require_release_status_promoted", True):
-        if release.get("status") not in {"promoted", "published"}:
+        if release.get("status") != "promoted":
             failures.append(
                 f"Release {release_id} must be promoted before publication; current status is {release.get('status')}"
             )

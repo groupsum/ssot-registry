@@ -36,6 +36,12 @@ def evaluate_release_certification_guard(
         }
 
     certification_policy = registry.get("guard_policies", {}).get("certification", {})
+    if certification_policy.get("require_release_status_draft_or_candidate", True):
+        if release.get("status") not in {"draft", "candidate"}:
+            failures.append(
+                f"Release {release_id} must be draft or candidate before certification; current status is {release.get('status')}"
+            )
+
     require_frozen_boundary = bool(certification_policy.get("require_frozen_boundary", True))
     if require_frozen_boundary and not boundary.get("frozen", False):
         failures.append(f"Boundary {boundary['id']} is not frozen")
