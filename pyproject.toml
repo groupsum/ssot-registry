@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssot-registry"
-version = "0.1.1"
+version = "0.1.2"
 description = "Portable single-source-of-truth registry for features, tests, claims, evidence, issues, risks, boundaries, and releases."
 readme = "README.md"
 requires-python = ">=3.10"
