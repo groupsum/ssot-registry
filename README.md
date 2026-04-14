@@ -1,5 +1,17 @@
 # ssot-registry
 
+<div align="center">
+  <h1>🔷 ssot-registry</h1>
+  <p><strong>Single Source of Truth for features, claims, tests, and releases.</strong></p>
+</div>
+
+<div align="center">
+  <a href="https://pypi.org/project/ssot-registry/"><img src="https://img.shields.io/pypi/v/ssot-registry?label=PyPI%20version" alt="PyPI version" /></a>
+  <a href="https://pypi.org/project/ssot-registry/"><img src="https://img.shields.io/pypi/pyversions/ssot-registry?label=Python" alt="Supported Python versions" /></a>
+  <a href="https://pepy.tech/project/ssot-registry"><img src="https://static.pepy.tech/badge/ssot-registry" alt="Downloads" /></a>
+  <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Hits" /></a>
+</div>
+
 `ssot-registry` is a portable, repository-agnostic single-source-of-truth system.
 
 - GitHub: https://github.com/groupsum/ssot-registry
