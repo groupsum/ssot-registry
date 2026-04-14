@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssot-registry"
-version = "0.1.0"
+version = "0.1.1"
 description = "Portable single-source-of-truth registry for features, tests, claims, evidence, issues, risks, boundaries, and releases."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = "MIT"
 authors = [
-  { name = "OpenAI" }
+  { name = "Jacob Stewart", email = "jacob@swarmauri.com" }
 ]
 keywords = [
   "ssot",
@@ -25,8 +25,10 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Quality Assurance",
   "Topic :: Software Development :: Testing",
   "Topic :: System :: Archiving",
