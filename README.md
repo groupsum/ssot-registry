@@ -1,6 +1,10 @@
 # ssot-registry
 
-`ssot-registry` is a portable, repository-agnostic single-source-of-truth system for:
+`ssot-registry` is a portable, repository-agnostic single-source-of-truth system.
+
+- GitHub: https://github.com/groupsum/ssot-registry
+
+It provides a canonical registry for:
 
 - features
 - tests
@@ -61,13 +65,17 @@ ssot-registry graph export . --format json
 
 ## Repository layout
 
-See `docs/specs/file-tree.md` and the embedded examples under `docs/examples/`.
+- Specs: `docs/specs/`
+- ADRs: `docs/adr/`
+- Examples: `docs/examples/` and `examples/`
+- Source code: `src/ssot_registry/`
 
 ## Development
 
 ```bash
 python -m venv .venv
 . .venv/bin/activate
+python -m pip install --upgrade pip
 python -m pip install -e .
 python -m unittest discover -s tests -v
 ```
