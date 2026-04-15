@@ -50,12 +50,29 @@ Everything else is derived from it.
 
 The canonical authored format is JSON. Markdown, CSV, DOT, SQLite, and reports are derived projections.
 
+## Schema 4
+
+Schema `4` introduces first-class ADR and spec sections in `.ssot/registry.json`:
+
+- `tooling`
+- `document_id_reservations`
+- `adrs`
+- `specs`
+
+Packaged SSOT documents are manifest-driven, immutable, and synced into reserved SSOT-owned ranges. Repository-local ADRs and specs are created in separate non-overlapping ranges so local numbering cannot collide with SSOT-managed documents.
+
 ## Install
 
 ```bash
 python -m pip install ssot-registry
 # or for local development
 python -m pip install -e .
+```
+
+If you already have a repository initialized on schema `3`, upgrade it explicitly after installing the new package:
+
+```bash
+ssot-registry upgrade . --sync-docs --write-report
 ```
 
 ## Community
@@ -705,7 +722,7 @@ ssot-registry registry export [path]
 
 ```bash
 # Initialize registry under current repo
-ssot-registry init . --repo-id rep:demo.app --repo-name "Demo App" --version 0.1.0
+ssot-registry init . --repo-id repo:demo.app --repo-name "Demo App" --version 0.1.0
 
 # Validate and write machine-readable report
 ssot-registry validate . --write-report
@@ -714,6 +731,31 @@ ssot-registry validate . --write-report
 ssot-registry feature list .
 ssot-registry claim list .
 ssot-registry test list .
+ssot-registry adr list .
+ssot-registry spec list .
+```
+
+### E2E example 1b: create repo-local ADRs and specs
+
+```bash
+# Create local ADR/spec bodies
+cat > adr-body.md <<'EOF'
+Adopt local numbering for repository-owned decisions.
+EOF
+
+cat > spec-body.md <<'EOF'
+Repository-local operational conventions for maintainers.
+EOF
+
+# Create repo-local documents from the local reservation range
+ssot-registry adr create . --title "Use repo-local ADR numbering" --slug use-repo-local-adr-numbering --body-file adr-body.md
+ssot-registry spec create . --title "Maintainer operating conventions" --slug maintainer-operating-conventions --body-file spec-body.md --kind operational
+
+# Inspect or sync the document sets
+ssot-registry adr list .
+ssot-registry spec list .
+ssot-registry adr sync .
+ssot-registry spec sync .
 ```
 
 ### E2E example 2: plan + implementation lifecycle + release flow

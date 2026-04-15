@@ -6,9 +6,9 @@
     "version": "1.2.0"
   },
   "tooling": {
-    "ssot_registry_version": "0.2.0",
-    "initialized_with_version": "0.2.0",
-    "last_upgraded_from_version": "0.2.0"
+    "ssot_registry_version": "0.2.1",
+    "initialized_with_version": "0.2.1",
+    "last_upgraded_from_version": "0.2.1"
   },
   "paths": {
     "ssot_root": ".ssot",

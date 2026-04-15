@@ -11,7 +11,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -28,7 +28,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -45,7 +45,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -62,7 +62,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -79,7 +79,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -96,7 +96,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -113,7 +113,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -130,7 +130,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -147,7 +147,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -164,7 +164,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -181,7 +181,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
@@ -198,7 +198,7 @@
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
-    "introduced_in": "0.2.0",
+    "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
