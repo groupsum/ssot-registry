@@ -3,6 +3,7 @@ from __future__ import annotations
 from importlib import resources
 from pathlib import Path
 
+from ssot_registry.api.documents import sync_all_documents
 from ssot_registry.model.registry import build_minimal_registry, default_paths
 from ssot_registry.util.errors import RegistryError
 from ssot_registry.util.jsonio import save_json
@@ -40,8 +41,7 @@ def initialize_repo(
     save_json(registry_path, registry)
 
     _copy_resource_tree("ssot_registry.schema", repo_root / paths["schema_root"], ".json")
-    _copy_resource_tree("ssot_registry.templates.adr", repo_root / paths["adr_root"], ".md")
-    _copy_resource_tree("ssot_registry.templates.specs", repo_root / paths["spec_root"], ".md")
+    sync_all_documents(registry_path)
 
     report = validate_registry(registry_path)
     if not report["passed"]:

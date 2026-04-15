@@ -6,6 +6,7 @@ from ssot_registry.model.enums import (
     BOUNDARY_STATUSES,
     CLAIM_STATUSES,
     CLAIM_TIERS,
+    CORE_ENTITY_SECTIONS,
     EVIDENCE_STATUSES,
     FEATURE_IMPLEMENTATION_STATUSES,
     FEATURE_LIFECYCLE_STAGES,
@@ -202,6 +203,14 @@ def validate_structure(registry: dict[str, Any], index: dict[str, dict[str, dict
             if not isinstance(repo.get(field_name), str) or not repo[field_name].strip():
                 failures.append(f"repo.{field_name} must be a non-empty string")
 
+    tooling = registry.get("tooling")
+    if not isinstance(tooling, dict):
+        failures.append("tooling must be an object")
+    else:
+        for field_name in ("ssot_registry_version", "initialized_with_version", "last_upgraded_from_version"):
+            if not isinstance(tooling.get(field_name), str) or not tooling[field_name].strip():
+                failures.append(f"tooling.{field_name} must be a non-empty string")
+
     paths = registry.get("paths")
     if not isinstance(paths, dict):
         failures.append("paths must be an object")
@@ -243,7 +252,8 @@ def validate_structure(registry: dict[str, Any], index: dict[str, dict[str, dict
         "releases": _validate_release,
     }
 
-    for section, rows in index.items():
+    for section in CORE_ENTITY_SECTIONS:
+        rows = index.get(section, {})
         required_fields = REQUIRED_ENTITY_FIELDS[section]
         validator = validators[section]
         for entity_id, row in rows.items():

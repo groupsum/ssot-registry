@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import json
-import tempfile
 import unittest
 from pathlib import Path
 
-from tests.helpers import run_cli
+from tests.helpers import run_cli, workspace_tempdir
 
 
 class CliUsageExamplesTests(unittest.TestCase):
     def test_init_to_release_three_via_three_releases(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
+        with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "repo"
             repo.mkdir(parents=True, exist_ok=True)
 

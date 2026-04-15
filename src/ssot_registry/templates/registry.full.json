@@ -1,9 +1,14 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "repo": {
     "id": "repo:advanced-example",
     "name": "advanced-example",
     "version": "1.2.0"
+  },
+  "tooling": {
+    "ssot_registry_version": "0.2.0",
+    "initialized_with_version": "0.2.0",
+    "last_upgraded_from_version": "0.2.0"
   },
   "paths": {
     "ssot_root": ".ssot",
@@ -49,6 +54,44 @@
       "forbid_obsolete_or_removed_in_active_boundary": true,
       "require_feature_absent_for_removed": true
     }
+  },
+  "document_id_reservations": {
+    "adr": [
+      {
+        "owner": "ssot-core",
+        "start": 1,
+        "end": 999,
+        "immutable": true,
+        "deletable": false,
+        "assignable_by_repo": false
+      },
+      {
+        "owner": "repo-local-default",
+        "start": 1000,
+        "end": 4999,
+        "immutable": false,
+        "deletable": true,
+        "assignable_by_repo": true
+      }
+    ],
+    "spec": [
+      {
+        "owner": "ssot-core",
+        "start": 1,
+        "end": 999,
+        "immutable": true,
+        "deletable": false,
+        "assignable_by_repo": false
+      },
+      {
+        "owner": "repo-local-default",
+        "start": 1000,
+        "end": 4999,
+        "immutable": false,
+        "deletable": true,
+        "assignable_by_repo": true
+      }
+    ]
   },
   "features": [
     {
@@ -155,5 +198,7 @@
         "evd:t3.rfc.9000.connection-migration.bundle"
       ]
     }
-  ]
+  ],
+  "adrs": [],
+  "specs": []
 }

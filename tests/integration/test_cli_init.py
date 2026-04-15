@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import json
-import tempfile
 import unittest
 from pathlib import Path
 
-from tests.helpers import run_cli
+from tests.helpers import run_cli, workspace_tempdir
 
 
 class CliInitTests(unittest.TestCase):
     def test_init_and_validate(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
+        with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "new-repo"
             repo.mkdir()
             result = run_cli("init", str(repo), "--repo-id", "repo:new-repo", "--repo-name", "new-repo", "--version", "0.1.0")

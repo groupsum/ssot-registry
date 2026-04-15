@@ -6,9 +6,11 @@
   "required": [
     "schema_version",
     "repo",
+    "tooling",
     "paths",
     "program",
     "guard_policies",
+    "document_id_reservations",
     "features",
     "tests",
     "claims",
@@ -16,14 +18,19 @@
     "issues",
     "risks",
     "boundaries",
-    "releases"
+    "releases",
+    "adrs",
+    "specs"
   ],
   "properties": {
     "schema_version": {
-      "const": 3
+      "const": 4
     },
     "repo": {
       "$ref": "#/$defs/repo"
+    },
+    "tooling": {
+      "$ref": "#/$defs/tooling"
     },
     "paths": {
       "$ref": "#/$defs/paths"
@@ -33,6 +40,9 @@
     },
     "guard_policies": {
       "$ref": "#/$defs/guardPolicies"
+    },
+    "document_id_reservations": {
+      "$ref": "#/$defs/documentIdReservations"
     },
     "features": {
       "type": "array",
@@ -81,6 +91,18 @@
       "items": {
         "$ref": "#/$defs/release"
       }
+    },
+    "adrs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/adr"
+      }
+    },
+    "specs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/spec"
+      }
     }
   },
   "$defs": {
@@ -110,6 +132,29 @@
           "minLength": 1
         },
         "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "tooling": {
+      "type": "object",
+      "required": [
+        "ssot_registry_version",
+        "initialized_with_version",
+        "last_upgraded_from_version"
+      ],
+      "properties": {
+        "ssot_registry_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "initialized_with_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "last_upgraded_from_version": {
           "type": "string",
           "minLength": 1
         }
@@ -188,6 +233,63 @@
     "guardPolicies": {
       "type": "object",
       "additionalProperties": true
+    },
+    "documentReservationRange": {
+      "type": "object",
+      "required": [
+        "owner",
+        "start",
+        "end",
+        "immutable",
+        "deletable",
+        "assignable_by_repo"
+      ],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "immutable": {
+          "type": "boolean"
+        },
+        "deletable": {
+          "type": "boolean"
+        },
+        "assignable_by_repo": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "documentIdReservations": {
+      "type": "object",
+      "required": [
+        "adr",
+        "spec"
+      ],
+      "properties": {
+        "adr": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/documentReservationRange"
+          }
+        },
+        "spec": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/documentReservationRange"
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "featurePlan": {
       "type": "object",
@@ -715,6 +817,145 @@
         },
         "evidence_ids": {
           "$ref": "#/$defs/stringList"
+        }
+      },
+      "additionalProperties": true
+    },
+    "adr": {
+      "type": "object",
+      "required": [
+        "id",
+        "number",
+        "slug",
+        "title",
+        "path",
+        "origin",
+        "managed",
+        "immutable",
+        "package_version",
+        "content_sha256",
+        "status",
+        "supersedes",
+        "superseded_by"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/normalizedId"
+        },
+        "number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "origin": {
+          "enum": [
+            "ssot-core",
+            "repo-local"
+          ]
+        },
+        "managed": {
+          "type": "boolean"
+        },
+        "immutable": {
+          "type": "boolean"
+        },
+        "package_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "status": {
+          "enum": [
+            "proposed",
+            "accepted",
+            "superseded",
+            "retired"
+          ]
+        },
+        "supersedes": {
+          "$ref": "#/$defs/stringList"
+        },
+        "superseded_by": {
+          "$ref": "#/$defs/stringList"
+        }
+      },
+      "additionalProperties": true
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "id",
+        "number",
+        "slug",
+        "title",
+        "path",
+        "origin",
+        "managed",
+        "immutable",
+        "package_version",
+        "content_sha256",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/normalizedId"
+        },
+        "number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "origin": {
+          "enum": [
+            "ssot-core",
+            "repo-local"
+          ]
+        },
+        "managed": {
+          "type": "boolean"
+        },
+        "immutable": {
+          "type": "boolean"
+        },
+        "package_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "kind": {
+          "enum": [
+            "normative",
+            "operational",
+            "repo-local"
+          ]
         }
       },
       "additionalProperties": true

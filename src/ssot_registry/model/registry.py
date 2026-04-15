@@ -3,6 +3,9 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+from ssot_registry.model.document import default_document_id_reservations
+from ssot_registry.version import __version__
+
 from .enums import SCHEMA_VERSION
 
 
@@ -61,12 +64,18 @@ def build_minimal_registry(repo_id: str, repo_name: str, version: str) -> dict[s
             "name": repo_name,
             "version": version,
         },
+        "tooling": {
+            "ssot_registry_version": __version__,
+            "initialized_with_version": __version__,
+            "last_upgraded_from_version": __version__,
+        },
         "paths": default_paths(),
         "program": {
             "active_boundary_id": "bnd:default",
             "active_release_id": f"rel:{version}",
         },
         "guard_policies": default_guard_policies(),
+        "document_id_reservations": default_document_id_reservations(),
         "features": [],
         "tests": [],
         "claims": [],
@@ -92,6 +101,8 @@ def build_minimal_registry(repo_id: str, repo_name: str, version: str) -> dict[s
                 "evidence_ids": [],
             }
         ],
+        "adrs": [],
+        "specs": [],
     }
 
 
@@ -105,6 +116,8 @@ def count_entities(registry: dict[str, Any]) -> dict[str, int]:
         "risks": len(registry.get("risks", [])),
         "boundaries": len(registry.get("boundaries", [])),
         "releases": len(registry.get("releases", [])),
+        "adrs": len(registry.get("adrs", [])),
+        "specs": len(registry.get("specs", [])),
     }
 
 

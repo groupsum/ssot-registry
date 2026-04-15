@@ -8,3 +8,4 @@ build/
 *.egg-info/
 .pytest_cache/
 .ssot/cache/
+.tmp_test_runs/

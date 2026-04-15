@@ -6,6 +6,7 @@ from typing import Any
 from ssot_registry.util.errors import GuardError, RegistryError, ValidationError
 from ssot_registry.util.formatting import render_payload
 
+from .adr_cmd import register_adr
 from .boundary_cmd import register_boundary
 from .claim_cmd import register_claim
 from .evidence_cmd import register_evidence
@@ -16,7 +17,9 @@ from .issue_cmd import register_issue
 from .registry_cmd import register_registry
 from .release_cmd import register_release
 from .risk_cmd import register_risk
+from .spec_cmd import register_spec
 from .test_cmd import register_test
+from .upgrade_cmd import register_upgrade
 from .validate_cmd import register_validate
 
 
@@ -35,6 +38,9 @@ def main() -> int:
 
     register_init(subparsers)
     register_validate(subparsers)
+    register_upgrade(subparsers)
+    register_adr(subparsers)
+    register_spec(subparsers)
     register_feature(subparsers)
     register_test(subparsers)
     register_issue(subparsers)

@@ -1,6 +1,6 @@
 <div align="center">
   <h1>🔷 ssot-registry</h1>
-  <p><strong>Single Source of Truth for features, claims, tests, and releases.</strong></p>
+  <p><strong>Single Source of Truth for features, claims, tests, releases, ADRs, and specs.</strong></p>
 </div>
 
 <div align="center">
@@ -24,6 +24,8 @@ It provides a canonical registry for:
 - risks
 - frozen boundaries
 - releases
+- ADRs
+- specs
 
 The canonical machine-readable artifact is:
 
@@ -66,6 +68,9 @@ Please review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
 ssot-registry --help
 ssot-registry init --help
 ssot-registry validate --help
+ssot-registry upgrade --help
+ssot-registry adr --help
+ssot-registry spec --help
 ssot-registry feature --help
 ssot-registry test --help
 ssot-registry issue --help
@@ -96,6 +101,9 @@ ssot-registry registry --help
 
 - `init`
 - `validate`
+- `upgrade`
+- `adr`
+- `spec`
 - `feature`
 - `test`
 - `issue`
@@ -122,6 +130,97 @@ ssot-registry init [path]
 ```text
 ssot-registry validate [path]
   --write-report
+```
+
+### `upgrade`
+
+```text
+ssot-registry upgrade [path]
+  --target-version VERSION
+  --sync-docs
+  --write-report
+```
+
+### `adr`
+
+Subcommands:
+
+- `create`, `get`, `list`, `update`, `delete`, `sync`
+- `reserve create`, `reserve list`
+
+```text
+ssot-registry adr create [path]
+  --title TITLE (required)
+  --slug SLUG (required)
+  --body-file BODY_FILE (required)
+  --number NUMBER
+  --status {proposed,accepted,superseded,retired}
+  --origin {repo-local}
+  --reserve-range RANGE_NAME
+
+ssot-registry adr get [path]
+  --id ID (required)
+
+ssot-registry adr list [path]
+
+ssot-registry adr update [path]
+  --id ID (required)
+  --title TITLE
+  --body-file BODY_FILE
+  --status {proposed,accepted,superseded,retired}
+
+ssot-registry adr delete [path]
+  --id ID (required)
+
+ssot-registry adr sync [path]
+
+ssot-registry adr reserve create [path]
+  --name NAME (required)
+  --start START (required)
+  --end END (required)
+
+ssot-registry adr reserve list [path]
+```
+
+### `spec`
+
+Subcommands:
+
+- `create`, `get`, `list`, `update`, `delete`, `sync`
+- `reserve create`, `reserve list`
+
+```text
+ssot-registry spec create [path]
+  --title TITLE (required)
+  --slug SLUG (required)
+  --body-file BODY_FILE (required)
+  --number NUMBER
+  --origin {repo-local}
+  --kind {normative,operational,repo-local}
+  --reserve-range RANGE_NAME
+
+ssot-registry spec get [path]
+  --id ID (required)
+
+ssot-registry spec list [path]
+
+ssot-registry spec update [path]
+  --id ID (required)
+  --title TITLE
+  --body-file BODY_FILE
+  --kind {normative,operational,repo-local}
+
+ssot-registry spec delete [path]
+  --id ID (required)
+
+ssot-registry spec sync [path]
+
+ssot-registry spec reserve create [path]
+  --name NAME (required)
+  --start START (required)
+  --end END (required)
+
+ssot-registry spec reserve list [path]
 ```
 
 ### `feature`
@@ -671,14 +770,14 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 ## Documentation map (pointers to docs subdirectories)
 
 - Specifications (`docs/specs/`)
-  - CLI contract: `docs/specs/cli.md`
-  - Registry core: `docs/specs/registry-core.md`
-  - Graph model: `docs/specs/graph-model.md`
-  - Lifecycle: `docs/specs/feature-lifecycle.md`
-  - Claims and tiers: `docs/specs/claim-statuses.md`, `docs/specs/claim-tiers.md`
-  - Boundaries/releases/snapshots: `docs/specs/snapshots-and-reports.md`
-  - Validation policy: `docs/specs/repo-policy.md`, `docs/specs/gates-and-fences.md`
-  - IDs and file tree: `docs/specs/id-normalization.md`, `docs/specs/file-tree.md`
+  - CLI contract: `docs/specs/SPEC-0002-cli.md`
+  - Registry core: `docs/specs/SPEC-0001-registry-core.md`
+  - Graph model: `docs/specs/SPEC-0003-graph-model.md`
+  - Lifecycle: `docs/specs/SPEC-0004-feature-lifecycle.md`
+  - Claims and tiers: `docs/specs/SPEC-0005-claim-statuses.md`, `docs/specs/SPEC-0006-claim-tiers.md`
+  - Boundaries/releases/snapshots: `docs/specs/SPEC-0007-snapshots-and-reports.md`
+  - Validation policy: `docs/specs/SPEC-0008-repo-policy.md`, `docs/specs/SPEC-0009-gates-and-fences.md`
+  - IDs and file tree: `docs/specs/SPEC-0010-id-normalization.md`, `docs/specs/SPEC-0011-file-tree.md`
 
 - Architecture decisions (`docs/adr/`)
   - Rationale and decision history for the model and release flow.

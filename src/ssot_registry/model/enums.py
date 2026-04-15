@@ -1,13 +1,28 @@
 from __future__ import annotations
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 TOP_LEVEL_SECTIONS = (
     "schema_version",
     "repo",
+    "tooling",
     "paths",
     "program",
     "guard_policies",
+    "document_id_reservations",
+    "features",
+    "tests",
+    "claims",
+    "evidence",
+    "issues",
+    "risks",
+    "boundaries",
+    "releases",
+    "adrs",
+    "specs",
+)
+
+CORE_ENTITY_SECTIONS = (
     "features",
     "tests",
     "claims",
@@ -18,16 +33,12 @@ TOP_LEVEL_SECTIONS = (
     "releases",
 )
 
-ENTITY_SECTIONS = (
-    "features",
-    "tests",
-    "claims",
-    "evidence",
-    "issues",
-    "risks",
-    "boundaries",
-    "releases",
+DOCUMENT_ENTITY_SECTIONS = (
+    "adrs",
+    "specs",
 )
+
+ENTITY_SECTIONS = CORE_ENTITY_SECTIONS + DOCUMENT_ENTITY_SECTIONS
 
 ENTITY_PREFIXES = {
     "repo": "repo:",
@@ -39,6 +50,8 @@ ENTITY_PREFIXES = {
     "risks": "rsk:",
     "boundaries": "bnd:",
     "releases": "rel:",
+    "adrs": "adr:",
+    "specs": "spc:",
 }
 
 FEATURE_IMPLEMENTATION_STATUSES = {"absent", "partial", "implemented"}
@@ -82,9 +95,11 @@ SEVERITIES = {"low", "medium", "high", "critical"}
 REQUIRED_TOP_LEVEL_KEYS = {
     "schema_version",
     "repo",
+    "tooling",
     "paths",
     "program",
     "guard_policies",
+    "document_id_reservations",
     "features",
     "tests",
     "claims",
@@ -93,6 +108,8 @@ REQUIRED_TOP_LEVEL_KEYS = {
     "risks",
     "boundaries",
     "releases",
+    "adrs",
+    "specs",
 }
 
 REQUIRED_ENTITY_FIELDS = {

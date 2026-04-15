@@ -1,5 +1,16 @@
 from .boundary import freeze_boundary
 from .claims import evaluate_claims
+from .documents import (
+    create_document,
+    create_document_reservation,
+    delete_document,
+    get_document,
+    list_document_reservations,
+    list_documents,
+    sync_all_documents,
+    sync_documents,
+    update_document,
+)
 from .entity_ops import (
     add_boundary_features,
     add_release_claims,
@@ -28,6 +39,7 @@ from .plan import plan_features, plan_issues
 from .registry import export_registry
 from .release import certify_release, promote_release, publish_release, revoke_release
 from .save import save_registry
+from .upgrade import upgrade_registry
 from .validate import validate_registry
 
 __all__ = [
@@ -35,6 +47,15 @@ __all__ = [
     "load_registry",
     "save_registry",
     "validate_registry",
+    "create_document",
+    "get_document",
+    "list_documents",
+    "update_document",
+    "delete_document",
+    "sync_documents",
+    "sync_all_documents",
+    "create_document_reservation",
+    "list_document_reservations",
     "create_entity",
     "get_entity",
     "list_entities",
@@ -64,4 +85,5 @@ __all__ = [
     "revoke_release",
     "export_graph",
     "export_registry",
+    "upgrade_registry",
 ]
