@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from ssot_registry.model.document import CREATE_ALLOWED_STATUSES, DOCUMENT_STATUSES, TRANSITION_RULES
@@ -38,7 +38,7 @@ def append_status_note(
     entry: dict[str, str] = {
         "status": status,
         "note": note.strip(),
-        "at": at or datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "at": at or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
     }
     if actor is not None:
         entry["actor"] = actor
