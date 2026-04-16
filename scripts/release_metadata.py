@@ -20,6 +20,7 @@ RELEASE_ORDER = (
     "ssot-cli",
     "ssot-tui",
 )
+RELEASE_TRAINS = ("core", *RELEASE_ORDER, "selected")
 
 
 @dataclass(frozen=True)
@@ -119,10 +120,8 @@ def collect_metadata() -> dict[str, object]:
 def resolve_targets(train: str, selected_packages: str | None) -> list[str]:
     if train == "core":
         return list(CORE_PACKAGES)
-    if train == "ssot-cli":
-        return ["ssot-cli"]
-    if train == "ssot-tui":
-        return ["ssot-tui"]
+    if train in PACKAGE_INFOS:
+        return [train]
     if train != "selected":
         raise ValueError(f"Unsupported release train: {train}")
     if not selected_packages:
@@ -215,7 +214,7 @@ def main() -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     show_parser = subparsers.add_parser("show", help="Show package metadata as JSON.")
-    show_parser.add_argument("--train", choices=["core", "ssot-cli", "ssot-tui", "selected"])
+    show_parser.add_argument("--train", choices=RELEASE_TRAINS)
     show_parser.add_argument("--packages", help="Comma-separated package list for selected train.")
 
     version_parser = subparsers.add_parser("version", help="Print the version for a package.")
@@ -225,11 +224,11 @@ def main() -> int:
     tag_parser.add_argument("--package", required=True, choices=sorted(PACKAGE_INFOS))
 
     targets_parser = subparsers.add_parser("targets", help="Print release targets for a train.")
-    targets_parser.add_argument("--train", required=True, choices=["core", "ssot-cli", "ssot-tui", "selected"])
+    targets_parser.add_argument("--train", required=True, choices=RELEASE_TRAINS)
     targets_parser.add_argument("--packages", help="Comma-separated package list for selected train.")
 
     validate_parser = subparsers.add_parser("validate-train", help="Validate release policy for a train.")
-    validate_parser.add_argument("--train", required=True, choices=["core", "ssot-cli", "ssot-tui", "selected"])
+    validate_parser.add_argument("--train", required=True, choices=RELEASE_TRAINS)
     validate_parser.add_argument("--packages", help="Comma-separated package list for selected train.")
 
     args = parser.parse_args()

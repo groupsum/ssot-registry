@@ -1,8 +1,15 @@
 from __future__ import annotations
 
-import tomllib
 import unittest
 from pathlib import Path
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - Python 3.10 fallback
+    try:
+        import tomli as tomllib
+    except ModuleNotFoundError:
+        from pip._vendor import tomli as tomllib
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

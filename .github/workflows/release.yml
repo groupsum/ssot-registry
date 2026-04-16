@@ -35,6 +35,10 @@ on:
         type: choice
         options:
           - core
+          - ssot-contracts
+          - ssot-views
+          - ssot-codegen
+          - ssot-registry
           - ssot-cli
           - ssot-tui
           - selected

@@ -37,6 +37,18 @@ class ReleaseMetadataTests(unittest.TestCase):
         )
         self.assertEqual(payload, ["ssot-contracts", "ssot-registry"])
 
+    def test_each_package_has_a_direct_release_train(self) -> None:
+        for package_name in (
+            "ssot-contracts",
+            "ssot-views",
+            "ssot-codegen",
+            "ssot-registry",
+            "ssot-cli",
+            "ssot-tui",
+        ):
+            payload = json.loads(_run_release_metadata("targets", "--train", package_name).stdout)
+            self.assertEqual(payload, [package_name])
+
 
 if __name__ == "__main__":
     unittest.main()

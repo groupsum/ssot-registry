@@ -1,8 +1,15 @@
 from __future__ import annotations
 
-import tomllib
 import unittest
 from pathlib import Path
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - Python 3.10 fallback
+    try:
+        import tomli as tomllib
+    except ModuleNotFoundError:
+        from pip._vendor import tomli as tomllib
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -28,9 +35,30 @@ class ReleaseWorkflowTests(unittest.TestCase):
     def test_release_workflow_targets_package_publish_wrappers(self) -> None:
         workflow = _read(".github/workflows/release.yml")
         self.assertIn("release_train", workflow)
+        self.assertIn("- ssot-contracts", workflow)
+        self.assertIn("- ssot-views", workflow)
+        self.assertIn("- ssot-codegen", workflow)
+        self.assertIn("- ssot-registry", workflow)
         self.assertIn("publish-ssot-contracts.yml", workflow)
+        self.assertIn("publish-ssot-views.yml", workflow)
+        self.assertIn("publish-ssot-codegen.yml", workflow)
         self.assertIn("publish-ssot-registry.yml", workflow)
         self.assertIn("publish-ssot-cli.yml", workflow)
+        self.assertIn("publish-ssot-tui.yml", workflow)
+
+    def test_ci_workflow_covers_each_package_across_supported_python_versions(self) -> None:
+        workflow = _read(".github/workflows/ci.yml")
+        self.assertIn('python_version: ["3.10", "3.11", "3.12", "3.13"]', workflow)
+        for package_name in (
+            "ssot-contracts",
+            "ssot-views",
+            "ssot-codegen",
+            "ssot-registry",
+            "ssot-cli",
+            "ssot-tui",
+        ):
+            self.assertIn(f"          - {package_name}", workflow)
+            self.assertIn(f"          - package_name: {package_name}", workflow)
 
     def test_publish_workflows_exist_for_all_packages(self) -> None:
         for filename in (

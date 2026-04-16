@@ -20,6 +20,7 @@ ssot-tui = { workspace = true }
 dev = [
   "pytest>=8.3",
   "textual>=8.2.3",
+  "tomli>=2.0.1; python_version < '3.11'",
 ]
 
 [tool.pytest.ini_options]
