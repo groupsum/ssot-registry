@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ssot-tui"
+version = "0.1.0"
+description = "Terminal UI package for ssot-registry workflows."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
+
+[project.urls]
+Homepage = "https://github.com/groupsum/ssot-registry"
+Repository = "https://github.com/groupsum/ssot-registry"
+Issues = "https://github.com/groupsum/ssot-registry/issues"
+
+[project.scripts]
+ssot-tui = "ssot_tui.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
