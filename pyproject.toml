@@ -8,7 +8,7 @@ version = "0.2.3"
 description = "Portable single-source-of-truth registry for features, tests, claims, evidence, issues, risks, boundaries, releases, ADRs, and specs."
 readme = "README.md"
 requires-python = ">=3.10"
-license = "MIT"
+license = "Apache-2.0"
 authors = [
   { name = "Jacob Stewart", email = "jacob@swarmauri.com" }
 ]
@@ -27,7 +27,6 @@ classifiers = [
   "Intended Audience :: Developers",
   "Intended Audience :: Information Technology",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: MIT License",
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
@@ -75,5 +74,5 @@ where = ["src"]
 "ssot_registry.templates.specs" = ["*.md", "*.json"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "pkgs/ssot-cli/tests", "pkgs/ssot-tui/tests"]
 norecursedirs = ["tests/fixtures"]
