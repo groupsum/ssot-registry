@@ -35,6 +35,21 @@ class CliOutputFormatsTests(unittest.TestCase):
         self.assertTrue(export_path.exists())
         self.assertIn("[program]", export_path.read_text(encoding="utf-8"))
 
+    def test_registry_export_supports_df(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+
+        result = run_cli("registry", "export", str(repo), "--format", "df")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        payload = json.loads(result.stdout)
+        export_path = Path(payload["output_path"])
+        self.assertTrue(export_path.exists())
+        self.assertEqual(export_path.suffix, ".txt")
+        table_text = export_path.read_text(encoding="utf-8")
+        self.assertIn("schema_version", table_text)
+        self.assertIn("| program", table_text)
+
     def test_graph_export_supports_png_when_dot_is_available(self) -> None:
         if shutil.which("dot") is None:
             self.skipTest("dot is not installed")
