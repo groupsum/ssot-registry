@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssot-views"
-version = "0.2.3"
+version = "0.2.4.dev1"
 description = "Derived projections, reports, and graph exports for SSOT."
 readme = "README.md"
 requires-python = ">=3.10"
