@@ -138,7 +138,8 @@
       "frozen": true,
       "feature_ids": [
         "feat:rfc.9000.connection-migration"
-      ]
+      ],
+      "profile_ids": []
     }
   ],
   "releases": [
@@ -154,5 +155,6 @@
         "evd:t3.rfc.9000.connection-migration.bundle"
       ]
     }
-  ]
+  ],
+  "profiles": []
 }

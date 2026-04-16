@@ -14,6 +14,14 @@ def build_graph_json(registry: dict[str, object]) -> dict[str, object]:
     for boundary in registry.get("boundaries", []):
         for feature_id in boundary.get("feature_ids", []):
             edges.append({"type": "SCOPES", "from": boundary["id"], "to": feature_id})
+        for profile_id in boundary.get("profile_ids", []):
+            edges.append({"type": "SCOPES_PROFILE", "from": boundary["id"], "to": profile_id})
+
+    for profile in registry.get("profiles", []):
+        for feature_id in profile.get("feature_ids", []):
+            edges.append({"type": "BUNDLES", "from": profile["id"], "to": feature_id})
+        for nested_profile_id in profile.get("profile_ids", []):
+            edges.append({"type": "COMPOSES", "from": profile["id"], "to": nested_profile_id})
 
     for release in registry.get("releases", []):
         edges.append({"type": "USES_BOUNDARY", "from": release["id"], "to": release["boundary_id"]})

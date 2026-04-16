@@ -141,6 +141,26 @@ def migrate_v3_to_v4(registry: dict[str, Any], repo_root: Path, *, previous_vers
     return migrated
 
 
+def _seed_v5_profiles(registry: dict[str, Any]) -> None:
+    registry["schema_version"] = 5
+    registry.setdefault("profiles", [])
+    for boundary in registry.get("boundaries", []):
+        boundary.setdefault("profile_ids", [])
+
+
+def migrate_v4_to_v5(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    _ = repo_root, previous_version, target_version
+    migrated = deepcopy(registry)
+    _seed_v5_profiles(migrated)
+    return migrated
+
+
 def target_version_from_registry(registry: dict[str, Any]) -> str:
     tooling = registry.get("tooling")
     if isinstance(tooling, dict):
@@ -176,8 +196,12 @@ def upgrade_registry(
         rename_summary = _rename_legacy_packaged_specs(working, repo_root)
         working = migrate_v3_to_v4(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
         migrations.append("migrate_v3_to_v4")
+        source_schema = 4
+    if source_schema == 4:
+        working = migrate_v4_to_v5(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
+        migrations.append("migrate_v4_to_v5")
     elif source_schema != SCHEMA_VERSION:
-        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3 or {SCHEMA_VERSION}")
+        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4 or {SCHEMA_VERSION}")
 
     if not migrations and source_tooling_version == target_version and not sync_docs:
         report = validate_registry_document(working, registry_path, repo_root)

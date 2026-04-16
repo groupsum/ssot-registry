@@ -13,6 +13,7 @@ from .documents import (
 )
 from .entity_ops import (
     add_boundary_features,
+    add_boundary_profiles,
     add_release_claims,
     add_release_evidence,
     create_entity,
@@ -21,6 +22,7 @@ from .entity_ops import (
     link_entities,
     list_entities,
     remove_boundary_features,
+    remove_boundary_profiles,
     remove_release_claims,
     remove_release_evidence,
     set_claim_status,
@@ -30,6 +32,7 @@ from .entity_ops import (
     unlink_entities,
     update_entity,
 )
+from .profile_eval import evaluate_feature_passing, evaluate_profile, evaluate_profile_by_id, evaluate_profiles
 from .evidence import verify_evidence_rows
 from .graph import export_graph
 from .init import initialize_repo
@@ -68,7 +71,9 @@ __all__ = [
     "set_issue_status",
     "set_risk_status",
     "add_boundary_features",
+    "add_boundary_profiles",
     "remove_boundary_features",
+    "remove_boundary_profiles",
     "add_release_claims",
     "remove_release_claims",
     "add_release_evidence",
@@ -77,6 +82,10 @@ __all__ = [
     "plan_issues",
     "set_feature_lifecycle",
     "evaluate_claims",
+    "evaluate_feature_passing",
+    "evaluate_profile",
+    "evaluate_profile_by_id",
+    "evaluate_profiles",
     "verify_evidence_rows",
     "freeze_boundary",
     "certify_release",

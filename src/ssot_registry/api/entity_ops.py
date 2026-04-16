@@ -13,6 +13,7 @@ from .validate import validate_registry_document
 
 SECTION_LABELS = {
     "features": "feature",
+    "profiles": "profile",
     "tests": "test",
     "claims": "claim",
     "evidence": "evidence",
@@ -39,12 +40,13 @@ RECIPROCAL_FIELDS = {
 
 LINKABLE_FIELDS = {
     "features": {"claim_ids", "test_ids", "requires"},
+    "profiles": {"feature_ids", "profile_ids"},
     "tests": {"feature_ids", "claim_ids", "evidence_ids"},
     "claims": {"feature_ids", "test_ids", "evidence_ids"},
     "evidence": {"claim_ids", "test_ids"},
     "issues": {"feature_ids", "claim_ids", "test_ids", "evidence_ids", "risk_ids"},
     "risks": {"feature_ids", "claim_ids", "test_ids", "evidence_ids", "issue_ids"},
-    "boundaries": {"feature_ids"},
+    "boundaries": {"feature_ids", "profile_ids"},
     "releases": {"claim_ids", "evidence_ids"},
 }
 
@@ -308,6 +310,14 @@ def add_boundary_features(path: str | Path, boundary_id: str, feature_ids: list[
 
 def remove_boundary_features(path: str | Path, boundary_id: str, feature_ids: list[str]) -> dict[str, Any]:
     return unlink_entities(path, "boundaries", boundary_id, {"feature_ids": feature_ids})
+
+
+def add_boundary_profiles(path: str | Path, boundary_id: str, profile_ids: list[str]) -> dict[str, Any]:
+    return link_entities(path, "boundaries", boundary_id, {"profile_ids": profile_ids})
+
+
+def remove_boundary_profiles(path: str | Path, boundary_id: str, profile_ids: list[str]) -> dict[str, Any]:
+    return unlink_entities(path, "boundaries", boundary_id, {"profile_ids": profile_ids})
 
 
 def add_release_claims(path: str | Path, release_id: str, claim_ids: list[str]) -> dict[str, Any]:

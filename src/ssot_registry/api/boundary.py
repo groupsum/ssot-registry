@@ -6,6 +6,7 @@ from ssot_registry.snapshots.boundary_snapshot import build_boundary_snapshot
 from ssot_registry.util.errors import ValidationError
 from ssot_registry.util.jsonio import save_json
 from .load import load_registry
+from .profile_resolution import resolve_boundary_feature_ids
 from .save import save_registry
 from .validate import validate_registry, validate_registry_document
 
@@ -33,11 +34,15 @@ def freeze_boundary(path: str | Path, boundary_id: str | None = None) -> dict[st
     save_registry(registry_path, registry)
 
     features = {row["id"]: row for row in registry["features"]}
+    from ssot_registry.validators.identity import build_index
+
+    index = build_index(registry, [])
+    resolved_feature_ids = resolve_boundary_feature_ids(boundary, index)
     snapshot, output_path = build_boundary_snapshot(
         repo_root,
         registry_path,
         boundary,
-        [features[feature_id] for feature_id in boundary.get("feature_ids", []) if feature_id in features],
+        [features[feature_id] for feature_id in resolved_feature_ids if feature_id in features],
     )
     save_json(output_path, snapshot)
 

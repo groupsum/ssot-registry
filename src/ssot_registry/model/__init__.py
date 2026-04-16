@@ -16,6 +16,7 @@ from .document import (
     read_packaged_document_text,
 )
 from .ids import is_normalized_id, filesystem_safe_id
+from .profile import ProfileRow
 from .registry import build_minimal_registry, count_entities, default_guard_policies, default_paths
 
 __all__ = [
@@ -38,6 +39,7 @@ __all__ = [
     "load_document_manifest",
     "normalize_document_id",
     "parse_document_filename",
+    "ProfileRow",
     "read_packaged_document_bytes",
     "read_packaged_document_text",
 ]

@@ -77,6 +77,7 @@ def build_minimal_registry(repo_id: str, repo_name: str, version: str) -> dict[s
         "guard_policies": default_guard_policies(),
         "document_id_reservations": default_document_id_reservations(),
         "features": [],
+        "profiles": [],
         "tests": [],
         "claims": [],
         "evidence": [],
@@ -89,6 +90,7 @@ def build_minimal_registry(repo_id: str, repo_name: str, version: str) -> dict[s
                 "status": "draft",
                 "frozen": False,
                 "feature_ids": [],
+                "profile_ids": [],
             }
         ],
         "releases": [
@@ -109,6 +111,7 @@ def build_minimal_registry(repo_id: str, repo_name: str, version: str) -> dict[s
 def count_entities(registry: dict[str, Any]) -> dict[str, int]:
     return {
         "features": len(registry.get("features", [])),
+        "profiles": len(registry.get("profiles", [])),
         "tests": len(registry.get("tests", [])),
         "claims": len(registry.get("claims", [])),
         "evidence": len(registry.get("evidence", [])),
