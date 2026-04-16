@@ -20,61 +20,38 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        python_version: ["3.10", "3.11", "3.12", "3.13"]
         include:
           - package_name: ssot-contracts
             project_path: pkgs/ssot-contracts
             compile_paths: pkgs/ssot-contracts/src tests/unit/test_contracts_views_codegen.py tests/unit/test_release_metadata.py tests/unit/test_release_workflows.py tests/unit/test_pyproject_metadata.py
             test_command: python -m unittest tests.unit.test_contracts_views_codegen tests.unit.test_release_metadata tests.unit.test_release_workflows tests.unit.test_pyproject_metadata -v
             verify_packaged_docs: true
-            python_version: "3.12"
           - package_name: ssot-views
             project_path: pkgs/ssot-views
             compile_paths: pkgs/ssot-views/src tests/unit/test_contracts_views_codegen.py tests/unit/test_release_metadata.py tests/unit/test_release_workflows.py tests/unit/test_pyproject_metadata.py
             test_command: python -m unittest tests.unit.test_contracts_views_codegen tests.unit.test_release_metadata tests.unit.test_release_workflows tests.unit.test_pyproject_metadata -v
             verify_packaged_docs: false
-            python_version: "3.12"
           - package_name: ssot-codegen
             project_path: pkgs/ssot-codegen
             compile_paths: pkgs/ssot-codegen/src tests/unit/test_contracts_views_codegen.py tests/unit/test_release_metadata.py tests/unit/test_release_workflows.py tests/unit/test_pyproject_metadata.py
             test_command: python -m unittest tests.unit.test_contracts_views_codegen tests.unit.test_release_metadata tests.unit.test_release_workflows tests.unit.test_pyproject_metadata -v
             verify_packaged_docs: false
-            python_version: "3.12"
           - package_name: ssot-registry
             project_path: pkgs/ssot-registry
             compile_paths: pkgs/ssot-registry/src tests
             test_command: python -m unittest discover -s tests -v
             verify_packaged_docs: false
-            python_version: "3.12"
           - package_name: ssot-cli
             project_path: pkgs/ssot-cli
             compile_paths: pkgs/ssot-cli/src tests
             test_command: python -m unittest tests.integration.test_cli_init tests.integration.test_cli_global_flags tests.integration.test_cli_upgrade tests.unit.test_cli_package_layout tests.unit.test_release_workflows tests.unit.test_pyproject_metadata -v
             verify_packaged_docs: false
-            python_version: "3.12"
           - package_name: ssot-tui
             project_path: pkgs/ssot-tui
             compile_paths: pkgs/ssot-tui/src tests/unit/test_cli_package_layout.py tests/unit/test_release_workflows.py tests/unit/test_pyproject_metadata.py
             test_command: python -m unittest tests.unit.test_cli_package_layout tests.unit.test_release_workflows tests.unit.test_pyproject_metadata -v
             verify_packaged_docs: false
-            python_version: "3.12"
-          - package_name: ssot-registry
-            project_path: pkgs/ssot-registry
-            compile_paths: pkgs/ssot-registry/src tests
-            test_command: python -m unittest discover -s tests -v
-            verify_packaged_docs: false
-            python_version: "3.10"
-          - package_name: ssot-registry
-            project_path: pkgs/ssot-registry
-            compile_paths: pkgs/ssot-registry/src tests
-            test_command: python -m unittest discover -s tests -v
-            verify_packaged_docs: false
-            python_version: "3.11"
-          - package_name: ssot-registry
-            project_path: pkgs/ssot-registry
-            compile_paths: pkgs/ssot-registry/src tests
-            test_command: python -m unittest discover -s tests -v
-            verify_packaged_docs: false
-            python_version: "3.13"
     uses: ./.github/workflows/_package-ci.yml
     with:
       package_name: ${{ matrix.package_name }}

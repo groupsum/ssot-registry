@@ -13,6 +13,25 @@ def _load_toml(path: str) -> dict:
 
 
 class PyprojectMetadataTests(unittest.TestCase):
+    def test_all_publishable_packages_declare_python_3_10_through_3_13_support(self) -> None:
+        expected_classifiers = {
+            "Programming Language :: Python :: 3.10",
+            "Programming Language :: Python :: 3.11",
+            "Programming Language :: Python :: 3.12",
+            "Programming Language :: Python :: 3.13",
+        }
+        for path in (
+            "pkgs/ssot-contracts/pyproject.toml",
+            "pkgs/ssot-views/pyproject.toml",
+            "pkgs/ssot-codegen/pyproject.toml",
+            "pkgs/ssot-registry/pyproject.toml",
+            "pkgs/ssot-cli/pyproject.toml",
+            "pkgs/ssot-tui/pyproject.toml",
+        ):
+            project = _load_toml(path)["project"]
+            self.assertEqual(project["requires-python"], ">=3.10")
+            self.assertTrue(expected_classifiers.issubset(set(project["classifiers"])), path)
+
     def test_workspace_root_defines_dev_dependency_group(self) -> None:
         data = _load_toml("pyproject.toml")
         self.assertIn("dependency-groups", data)
