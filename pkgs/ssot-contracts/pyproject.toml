@@ -10,6 +10,27 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
+keywords = ["ssot", "contracts", "schemas", "templates", "manifests"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: File Formats :: JSON",
+  "Topic :: File Formats :: JSON :: JSON Schema",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/groupsum/ssot-registry"
+Repository = "https://github.com/groupsum/ssot-registry"
+Issues = "https://github.com/groupsum/ssot-registry/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

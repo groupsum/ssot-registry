@@ -16,6 +16,12 @@ ssot-registry = { workspace = true }
 ssot-cli = { workspace = true }
 ssot-tui = { workspace = true }
 
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "textual>=8.2.3",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests", "pkgs/ssot-cli/tests", "pkgs/ssot-tui/tests", "pkgs/ssot-registry/tests", "pkgs/ssot-contracts/tests", "pkgs/ssot-views/tests", "pkgs/ssot-codegen/tests"]
 norecursedirs = ["tests/fixtures"]

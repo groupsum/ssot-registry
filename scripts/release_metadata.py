@@ -184,11 +184,12 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
     for package_name in ("ssot-cli", "ssot-tui"):
         actual_dependencies = packages[package_name]["dependencies"]  # type: ignore[index]
         assert isinstance(actual_dependencies, dict)
-        actual_value = actual_dependencies.get("ssot-registry", "")
-        if expected_surface_dependency not in actual_value:
-            raise ValueError(
-                f"{package_name} must depend on a compatible ssot-registry range containing {expected_surface_dependency!r}."
-            )
+        for dependency_name in ("ssot-contracts", "ssot-registry"):
+            actual_value = actual_dependencies.get(dependency_name, "")
+            if expected_surface_dependency not in actual_value:
+                raise ValueError(
+                    f"{package_name} must depend on a compatible {dependency_name} range containing {expected_surface_dependency!r}."
+                )
 
     for package_name in targets:
         dependencies = packages[package_name]["dependencies"]  # type: ignore[index]

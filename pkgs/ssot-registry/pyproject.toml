@@ -61,10 +61,6 @@ Homepage = "https://github.com/groupsum/ssot-registry"
 Repository = "https://github.com/groupsum/ssot-registry"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
 
-[project.scripts]
-ssot = "ssot_registry.cli.main:main"
-ssot-registry = "ssot_registry.cli.main:main"
-
 [tool.setuptools]
 package-dir = {"" = "src"}
 
@@ -76,7 +72,3 @@ where = ["src"]
 "ssot_registry.templates" = ["*.json"]
 "ssot_registry.templates.adr" = ["*.md", "*.json"]
 "ssot_registry.templates.specs" = ["*.md", "*.json"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests", "pkgs/ssot-cli/tests", "pkgs/ssot-tui/tests"]
-norecursedirs = ["tests/fixtures"]

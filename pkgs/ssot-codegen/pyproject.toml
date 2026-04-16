@@ -14,9 +14,30 @@ dependencies = [
   "ssot-contracts==0.2.3",
   "ssot-views==0.2.3",
 ]
+keywords = ["ssot", "codegen", "generators", "contracts"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Code Generators",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 [project.scripts]
 ssot-codegen = "ssot_codegen.main:main"
+
+[project.urls]
+Homepage = "https://github.com/groupsum/ssot-registry"
+Repository = "https://github.com/groupsum/ssot-registry"
+Issues = "https://github.com/groupsum/ssot-registry/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

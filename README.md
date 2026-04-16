@@ -71,7 +71,7 @@ python -m pip install ssot-tui        # Textual TUI
 python -m pip install -e pkgs/ssot-registry
 ```
 
-`ssot-registry` remains the canonical import package. CLI implementation now lives in `ssot-cli`, while `ssot-registry` keeps legacy `ssot` and `ssot-registry` entrypoints during the transition.
+`ssot-registry` remains the canonical import package. CLI entry points now ship from `ssot-cli`, including both `ssot` and the compatibility alias `ssot-registry`.
 
 The repository root is now workspace tooling only. Canonical release artifacts are built from package roots under `pkgs/`, and the canonical Python runtime release target is `pkgs/ssot-registry`.
 
