@@ -1,5 +1,8 @@
 # Claim tiers
 
+## Status
+Draft
+
 Supported tiers:
 - `T0` declared intent or inventory-level
 - `T1` maintainer-asserted with local evidence

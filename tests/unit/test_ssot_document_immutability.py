@@ -18,7 +18,7 @@ class SsotDocumentImmutabilityTests(unittest.TestCase):
 
         report = validate_registry(repo)
         self.assertFalse(report["passed"])
-        self.assertIn("SSOT-managed and immutable", "\n".join(report["failures"]))
+        self.assertIn("content hash does not match file content", "\n".join(report["failures"]))
 
 
 if __name__ == "__main__":

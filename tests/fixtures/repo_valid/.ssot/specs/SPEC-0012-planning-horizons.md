@@ -1,5 +1,8 @@
 # Planning horizons
 
+## Status
+Draft
+
 Supported horizons:
 - `current`
 - `next`

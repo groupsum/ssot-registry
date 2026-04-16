@@ -18,7 +18,7 @@ class DocumentSyncTests(unittest.TestCase):
 
         report = validate_registry(repo)
         self.assertFalse(report["passed"])
-        self.assertIn("SSOT-managed and immutable", "\n".join(report["failures"]))
+        self.assertIn("content hash does not match file content", "\n".join(report["failures"]))
 
         sync_result = sync_documents(repo, "adr")
         self.assertIn("adr:0001", sync_result["updated"])

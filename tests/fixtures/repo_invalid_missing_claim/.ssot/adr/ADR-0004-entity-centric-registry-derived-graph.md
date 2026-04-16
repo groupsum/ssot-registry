@@ -1,7 +1,7 @@
 # ADR-0004: Entity-centric registry with a derived graph export
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 The canonical registry is entity-centric JSON with explicit references. A graph export is derived from it.

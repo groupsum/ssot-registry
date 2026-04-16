@@ -1,7 +1,7 @@
 # ADR-0007: Feature implementation state is separate from lifecycle state
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 `implementation_status` and `lifecycle.stage` are distinct fields.

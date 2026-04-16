@@ -1,7 +1,7 @@
 # ADR-0001: Canonical registry is a single JSON document
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 The only authored machine-readable source of truth is `.ssot/registry.json`.

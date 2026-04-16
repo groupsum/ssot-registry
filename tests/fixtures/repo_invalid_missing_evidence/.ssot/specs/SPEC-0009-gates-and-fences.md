@@ -1,5 +1,8 @@
 # Gates and fences
 
+## Status
+Draft
+
 The system enforces:
 - claim closure guards
 - certification gates
