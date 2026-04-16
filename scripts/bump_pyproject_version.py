@@ -14,6 +14,11 @@ import argparse
 import re
 from pathlib import Path
 
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - Python 3.10 fallback
+    import tomli as tomllib
+
 _VERSION_RE = re.compile(r"^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:\.dev(?P<dev>0|[1-9]\d*))?$")
 _PYPROJECT_VERSION_LINE_RE = re.compile(r'^(?P<prefix>version\s*=\s*")(?P<version>[^"]+)(?P<suffix>"\s*)$', re.MULTILINE)
 
@@ -54,8 +59,6 @@ def bump_version(current_version: str, bump_type: str) -> str:
 
 
 def read_project_version(pyproject_path: Path) -> str:
-    import tomllib
-
     data = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
     try:
         return data["project"]["version"]

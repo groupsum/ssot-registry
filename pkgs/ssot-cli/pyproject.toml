@@ -13,6 +13,7 @@ authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = [
   "ssot-contracts>=0.2.4.dev1,<0.3.0",
   "ssot-registry>=0.2.4.dev1,<0.3.0",
+  "tomli>=2.0.1; python_version < '3.11'",
 ]
 keywords = ["ssot", "cli", "registry"]
 classifiers = [
