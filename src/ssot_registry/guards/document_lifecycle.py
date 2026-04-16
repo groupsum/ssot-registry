@@ -49,7 +49,7 @@ def append_status_note(
 
 
 def assert_mutable_document(row: dict[str, Any], *, label: str, document_id: str) -> None:
-    if row.get("origin") == "ssot-core" or row.get("immutable"):
+    if row.get("immutable"):
         raise ValidationError(f"{label} {document_id} is immutable and may only be changed via sync")
 
 

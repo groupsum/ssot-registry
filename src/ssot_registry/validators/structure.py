@@ -233,9 +233,11 @@ def validate_structure(registry: dict[str, Any], index: dict[str, dict[str, dict
     if not isinstance(repo, dict):
         failures.append("repo must be an object")
     else:
-        for field_name in ("id", "name", "version"):
+        for field_name in ("id", "name", "version", "kind"):
             if not isinstance(repo.get(field_name), str) or not repo[field_name].strip():
                 failures.append(f"repo.{field_name} must be a non-empty string")
+        if repo.get("kind") not in {"ssot-upstream", "operator-repo"}:
+            failures.append("repo.kind must be one of ['operator-repo', 'ssot-upstream']")
 
     tooling = registry.get("tooling")
     if not isinstance(tooling, dict):

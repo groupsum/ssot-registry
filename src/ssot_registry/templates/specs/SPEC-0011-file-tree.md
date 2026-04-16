@@ -10,9 +10,7 @@ Your repository MUST maintain the following `.ssot` tree:
   registry.json
   schemas/
   adr/
-    ADR-0001-canonical-json-registry.md
   specs/
-    SPEC-0001-registry-core.md
   evidence/
   graphs/
   reports/
@@ -25,6 +23,6 @@ Your repository MUST maintain the following `.ssot` tree:
 - ADR files SHALL be stored under `.ssot/adr`.
 - SPEC files SHALL be stored under `.ssot/specs`.
 - `.ssot/registry.json` SHALL track ADR/SPEC metadata in top-level `adrs` and `specs` sections.
-- Seeded core documents are `origin: ssot-core` and immutable.
-- Repository-authored documents are `origin: repo-local` and mutable according to your repo policy.
-- Core reserved ranges are `1..999`; repo-local default assignable ranges are `1000..4999`.
+- Synced packaged documents use `origin: ssot-origin` and are immutable.
+- Repository-authored documents use `origin: repo-local` and are mutable.
+- `origin: ssot-core` is upstream-only and is not valid in operator repositories.

@@ -54,6 +54,10 @@ def validate_document_rows(
 ) -> None:
     reservations = registry.get("document_id_reservations", {})
     paths = registry.get("paths", {})
+    repo = registry.get("repo", {})
+    repo_kind = repo.get("kind") if isinstance(repo, dict) else None
+    if repo_kind not in {"ssot-upstream", "operator-repo"}:
+        repo_kind = "operator-repo"
 
     manifest_lookup = {
         "adrs": {entry["id"]: entry for entry in load_document_manifest("adr")},
@@ -134,10 +138,7 @@ def validate_document_rows(
                     if not isinstance(content_sha256, str) or len(content_sha256) != 64:
                         failures.append(f"{prefix}.content_sha256 must be a 64-character sha256 hex digest")
                     elif actual_sha256 != content_sha256:
-                        if origin == "ssot-core":
-                            failures.append(f"{prefix} is SSOT-managed and immutable, but content hash differs from packaged source")
-                        else:
-                            failures.append(f"{prefix} content hash does not match file content: {relative_path}")
+                        failures.append(f"{prefix} content hash does not match file content: {relative_path}")
             if origin not in DOCUMENT_ORIGINS:
                 failures.append(f"{prefix}.origin must be one of {sorted(DOCUMENT_ORIGINS)}")
             if not isinstance(managed, bool):
@@ -154,13 +155,32 @@ def validate_document_rows(
             else:
                 reservation = matching_reservations[0]
 
-            if reservation is not None and reservation.get("immutable") and origin != "ssot-core":
+            if reservation is not None and reservation.get("immutable") and origin == "repo-local":
                 failures.append(f"{prefix} uses immutable {kind} reservation owned by {reservation.get('owner')} but origin is {origin}")
-            if origin == "ssot-core":
-                if managed is not True:
-                    failures.append(f"{prefix}.managed must be true for ssot-core documents")
-                if immutable is not True:
-                    failures.append(f"{prefix}.immutable must be true for ssot-core documents")
+            if reservation is not None and origin in {"ssot-origin", "ssot-core"} and reservation.get("owner") != origin:
+                failures.append(
+                    f"{prefix}.number belongs to reservation owner {reservation.get('owner')} but origin is {origin}"
+                )
+            if repo_kind == "operator-repo":
+                if origin == "ssot-core":
+                    failures.append(f"{prefix}.origin must not be ssot-core in operator-repo")
+                if origin == "ssot-origin":
+                    if managed is not True:
+                        failures.append(f"{prefix}.managed must be true for ssot-origin documents in operator-repo")
+                    if immutable is not True:
+                        failures.append(f"{prefix}.immutable must be true for ssot-origin documents in operator-repo")
+                if origin == "repo-local":
+                    if managed is not False:
+                        failures.append(f"{prefix}.managed must be false for repo-local documents")
+                    if immutable is not False:
+                        failures.append(f"{prefix}.immutable must be false for repo-local documents")
+            elif repo_kind == "ssot-upstream":
+                if origin == "repo-local":
+                    failures.append(f"{prefix}.origin must not be repo-local in ssot-upstream")
+                if managed is not False:
+                    failures.append(f"{prefix}.managed must be false in ssot-upstream")
+                if immutable is not False:
+                    failures.append(f"{prefix}.immutable must be false in ssot-upstream")
 
             if section == "adrs":
                 pass
@@ -193,11 +213,13 @@ def validate_document_rows(
             if status != "superseded" and isinstance(superseded_by, list) and superseded_by:
                 failures.append(f"{prefix}.superseded_by must be empty unless status is superseded")
 
-            if origin == "ssot-core":
+            if repo_kind == "operator-repo" and origin == "ssot-origin":
                 manifest_entry = manifest_lookup[section].get(entity_id)
                 if manifest_entry is None:
-                    failures.append(f"{prefix} is ssot-core managed but not present in the packaged manifest")
+                    failures.append(f"{prefix} is ssot-origin managed but not present in the packaged manifest")
                     continue
+                if manifest_entry.get("origin") != "ssot-origin":
+                    failures.append(f"packaged {kind} manifest entry {entity_id} must use origin ssot-origin")
                 for field_name in ("number", "slug", "title"):
                     if row.get(field_name) != manifest_entry.get(field_name):
                         failures.append(f"{prefix}.{field_name} must match the packaged manifest")

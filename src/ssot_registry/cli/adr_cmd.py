@@ -21,7 +21,7 @@ def register_adr(subparsers: argparse._SubParsersAction) -> None:
     adr = subparsers.add_parser("adr", help="ADR operations.")
     adr_sub = adr.add_subparsers(dest="adr_command", required=True)
 
-    create = adr_sub.add_parser("create", help="Create a repo-local ADR.")
+    create = adr_sub.add_parser("create", help="Create an ADR.")
     add_path_argument(create)
     create.add_argument("--title", required=True)
     create.add_argument("--slug", required=True)
@@ -29,7 +29,7 @@ def register_adr(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--number", type=int, default=None)
     create.add_argument("--status", choices=["draft", "in_review", "accepted", "rejected", "withdrawn", "superseded", "retired"], default="draft")
     create.add_argument("--note", default=None, help="Optional lifecycle note.")
-    create.add_argument("--origin", choices=["repo-local"], default="repo-local")
+    create.add_argument("--origin", choices=["repo-local", "ssot-origin", "ssot-core"], default="repo-local")
     create.add_argument("--reserve-range", default=None, help="Reservation owner to allocate from.")
     create.set_defaults(func=run_create)
 

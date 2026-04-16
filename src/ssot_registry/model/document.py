@@ -32,7 +32,7 @@ DOCUMENT_RESERVATION_KEYS = {
     "adr": "adr",
     "spec": "spec",
 }
-DOCUMENT_ORIGINS = {"ssot-core", "repo-local"}
+DOCUMENT_ORIGINS = {"ssot-core", "ssot-origin", "repo-local"}
 DOCUMENT_STATUSES = ("draft", "in_review", "accepted", "rejected", "superseded", "withdrawn", "retired")
 CREATE_ALLOWED_STATUSES = ("draft", "in_review", "accepted", "rejected", "withdrawn")
 TERMINAL_STATUSES = ("rejected", "withdrawn", "superseded", "retired")
@@ -45,15 +45,23 @@ TRANSITION_RULES = {
     "superseded": set(),
     "retired": set(),
 }
-SPEC_KINDS = {"normative", "operational", "repo-local"}
+SPEC_KINDS = {"normative", "operational", "governance", "local-policy"}
 DOCUMENT_SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 DOCUMENT_FILENAME_PATTERNS = {
     "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.md$"),
     "spec": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.md$"),
 }
-DEFAULT_SSOT_RANGE = {
-    "owner": "ssot-core",
+DEFAULT_SSOT_ORIGIN_RANGE = {
+    "owner": "ssot-origin",
     "start": 1,
+    "end": 499,
+    "immutable": True,
+    "deletable": False,
+    "assignable_by_repo": False,
+}
+DEFAULT_SSOT_CORE_RANGE = {
+    "owner": "ssot-core",
+    "start": 500,
     "end": 999,
     "immutable": True,
     "deletable": False,
@@ -111,8 +119,8 @@ def section_for_document_kind(kind: str) -> str:
 
 def default_document_id_reservations() -> dict[str, list[dict[str, Any]]]:
     return {
-        "adr": [dict(DEFAULT_SSOT_RANGE), dict(DEFAULT_REPO_LOCAL_RANGE)],
-        "spec": [dict(DEFAULT_SSOT_RANGE), dict(DEFAULT_REPO_LOCAL_RANGE)],
+        "adr": [dict(DEFAULT_SSOT_ORIGIN_RANGE), dict(DEFAULT_SSOT_CORE_RANGE), dict(DEFAULT_REPO_LOCAL_RANGE)],
+        "spec": [dict(DEFAULT_SSOT_ORIGIN_RANGE), dict(DEFAULT_SSOT_CORE_RANGE), dict(DEFAULT_REPO_LOCAL_RANGE)],
     }
 
 

@@ -119,7 +119,7 @@ def _collect_repo_local_documents(registry: dict[str, Any], repo_root: Path, kin
             row["superseded_by"] = []
             row["status_notes"] = []
         else:
-            row["kind"] = "repo-local"
+            row["kind"] = "local-policy"
             row["status"] = "draft"
             row["supersedes"] = []
             row["superseded_by"] = []
@@ -191,6 +191,32 @@ def migrate_v5_to_v6(
     return migrated
 
 
+def migrate_v6_to_v7(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    _ = repo_root, previous_version, target_version
+    migrated = deepcopy(registry)
+    migrated["schema_version"] = 7
+    repo = migrated.setdefault("repo", {})
+    if not isinstance(repo, dict):
+        migrated["repo"] = {"kind": "operator-repo"}
+    else:
+        repo.setdefault("kind", "operator-repo")
+
+    migrated["document_id_reservations"] = default_document_id_reservations()
+    for section in ("adrs", "specs"):
+        for row in migrated.get(section, []):
+            if row.get("origin") == "ssot-core":
+                row["origin"] = "ssot-origin"
+            if section == "specs" and row.get("kind") == "repo-local":
+                row["kind"] = "local-policy"
+    return migrated
+
+
 def target_version_from_registry(registry: dict[str, Any]) -> str:
     tooling = registry.get("tooling")
     if isinstance(tooling, dict):
@@ -234,8 +260,12 @@ def upgrade_registry(
     if source_schema == 5:
         working = migrate_v5_to_v6(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
         migrations.append("migrate_v5_to_v6")
+        source_schema = 6
+    if source_schema == 6:
+        working = migrate_v6_to_v7(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
+        migrations.append("migrate_v6_to_v7")
     elif source_schema != SCHEMA_VERSION:
-        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5 or {SCHEMA_VERSION}")
+        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6 or {SCHEMA_VERSION}")
 
     if not migrations and source_tooling_version == target_version and not sync_docs:
         report = validate_registry_document(working, registry_path, repo_root)
