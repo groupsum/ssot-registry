@@ -89,23 +89,23 @@ jobs:
 
       - name: Build all packages from package roots
         run: |
-          uv build --project pkgs/ssot-contracts
-          uv build --project pkgs/ssot-views
-          uv build --project pkgs/ssot-codegen
-          uv build --project pkgs/ssot-registry
-          uv build --project pkgs/ssot-cli
-          uv build --project pkgs/ssot-tui
+          uv build --project pkgs/ssot-contracts --out-dir pkgs/ssot-contracts/dist
+          uv build --project pkgs/ssot-views --out-dir pkgs/ssot-views/dist
+          uv build --project pkgs/ssot-codegen --out-dir pkgs/ssot-codegen/dist
+          uv build --project pkgs/ssot-registry --out-dir pkgs/ssot-registry/dist
+          uv build --project pkgs/ssot-cli --out-dir pkgs/ssot-cli/dist
+          uv build --project pkgs/ssot-tui --out-dir pkgs/ssot-tui/dist
 
       - name: Install local release train artifacts in dependency order
         run: |
           python -m venv .venv-release-smoke
           . .venv-release-smoke/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install pkgs/ssot-contracts/dist/*
-          python -m pip install pkgs/ssot-views/dist/*
-          python -m pip install pkgs/ssot-codegen/dist/*
-          python -m pip install pkgs/ssot-registry/dist/*
-          python -m pip install pkgs/ssot-cli/dist/*
+          python -m pip install pkgs/ssot-contracts/dist/*.whl
+          python -m pip install pkgs/ssot-views/dist/*.whl
+          python -m pip install pkgs/ssot-codegen/dist/*.whl
+          python -m pip install pkgs/ssot-registry/dist/*.whl
+          python -m pip install pkgs/ssot-cli/dist/*.whl
 
       - name: Verify runtime imports against packaged artifacts
         run: |

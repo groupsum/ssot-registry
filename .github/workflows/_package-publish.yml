@@ -91,7 +91,7 @@ jobs:
           fi
 
       - name: Build package
-        run: uv build --project ${{ inputs.project_path }}
+        run: uv build --project ${{ inputs.project_path }} --out-dir ${{ inputs.project_path }}/dist
 
       - name: Generate checksums
         run: |

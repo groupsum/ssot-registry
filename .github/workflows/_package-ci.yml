@@ -57,4 +57,4 @@ jobs:
 
       - name: Build package
         if: ${{ inputs.python_version == '3.12' }}
-        run: uv build --project ${{ inputs.project_path }}
+        run: uv build --project ${{ inputs.project_path }} --out-dir ${{ inputs.project_path }}/dist
