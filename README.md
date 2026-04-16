@@ -69,9 +69,11 @@ python -m pip install ssot-registry
 python -m pip install -e .
 ```
 
-If you already have a repository initialized on schema `3`, upgrade it explicitly after installing the new package:
+If you already have a repository initialized on schema `3`, upgrade it explicitly after installing the new package (using either `ssot` or `ssot-registry`):
 
 ```bash
+ssot upgrade . --sync-docs --write-report
+# equivalent
 ssot-registry upgrade . --sync-docs --write-report
 ```
 
@@ -81,7 +83,10 @@ Please review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
 
 ## CLI quick reference
 
+You can invoke the CLI with either `ssot` or `ssot-registry`; both aliases run the same command set.
+
 ```bash
+ssot --help
 ssot-registry --help
 ssot-registry init --help
 ssot-registry validate --help
