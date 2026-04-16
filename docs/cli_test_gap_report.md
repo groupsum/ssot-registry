@@ -5,9 +5,9 @@ Generated on 2026-04-16 by comparing the argparse CLI surface in `src/ssot_regis
 ## Quick answer by coverage category
 
 - Untested CLI commands: none.
-- Untested CLI subcommands: `adr list`, `adr sync`, `adr reserve create`, `adr reserve list`, `spec list`, `spec sync`, `spec reserve create`, `spec reserve list`, `profile unlink`, `profile verify`.
-- Untested CLI global flags: `--output-file`.
-- Untested CLI command flags: `init --force`, `upgrade --target-version`.
+- Untested CLI subcommands: none.
+- Untested CLI global flags: none.
+- Untested CLI command flags: none.
 - Untested CLI subcommand flags: see full enumerated list in [Untested CLI subcommand flags](#untested-cli-subcommand-flags).
 
 ## CLI surface manifest
@@ -20,31 +20,20 @@ All top-level CLI commands are exercised at least once in integration tests.
 
 ## Untested CLI subcommands
 
-- `adr list`
-- `adr sync`
-- `adr reserve create`
-- `adr reserve list`
-- `spec list`
-- `spec sync`
-- `spec reserve create`
-- `spec reserve list`
-- `profile unlink`
-- `profile verify`
+All leaf CLI subcommands are exercised at least once in integration tests.
 
 ## Untested CLI global flags
 
-- `--output-file`
+All global flags are exercised at least once in integration tests.
 
 ## Untested CLI command flags (single-level commands)
 
-- `init`: `--force`
-- `upgrade`: `--target-version`
+All flags on single-level commands are exercised at least once in integration tests.
 
 ## Untested CLI subcommand flags
 
 - `adr create`: `--note`, `--origin`, `--reserve-range`
-- `adr reserve create`: `--name`, `--start`, `--end`
-- `adr update`: `--status`, `--note`
+- `adr update`: `--note`, `--status`
 - `boundary create`: `--status`, `--frozen`, `--no-frozen`, `--profile-ids`
 - `boundary update`: `--title`, `--frozen`, `--no-frozen`
 - `claim unlink`: `--test-ids`, `--evidence-ids`
@@ -62,10 +51,8 @@ All top-level CLI commands are exercised at least once in integration tests.
 - `issue unlink`: `--claim-ids`, `--test-ids`, `--evidence-ids`, `--risk-ids`
 - `issue update`: `--title`, `--severity`, `--release-blocking`
 - `profile create`: `--profile-ids`, `--allow-feature-override-tier`, `--no-allow-feature-override-tier`
-- `profile link`: `--feature-ids`
-- `profile unlink`: `--id`, `--feature-ids`, `--profile-ids`
+- `profile unlink`: `--feature-ids`
 - `profile update`: `--description`, `--status`, `--kind`, `--claim-tier`
-- `profile verify`: `--profile-id`
 - `registry export`: `--output`
 - `release create`: `--status`
 - `release update`: `--version`
@@ -74,7 +61,6 @@ All top-level CLI commands are exercised at least once in integration tests.
 - `risk unlink`: `--feature-ids`, `--claim-ids`, `--test-ids`, `--evidence-ids`
 - `risk update`: `--title`, `--severity`, `--no-release-blocking`
 - `spec create`: `--origin`, `--note`, `--reserve-range`
-- `spec reserve create`: `--name`, `--start`, `--end`
 - `spec update`: `--body-file`, `--kind`, `--status`, `--note`
 - `test link`: `--claim-ids`, `--evidence-ids`
 - `test unlink`: `--claim-ids`, `--evidence-ids`
