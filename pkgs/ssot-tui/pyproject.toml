@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssot-tui"
-version = "0.1.1.dev2"
+version = "0.1.1"
 description = "Terminal UI package for ssot-registry workflows."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = [
-  "ssot-contracts>=0.2.4.dev2,<0.3.0",
-  "ssot-registry>=0.2.4.dev2,<0.3.0",
+  "ssot-contracts>=0.2.4,<0.3.0",
+  "ssot-registry>=0.2.4,<0.3.0",
   "textual>=8.2.3",
   "tomli>=2.0.1; python_version < '3.11'",
 ]
