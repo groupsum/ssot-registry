@@ -79,7 +79,7 @@ def _write_document(repo_root: Path, row: dict[str, Any], body: str, kind: str) 
     return sha256_path(target)
 
 
-def _build_repo_local_row(
+def _build_authored_row(
     registry: dict[str, Any],
     kind: str,
     *,
@@ -87,6 +87,7 @@ def _build_repo_local_row(
     slug: str,
     title: str,
     content_sha256: str,
+    origin: str,
     status: str | None = None,
     note: str | None = None,
     spec_kind: str | None = None,
@@ -97,7 +98,7 @@ def _build_repo_local_row(
         "slug": slug,
         "title": title,
         "path": build_document_path(registry["paths"], kind, number, slug),
-        "origin": "repo-local",
+        "origin": origin,
         "managed": False,
         "immutable": False,
         "package_version": registry.get("tooling", {}).get("ssot_registry_version", __version__),
@@ -110,8 +111,18 @@ def _build_repo_local_row(
     if note is not None:
         append_status_note(row, status=row["status"], note=note)
     if kind == "spec":
-        row["kind"] = spec_kind or "repo-local"
+        default_kind = "local-policy" if origin == "repo-local" else "governance"
+        row["kind"] = spec_kind or default_kind
     return row
+
+
+def _repo_kind(registry: dict[str, Any]) -> str:
+    repo = registry.get("repo")
+    if isinstance(repo, dict):
+        kind = repo.get("kind")
+        if isinstance(kind, str) and kind:
+            return kind
+    return "operator-repo"
 
 
 def _manifest_row_to_registry_row(registry: dict[str, Any], kind: str, manifest_entry: dict[str, Any]) -> dict[str, Any]:
@@ -163,9 +174,15 @@ def _reservation_for_number(registry: dict[str, Any], kind: str, number: int) ->
     return matches[0]
 
 
-def _ensure_assignable_number(registry: dict[str, Any], kind: str, number: int) -> None:
+def _ensure_assignable_number(
+    registry: dict[str, Any],
+    kind: str,
+    number: int,
+    *,
+    allow_non_assignable: bool = False,
+) -> None:
     reservation = _reservation_for_number(registry, kind, number)
-    if not reservation.get("assignable_by_repo"):
+    if not allow_non_assignable and not reservation.get("assignable_by_repo"):
         raise ValidationError(
             f"{_document_label(kind)} number {number} belongs to non-assignable reservation owned by {reservation.get('owner')}"
         )
@@ -246,8 +263,8 @@ def create_document(
     note: str | None = None,
     spec_kind: str | None = None,
 ) -> dict[str, Any]:
-    if origin != "repo-local":
-        raise ValidationError(f"Only repo-local {_document_label(kind)} creation is supported")
+    if origin not in {"repo-local", "ssot-core", "ssot-origin"}:
+        raise ValidationError(f"Unsupported origin '{origin}' for {_document_label(kind)} creation")
     if not isinstance(title, str) or not title.strip():
         raise ValidationError(f"{_document_label(kind)} title must be a non-empty string")
     if not isinstance(slug, str) or DOCUMENT_SLUG_PATTERN.match(slug) is None:
@@ -258,31 +275,50 @@ def create_document(
         raise ValidationError(f"Spec kind must be one of {sorted(SPEC_KINDS)}")
 
     registry_path, repo_root, registry = load_registry(path)
+    repo_kind = _repo_kind(registry)
+    if repo_kind == "operator-repo" and origin != "repo-local":
+        raise ValidationError(f"Operator repositories may only create repo-local {_document_label(kind)} rows")
+    if repo_kind == "ssot-upstream" and origin == "repo-local":
+        raise ValidationError(f"Upstream repositories may only create ssot-core or ssot-origin {_document_label(kind)} rows")
     if number is None:
+        if repo_kind == "ssot-upstream" and origin in {"ssot-core", "ssot-origin"}:
+            raise ValidationError(f"Upstream {_document_label(kind)} creation for {origin} requires an explicit --number")
         number = _allocate_number(registry, kind, reserve_range)
     else:
-        _ensure_assignable_number(registry, kind, number)
+        _ensure_assignable_number(
+            registry,
+            kind,
+            number,
+            allow_non_assignable=repo_kind == "ssot-upstream" and origin in {"ssot-core", "ssot-origin"},
+        )
+    reservation = _reservation_for_number(registry, kind, number)
+    if origin in {"ssot-core", "ssot-origin"} and reservation.get("owner") != origin:
+        raise ValidationError(
+            f"{_document_label(kind)} number {number} must use reservation owned by {origin}; got {reservation.get('owner')}"
+        )
 
     body = _read_body(body_file)
-    provisional = _build_repo_local_row(
+    provisional = _build_authored_row(
         registry,
         kind,
         number=number,
         slug=slug,
         title=title,
         content_sha256="0" * 64,
+        origin=origin,
         status=status,
         note=note,
         spec_kind=spec_kind,
     )
     content_sha256 = _write_document(repo_root, provisional, body, kind)
-    row = _build_repo_local_row(
+    row = _build_authored_row(
         registry,
         kind,
         number=number,
         slug=slug,
         title=title,
         content_sha256=content_sha256,
+        origin=origin,
         status=status,
         note=note,
         spec_kind=spec_kind,
@@ -368,7 +404,7 @@ def delete_document(path: str | Path, kind: str, document_id: str) -> dict[str, 
         raise ValueError(f"Unknown {_document_label(kind)} id: {document_id}") from exc
 
     reservation = _reservation_for_number(registry, kind, row["number"])
-    if row.get("origin") == "ssot-core" or row.get("immutable") or not reservation.get("deletable"):
+    if row.get("immutable") or not reservation.get("deletable"):
         raise ValidationError(f"{_document_label(kind)} {document_id} is immutable and cannot be deleted")
 
     target = repo_root / row["path"]
@@ -479,6 +515,8 @@ def sync_documents_in_memory(registry: dict[str, Any], repo_root: Path, kind: st
     summary: dict[str, list[str]] = {"created": [], "updated": [], "unchanged": []}
 
     for manifest_entry in load_packaged_document_manifest(kind):
+        if manifest_entry.get("origin") != "ssot-origin":
+            raise ValidationError(f"Packaged {kind} manifest entry {manifest_entry.get('id')} must use origin 'ssot-origin'")
         if manifest_entry.get("minimum_schema_version", 0) > registry.get("schema_version", 0):
             continue
         outcome, document_id = _sync_manifest_document(registry, repo_root, kind, manifest_entry, lookup)
@@ -493,6 +531,16 @@ def sync_documents_in_memory(registry: dict[str, Any], repo_root: Path, kind: st
 def sync_documents(path: str | Path, kind: str) -> dict[str, Any]:
     registry_path, repo_root, registry = load_registry(path)
     section = section_for_document_kind(kind)
+    if _repo_kind(registry) == "ssot-upstream":
+        return {
+            "passed": True,
+            "registry_path": registry_path.as_posix(),
+            "section": section,
+            "created": [],
+            "updated": [],
+            "unchanged": [],
+            "skipped": True,
+        }
     summary = sync_documents_in_memory(registry, repo_root, kind)
     _validate_and_save(registry_path, repo_root, registry, f"syncing {kind} documents")
     return {

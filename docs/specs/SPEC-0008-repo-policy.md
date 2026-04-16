@@ -3,48 +3,26 @@
 ## Status
 Draft
 
-## Purpose and scope (maintainer-only)
+This file is seeded into your repository by `ssot-registry init` / `sync`.
 
-This spec is maintainer-facing guidance for the `ssot-registry` repository itself.
-It governs how maintainers publish operator-facing ADR/SPEC contracts and how repo-local operator policy is supported.
+## Scope
 
-Stability: accepted.
-Operational impact: affects packaged templates and validator behavior.
-Promotion criterion: maintainer-only guidance is promoted into templates only when it becomes an operator requirement.
+This is part of your operator contract in `.ssot/specs`.
 
-## Documentation layers
+## Origin model
 
-`ssot-registry` has two documentation layers:
+- `ssot-origin`: packaged contract docs synced from `ssot-registry` and immutable in operator repos.
+- `repo-local`: docs authored by your repository and editable locally.
+- `ssot-core`: upstream-only governance and not permitted in operator repositories.
 
-1. Maintainer governance docs in this repository:
-   - `docs/adr/**`
-   - `docs/specs/**`
-2. Packaged operator-facing core docs distributed into user repos:
-   - `src/ssot_registry/templates/adr/**`
-   - `src/ssot_registry/templates/specs/**`
+## Numbering and reservations
 
-Maintainer-only rules SHALL stay in `docs/**`.
-Operator-required rules SHALL be published in `src/ssot_registry/templates/**` (and MAY be mirrored in `docs/**` for readability).
+- `1..499` is reserved for `ssot-origin` docs.
+- `500..999` is reserved for upstream `ssot-core` governance.
+- `1000..4999` is assignable to `repo-local` docs.
 
-## Origin and mutability policy
+## Required locations
 
-- Packaged template ADRs/SPECs are `origin: ssot-core`, managed, and immutable in operator repos.
-- Repo-local ADRs/SPECs are `origin: repo-local`, mutable, and owned by the operator repository.
-- Maintainers SHALL keep this distinction explicit in specs and templates.
-
-## Numbering and reservation policy
-
-- Core reserved ranges are non-assignable by repos: `1..999` for ADR and SPEC.
-- Repo-local default ranges are assignable by repos: `1000..4999` for ADR and SPEC.
-- Maintainers SHALL ship defaults and validation behavior consistent with these ranges.
-
-## File-tree conformance policy
-
-Maintainers SHALL deliver `ssot-registry` so initialized repositories conform to:
-
-- `.ssot/adr` for ADR files,
-- `.ssot/specs` for SPEC files,
-- top-level `adrs` and `specs` sections in `.ssot/registry.json`.
-
-Repository-local policy belongs in `.ssot/specs/SPEC-0008-repo-policy.md`.
-Portable defaults are strict and fail closed.
+- ADR files SHALL live under `.ssot/adr`.
+- SPEC files SHALL live under `.ssot/specs`.
+- Registry metadata SHALL keep ADR/SPEC records under top-level `adrs` and `specs` in `.ssot/registry.json`.

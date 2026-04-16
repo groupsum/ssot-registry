@@ -56,13 +56,20 @@ def default_guard_policies() -> dict[str, Any]:
     }
 
 
-def build_minimal_registry(repo_id: str, repo_name: str, version: str) -> dict[str, Any]:
+def build_minimal_registry(
+    repo_id: str,
+    repo_name: str,
+    version: str,
+    *,
+    repo_kind: str = "operator-repo",
+) -> dict[str, Any]:
     return {
         "schema_version": SCHEMA_VERSION,
         "repo": {
             "id": repo_id,
             "name": repo_name,
             "version": version,
+            "kind": repo_kind,
         },
         "tooling": {
             "ssot_registry_version": __version__,

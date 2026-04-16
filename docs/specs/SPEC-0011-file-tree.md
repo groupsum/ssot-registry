@@ -3,35 +3,14 @@
 ## Status
 Draft
 
-## Purpose and scope (maintainer-only)
-
-This spec defines the required `.ssot` filesystem layout that `ssot-registry` MUST initialize, sync, and validate.
-It also defines the source locations maintainers MUST keep aligned when publishing ADR/SPEC contracts.
-
-## Maintainer source and packaged output
-
-Maintainer governance sources:
-
-- `docs/adr/**`
-- `docs/specs/**`
-
-Packaged operator contract sources:
-
-- `src/ssot_registry/templates/adr/**`
-- `src/ssot_registry/templates/specs/**`
-
-Maintainers SHALL ensure packaged templates produce a conformant `.ssot` tree in operator repositories.
-
-## Required `.ssot` tree in operator repositories
+Your repository MUST maintain the following `.ssot` tree:
 
 ```text
 .ssot/
   registry.json
   schemas/
   adr/
-    ADR-0001-canonical-json-registry.md
   specs/
-    SPEC-0001-registry-core.md
   evidence/
   graphs/
   reports/
@@ -39,10 +18,11 @@ Maintainers SHALL ensure packaged templates produce a conformant `.ssot` tree in
   cache/
 ```
 
-## ADR/SPEC placement and metadata rules
+## ADR/SPEC contract
 
-- ADR markdown files SHALL resolve under `.ssot/adr`.
-- SPEC markdown files SHALL resolve under `.ssot/specs`.
-- `.ssot/registry.json` SHALL expose top-level `adrs` and `specs` arrays.
-- Core seeded documents SHALL be represented as `origin: ssot-core` and immutable.
-- Repo-local documents SHALL be represented as `origin: repo-local`.
+- ADR files SHALL be stored under `.ssot/adr`.
+- SPEC files SHALL be stored under `.ssot/specs`.
+- `.ssot/registry.json` SHALL track ADR/SPEC metadata in top-level `adrs` and `specs` sections.
+- Synced packaged documents use `origin: ssot-origin` and are immutable.
+- Repository-authored documents use `origin: repo-local` and are mutable.
+- `origin: ssot-core` is upstream-only and is not valid in operator repositories.

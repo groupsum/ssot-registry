@@ -7,21 +7,22 @@ This file is seeded into your repository by `ssot-registry init` / `sync`.
 
 ## Scope
 
-This spec is part of your operator contract in `.ssot/specs`.
-Use it for repository-local policy that applies to your repo.
+This is part of your operator contract in `.ssot/specs`.
 
-## SSOT core vs repo-local documents
+## Origin model
 
-- Seeded core ADRs/SPECs are `origin: ssot-core` and immutable unless replaced by newer packaged content.
-- Repository-specific ADRs/SPECs are `origin: repo-local` and are mutable by your repository.
-- Core ADR/SPEC ranges `1..999` are reserved for `origin: ssot-core` and are not repo-assignable.
-- Repo-local ADR/SPEC ranges `1000..4999` are assignable for `origin: repo-local` by your repository.
+- `ssot-origin`: packaged contract docs synced from `ssot-registry` and immutable in operator repos.
+- `repo-local`: docs authored by your repository and editable locally.
+- `ssot-core`: upstream-only governance and not permitted in operator repositories.
+
+## Numbering and reservations
+
+- `1..499` is reserved for `ssot-origin` docs.
+- `500..999` is reserved for upstream `ssot-core` governance.
+- `1000..4999` is assignable to `repo-local` docs.
 
 ## Required locations
 
 - ADR files SHALL live under `.ssot/adr`.
 - SPEC files SHALL live under `.ssot/specs`.
 - Registry metadata SHALL keep ADR/SPEC records under top-level `adrs` and `specs` in `.ssot/registry.json`.
-
-Repository-local policy belongs in `.ssot/specs/SPEC-0008-repo-policy.md`.
-Portable defaults are strict and fail closed.
