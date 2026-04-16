@@ -1,5 +1,8 @@
 # Registry core
 
+## Status
+Draft
+
 The canonical registry is `.ssot/registry.json`.
 
 Top-level sections:

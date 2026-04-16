@@ -127,7 +127,7 @@ def _manifest_row_to_registry_row(registry: dict[str, Any], kind: str, manifest_
         "package_version": __version__,
         "content_sha256": manifest_entry["sha256"],
     }
-    row["status"] = manifest_entry.get("status", "accepted")
+    row["status"] = manifest_entry.get("status", "draft")
     row["supersedes"] = manifest_entry.get("supersedes", [])
     row["superseded_by"] = manifest_entry.get("superseded_by", [])
     row["status_notes"] = manifest_entry.get("status_notes", [])

@@ -1,7 +1,7 @@
 # ADR-0005: Normalized prefixed IDs
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 Every first-class entity uses a normalized prefixed ID.

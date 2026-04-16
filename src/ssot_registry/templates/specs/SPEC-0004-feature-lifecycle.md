@@ -1,5 +1,8 @@
 # Feature lifecycle
 
+## Status
+Draft
+
 Supported lifecycle stages:
 - `active`
 - `deprecated`

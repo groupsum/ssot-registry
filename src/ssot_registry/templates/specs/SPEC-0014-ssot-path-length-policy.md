@@ -1,5 +1,8 @@
 # SSOT path-length policy
 
+## Status
+Draft
+
 ## Scope
 
 This specification defines path and filename limits for artifacts stored under `.ssot/`.

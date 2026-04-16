@@ -1,7 +1,7 @@
 # ADR-0013: Enforce max path and filename lengths under `.ssot`
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 Files under `.ssot` MUST respect these limits:

@@ -30,7 +30,7 @@ class MigrateV5ToV6Tests(unittest.TestCase):
         migrated = migrate_v5_to_v6(registry, repo_root, previous_version=__version__, target_version=__version__)
         self.assertEqual(migrated["schema_version"], 6)
         self.assertEqual(migrated["adrs"][0]["status"], "draft")
-        self.assertEqual(migrated["specs"][0]["status"], "accepted")
+        self.assertEqual(migrated["specs"][0]["status"], "draft")
         self.assertEqual(migrated["specs"][0]["supersedes"], [])
         self.assertEqual(migrated["specs"][0]["superseded_by"], [])
         self.assertEqual(migrated["specs"][0]["status_notes"], [])
