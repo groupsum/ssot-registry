@@ -22,6 +22,38 @@ class CliInitTests(unittest.TestCase):
             validate_payload = json.loads(validate.stdout)
             self.assertTrue(validate_payload["passed"], validate_payload)
 
+    def test_init_force_overwrites_existing_registry(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "new-repo"
+            repo.mkdir()
+
+            first_init = run_cli("init", str(repo), "--repo-id", "repo:first", "--repo-name", "first", "--version", "0.1.0")
+            self.assertEqual(first_init.returncode, 0, first_init.stderr)
+
+            without_force = run_cli("init", str(repo), "--repo-id", "repo:second", "--repo-name", "second", "--version", "0.2.0")
+            self.assertEqual(without_force.returncode, 1)
+            without_force_payload = json.loads(without_force.stdout)
+            self.assertIn("Registry already exists", without_force_payload["error"])
+
+            with_force = run_cli(
+                "init",
+                str(repo),
+                "--repo-id",
+                "repo:second",
+                "--repo-name",
+                "second",
+                "--version",
+                "0.2.0",
+                "--force",
+            )
+            self.assertEqual(with_force.returncode, 0, with_force.stderr)
+
+            registry_path = repo / ".ssot" / "registry.json"
+            registry = json.loads(registry_path.read_text(encoding="utf-8"))
+            self.assertEqual(registry["repo"]["id"], "repo:second")
+            self.assertEqual(registry["repo"]["name"], "second")
+            self.assertEqual(registry["repo"]["version"], "0.2.0")
+
 
 if __name__ == "__main__":
     unittest.main()
