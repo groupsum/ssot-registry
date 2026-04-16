@@ -39,7 +39,7 @@ class BrowserScreen(Screen[None]):
 
     def _refresh_table(self) -> None:
         table = self.query_one(EntityTable)
-        table.load_rows(self._rows_for_active_section())
+        table.load_rows(self.active_section, self._rows_for_active_section())
         detail = self.query_one(EntityDetailPane)
         detail.show_entity(None)
 

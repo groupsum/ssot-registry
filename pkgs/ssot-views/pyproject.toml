@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ssot-views"
+version = "0.2.3"
+description = "Derived projections, reports, and graph exports for SSOT."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
+dependencies = ["ssot-contracts==0.2.3"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

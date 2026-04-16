@@ -1,0 +1,124 @@
+name: _Package Publish
+
+on:
+  workflow_call:
+    inputs:
+      package_name:
+        required: true
+        type: string
+      project_path:
+        required: true
+        type: string
+      pypi_project_url:
+        required: true
+        type: string
+      ref_name:
+        required: true
+        type: string
+      publish_to_pypi:
+        required: false
+        type: boolean
+        default: true
+      create_tag:
+        required: false
+        type: boolean
+        default: true
+      create_github_release:
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: ${{ inputs.pypi_project_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install Python 3.12
+        run: uv python install 3.12
+
+      - name: Determine release version and tag
+        id: release_meta
+        env:
+          PACKAGE_NAME: ${{ inputs.package_name }}
+        run: |
+          VERSION=$(python scripts/release_metadata.py version --package "$PACKAGE_NAME")
+          TAG=$(python scripts/release_metadata.py tag --package "$PACKAGE_NAME")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Create git tag from package version
+        if: ${{ inputs.create_tag }}
+        env:
+          TAG: ${{ steps.release_meta.outputs.tag }}
+        run: |
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - name: Verify package version and tag are in sync
+        if: ${{ !inputs.create_tag }}
+        env:
+          PACKAGE_NAME: ${{ inputs.package_name }}
+          EXPECTED_TAG: ${{ steps.release_meta.outputs.tag }}
+        run: |
+          ACTUAL_TAG="${GITHUB_REF_NAME}"
+          if [ "$ACTUAL_TAG" != "$EXPECTED_TAG" ]; then
+            echo "Release tag and package version are out of sync for $PACKAGE_NAME."
+            echo "Expected: $EXPECTED_TAG"
+            echo "Actual:   $ACTUAL_TAG"
+            exit 1
+          fi
+
+      - name: Build package
+        run: uv build --project ${{ inputs.project_path }}
+
+      - name: Generate checksums
+        run: |
+          cd ${{ inputs.project_path }}/dist
+          sha256sum * > SHA256SUMS
+
+      - name: Upload distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ inputs.package_name }}
+          path: ${{ inputs.project_path }}/dist/*
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: ${{ inputs.create_github_release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_meta.outputs.tag }}
+          target_commitish: ${{ inputs.ref_name }}
+          name: ${{ inputs.package_name }} ${{ steps.release_meta.outputs.version }}
+          files: ${{ inputs.project_path }}/dist/*
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(steps.release_meta.outputs.version, '.dev') }}
+
+      - name: Publish package distributions to PyPI
+        if: ${{ inputs.publish_to_pypi }}
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: uv publish ${{ inputs.project_path }}/dist/*

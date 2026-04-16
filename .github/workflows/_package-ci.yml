@@ -1,0 +1,60 @@
+name: _Package CI
+
+on:
+  workflow_call:
+    inputs:
+      package_name:
+        required: true
+        type: string
+      project_path:
+        required: true
+        type: string
+      compile_paths:
+        required: true
+        type: string
+      test_command:
+        required: true
+        type: string
+      verify_packaged_docs:
+        required: false
+        type: boolean
+        default: false
+      python_version:
+        required: false
+        type: string
+        default: "3.12"
+
+permissions:
+  contents: read
+
+jobs:
+  package-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install Python ${{ inputs.python_version }}
+        run: uv python install ${{ inputs.python_version }}
+
+      - name: Install workspace package
+        run: uv sync --python ${{ inputs.python_version }} --package ${{ inputs.package_name }}
+
+      - name: Verify packaged doc mirrors
+        if: ${{ inputs.verify_packaged_docs }}
+        run: uv run --python ${{ inputs.python_version }} --package ${{ inputs.package_name }} --no-sync python scripts/sync_packaged_docs.py --check
+
+      - name: Compile checks
+        run: uv run --python ${{ inputs.python_version }} --package ${{ inputs.package_name }} --no-sync python -m compileall ${{ inputs.compile_paths }}
+
+      - name: Run tests
+        run: uv run --python ${{ inputs.python_version }} --package ${{ inputs.package_name }} --no-sync ${{ inputs.test_command }}
+
+      - name: Build package
+        if: ${{ inputs.python_version == '3.12' }}
+        run: uv build --project ${{ inputs.project_path }}

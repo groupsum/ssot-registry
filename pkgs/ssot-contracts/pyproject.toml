@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ssot-contracts"
+version = "0.2.3"
+description = "Canonical schemas, templates, manifests, and generated Python contract artifacts for SSOT."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"ssot_contracts.schema" = ["*.json"]
+"ssot_contracts.templates" = ["*.json"]
+"ssot_contracts.templates.adr" = ["*.md", "*.json"]
+"ssot_contracts.templates.specs" = ["*.md", "*.json"]

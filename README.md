@@ -68,10 +68,12 @@ python -m pip install ssot-registry   # core library
 python -m pip install ssot-cli        # primary CLI distribution
 python -m pip install ssot-tui        # Textual TUI
 # or for local development
-python -m pip install -e .
+python -m pip install -e pkgs/ssot-registry
 ```
 
 `ssot-registry` remains the canonical import package. CLI implementation now lives in `ssot-cli`, while `ssot-registry` keeps legacy `ssot` and `ssot-registry` entrypoints during the transition.
+
+The repository root is now workspace tooling only. Canonical release artifacts are built from package roots under `pkgs/`, and the canonical Python runtime release target is `pkgs/ssot-registry`.
 
 If you already have a repository initialized on schema `3`, upgrade it explicitly after installing the new package:
 
@@ -855,7 +857,7 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 - Specs: `docs/specs/`
 - ADRs: `docs/adr/`
 - Examples: `docs/examples/` and `examples/`
-- Source code: `src/ssot_registry/`
+- Source code: `pkgs/*/src/`
 
 ## Development
 
@@ -863,6 +865,6 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 python -m venv .venv
 . .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -e .
+python -m pip install -e pkgs/ssot-registry
 python -m unittest discover -s tests -v
 ```

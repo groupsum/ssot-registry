@@ -3,6 +3,21 @@ name: Prepare Release
 on:
   workflow_dispatch:
     inputs:
+      release_train:
+        description: "Release train to bump"
+        required: true
+        default: core
+        type: choice
+        options:
+          - core
+          - ssot-cli
+          - ssot-tui
+          - selected
+      selected_packages:
+        description: "Comma-separated package list when release_train=selected"
+        required: false
+        default: ""
+        type: string
       bump_type:
         description: "Version bump type {major,minor,patch,finalize}"
         required: true
@@ -18,8 +33,8 @@ on:
         required: true
         default: true
         type: boolean
-      run_publish:
-        description: "Dispatch publish workflow to upload to PyPI after bump"
+      publish_to_pypi:
+        description: "Publish packages to PyPI when the release workflow runs"
         required: true
         default: false
         type: boolean
@@ -34,10 +49,10 @@ permissions:
 
 jobs:
   bump-version:
-    name: Auto-increment version
+    name: Bump package versions
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.bump_version.outputs.version }}
+      changed_files: ${{ steps.bump_version.outputs.changed_files }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,28 +65,27 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Auto-increment package version
-        id: bump_version
-        env:
-          BUMP_TYPE: ${{ inputs.bump_type }}
-        run: |
-          python scripts/bump_pyproject_version.py --bump "$BUMP_TYPE" pyproject.toml
-          VERSION=$(python - <<'PY'
-          from pathlib import Path
-          import tomllib
+      - name: Validate train policy
+        run: python scripts/release_metadata.py validate-train --train "${{ inputs.release_train }}" --packages "${{ inputs.selected_packages }}"
 
-          pyproject = tomllib.loads(Path('pyproject.toml').read_text())
-          print(pyproject['project']['version'])
+      - name: Bump selected release train
+        id: bump_version
+        run: |
+          python scripts/bump_release_train.py --train "${{ inputs.release_train }}" --bump "${{ inputs.bump_type }}" --packages "${{ inputs.selected_packages }}" > changed_files.txt
+          CHANGED=$(python - <<'PY'
+          from pathlib import Path
+          changed = [line.strip() for line in Path("changed_files.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
+          print(" ".join(changed))
           PY
           )
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "changed_files=$CHANGED" >> "$GITHUB_OUTPUT"
 
-      - name: Commit bumped version
+      - name: Commit bumped versions
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pyproject.toml
-          git commit -m "chore(release): bump version to ${{ steps.bump_version.outputs.version }}"
+          git add ${{ steps.bump_version.outputs.changed_files }}
+          git commit -m "chore(release): bump ${{ inputs.release_train }} versions"
           git push origin "HEAD:${{ github.ref_name }}"
 
   release:
@@ -80,17 +94,9 @@ jobs:
     if: ${{ inputs.run_release }}
     uses: ./.github/workflows/release.yml
     with:
+      release_train: ${{ inputs.release_train }}
       ref_name: ${{ github.ref_name }}
+      selected_packages: ${{ inputs.selected_packages }}
+      publish_to_pypi: ${{ inputs.publish_to_pypi }}
+      create_github_release: true
     secrets: inherit
-
-  publish:
-    name: Dispatch publish workflow
-    needs: bump-version
-    if: ${{ inputs.run_publish }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dispatch publish workflow
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh workflow run publish.yml --ref "${{ github.ref_name }}"

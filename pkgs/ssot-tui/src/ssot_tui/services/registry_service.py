@@ -4,21 +4,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from ssot_contracts.generated.python.tui_metadata import ENTITY_SECTIONS
 from ssot_registry.api import create_entity, delete_entity, list_entities, load_registry, update_entity, validate_registry
-
-ENTITY_SECTIONS: tuple[tuple[str, str], ...] = (
-    ("features", "Features"),
-    ("profiles", "Profiles"),
-    ("tests", "Tests"),
-    ("claims", "Claims"),
-    ("evidence", "Evidence"),
-    ("issues", "Issues"),
-    ("risks", "Risks"),
-    ("boundaries", "Boundaries"),
-    ("releases", "Releases"),
-    ("adrs", "ADRs"),
-    ("specs", "Specs"),
-)
 
 
 @dataclass(slots=True)

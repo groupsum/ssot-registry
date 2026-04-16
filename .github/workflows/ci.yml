@@ -15,59 +15,79 @@ permissions:
   contents: read
 
 jobs:
-  lint:
-    name: Lint (Python 3.12)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          enable-cache: true
-
-      - name: Install Python 3.12
-        run: uv python install 3.12
-
-      - name: Install package
-        run: uv sync --python 3.12
-
-      - name: Verify packaged doc mirrors
-        run: uv run --python 3.12 --no-sync python scripts/sync_packaged_docs.py --check
-
-      - name: Compile checks
-        run: uv run --python 3.12 --no-sync python -m compileall src tests
-
-  test:
-    name: Tests (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+  package-ci:
+    name: ${{ matrix.package_name }} (Python ${{ matrix.python_version }})
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        include:
+          - package_name: ssot-contracts
+            project_path: pkgs/ssot-contracts
+            compile_paths: pkgs/ssot-contracts/src tests/unit/test_contracts_views_codegen.py tests/unit/test_release_metadata.py tests/unit/test_release_workflows.py
+            test_command: python -m unittest tests.unit.test_contracts_views_codegen tests.unit.test_release_metadata tests.unit.test_release_workflows -v
+            verify_packaged_docs: true
+            python_version: "3.12"
+          - package_name: ssot-views
+            project_path: pkgs/ssot-views
+            compile_paths: pkgs/ssot-views/src tests/unit/test_contracts_views_codegen.py tests/unit/test_release_metadata.py tests/unit/test_release_workflows.py
+            test_command: python -m unittest tests.unit.test_contracts_views_codegen tests.unit.test_release_metadata tests.unit.test_release_workflows -v
+            verify_packaged_docs: false
+            python_version: "3.12"
+          - package_name: ssot-codegen
+            project_path: pkgs/ssot-codegen
+            compile_paths: pkgs/ssot-codegen/src tests/unit/test_contracts_views_codegen.py tests/unit/test_release_metadata.py tests/unit/test_release_workflows.py
+            test_command: python -m unittest tests.unit.test_contracts_views_codegen tests.unit.test_release_metadata tests.unit.test_release_workflows -v
+            verify_packaged_docs: false
+            python_version: "3.12"
+          - package_name: ssot-registry
+            project_path: pkgs/ssot-registry
+            compile_paths: pkgs/ssot-registry/src tests
+            test_command: python -m unittest discover -s tests -v
+            verify_packaged_docs: false
+            python_version: "3.12"
+          - package_name: ssot-cli
+            project_path: pkgs/ssot-cli
+            compile_paths: pkgs/ssot-cli/src tests
+            test_command: python -m unittest tests.integration.test_cli_init tests.integration.test_cli_global_flags tests.integration.test_cli_upgrade tests.unit.test_cli_package_layout tests.unit.test_release_workflows -v
+            verify_packaged_docs: false
+            python_version: "3.12"
+          - package_name: ssot-tui
+            project_path: pkgs/ssot-tui
+            compile_paths: pkgs/ssot-tui/src tests/unit/test_cli_package_layout.py tests/unit/test_release_workflows.py
+            test_command: python -m unittest tests.unit.test_cli_package_layout tests.unit.test_release_workflows -v
+            verify_packaged_docs: false
+            python_version: "3.12"
+          - package_name: ssot-registry
+            project_path: pkgs/ssot-registry
+            compile_paths: pkgs/ssot-registry/src tests
+            test_command: python -m unittest discover -s tests -v
+            verify_packaged_docs: false
+            python_version: "3.10"
+          - package_name: ssot-registry
+            project_path: pkgs/ssot-registry
+            compile_paths: pkgs/ssot-registry/src tests
+            test_command: python -m unittest discover -s tests -v
+            verify_packaged_docs: false
+            python_version: "3.11"
+          - package_name: ssot-registry
+            project_path: pkgs/ssot-registry
+            compile_paths: pkgs/ssot-registry/src tests
+            test_command: python -m unittest discover -s tests -v
+            verify_packaged_docs: false
+            python_version: "3.13"
+    uses: ./.github/workflows/_package-ci.yml
+    with:
+      package_name: ${{ matrix.package_name }}
+      project_path: ${{ matrix.project_path }}
+      compile_paths: ${{ matrix.compile_paths }}
+      test_command: ${{ matrix.test_command }}
+      verify_packaged_docs: ${{ matrix.verify_packaged_docs }}
+      python_version: ${{ matrix.python_version }}
 
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          enable-cache: true
-
-      - name: Install Python ${{ matrix.python-version }}
-        run: uv python install ${{ matrix.python-version }}
-
-      - name: Install package
-        run: uv sync --python ${{ matrix.python-version }}
-
-      - name: Run test suite
-        run: uv run --python ${{ matrix.python-version }} --no-sync python -m unittest discover -s tests -v
-
-  build:
-    name: Build distribution
+  smoke-release-train:
+    name: Release Smoke Lane
     runs-on: ubuntu-latest
-    needs: [lint, test]
+    needs: package-ci
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -80,15 +100,30 @@ jobs:
       - name: Install Python 3.12
         run: uv python install 3.12
 
-      - name: Install package
-        run: uv sync --python 3.12
+      - name: Validate core release train metadata
+        run: python scripts/release_metadata.py validate-train --train core
 
-      - name: Build package
-        run: uv build
+      - name: Build all packages from package roots
+        run: |
+          uv build --project pkgs/ssot-contracts
+          uv build --project pkgs/ssot-views
+          uv build --project pkgs/ssot-codegen
+          uv build --project pkgs/ssot-registry
+          uv build --project pkgs/ssot-cli
+          uv build --project pkgs/ssot-tui
 
-      - name: Upload dist artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/*
-          if-no-files-found: error
+      - name: Install local release train artifacts in dependency order
+        run: |
+          python -m venv .venv-release-smoke
+          . .venv-release-smoke/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install pkgs/ssot-contracts/dist/*
+          python -m pip install pkgs/ssot-views/dist/*
+          python -m pip install pkgs/ssot-codegen/dist/*
+          python -m pip install pkgs/ssot-registry/dist/*
+          python -m pip install pkgs/ssot-cli/dist/*
+
+      - name: Verify runtime imports against packaged artifacts
+        run: |
+          . .venv-release-smoke/bin/activate
+          python -c "import ssot_contracts, ssot_views, ssot_codegen, ssot_registry, ssot_cli"

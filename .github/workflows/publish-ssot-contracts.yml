@@ -1,0 +1,59 @@
+name: Publish ssot-contracts
+
+on:
+  workflow_call:
+    inputs:
+      ref_name:
+        required: true
+        type: string
+      publish_to_pypi:
+        required: false
+        default: true
+        type: boolean
+      create_tag:
+        required: false
+        default: true
+        type: boolean
+      create_github_release:
+        required: false
+        default: true
+        type: boolean
+  workflow_dispatch:
+    inputs:
+      ref_name:
+        description: "Branch or ref name to publish from"
+        required: true
+        default: master
+        type: string
+      publish_to_pypi:
+        description: "Publish package distributions to PyPI"
+        required: true
+        default: false
+        type: boolean
+      create_tag:
+        description: "Create the package release tag before publishing"
+        required: true
+        default: true
+        type: boolean
+      create_github_release:
+        description: "Create a GitHub Release for the package tag"
+        required: true
+        default: true
+        type: boolean
+
+concurrency:
+  group: publish-ssot-contracts-${{ inputs.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    uses: ./.github/workflows/_package-publish.yml
+    with:
+      package_name: ssot-contracts
+      project_path: pkgs/ssot-contracts
+      pypi_project_url: https://pypi.org/p/ssot-contracts
+      ref_name: ${{ inputs.ref_name }}
+      publish_to_pypi: ${{ inputs.publish_to_pypi }}
+      create_tag: ${{ inputs.create_tag }}
+      create_github_release: ${{ inputs.create_github_release }}
+    secrets: inherit

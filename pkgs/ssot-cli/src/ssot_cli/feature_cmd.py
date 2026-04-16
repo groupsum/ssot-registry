@@ -2,6 +2,7 @@
 
 import argparse
 
+from ssot_contracts.generated.python.enums import CLAIM_TIERS, FEATURE_IMPLEMENTATION_STATUSES, FEATURE_LIFECYCLE_STAGES, PLANNING_HORIZONS
 from ssot_registry.api import (
     create_entity,
     delete_entity,
@@ -32,13 +33,13 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--id", required=True, help="Feature id.")
     create.add_argument("--title", required=True, help="Feature title.")
     create.add_argument("--description", default="", help="Feature description.")
-    create.add_argument("--implementation-status", choices=["absent", "partial", "implemented"], default="absent")
-    create.add_argument("--lifecycle-stage", choices=["active", "deprecated", "obsolete", "removed"], default="active")
+    create.add_argument("--implementation-status", choices=sorted(FEATURE_IMPLEMENTATION_STATUSES), default="absent")
+    create.add_argument("--lifecycle-stage", choices=sorted(FEATURE_LIFECYCLE_STAGES), default="active")
     create.add_argument("--replacement-feature-id", nargs="*", default=[])
     create.add_argument("--note", default=None)
-    create.add_argument("--horizon", choices=["current", "next", "future", "explicit", "backlog", "out_of_bounds"], default="backlog")
-    create.add_argument("--claim-tier", choices=["T0", "T1", "T2", "T3", "T4"], default=None)
-    create.add_argument("--target-lifecycle-stage", choices=["active", "deprecated", "obsolete", "removed"], default="active")
+    create.add_argument("--horizon", choices=sorted(PLANNING_HORIZONS), default="backlog")
+    create.add_argument("--claim-tier", choices=sorted(CLAIM_TIERS), default=None)
+    create.add_argument("--target-lifecycle-stage", choices=sorted(FEATURE_LIFECYCLE_STAGES), default="active")
     create.add_argument("--slot", default=None)
     create.add_argument("--claim-ids", nargs="*", default=[])
     create.add_argument("--test-ids", nargs="*", default=[])
@@ -59,7 +60,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--id", required=True)
     update.add_argument("--title", default=None)
     update.add_argument("--description", default=None)
-    update.add_argument("--implementation-status", choices=["absent", "partial", "implemented"], default=None)
+    update.add_argument("--implementation-status", choices=sorted(FEATURE_IMPLEMENTATION_STATUSES), default=None)
     update.set_defaults(func=run_update)
 
     delete = feature_sub.add_parser("delete", help="Delete a feature.")
@@ -89,13 +90,13 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     plan.add_argument(
         "--horizon",
         required=True,
-        choices=["current", "next", "future", "explicit", "backlog", "out_of_bounds"],
+        choices=sorted(PLANNING_HORIZONS),
         help="Planning horizon.",
     )
-    plan.add_argument("--claim-tier", choices=["T0", "T1", "T2", "T3", "T4"], default=None, help="Target claim tier.")
+    plan.add_argument("--claim-tier", choices=sorted(CLAIM_TIERS), default=None, help="Target claim tier.")
     plan.add_argument(
         "--target-lifecycle-stage",
-        choices=["active", "deprecated", "obsolete", "removed"],
+        choices=sorted(FEATURE_LIFECYCLE_STAGES),
         default=None,
         help="Planned lifecycle target for the feature.",
     )
@@ -107,7 +108,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     lifecycle_set = lifecycle_sub.add_parser("set", help="Set actual feature lifecycle state.")
     add_path_argument(lifecycle_set)
     lifecycle_set.add_argument("--ids", nargs="+", required=True, help="Feature ids to update.")
-    lifecycle_set.add_argument("--stage", required=True, choices=["active", "deprecated", "obsolete", "removed"])
+    lifecycle_set.add_argument("--stage", required=True, choices=sorted(FEATURE_LIFECYCLE_STAGES))
     lifecycle_set.add_argument("--replacement-feature-id", nargs="*", default=None, help="Replacement feature id(s).")
     lifecycle_set.add_argument("--effective-release-id", default=None, help="Effective release id.")
     lifecycle_set.add_argument("--note", default=None, help="Lifecycle note or rationale.")

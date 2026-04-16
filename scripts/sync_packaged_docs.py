@@ -7,8 +7,8 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MIRRORS = (
-    (PROJECT_ROOT / "src" / "ssot_registry" / "templates" / "adr", PROJECT_ROOT / "docs" / "adr"),
-    (PROJECT_ROOT / "src" / "ssot_registry" / "templates" / "specs", PROJECT_ROOT / "docs" / "specs"),
+    (PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "adr", PROJECT_ROOT / "docs" / "adr"),
+    (PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "specs", PROJECT_ROOT / "docs" / "specs"),
 )
 
 

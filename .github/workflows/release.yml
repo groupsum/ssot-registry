@@ -3,90 +3,195 @@ name: Release
 on:
   workflow_call:
     inputs:
+      release_train:
+        description: "Release train to publish"
+        required: true
+        type: string
       ref_name:
         description: "Branch or ref name to release from"
         required: true
         type: string
+      selected_packages:
+        description: "Comma-separated package list when release_train=selected"
+        required: false
+        default: ""
+        type: string
+      publish_to_pypi:
+        description: "Publish to PyPI after building artifacts"
+        required: false
+        default: true
+        type: boolean
+      create_github_release:
+        description: "Create GitHub Releases for package tags"
+        required: false
+        default: true
+        type: boolean
+  workflow_dispatch:
+    inputs:
+      release_train:
+        description: "Release train to publish"
+        required: true
+        default: core
+        type: choice
+        options:
+          - core
+          - ssot-cli
+          - ssot-tui
+          - selected
+      ref_name:
+        description: "Branch or ref name to release from"
+        required: true
+        default: master
+        type: string
+      selected_packages:
+        description: "Comma-separated package list when release_train=selected"
+        required: false
+        default: ""
+        type: string
+      publish_to_pypi:
+        description: "Publish to PyPI after building artifacts"
+        required: true
+        default: true
+        type: boolean
+      create_github_release:
+        description: "Create GitHub Releases for package tags"
+        required: true
+        default: true
+        type: boolean
 
 concurrency:
-  group: release-${{ inputs.ref_name }}
+  group: release-${{ inputs.release_train }}-${{ inputs.ref_name }}
   cancel-in-progress: false
 
 permissions:
   contents: write
 
 jobs:
-  build-and-release:
-    name: Build and publish GitHub Release
+  validate:
+    name: Validate release train
     runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.targets.outputs.targets }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref_name }}
-          fetch-depth: 0
-
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          enable-cache: true
 
       - name: Install Python 3.12
-        run: uv python install 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      - name: Install package
-        run: uv sync --python 3.12
+      - name: Validate train policy
+        run: python scripts/release_metadata.py validate-train --train "${{ inputs.release_train }}" --packages "${{ inputs.selected_packages }}"
 
-      - name: Determine release version and tag
-        id: release_meta
+      - name: Resolve release targets
+        id: targets
         run: |
-          VERSION=$(python - <<'PY'
-          from pathlib import Path
-          import tomllib
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
 
-          pyproject = tomllib.loads(Path('pyproject.toml').read_text())
-          print(pyproject['project']['version'])
-          PY
+          result = subprocess.run(
+              [
+                  "python",
+                  "scripts/release_metadata.py",
+                  "targets",
+                  "--train",
+                  os.environ["RELEASE_TRAIN"],
+                  "--packages",
+                  os.environ["SELECTED_PACKAGES"],
+              ],
+              check=True,
+              text=True,
+              capture_output=True,
           )
-          TAG="ssot-registry==${VERSION}"
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
-
-      - name: Create git tag from pyproject version
+          targets = set(json.loads(result.stdout))
+          payload = {
+              "ssot_contracts": "ssot-contracts" in targets,
+              "ssot_views": "ssot-views" in targets,
+              "ssot_codegen": "ssot-codegen" in targets,
+              "ssot_registry": "ssot-registry" in targets,
+              "ssot_cli": "ssot-cli" in targets,
+              "ssot_tui": "ssot-tui" in targets,
+          }
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"targets={json.dumps(payload)}\n")
+          PY
         env:
-          TAG: ${{ steps.release_meta.outputs.tag }}
-        run: |
-          if git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "Tag $TAG already exists."
-            exit 1
-          fi
+          RELEASE_TRAIN: ${{ inputs.release_train }}
+          SELECTED_PACKAGES: ${{ inputs.selected_packages }}
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag "$TAG"
-          git push origin "$TAG"
+  publish-ssot-contracts:
+    name: Publish ssot-contracts
+    needs: validate
+    if: ${{ fromJSON(needs.validate.outputs.targets).ssot_contracts }}
+    uses: ./.github/workflows/publish-ssot-contracts.yml
+    with:
+      ref_name: ${{ inputs.ref_name }}
+      publish_to_pypi: ${{ inputs.publish_to_pypi }}
+      create_tag: true
+      create_github_release: ${{ inputs.create_github_release }}
+    secrets: inherit
 
-      - name: Build package
-        run: uv build
+  publish-ssot-views:
+    name: Publish ssot-views
+    needs: [validate, publish-ssot-contracts]
+    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_views && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-contracts.result) }}
+    uses: ./.github/workflows/publish-ssot-views.yml
+    with:
+      ref_name: ${{ inputs.ref_name }}
+      publish_to_pypi: ${{ inputs.publish_to_pypi }}
+      create_tag: true
+      create_github_release: ${{ inputs.create_github_release }}
+    secrets: inherit
 
-      - name: Generate checksums
-        run: |
-          cd dist
-          sha256sum * > SHA256SUMS
+  publish-ssot-codegen:
+    name: Publish ssot-codegen
+    needs: [validate, publish-ssot-views]
+    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_codegen && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-views.result) }}
+    uses: ./.github/workflows/publish-ssot-codegen.yml
+    with:
+      ref_name: ${{ inputs.ref_name }}
+      publish_to_pypi: ${{ inputs.publish_to_pypi }}
+      create_tag: true
+      create_github_release: ${{ inputs.create_github_release }}
+    secrets: inherit
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-dist
-          path: dist/*
+  publish-ssot-registry:
+    name: Publish ssot-registry
+    needs: [validate, publish-ssot-codegen]
+    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_registry && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-codegen.result) }}
+    uses: ./.github/workflows/publish-ssot-registry.yml
+    with:
+      ref_name: ${{ inputs.ref_name }}
+      publish_to_pypi: ${{ inputs.publish_to_pypi }}
+      create_tag: true
+      create_github_release: ${{ inputs.create_github_release }}
+    secrets: inherit
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.release_meta.outputs.tag }}
-          target_commitish: ${{ inputs.ref_name }}
-          name: ssot-registry ${{ steps.release_meta.outputs.version }}
-          files: dist/*
-          generate_release_notes: true
-          draft: false
-          prerelease: ${{ contains(steps.release_meta.outputs.version, '.dev') }}
+  publish-ssot-cli:
+    name: Publish ssot-cli
+    needs: [validate, publish-ssot-registry]
+    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_cli && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-registry.result) }}
+    uses: ./.github/workflows/publish-ssot-cli.yml
+    with:
+      ref_name: ${{ inputs.ref_name }}
+      publish_to_pypi: ${{ inputs.publish_to_pypi }}
+      create_tag: true
+      create_github_release: ${{ inputs.create_github_release }}
+    secrets: inherit
+
+  publish-ssot-tui:
+    name: Publish ssot-tui
+    needs: [validate, publish-ssot-cli]
+    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_tui && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-cli.result) }}
+    uses: ./.github/workflows/publish-ssot-tui.yml
+    with:
+      ref_name: ${{ inputs.ref_name }}
+      publish_to_pypi: ${{ inputs.publish_to_pypi }}
+      create_tag: true
+      create_github_release: ${{ inputs.create_github_release }}
+    secrets: inherit

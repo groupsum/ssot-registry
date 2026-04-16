@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from ssot_contracts.generated.python.cli_metadata import OUTPUT_FORMATS
 from ssot_registry.util.errors import GuardError, RegistryError, ValidationError
 from ssot_registry.util.formatting import render_payload
 
@@ -40,7 +41,7 @@ def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
         prog=prog or _default_prog(),
         description="Portable single-source-of-truth registry for features, tests, claims, evidence, issues, risks, boundaries, and releases.",
     )
-    parser.add_argument("--output-format", default="json", choices=["json", "csv", "df", "yaml", "toml"], help="CLI output format.")
+    parser.add_argument("--output-format", default="json", choices=OUTPUT_FORMATS, help="CLI output format.")
     parser.add_argument("--output-file", default=None, help="Optional file to write the rendered command output.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 

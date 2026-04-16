@@ -1,0 +1,142 @@
+{
+  "schema_version": 7,
+  "repo": {
+    "id": "repo:minimal-example",
+    "name": "minimal-example",
+    "version": "0.1.0",
+    "kind": "operator-repo"
+  },
+  "tooling": {
+    "ssot_registry_version": "0.2.1",
+    "initialized_with_version": "0.2.1",
+    "last_upgraded_from_version": "0.2.1"
+  },
+  "paths": {
+    "ssot_root": ".ssot",
+    "schema_root": ".ssot/schemas",
+    "adr_root": ".ssot/adr",
+    "spec_root": ".ssot/specs",
+    "graph_root": ".ssot/graphs",
+    "evidence_root": ".ssot/evidence",
+    "release_root": ".ssot/releases",
+    "report_root": ".ssot/reports",
+    "cache_root": ".ssot/cache"
+  },
+  "program": {
+    "active_boundary_id": "bnd:default",
+    "active_release_id": "rel:0.1.0"
+  },
+  "guard_policies": {
+    "claim_closure": {
+      "require_implemented_features": true,
+      "require_linked_tests_passing": true,
+      "require_linked_evidence_passing": true,
+      "require_claim_evidence_tier_alignment": true,
+      "forbid_failed_or_stale_evidence": true
+    },
+    "certification": {
+      "require_release_status_draft_or_candidate": true,
+      "require_frozen_boundary": true,
+      "require_release_claim_coverage_for_boundary_features": true,
+      "require_boundary_features_current_or_explicit": true,
+      "require_feature_target_tiers_met": true,
+      "forbid_open_release_blocking_issues": true,
+      "forbid_active_release_blocking_risks": true
+    },
+    "promotion": {
+      "require_release_status_certified": true,
+      "require_release_snapshot_hashes": true
+    },
+    "publication": {
+      "require_release_status_promoted": true
+    },
+    "lifecycle": {
+      "require_replacement_or_note_for_deprecation": true,
+      "forbid_obsolete_or_removed_in_active_boundary": true,
+      "require_feature_absent_for_removed": true
+    }
+  },
+  "document_id_reservations": {
+    "adr": [
+      {
+        "owner": "ssot-origin",
+        "start": 1,
+        "end": 499,
+        "immutable": true,
+        "deletable": false,
+        "assignable_by_repo": false
+      },
+      {
+        "owner": "ssot-core",
+        "start": 500,
+        "end": 999,
+        "immutable": true,
+        "deletable": false,
+        "assignable_by_repo": false
+      },
+      {
+        "owner": "repo-local-default",
+        "start": 1000,
+        "end": 4999,
+        "immutable": false,
+        "deletable": true,
+        "assignable_by_repo": true
+      }
+    ],
+    "spec": [
+      {
+        "owner": "ssot-origin",
+        "start": 1,
+        "end": 499,
+        "immutable": true,
+        "deletable": false,
+        "assignable_by_repo": false
+      },
+      {
+        "owner": "ssot-core",
+        "start": 500,
+        "end": 999,
+        "immutable": true,
+        "deletable": false,
+        "assignable_by_repo": false
+      },
+      {
+        "owner": "repo-local-default",
+        "start": 1000,
+        "end": 4999,
+        "immutable": false,
+        "deletable": true,
+        "assignable_by_repo": true
+      }
+    ]
+  },
+  "features": [],
+  "tests": [],
+  "claims": [],
+  "evidence": [],
+  "issues": [],
+  "risks": [],
+  "boundaries": [
+    {
+      "id": "bnd:default",
+      "title": "Default boundary",
+      "status": "draft",
+      "frozen": false,
+      "feature_ids": [],
+      "profile_ids": []
+    }
+  ],
+  "releases": [
+    {
+      "id": "rel:0.1.0",
+      "version": "0.1.0",
+      "status": "draft",
+      "boundary_id": "bnd:default",
+      "claim_ids": [],
+      "evidence_ids": []
+    }
+  ],
+  "adrs": [],
+  "specs": [],
+  "profiles": []
+}
