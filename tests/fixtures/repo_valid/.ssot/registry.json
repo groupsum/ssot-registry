@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "repo": {
     "id": "repo:advanced-example",
     "name": "advanced-example",
@@ -138,7 +138,8 @@
       "frozen": true,
       "feature_ids": [
         "feat:rfc.9000.connection-migration"
-      ]
+      ],
+      "profile_ids": []
     }
   ],
   "releases": [
@@ -550,5 +551,6 @@
       "content_sha256": "a18bcc7c72373487d8cd4a88b93b605ca6a46703dbd8d5fa5d9f8c86937348da",
       "kind": "operational"
     }
-  ]
+  ],
+  "profiles": []
 }

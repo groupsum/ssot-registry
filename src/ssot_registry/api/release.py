@@ -13,6 +13,8 @@ from ssot_registry.util.errors import GuardError, ValidationError
 from ssot_registry.util.jsonio import save_json
 from ssot_registry.validators.identity import build_index
 from .load import load_registry
+from .profile_eval import evaluate_profile
+from .profile_resolution import resolve_boundary_feature_ids
 from .save import save_registry
 from .validate import validate_registry, validate_registry_document
 
@@ -96,7 +98,10 @@ def promote_release(path: str | Path, release_id: str | None = None) -> dict[str
     save_registry(registry_path, registry)
 
     release_claims = [claim_lookup[claim_id] for claim_id in release.get("claim_ids", []) if claim_id in claim_lookup]
-    boundary_features = [feature_lookup[feature_id] for feature_id in boundary.get("feature_ids", []) if feature_id in feature_lookup]
+    boundary_feature_ids = resolve_boundary_feature_ids(boundary, index)
+    boundary_features = [feature_lookup[feature_id] for feature_id in boundary_feature_ids if feature_id in feature_lookup]
+    boundary_profiles = [index["profiles"][profile_id] for profile_id in boundary.get("profile_ids", []) if profile_id in index["profiles"]]
+    profile_evaluations = [evaluate_profile(profile, index, registry.get("guard_policies", {})) for profile in boundary_profiles]
     release_test_ids = sorted({test_id for claim in release_claims for test_id in claim.get("test_ids", []) if test_id in test_lookup})
     release_evidence_ids = sorted(
         set(release.get("evidence_ids", [])) | {evidence_id for claim in release_claims for evidence_id in claim.get("evidence_ids", [])}
@@ -110,6 +115,8 @@ def promote_release(path: str | Path, release_id: str | None = None) -> dict[str
         release,
         boundary,
         boundary_features,
+        boundary_profiles,
+        profile_evaluations,
         release_claims,
         release_tests,
         release_evidence,

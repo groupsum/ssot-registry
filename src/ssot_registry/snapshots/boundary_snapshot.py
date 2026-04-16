@@ -24,6 +24,7 @@ def build_boundary_snapshot(
         "summary": {
             "boundary_id": boundary["id"],
             "feature_count": len(features),
+            "profile_count": len(boundary.get("profile_ids", [])),
             "frozen": boundary["frozen"],
             "status": boundary["status"],
         },

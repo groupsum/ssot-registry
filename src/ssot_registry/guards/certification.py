@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ssot_registry.api.profile_resolution import resolve_boundary_feature_ids
 from ssot_registry.guards.claim_closure import evaluate_claim_guard
 from ssot_registry.model.enums import CLAIM_TIER_RANK
 
@@ -46,7 +47,7 @@ def evaluate_release_certification_guard(
     if require_frozen_boundary and not boundary.get("frozen", False):
         failures.append(f"Boundary {boundary['id']} is not frozen")
 
-    boundary_feature_ids = boundary.get("feature_ids", [])
+    boundary_feature_ids = resolve_boundary_feature_ids(boundary, index)
     if certification_policy.get("require_boundary_features_current_or_explicit", True):
         for feature_id in boundary_feature_ids:
             feature = index["features"].get(feature_id)
@@ -58,6 +59,10 @@ def evaluate_release_certification_guard(
                 )
 
     release_claims = [index["claims"][claim_id] for claim_id in release.get("claim_ids", []) if claim_id in index["claims"]]
+    boundary_profiles = [index["profiles"][profile_id] for profile_id in boundary.get("profile_ids", []) if profile_id in index["profiles"]]
+    from ssot_registry.api.profile_eval import evaluate_profile
+
+    profile_reports = [evaluate_profile(profile, index, registry.get("guard_policies", {})) for profile in boundary_profiles]
     claim_reports = [evaluate_claim_guard(claim, index, registry.get("guard_policies", {})) for claim in release_claims]
     for report in claim_reports:
         failures.extend(report["failures"])
@@ -131,9 +136,16 @@ def evaluate_release_certification_guard(
         "warnings": warnings,
         "claims": claim_reports,
         "evidence": evidence_reports,
+        "profiles": profile_reports,
+        "boundary": {
+            "id": boundary["id"],
+            "profile_ids": boundary.get("profile_ids", []),
+            "resolved_feature_ids": boundary_feature_ids,
+        },
         "summary": {
             "boundary_id": boundary["id"],
             "boundary_feature_count": len(boundary_feature_ids),
+            "boundary_profile_count": len(boundary.get("profile_ids", [])),
             "release_claim_count": len(release_claims),
             "release_evidence_count": len(evidence_reports),
         },

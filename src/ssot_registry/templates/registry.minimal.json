@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "repo": {
     "id": "repo:minimal-example",
     "name": "minimal-example",
@@ -105,7 +105,8 @@
       "title": "Default boundary",
       "status": "draft",
       "frozen": false,
-      "feature_ids": []
+      "feature_ids": [],
+      "profile_ids": []
     }
   ],
   "releases": [
@@ -119,5 +120,6 @@
     }
   ],
   "adrs": [],
-  "specs": []
+  "specs": [],
+  "profiles": []
 }

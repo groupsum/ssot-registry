@@ -14,6 +14,7 @@ from .feature_cmd import register_feature
 from .graph_cmd import register_graph
 from .init_cmd import register_init
 from .issue_cmd import register_issue
+from .profile_cmd import register_profile
 from .registry_cmd import register_registry
 from .release_cmd import register_release
 from .risk_cmd import register_risk
@@ -42,6 +43,7 @@ def main() -> int:
     register_adr(subparsers)
     register_spec(subparsers)
     register_feature(subparsers)
+    register_profile(subparsers)
     register_test(subparsers)
     register_issue(subparsers)
     register_claim(subparsers)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 TOP_LEVEL_SECTIONS = (
     "schema_version",
@@ -11,6 +11,7 @@ TOP_LEVEL_SECTIONS = (
     "guard_policies",
     "document_id_reservations",
     "features",
+    "profiles",
     "tests",
     "claims",
     "evidence",
@@ -24,6 +25,7 @@ TOP_LEVEL_SECTIONS = (
 
 CORE_ENTITY_SECTIONS = (
     "features",
+    "profiles",
     "tests",
     "claims",
     "evidence",
@@ -43,6 +45,7 @@ ENTITY_SECTIONS = CORE_ENTITY_SECTIONS + DOCUMENT_ENTITY_SECTIONS
 ENTITY_PREFIXES = {
     "repo": "repo:",
     "features": "feat:",
+    "profiles": "prf:",
     "tests": "tst:",
     "claims": "clm:",
     "evidence": "evd:",
@@ -59,6 +62,9 @@ FEATURE_LIFECYCLE_STAGES = {"active", "deprecated", "obsolete", "removed"}
 PLANNING_HORIZONS = {"current", "next", "future", "explicit", "backlog", "out_of_bounds"}
 
 TEST_STATUSES = {"planned", "passing", "failing", "blocked", "skipped"}
+PROFILE_STATUSES = {"draft", "active", "retired"}
+PROFILE_KINDS = {"capability", "certification", "deployment", "interoperability"}
+PROFILE_EVALUATION_MODES = {"all_features_must_pass"}
 CLAIM_TIERS = {"T0", "T1", "T2", "T3", "T4"}
 CLAIM_TIER_RANK = {"T0": 0, "T1": 1, "T2": 2, "T3": 3, "T4": 4}
 CLAIM_STATUSES = {
@@ -101,6 +107,7 @@ REQUIRED_TOP_LEVEL_KEYS = {
     "guard_policies",
     "document_id_reservations",
     "features",
+    "profiles",
     "tests",
     "claims",
     "evidence",
@@ -122,6 +129,17 @@ REQUIRED_ENTITY_FIELDS = {
         "plan",
         "claim_ids",
         "test_ids",
+    },
+    "profiles": {
+        "id",
+        "title",
+        "description",
+        "status",
+        "kind",
+        "feature_ids",
+        "profile_ids",
+        "claim_tier",
+        "evaluation",
     },
     "tests": {
         "id",
@@ -187,6 +205,7 @@ REQUIRED_ENTITY_FIELDS = {
         "status",
         "frozen",
         "feature_ids",
+        "profile_ids",
     },
     "releases": {
         "id",
@@ -205,6 +224,8 @@ REF_FIELD_TARGETS = {
     ("features", "claim_ids"): "claims",
     ("features", "test_ids"): "tests",
     ("features", "requires"): "features",
+    ("profiles", "feature_ids"): "features",
+    ("profiles", "profile_ids"): "profiles",
     ("claims", "feature_ids"): "features",
     ("claims", "test_ids"): "tests",
     ("claims", "evidence_ids"): "evidence",
@@ -221,6 +242,7 @@ REF_FIELD_TARGETS = {
     ("risks", "evidence_ids"): "evidence",
     ("risks", "issue_ids"): "issues",
     ("boundaries", "feature_ids"): "features",
+    ("boundaries", "profile_ids"): "profiles",
     ("releases", "boundary_id"): "boundaries",
     ("releases", "claim_ids"): "claims",
     ("releases", "evidence_ids"): "evidence",
@@ -237,6 +259,7 @@ BIDIRECTIONAL_LINKS = (
 
 GRAPH_NODE_KIND = {
     "features": "feature",
+    "profiles": "profile",
     "tests": "test",
     "claims": "claim",
     "evidence": "evidence",
