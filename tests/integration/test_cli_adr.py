@@ -99,6 +99,49 @@ class CliAdrTests(unittest.TestCase):
             self.assertEqual(create.returncode, 1)
             self.assertIn("non-assignable reservation", create.stdout)
 
+    def test_adr_list_sync_and_reservations(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            init = run_cli("init", str(repo), "--repo-id", "repo:adr-sync", "--repo-name", "adr-sync", "--version", "1.0.0")
+            self.assertEqual(init.returncode, 0, init.stderr)
+
+            list_result = run_cli("adr", "list", str(repo))
+            self.assertEqual(list_result.returncode, 0, list_result.stderr)
+            list_payload = json.loads(list_result.stdout)
+            self.assertTrue(list_payload["passed"])
+            baseline_count = list_payload["count"]
+
+            sync_result = run_cli("adr", "sync", str(repo))
+            self.assertEqual(sync_result.returncode, 0, sync_result.stderr)
+            sync_payload = json.loads(sync_result.stdout)
+            self.assertTrue(sync_payload["passed"])
+
+            list_after_sync = run_cli("adr", "list", str(repo))
+            self.assertEqual(list_after_sync.returncode, 0, list_after_sync.stderr)
+            list_after_sync_payload = json.loads(list_after_sync.stdout)
+            self.assertTrue(list_after_sync_payload["passed"])
+            self.assertGreaterEqual(list_after_sync_payload["count"], baseline_count)
+            synced_ids = set(sync_payload["created"] + sync_payload["updated"] + sync_payload["unchanged"])
+            listed_ids = {row["id"] for row in list_after_sync_payload["documents"]}
+            self.assertTrue(synced_ids.issubset(listed_ids))
+
+            reserve_create = run_cli("adr", "reserve", "create", str(repo), "--name", "origin:repo-test", "--start", "5100", "--end", "5199")
+            self.assertEqual(reserve_create.returncode, 0, reserve_create.stderr)
+            reserve_payload = json.loads(reserve_create.stdout)
+            self.assertTrue(reserve_payload["passed"])
+            self.assertEqual(reserve_payload["reservation"]["owner"], "origin:repo-test")
+
+            reserve_list = run_cli("adr", "reserve", "list", str(repo))
+            self.assertEqual(reserve_list.returncode, 0, reserve_list.stderr)
+            reserve_list_payload = json.loads(reserve_list.stdout)
+            self.assertTrue(reserve_list_payload["passed"])
+            reservation_rows = reserve_list_payload["reservations"]
+            self.assertIn(
+                {"owner": "origin:repo-test", "start": 5100, "end": 5199, "immutable": False, "deletable": True, "assignable_by_repo": True},
+                reservation_rows,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
