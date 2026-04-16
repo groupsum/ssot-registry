@@ -1,13 +1,15 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - master
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref_name:
+        description: "Branch or ref name to release from"
+        required: true
+        type: string
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ inputs.ref_name }}
   cancel-in-progress: false
 
 permissions:
@@ -20,6 +22,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref_name }}
+          fetch-depth: 0
 
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
@@ -53,7 +58,7 @@ jobs:
         run: |
           if git rev-parse "$TAG" >/dev/null 2>&1; then
             echo "Tag $TAG already exists."
-            exit 0
+            exit 1
           fi
 
           git config user.name "github-actions[bot]"
@@ -79,9 +84,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release_meta.outputs.tag }}
-          target_commitish: ${{ github.sha }}
+          target_commitish: ${{ inputs.ref_name }}
           name: ssot-registry ${{ steps.release_meta.outputs.version }}
           files: dist/*
           generate_release_notes: true
           draft: false
-          prerelease: ${{ contains(steps.release_meta.outputs.version, '-') }}
+          prerelease: ${{ contains(steps.release_meta.outputs.version, '.dev') }}

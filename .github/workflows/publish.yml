@@ -3,7 +3,6 @@ name: Publish
 on:
   release:
     types: [published]
-  workflow_dispatch:
 
 concurrency:
   group: publish-${{ github.ref }}
@@ -19,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
 
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
@@ -30,6 +31,27 @@ jobs:
 
       - name: Install package
         run: uv sync --python 3.12
+
+      - name: Verify release tag and package version are in sync
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          PYPROJECT_VERSION=$(python - <<'PY'
+          from pathlib import Path
+          import tomllib
+
+          pyproject = tomllib.loads(Path('pyproject.toml').read_text())
+          print(pyproject['project']['version'])
+          PY
+          )
+
+          EXPECTED_TAG="ssot-registry==${PYPROJECT_VERSION}"
+          if [ "$EXPECTED_TAG" != "$RELEASE_TAG" ]; then
+            echo "Release tag and pyproject version are out of sync."
+            echo "Expected: $EXPECTED_TAG"
+            echo "Actual:   $RELEASE_TAG"
+            exit 1
+          fi
 
       - name: Build package
         run: uv build
