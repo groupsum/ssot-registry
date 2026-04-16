@@ -193,5 +193,20 @@
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
     "kind": "operational"
+  },
+  {
+    "id": "spc:0014",
+    "number": 14,
+    "slug": "ssot-path-length-policy",
+    "title": "SSOT path-length policy",
+    "filename": "SPEC-0014-ssot-path-length-policy.md",
+    "target_path": ".ssot/specs/SPEC-0014-ssot-path-length-policy.md",
+    "sha256": "f3111920bae714bc62fe31eaabc0ba7074f47a2332d7a5d88c7f0c14fa0f8ed1",
+    "origin": "ssot-core",
+    "reservation_owner": "ssot-core",
+    "immutable": true,
+    "minimum_schema_version": 4,
+    "introduced_in": "0.2.1",
+    "kind": "normative"
   }
 ]
