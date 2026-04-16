@@ -25,7 +25,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 5
+      "const": 6
     },
     "repo": {
       "$ref": "#/$defs/repo"
@@ -850,7 +850,8 @@
         "content_sha256",
         "status",
         "supersedes",
-        "superseded_by"
+        "superseded_by",
+        "status_notes"
       ],
       "properties": {
         "id": {
@@ -893,18 +894,19 @@
           "pattern": "^[a-f0-9]{64}$"
         },
         "status": {
-          "enum": [
-            "proposed",
-            "accepted",
-            "superseded",
-            "retired"
-          ]
+          "$ref": "#/$defs/documentStatus"
         },
         "supersedes": {
           "$ref": "#/$defs/stringList"
         },
         "superseded_by": {
           "$ref": "#/$defs/stringList"
+        },
+        "status_notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/statusNote"
+          }
         }
       },
       "additionalProperties": true
@@ -922,7 +924,11 @@
         "immutable",
         "package_version",
         "content_sha256",
-        "kind"
+        "kind",
+        "status",
+        "supersedes",
+        "superseded_by",
+        "status_notes"
       ],
       "properties": {
         "id": {
@@ -970,6 +976,21 @@
             "operational",
             "repo-local"
           ]
+        },
+        "status": {
+          "$ref": "#/$defs/documentStatus"
+        },
+        "supersedes": {
+          "$ref": "#/$defs/stringList"
+        },
+        "superseded_by": {
+          "$ref": "#/$defs/stringList"
+        },
+        "status_notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/statusNote"
+          }
         }
       },
       "additionalProperties": true
@@ -1055,6 +1076,47 @@
             }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "documentStatus": {
+      "enum": [
+        "draft",
+        "in_review",
+        "accepted",
+        "rejected",
+        "superseded",
+        "withdrawn",
+        "retired"
+      ]
+    },
+    "statusNote": {
+      "type": "object",
+      "required": [
+        "status",
+        "note",
+        "at"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/documentStatus"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "additionalProperties": false

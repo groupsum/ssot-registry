@@ -14,7 +14,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0002",
@@ -31,7 +32,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0003",
@@ -48,7 +50,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0004",
@@ -65,7 +68,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0005",
@@ -82,7 +86,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0006",
@@ -99,7 +104,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0007",
@@ -116,7 +122,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0008",
@@ -133,7 +140,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0009",
@@ -150,7 +158,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0010",
@@ -167,7 +176,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0011",
@@ -184,7 +194,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0012",
@@ -201,7 +212,8 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "adr:0013",
@@ -218,6 +230,7 @@
     "introduced_in": "0.2.1",
     "status": "accepted",
     "supersedes": [],
-    "superseded_by": []
+    "superseded_by": [],
+    "status_notes": []
   }
 ]

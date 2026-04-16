@@ -1,5 +1,6 @@
 from .document import (
-    ADR_STATUSES,
+    CREATE_ALLOWED_STATUSES,
+    DOCUMENT_STATUSES,
     DOCUMENT_KINDS,
     DOCUMENT_ORIGINS,
     DOCUMENT_SECTIONS,
@@ -20,7 +21,8 @@ from .profile import ProfileRow
 from .registry import build_minimal_registry, count_entities, default_guard_policies, default_paths
 
 __all__ = [
-    "ADR_STATUSES",
+    "CREATE_ALLOWED_STATUSES",
+    "DOCUMENT_STATUSES",
     "DOCUMENT_KINDS",
     "DOCUMENT_ORIGINS",
     "DOCUMENT_SECTIONS",

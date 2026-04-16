@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from ssot_registry.model.document import (
-    ADR_STATUSES,
+    DOCUMENT_STATUSES,
     DOCUMENT_ORIGINS,
     SPEC_KINDS,
     build_document_path,
@@ -18,6 +18,32 @@ from ssot_registry.version import __version__
 
 def _reservation_matches(number: int, reservations: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [row for row in reservations if isinstance(row.get("start"), int) and isinstance(row.get("end"), int) and row["start"] <= number <= row["end"]]
+
+
+def _validate_status_notes(prefix: str, row: dict[str, Any], failures: list[str]) -> None:
+    notes = row.get("status_notes", [])
+    if not isinstance(notes, list):
+        failures.append(f"{prefix}.status_notes must be a list")
+        return
+    for idx, note in enumerate(notes):
+        if not isinstance(note, dict):
+            failures.append(f"{prefix}.status_notes[{idx}] must be an object")
+            continue
+        status = note.get("status")
+        if status not in DOCUMENT_STATUSES:
+            failures.append(f"{prefix}.status_notes[{idx}].status must be one of {list(DOCUMENT_STATUSES)}")
+        note_text = note.get("note")
+        if not isinstance(note_text, str) or not note_text.strip():
+            failures.append(f"{prefix}.status_notes[{idx}].note must be a non-empty string")
+        at = note.get("at")
+        if not isinstance(at, str) or not at.strip():
+            failures.append(f"{prefix}.status_notes[{idx}].at must be a non-empty string")
+        actor = note.get("actor")
+        if actor is not None and not isinstance(actor, str):
+            failures.append(f"{prefix}.status_notes[{idx}].actor must be a string when provided")
+        reason = note.get("reason")
+        if reason is not None and not isinstance(reason, str):
+            failures.append(f"{prefix}.status_notes[{idx}].reason must be a string when provided")
 
 
 def validate_document_rows(
@@ -137,25 +163,35 @@ def validate_document_rows(
                     failures.append(f"{prefix}.immutable must be true for ssot-core documents")
 
             if section == "adrs":
-                status = row.get("status")
-                supersedes = row.get("supersedes")
-                superseded_by = row.get("superseded_by")
-                if status not in ADR_STATUSES:
-                    failures.append(f"{prefix}.status must be one of {sorted(ADR_STATUSES)}")
-                if not isinstance(supersedes, list) or not all(isinstance(value, str) for value in supersedes):
-                    failures.append(f"{prefix}.supersedes must be a list of strings")
-                if not isinstance(superseded_by, list) or not all(isinstance(value, str) for value in superseded_by):
-                    failures.append(f"{prefix}.superseded_by must be a list of strings")
-                for field_name in ("supersedes", "superseded_by"):
-                    value = row.get(field_name, [])
-                    if isinstance(value, list):
-                        for ref_id in value:
-                            if ref_id not in rows:
-                                failures.append(f"{prefix}.{field_name} references missing adr {ref_id}")
-            else:
+                pass
+            if section == "specs":
                 kind_value = row.get("kind")
                 if kind_value not in SPEC_KINDS:
                     failures.append(f"{prefix}.kind must be one of {sorted(SPEC_KINDS)}")
+            status = row.get("status")
+            supersedes = row.get("supersedes")
+            superseded_by = row.get("superseded_by")
+            if status not in DOCUMENT_STATUSES:
+                failures.append(f"{prefix}.status must be one of {list(DOCUMENT_STATUSES)}")
+            if not isinstance(supersedes, list) or not all(isinstance(value, str) for value in supersedes):
+                failures.append(f"{prefix}.supersedes must be a list of strings")
+            if not isinstance(superseded_by, list) or not all(isinstance(value, str) for value in superseded_by):
+                failures.append(f"{prefix}.superseded_by must be a list of strings")
+            _validate_status_notes(prefix, row, failures)
+            for field_name in ("supersedes", "superseded_by"):
+                value = row.get(field_name, [])
+                if isinstance(value, list):
+                    for ref_id in value:
+                        if ref_id not in rows:
+                            failures.append(f"{prefix}.{field_name} references missing {kind} {ref_id}")
+            if isinstance(supersedes, list) and isinstance(superseded_by, list):
+                overlap = set(supersedes).intersection(superseded_by)
+                if overlap:
+                    failures.append(f"{prefix} has ids present in both supersedes and superseded_by: {sorted(overlap)}")
+            if status == "superseded" and isinstance(superseded_by, list) and not superseded_by:
+                failures.append(f"{prefix}.status is superseded but superseded_by is empty")
+            if status != "superseded" and isinstance(superseded_by, list) and superseded_by:
+                failures.append(f"{prefix}.superseded_by must be empty unless status is superseded")
 
             if origin == "ssot-core":
                 manifest_entry = manifest_lookup[section].get(entity_id)

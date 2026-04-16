@@ -9,7 +9,9 @@ from ssot_registry.api import (
     get_document,
     list_document_reservations,
     list_documents,
+    set_document_status,
     sync_documents,
+    supersede_documents,
     update_document,
 )
 from ssot_registry.cli.common import add_path_argument, compact_dict
@@ -25,7 +27,8 @@ def register_adr(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--slug", required=True)
     create.add_argument("--body-file", required=True)
     create.add_argument("--number", type=int, default=None)
-    create.add_argument("--status", choices=["proposed", "accepted", "superseded", "retired"], default="proposed")
+    create.add_argument("--status", choices=["draft", "in_review", "accepted", "rejected", "withdrawn", "superseded", "retired"], default="draft")
+    create.add_argument("--note", default=None, help="Optional lifecycle note.")
     create.add_argument("--origin", choices=["repo-local"], default="repo-local")
     create.add_argument("--reserve-range", default=None, help="Reservation owner to allocate from.")
     create.set_defaults(func=run_create)
@@ -44,8 +47,23 @@ def register_adr(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--id", required=True)
     update.add_argument("--title", default=None)
     update.add_argument("--body-file", default=None)
-    update.add_argument("--status", choices=["proposed", "accepted", "superseded", "retired"], default=None)
+    update.add_argument("--status", choices=["draft", "in_review", "accepted", "rejected", "withdrawn", "superseded", "retired"], default=None)
+    update.add_argument("--note", default=None, help="Optional lifecycle note.")
     update.set_defaults(func=run_update)
+
+    set_status = adr_sub.add_parser("set-status", help="Set ADR lifecycle status.")
+    add_path_argument(set_status)
+    set_status.add_argument("--id", required=True)
+    set_status.add_argument("--status", required=True, choices=["draft", "in_review", "accepted", "rejected", "withdrawn", "superseded", "retired"])
+    set_status.add_argument("--note", default=None, help="Optional lifecycle note.")
+    set_status.set_defaults(func=run_set_status)
+
+    supersede = adr_sub.add_parser("supersede", help="Supersede ADR ids with another ADR.")
+    add_path_argument(supersede)
+    supersede.add_argument("--id", required=True)
+    supersede.add_argument("--supersedes", nargs="+", required=True)
+    supersede.add_argument("--note", default=None, help="Optional lifecycle note.")
+    supersede.set_defaults(func=run_supersede)
 
     delete = adr_sub.add_parser("delete", help="Delete a repo-local ADR.")
     add_path_argument(delete)
@@ -81,6 +99,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         origin=args.origin,
         reserve_range=args.reserve_range,
         status=args.status,
+        note=args.note,
     )
 
 
@@ -93,10 +112,18 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
-    changes = compact_dict({"title": args.title, "body_file": args.body_file, "status": args.status})
+    changes = compact_dict({"title": args.title, "body_file": args.body_file, "status": args.status, "note": args.note})
     if not changes:
         raise ValueError("At least one update field is required")
     return update_document(args.path, "adr", args.id, **changes)
+
+
+def run_set_status(args: argparse.Namespace) -> dict[str, object]:
+    return set_document_status(args.path, "adr", args.id, status=args.status, note=args.note)
+
+
+def run_supersede(args: argparse.Namespace) -> dict[str, object]:
+    return supersede_documents(args.path, "adr", args.id, supersedes=args.supersedes, note=args.note)
 
 
 def run_delete(args: argparse.Namespace) -> dict[str, object]:

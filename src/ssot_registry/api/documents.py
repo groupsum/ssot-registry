@@ -4,8 +4,15 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
+from ssot_registry.guards.document_lifecycle import (
+    apply_status_transition,
+    append_status_note,
+    assert_mutable_document,
+    validate_create_status,
+)
+from ssot_registry.guards.document_supersession import apply_supersession
 from ssot_registry.model.document import (
-    ADR_STATUSES,
+    DOCUMENT_STATUSES,
     DOCUMENT_SLUG_PATTERN,
     SPEC_KINDS,
     build_document_path,
@@ -81,6 +88,7 @@ def _build_repo_local_row(
     title: str,
     content_sha256: str,
     status: str | None = None,
+    note: str | None = None,
     spec_kind: str | None = None,
 ) -> dict[str, Any]:
     row = {
@@ -95,11 +103,13 @@ def _build_repo_local_row(
         "package_version": registry.get("tooling", {}).get("ssot_registry_version", __version__),
         "content_sha256": content_sha256,
     }
-    if kind == "adr":
-        row["status"] = status or "proposed"
-        row["supersedes"] = []
-        row["superseded_by"] = []
-    else:
+    row["status"] = status or "draft"
+    row["supersedes"] = []
+    row["superseded_by"] = []
+    row["status_notes"] = []
+    if note is not None:
+        append_status_note(row, status=row["status"], note=note)
+    if kind == "spec":
         row["kind"] = spec_kind or "repo-local"
     return row
 
@@ -117,11 +127,11 @@ def _manifest_row_to_registry_row(registry: dict[str, Any], kind: str, manifest_
         "package_version": __version__,
         "content_sha256": manifest_entry["sha256"],
     }
-    if kind == "adr":
-        row["status"] = manifest_entry.get("status", "accepted")
-        row["supersedes"] = manifest_entry.get("supersedes", [])
-        row["superseded_by"] = manifest_entry.get("superseded_by", [])
-    else:
+    row["status"] = manifest_entry.get("status", "accepted")
+    row["supersedes"] = manifest_entry.get("supersedes", [])
+    row["superseded_by"] = manifest_entry.get("superseded_by", [])
+    row["status_notes"] = manifest_entry.get("status_notes", [])
+    if kind == "spec":
         row["kind"] = manifest_entry.get("kind", "normative")
     return row
 
@@ -233,6 +243,7 @@ def create_document(
     origin: str = "repo-local",
     reserve_range: str | None = None,
     status: str | None = None,
+    note: str | None = None,
     spec_kind: str | None = None,
 ) -> dict[str, Any]:
     if origin != "repo-local":
@@ -241,8 +252,8 @@ def create_document(
         raise ValidationError(f"{_document_label(kind)} title must be a non-empty string")
     if not isinstance(slug, str) or DOCUMENT_SLUG_PATTERN.match(slug) is None:
         raise ValidationError(f"{_document_label(kind)} slug must match ^[a-z0-9]+(?:-[a-z0-9]+)*$")
-    if kind == "adr" and status is not None and status not in ADR_STATUSES:
-        raise ValidationError(f"ADR status must be one of {sorted(ADR_STATUSES)}")
+    if status is not None:
+        validate_create_status(status)
     if kind == "spec" and spec_kind is not None and spec_kind not in SPEC_KINDS:
         raise ValidationError(f"Spec kind must be one of {sorted(SPEC_KINDS)}")
 
@@ -261,6 +272,7 @@ def create_document(
         title=title,
         content_sha256="0" * 64,
         status=status,
+        note=note,
         spec_kind=spec_kind,
     )
     content_sha256 = _write_document(repo_root, provisional, body, kind)
@@ -272,6 +284,7 @@ def create_document(
         title=title,
         content_sha256=content_sha256,
         status=status,
+        note=note,
         spec_kind=spec_kind,
     )
 
@@ -295,6 +308,7 @@ def update_document(
     title: str | None = None,
     body_file: str | Path | None = None,
     status: str | None = None,
+    note: str | None = None,
     spec_kind: str | None = None,
 ) -> dict[str, Any]:
     registry_path, repo_root, registry = load_registry(path)
@@ -304,19 +318,20 @@ def update_document(
     except KeyError as exc:
         raise ValueError(f"Unknown {_document_label(kind)} id: {document_id}") from exc
 
-    if row.get("origin") == "ssot-core" or row.get("immutable"):
-        raise ValidationError(f"{_document_label(kind)} {document_id} is immutable and may only be changed via sync")
+    assert_mutable_document(row, label=_document_label(kind), document_id=document_id)
     if title is not None and not title.strip():
         raise ValidationError(f"{_document_label(kind)} title must be a non-empty string")
-    if kind == "adr" and status is not None and status not in ADR_STATUSES:
-        raise ValidationError(f"ADR status must be one of {sorted(ADR_STATUSES)}")
+    if status is not None and status not in DOCUMENT_STATUSES:
+        raise ValidationError(f"{_document_label(kind)} status must be one of {list(DOCUMENT_STATUSES)}")
     if kind == "spec" and spec_kind is not None and spec_kind not in SPEC_KINDS:
         raise ValidationError(f"Spec kind must be one of {sorted(SPEC_KINDS)}")
 
     if title is not None:
         row["title"] = title
-    if kind == "adr" and status is not None:
-        row["status"] = status
+    if status is not None:
+        apply_status_transition(row, new_status=status, note=note)
+    elif note is not None:
+        append_status_note(row, status=row.get("status", "draft"), note=note)
     if kind == "spec" and spec_kind is not None:
         row["kind"] = spec_kind
 
@@ -370,6 +385,39 @@ def delete_document(path: str | Path, kind: str, document_id: str) -> dict[str, 
     }
 
 
+def set_document_status(
+    path: str | Path,
+    kind: str,
+    document_id: str,
+    *,
+    status: str,
+    note: str | None = None,
+) -> dict[str, Any]:
+    return update_document(path, kind, document_id, status=status, note=note)
+
+
+def supersede_documents(
+    path: str | Path,
+    kind: str,
+    source_id: str,
+    *,
+    supersedes: list[str],
+    note: str | None = None,
+) -> dict[str, Any]:
+    registry_path, repo_root, registry = load_registry(path)
+    section = section_for_document_kind(kind)
+    rows = _row_lookup(registry, kind)
+    apply_supersession(rows, source_id=source_id, target_ids=supersedes, label=_document_label(kind), note=note)
+    _sort_document_rows(registry, kind)
+    _validate_and_save(registry_path, repo_root, registry, f"superseding {kind} {source_id}")
+    return {
+        "passed": True,
+        "registry_path": registry_path.as_posix(),
+        "section": section,
+        "document": deepcopy(rows[source_id]),
+    }
+
+
 def _sync_manifest_document(
     registry: dict[str, Any],
     repo_root: Path,
@@ -409,7 +457,10 @@ def _sync_manifest_document(
         or current.get("content_sha256") != expected_row["content_sha256"]
         or current.get("package_version") != expected_row["package_version"]
         or current.get("title") != expected_row["title"]
-        or (kind == "adr" and current.get("status") != expected_row["status"])
+        or current.get("status") != expected_row["status"]
+        or current.get("supersedes") != expected_row["supersedes"]
+        or current.get("superseded_by") != expected_row["superseded_by"]
+        or current.get("status_notes") != expected_row["status_notes"]
         or (kind == "spec" and current.get("kind") != expected_row["kind"])
     )
     if needs_write:

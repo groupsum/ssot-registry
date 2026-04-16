@@ -41,14 +41,38 @@ class CliAdrTests(unittest.TestCase):
             update = run_cli("adr", "update", str(repo), "--id", "adr:1000", "--title", "Local decision updated", "--body-file", str(body))
             self.assertEqual(update.returncode, 0, update.stderr)
             self.assertEqual(json.loads(update.stdout)["document"]["title"], "Local decision updated")
+            set_status = run_cli("adr", "set-status", str(repo), "--id", "adr:1000", "--status", "in_review", "--note", "ready")
+            self.assertEqual(set_status.returncode, 0, set_status.stderr)
+            self.assertEqual(json.loads(set_status.stdout)["document"]["status"], "in_review")
+
+            body2 = repo / "adr-body-2.md"
+            body2.write_text("Another ADR.\n", encoding="utf-8")
+            create2 = run_cli(
+                "adr",
+                "create",
+                str(repo),
+                "--title",
+                "Second local decision",
+                "--slug",
+                "second-local-decision",
+                "--body-file",
+                str(body2),
+                "--status",
+                "accepted",
+            )
+            self.assertEqual(create2.returncode, 0, create2.stderr)
+
+            supersede = run_cli("adr", "supersede", str(repo), "--id", "adr:1001", "--supersedes", "adr:1000", "--note", "replaced")
+            self.assertEqual(supersede.returncode, 0, supersede.stderr)
+            superseded_doc = json.loads(run_cli("adr", "get", str(repo), "--id", "adr:1000").stdout)["document"]
+            self.assertEqual(superseded_doc["status"], "superseded")
 
             delete_ssot = run_cli("adr", "delete", str(repo), "--id", "adr:0001")
             self.assertEqual(delete_ssot.returncode, 1)
             self.assertIn("immutable", delete_ssot.stdout)
 
             delete_local = run_cli("adr", "delete", str(repo), "--id", "adr:1000")
-            self.assertEqual(delete_local.returncode, 0, delete_local.stderr)
-            self.assertFalse((repo / ".ssot" / "adr" / "ADR-1000-local-decision.md").exists())
+            self.assertEqual(delete_local.returncode, 1)
 
     def test_adr_create_inside_ssot_range_fails(self) -> None:
         with workspace_tempdir() as temp_dir:

@@ -114,11 +114,16 @@ def _collect_repo_local_documents(registry: dict[str, Any], repo_root: Path, kin
             "content_sha256": sha256_path(path),
         }
         if kind == "adr":
-            row["status"] = "proposed"
+            row["status"] = "draft"
             row["supersedes"] = []
             row["superseded_by"] = []
+            row["status_notes"] = []
         else:
             row["kind"] = "repo-local"
+            row["status"] = "draft"
+            row["supersedes"] = []
+            row["superseded_by"] = []
+            row["status_notes"] = []
         rows.append(row)
         existing_numbers.add(number)
         existing_ids.add(document_id)
@@ -161,6 +166,31 @@ def migrate_v4_to_v5(
     return migrated
 
 
+def migrate_v5_to_v6(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    _ = repo_root, previous_version, target_version
+    migrated = deepcopy(registry)
+    migrated["schema_version"] = 6
+    for adr in migrated.get("adrs", []):
+        status = adr.get("status")
+        if status == "proposed":
+            adr["status"] = "draft"
+        adr.setdefault("supersedes", [])
+        adr.setdefault("superseded_by", [])
+        adr.setdefault("status_notes", [])
+    for spec in migrated.get("specs", []):
+        spec.setdefault("status", "accepted" if spec.get("origin") == "ssot-core" else "draft")
+        spec.setdefault("supersedes", [])
+        spec.setdefault("superseded_by", [])
+        spec.setdefault("status_notes", [])
+    return migrated
+
+
 def target_version_from_registry(registry: dict[str, Any]) -> str:
     tooling = registry.get("tooling")
     if isinstance(tooling, dict):
@@ -200,8 +230,12 @@ def upgrade_registry(
     if source_schema == 4:
         working = migrate_v4_to_v5(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
         migrations.append("migrate_v4_to_v5")
+        source_schema = 5
+    if source_schema == 5:
+        working = migrate_v5_to_v6(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
+        migrations.append("migrate_v5_to_v6")
     elif source_schema != SCHEMA_VERSION:
-        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4 or {SCHEMA_VERSION}")
+        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5 or {SCHEMA_VERSION}")
 
     if not migrations and source_tooling_version == target_version and not sync_docs:
         report = validate_registry_document(working, registry_path, repo_root)
