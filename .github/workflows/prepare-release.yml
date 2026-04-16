@@ -18,12 +18,18 @@ on:
         required: true
         default: true
         type: boolean
+      run_publish:
+        description: "Dispatch publish workflow to upload to PyPI after bump"
+        required: true
+        default: false
+        type: boolean
 
 concurrency:
   group: prepare-release-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
+  actions: write
   contents: write
 
 jobs:
@@ -76,3 +82,15 @@ jobs:
     with:
       ref_name: ${{ github.ref_name }}
     secrets: inherit
+
+  publish:
+    name: Dispatch publish workflow
+    needs: bump-version
+    if: ${{ inputs.run_publish }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch publish workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run publish.yml --ref "${{ github.ref_name }}"
