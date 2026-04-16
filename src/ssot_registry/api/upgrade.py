@@ -267,7 +267,7 @@ def upgrade_registry(
     elif source_schema != SCHEMA_VERSION:
         raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6 or {SCHEMA_VERSION}")
 
-    if not migrations and source_tooling_version == target_version and not sync_docs:
+    if not migrations and not sync_docs:
         report = validate_registry_document(working, registry_path, repo_root)
         if not report["passed"]:
             raise ValidationError("; ".join(report["failures"]))
