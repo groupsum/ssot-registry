@@ -65,6 +65,11 @@ class ReleaseMetadataTests(unittest.TestCase):
             payload = json.loads(_run_release_metadata("targets", "--train", package_name).stdout)
             self.assertEqual(payload, [package_name])
 
+    def test_tag_uses_package_equals_equals_version_format(self) -> None:
+        payload = json.loads(_run_release_metadata("show").stdout)
+        for package_name, package in payload["packages"].items():
+            self.assertEqual(package["tag"], f"{package_name}=={package['version']}")
+
 
 if __name__ == "__main__":
     unittest.main()

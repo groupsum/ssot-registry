@@ -72,6 +72,11 @@ class ReleaseWorkflowTests(unittest.TestCase):
         ):
             self.assertTrue((REPO_ROOT / filename).exists(), filename)
 
+    def test_reusable_publish_workflow_uses_tag_as_release_title(self) -> None:
+        workflow = _read(".github/workflows/_package-publish.yml")
+        self.assertIn("tag_name: ${{ steps.release_meta.outputs.tag }}", workflow)
+        self.assertIn("name: ${{ steps.release_meta.outputs.tag }}", workflow)
+
     def test_prepare_release_uses_package_aware_bump_script(self) -> None:
         workflow = _read(".github/workflows/prepare-release.yml")
         self.assertIn("- all", workflow)

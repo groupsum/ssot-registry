@@ -111,7 +111,7 @@ jobs:
         with:
           tag_name: ${{ steps.release_meta.outputs.tag }}
           target_commitish: ${{ inputs.ref_name }}
-          name: ${{ inputs.package_name }} ${{ steps.release_meta.outputs.version }}
+          name: ${{ steps.release_meta.outputs.tag }}
           files: ${{ inputs.project_path }}/dist/*
           generate_release_notes: true
           draft: false
