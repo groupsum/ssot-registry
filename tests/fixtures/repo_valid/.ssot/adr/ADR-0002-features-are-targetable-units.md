@@ -1,7 +1,7 @@
 # ADR-0002: Features are the targetable units
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 Features are the only targetable implementation units. There is no separate `targets[]` section.

@@ -1,7 +1,7 @@
 # ADR-0009: Fail-closed guards
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 Validation, certification, promotion, publication, and lifecycle transitions refuse to proceed on guard violations.

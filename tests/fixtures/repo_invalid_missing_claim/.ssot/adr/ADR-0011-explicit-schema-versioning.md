@@ -1,7 +1,7 @@
 # ADR-0011: Explicit schema versioning
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 Breaking schema changes increment `schema_version` and require migration.

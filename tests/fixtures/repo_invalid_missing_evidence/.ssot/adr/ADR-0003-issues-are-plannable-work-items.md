@@ -1,7 +1,7 @@
 # ADR-0003: Issues are plannable work items
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 Issues and tickets can be planned as current, next, future, explicit, backlog, or out-of-bounds, but they are not substitute targets for features.

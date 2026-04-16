@@ -1,5 +1,8 @@
 # Claim statuses
 
+## Status
+Draft
+
 Supported statuses:
 - `proposed`
 - `declared`

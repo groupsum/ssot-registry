@@ -1,7 +1,7 @@
 # ADR-0006: Claim status and claim tier are orthogonal
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 Claim status expresses lifecycle progression. Claim tier expresses assurance strength.

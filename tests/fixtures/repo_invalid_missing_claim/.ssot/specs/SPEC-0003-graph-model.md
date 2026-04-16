@@ -1,5 +1,8 @@
 # Graph model
 
+## Status
+Draft
+
 The authored registry is entity-centric JSON.
 The graph export is derived and consists of nodes and typed edges.
 
