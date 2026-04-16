@@ -27,6 +27,10 @@ RELEASE_ORDER = (
 RELEASE_TRAINS = ("core", "all", *RELEASE_ORDER, "selected")
 
 
+def _load_root_pyproject() -> dict:
+    return tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+
+
 @dataclass(frozen=True)
 class PackageInfo:
     name: str
@@ -81,6 +85,10 @@ def _load_pyproject(package_name: str) -> dict:
     return tomllib.loads(path.read_text(encoding="utf-8"))
 
 
+def supported_python_spec() -> str:
+    return _load_root_pyproject()["tool"]["ssot"]["release"]["supported-python"]
+
+
 def _package_dependencies(pyproject: dict) -> dict[str, str]:
     result: dict[str, str] = {}
     for dependency in pyproject.get("project", {}).get("dependencies", []):
@@ -99,6 +107,29 @@ def _next_minor_upper_bound(version: str) -> str:
     return f"{major}.{minor + 1}.0"
 
 
+def expected_dependency_specs(core_version: str) -> dict[str, dict[str, str]]:
+    compatible_core_range = f">={core_version},<{_next_minor_upper_bound(core_version)}"
+    return {
+        "ssot-views": {"ssot-contracts": f"ssot-contracts=={core_version}"},
+        "ssot-codegen": {
+            "ssot-contracts": f"ssot-contracts=={core_version}",
+            "ssot-views": f"ssot-views=={core_version}",
+        },
+        "ssot-registry": {
+            "ssot-contracts": f"ssot-contracts=={core_version}",
+            "ssot-views": f"ssot-views=={core_version}",
+        },
+        "ssot-cli": {
+            "ssot-contracts": f"ssot-contracts{compatible_core_range}",
+            "ssot-registry": f"ssot-registry{compatible_core_range}",
+        },
+        "ssot-tui": {
+            "ssot-contracts": f"ssot-contracts{compatible_core_range}",
+            "ssot-registry": f"ssot-registry{compatible_core_range}",
+        },
+    }
+
+
 def collect_metadata() -> dict[str, object]:
     packages: dict[str, dict[str, object]] = {}
     for package_name, info in PACKAGE_INFOS.items():
@@ -113,10 +144,12 @@ def collect_metadata() -> dict[str, object]:
             "tag": f"{package_name}=={version}",
             "dependencies": _package_dependencies(pyproject),
             "group": "core" if package_name in CORE_PACKAGES else "surface",
+            "requires_python": pyproject["project"]["requires-python"],
         }
     return {
         "release_order": list(RELEASE_ORDER),
         "core_packages": list(CORE_PACKAGES),
+        "supported_python": supported_python_spec(),
         "packages": packages,
     }
 
@@ -164,18 +197,9 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
         raise ValueError("Core packages are not in lockstep version alignment.")
     core_version = next(iter(core_versions))
 
-    expected_core_dependencies = {
-        "ssot-views": {"ssot-contracts": f"ssot-contracts=={core_version}"},
-        "ssot-codegen": {
-            "ssot-contracts": f"ssot-contracts=={core_version}",
-            "ssot-views": f"ssot-views=={core_version}",
-        },
-        "ssot-registry": {
-            "ssot-contracts": f"ssot-contracts=={core_version}",
-            "ssot-views": f"ssot-views=={core_version}",
-        },
-    }
-    for package_name, expectations in expected_core_dependencies.items():
+    dependency_specs = expected_dependency_specs(core_version)
+    for package_name in CORE_PACKAGES[1:]:
+        expectations = dependency_specs[package_name]
         actual_dependencies = packages[package_name]["dependencies"]  # type: ignore[index]
         assert isinstance(actual_dependencies, dict)
         for dependency_name, expected_value in expectations.items():
@@ -184,17 +208,24 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
                 raise ValueError(
                     f"{package_name} dependency mismatch for {dependency_name}: expected {expected_value!r}, got {actual_value!r}"
                 )
-
-    expected_surface_dependency = f">={core_version},<{_next_minor_upper_bound(core_version)}"
     for package_name in ("ssot-cli", "ssot-tui"):
         actual_dependencies = packages[package_name]["dependencies"]  # type: ignore[index]
         assert isinstance(actual_dependencies, dict)
         for dependency_name in ("ssot-contracts", "ssot-registry"):
             actual_value = actual_dependencies.get(dependency_name, "")
-            if expected_surface_dependency not in actual_value:
+            expected_value = dependency_specs[package_name][dependency_name]
+            if actual_value != expected_value:
                 raise ValueError(
-                    f"{package_name} must depend on a compatible {dependency_name} range containing {expected_surface_dependency!r}."
+                    f"{package_name} dependency mismatch for {dependency_name}: expected {expected_value!r}, got {actual_value!r}"
                 )
+
+    supported_python = metadata["supported_python"]
+    assert isinstance(supported_python, str)
+    for package_name, package in packages.items():
+        if package["requires_python"] != supported_python:
+            raise ValueError(
+                f"{package_name} requires-python mismatch: expected {supported_python!r}, got {package['requires_python']!r}"
+            )
 
     for package_name in targets:
         dependencies = packages[package_name]["dependencies"]  # type: ignore[index]

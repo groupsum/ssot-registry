@@ -16,6 +16,9 @@ ssot-registry = { workspace = true }
 ssot-cli = { workspace = true }
 ssot-tui = { workspace = true }
 
+[tool.ssot.release]
+supported-python = ">=3.10,<3.14"
+
 [dependency-groups]
 dev = [
   "pytest>=8.3",

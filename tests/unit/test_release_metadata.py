@@ -21,6 +21,14 @@ def _run_release_metadata(*args: str) -> subprocess.CompletedProcess[str]:
 
 
 class ReleaseMetadataTests(unittest.TestCase):
+    def test_show_reports_current_core_version(self) -> None:
+        payload = json.loads(_run_release_metadata("show").stdout)
+        core_versions = [
+            payload["packages"][name]["version"]
+            for name in ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-registry")
+        ]
+        self.assertEqual(len(set(core_versions)), 1)
+
     def test_show_reports_registry_package_root(self) -> None:
         payload = json.loads(_run_release_metadata("show").stdout)
         self.assertEqual(payload["packages"]["ssot-registry"]["project_path"], "pkgs/ssot-registry")
@@ -29,7 +37,8 @@ class ReleaseMetadataTests(unittest.TestCase):
     def test_validate_core_train_enforces_lockstep_group(self) -> None:
         payload = json.loads(_run_release_metadata("validate-train", "--train", "core").stdout)
         self.assertEqual(payload["targets"], ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-registry"])
-        self.assertEqual(payload["core_version"], "0.2.3")
+        show_payload = json.loads(_run_release_metadata("show").stdout)
+        self.assertEqual(payload["core_version"], show_payload["packages"]["ssot-contracts"]["version"])
 
     def test_all_train_resolves_to_canonical_release_order(self) -> None:
         payload = json.loads(_run_release_metadata("targets", "--train", "all").stdout)

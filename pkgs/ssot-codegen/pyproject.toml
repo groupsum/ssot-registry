@@ -7,12 +7,12 @@ name = "ssot-codegen"
 version = "0.2.4.dev1"
 description = "Generators for SSOT contract, CLI, and TUI artifacts."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = [
-  "ssot-contracts==0.2.3",
-  "ssot-views==0.2.3",
+  "ssot-contracts==0.2.4.dev1",
+  "ssot-views==0.2.4.dev1",
 ]
 keywords = ["ssot", "codegen", "generators", "contracts"]
 classifiers = [
