@@ -184,7 +184,7 @@ def migrate_v5_to_v6(
         adr.setdefault("superseded_by", [])
         adr.setdefault("status_notes", [])
     for spec in migrated.get("specs", []):
-        spec.setdefault("status", "accepted" if spec.get("origin") == "ssot-core" else "draft")
+        spec.setdefault("status", "draft")
         spec.setdefault("supersedes", [])
         spec.setdefault("superseded_by", [])
         spec.setdefault("status_notes", [])

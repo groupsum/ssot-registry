@@ -1,5 +1,8 @@
 # File tree
 
+## Status
+Draft
+
 ## Purpose and scope (maintainer-only)
 
 This spec defines the required `.ssot` filesystem layout that `ssot-registry` MUST initialize, sync, and validate.

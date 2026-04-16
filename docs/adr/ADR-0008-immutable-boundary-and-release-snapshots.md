@@ -1,7 +1,7 @@
 # ADR-0008: Immutable boundary and release snapshots
 
 ## Status
-Accepted
+Draft
 
 ## Decision
 Frozen boundaries and promoted/published releases emit immutable snapshots with hashes.

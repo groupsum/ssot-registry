@@ -1,5 +1,8 @@
 # File tree
 
+## Status
+Draft
+
 Your repository MUST maintain the following `.ssot` tree:
 
 ```text

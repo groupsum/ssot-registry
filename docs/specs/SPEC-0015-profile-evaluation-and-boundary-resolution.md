@@ -1,5 +1,8 @@
 # SPEC-0015: Profile evaluation and boundary resolution
 
+## Status
+Draft
+
 ## Overview
 
 Profiles are reusable bundles of features and/or nested profiles.

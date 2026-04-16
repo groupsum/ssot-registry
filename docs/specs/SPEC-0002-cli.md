@@ -1,5 +1,8 @@
 # CLI
 
+## Status
+Draft
+
 Public commands:
 - `ssot-registry init`
 - `ssot-registry validate`

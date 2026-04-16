@@ -1,5 +1,8 @@
 # Repository policy
 
+## Status
+Draft
+
 This file is seeded into your repository by `ssot-registry init` / `sync`.
 
 ## Scope

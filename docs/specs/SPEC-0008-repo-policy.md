@@ -1,5 +1,8 @@
 # Repository policy
 
+## Status
+Draft
+
 ## Purpose and scope (maintainer-only)
 
 This spec is maintainer-facing guidance for the `ssot-registry` repository itself.
