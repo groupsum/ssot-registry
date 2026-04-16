@@ -1,0 +1,701 @@
+{
+  "flags_by_path": {
+    "adr": [],
+    "adr create": [
+      "--body-file",
+      "--note",
+      "--number",
+      "--origin",
+      "--reserve-range",
+      "--slug",
+      "--status",
+      "--title"
+    ],
+    "adr delete": [
+      "--id"
+    ],
+    "adr get": [
+      "--id"
+    ],
+    "adr list": [],
+    "adr reserve": [],
+    "adr reserve create": [
+      "--end",
+      "--name",
+      "--start"
+    ],
+    "adr reserve list": [],
+    "adr set-status": [
+      "--id",
+      "--note",
+      "--status"
+    ],
+    "adr supersede": [
+      "--id",
+      "--note",
+      "--supersedes"
+    ],
+    "adr sync": [],
+    "adr update": [
+      "--body-file",
+      "--id",
+      "--note",
+      "--status",
+      "--title"
+    ],
+    "boundary": [],
+    "boundary add-feature": [
+      "--feature-ids",
+      "--id"
+    ],
+    "boundary add-profile": [
+      "--id",
+      "--profile-ids"
+    ],
+    "boundary create": [
+      "--feature-ids",
+      "--frozen",
+      "--id",
+      "--no-frozen",
+      "--profile-ids",
+      "--status",
+      "--title"
+    ],
+    "boundary delete": [
+      "--id"
+    ],
+    "boundary freeze": [
+      "--boundary-id"
+    ],
+    "boundary get": [
+      "--id"
+    ],
+    "boundary list": [],
+    "boundary remove-feature": [
+      "--feature-ids",
+      "--id"
+    ],
+    "boundary remove-profile": [
+      "--id",
+      "--profile-ids"
+    ],
+    "boundary update": [
+      "--frozen",
+      "--id",
+      "--no-frozen",
+      "--status",
+      "--title"
+    ],
+    "claim": [],
+    "claim create": [
+      "--description",
+      "--evidence-ids",
+      "--feature-ids",
+      "--id",
+      "--kind",
+      "--status",
+      "--test-ids",
+      "--tier",
+      "--title"
+    ],
+    "claim delete": [
+      "--id"
+    ],
+    "claim evaluate": [
+      "--claim-id"
+    ],
+    "claim get": [
+      "--id"
+    ],
+    "claim link": [
+      "--evidence-ids",
+      "--feature-ids",
+      "--id",
+      "--test-ids"
+    ],
+    "claim list": [],
+    "claim set-status": [
+      "--id",
+      "--status"
+    ],
+    "claim set-tier": [
+      "--id",
+      "--tier"
+    ],
+    "claim unlink": [
+      "--evidence-ids",
+      "--feature-ids",
+      "--id",
+      "--test-ids"
+    ],
+    "claim update": [
+      "--description",
+      "--id",
+      "--kind",
+      "--title"
+    ],
+    "evidence": [],
+    "evidence create": [
+      "--claim-ids",
+      "--evidence-path",
+      "--id",
+      "--kind",
+      "--status",
+      "--test-ids",
+      "--tier",
+      "--title"
+    ],
+    "evidence delete": [
+      "--id"
+    ],
+    "evidence get": [
+      "--id"
+    ],
+    "evidence link": [
+      "--claim-ids",
+      "--id",
+      "--test-ids"
+    ],
+    "evidence list": [],
+    "evidence unlink": [
+      "--claim-ids",
+      "--id",
+      "--test-ids"
+    ],
+    "evidence update": [
+      "--evidence-path",
+      "--id",
+      "--kind",
+      "--status",
+      "--tier",
+      "--title"
+    ],
+    "evidence verify": [
+      "--evidence-id"
+    ],
+    "feature": [],
+    "feature create": [
+      "--claim-ids",
+      "--claim-tier",
+      "--description",
+      "--horizon",
+      "--id",
+      "--implementation-status",
+      "--lifecycle-stage",
+      "--note",
+      "--replacement-feature-id",
+      "--requires",
+      "--slot",
+      "--target-lifecycle-stage",
+      "--test-ids",
+      "--title"
+    ],
+    "feature delete": [
+      "--id"
+    ],
+    "feature get": [
+      "--id"
+    ],
+    "feature lifecycle": [],
+    "feature lifecycle set": [
+      "--effective-release-id",
+      "--ids",
+      "--note",
+      "--replacement-feature-id",
+      "--stage"
+    ],
+    "feature link": [
+      "--claim-ids",
+      "--id",
+      "--requires",
+      "--test-ids"
+    ],
+    "feature list": [],
+    "feature plan": [
+      "--claim-tier",
+      "--horizon",
+      "--ids",
+      "--slot",
+      "--target-lifecycle-stage"
+    ],
+    "feature unlink": [
+      "--claim-ids",
+      "--id",
+      "--requires",
+      "--test-ids"
+    ],
+    "feature update": [
+      "--description",
+      "--id",
+      "--implementation-status",
+      "--title"
+    ],
+    "graph": [],
+    "graph export": [
+      "--format",
+      "--output"
+    ],
+    "init": [
+      "--force",
+      "--repo-id",
+      "--repo-name",
+      "--version"
+    ],
+    "issue": [],
+    "issue close": [
+      "--id"
+    ],
+    "issue create": [
+      "--claim-ids",
+      "--description",
+      "--evidence-ids",
+      "--feature-ids",
+      "--horizon",
+      "--id",
+      "--no-release-blocking",
+      "--release-blocking",
+      "--risk-ids",
+      "--severity",
+      "--slot",
+      "--status",
+      "--test-ids",
+      "--title"
+    ],
+    "issue delete": [
+      "--id"
+    ],
+    "issue get": [
+      "--id"
+    ],
+    "issue link": [
+      "--claim-ids",
+      "--evidence-ids",
+      "--feature-ids",
+      "--id",
+      "--risk-ids",
+      "--test-ids"
+    ],
+    "issue list": [],
+    "issue plan": [
+      "--horizon",
+      "--ids",
+      "--slot"
+    ],
+    "issue reopen": [
+      "--id"
+    ],
+    "issue unlink": [
+      "--claim-ids",
+      "--evidence-ids",
+      "--feature-ids",
+      "--id",
+      "--risk-ids",
+      "--test-ids"
+    ],
+    "issue update": [
+      "--description",
+      "--id",
+      "--no-release-blocking",
+      "--release-blocking",
+      "--severity",
+      "--title"
+    ],
+    "profile": [],
+    "profile create": [
+      "--allow-feature-override-tier",
+      "--claim-tier",
+      "--description",
+      "--feature-ids",
+      "--id",
+      "--kind",
+      "--no-allow-feature-override-tier",
+      "--profile-ids",
+      "--status",
+      "--title"
+    ],
+    "profile delete": [
+      "--id"
+    ],
+    "profile evaluate": [
+      "--profile-id"
+    ],
+    "profile get": [
+      "--id"
+    ],
+    "profile link": [
+      "--feature-ids",
+      "--id",
+      "--profile-ids"
+    ],
+    "profile list": [],
+    "profile unlink": [
+      "--feature-ids",
+      "--id",
+      "--profile-ids"
+    ],
+    "profile update": [
+      "--claim-tier",
+      "--description",
+      "--id",
+      "--kind",
+      "--status",
+      "--title"
+    ],
+    "profile verify": [
+      "--profile-id"
+    ],
+    "registry": [],
+    "registry export": [
+      "--format",
+      "--output"
+    ],
+    "release": [],
+    "release add-claim": [
+      "--claim-ids",
+      "--id"
+    ],
+    "release add-evidence": [
+      "--evidence-ids",
+      "--id"
+    ],
+    "release certify": [
+      "--release-id",
+      "--write-report"
+    ],
+    "release create": [
+      "--boundary-id",
+      "--claim-ids",
+      "--evidence-ids",
+      "--id",
+      "--status",
+      "--version"
+    ],
+    "release delete": [
+      "--id"
+    ],
+    "release get": [
+      "--id"
+    ],
+    "release list": [],
+    "release promote": [
+      "--release-id"
+    ],
+    "release publish": [
+      "--release-id"
+    ],
+    "release remove-claim": [
+      "--claim-ids",
+      "--id"
+    ],
+    "release remove-evidence": [
+      "--evidence-ids",
+      "--id"
+    ],
+    "release revoke": [
+      "--reason",
+      "--release-id"
+    ],
+    "release update": [
+      "--boundary-id",
+      "--id",
+      "--status",
+      "--version"
+    ],
+    "risk": [],
+    "risk accept": [
+      "--id"
+    ],
+    "risk create": [
+      "--claim-ids",
+      "--description",
+      "--evidence-ids",
+      "--feature-ids",
+      "--id",
+      "--issue-ids",
+      "--no-release-blocking",
+      "--release-blocking",
+      "--severity",
+      "--status",
+      "--test-ids",
+      "--title"
+    ],
+    "risk delete": [
+      "--id"
+    ],
+    "risk get": [
+      "--id"
+    ],
+    "risk link": [
+      "--claim-ids",
+      "--evidence-ids",
+      "--feature-ids",
+      "--id",
+      "--issue-ids",
+      "--test-ids"
+    ],
+    "risk list": [],
+    "risk mitigate": [
+      "--id"
+    ],
+    "risk retire": [
+      "--id"
+    ],
+    "risk unlink": [
+      "--claim-ids",
+      "--evidence-ids",
+      "--feature-ids",
+      "--id",
+      "--issue-ids",
+      "--test-ids"
+    ],
+    "risk update": [
+      "--description",
+      "--id",
+      "--no-release-blocking",
+      "--release-blocking",
+      "--severity",
+      "--title"
+    ],
+    "spec": [],
+    "spec create": [
+      "--body-file",
+      "--kind",
+      "--note",
+      "--number",
+      "--origin",
+      "--reserve-range",
+      "--slug",
+      "--status",
+      "--title"
+    ],
+    "spec delete": [
+      "--id"
+    ],
+    "spec get": [
+      "--id"
+    ],
+    "spec list": [],
+    "spec reserve": [],
+    "spec reserve create": [
+      "--end",
+      "--name",
+      "--start"
+    ],
+    "spec reserve list": [],
+    "spec set-status": [
+      "--id",
+      "--note",
+      "--status"
+    ],
+    "spec supersede": [
+      "--id",
+      "--note",
+      "--supersedes"
+    ],
+    "spec sync": [],
+    "spec update": [
+      "--body-file",
+      "--id",
+      "--kind",
+      "--note",
+      "--status",
+      "--title"
+    ],
+    "test": [],
+    "test create": [
+      "--claim-ids",
+      "--evidence-ids",
+      "--feature-ids",
+      "--id",
+      "--kind",
+      "--status",
+      "--test-path",
+      "--title"
+    ],
+    "test delete": [
+      "--id"
+    ],
+    "test get": [
+      "--id"
+    ],
+    "test link": [
+      "--claim-ids",
+      "--evidence-ids",
+      "--feature-ids",
+      "--id"
+    ],
+    "test list": [],
+    "test unlink": [
+      "--claim-ids",
+      "--evidence-ids",
+      "--feature-ids",
+      "--id"
+    ],
+    "test update": [
+      "--id",
+      "--kind",
+      "--status",
+      "--test-path",
+      "--title"
+    ],
+    "upgrade": [
+      "--sync-docs",
+      "--target-version",
+      "--write-report"
+    ],
+    "validate": [
+      "--write-report"
+    ]
+  },
+  "global_flags": [
+    "--output-file",
+    "--output-format"
+  ],
+  "subcommand_paths": [
+    "adr",
+    "adr create",
+    "adr delete",
+    "adr get",
+    "adr list",
+    "adr reserve",
+    "adr reserve create",
+    "adr reserve list",
+    "adr set-status",
+    "adr supersede",
+    "adr sync",
+    "adr update",
+    "boundary",
+    "boundary add-feature",
+    "boundary add-profile",
+    "boundary create",
+    "boundary delete",
+    "boundary freeze",
+    "boundary get",
+    "boundary list",
+    "boundary remove-feature",
+    "boundary remove-profile",
+    "boundary update",
+    "claim",
+    "claim create",
+    "claim delete",
+    "claim evaluate",
+    "claim get",
+    "claim link",
+    "claim list",
+    "claim set-status",
+    "claim set-tier",
+    "claim unlink",
+    "claim update",
+    "evidence",
+    "evidence create",
+    "evidence delete",
+    "evidence get",
+    "evidence link",
+    "evidence list",
+    "evidence unlink",
+    "evidence update",
+    "evidence verify",
+    "feature",
+    "feature create",
+    "feature delete",
+    "feature get",
+    "feature lifecycle",
+    "feature lifecycle set",
+    "feature link",
+    "feature list",
+    "feature plan",
+    "feature unlink",
+    "feature update",
+    "graph",
+    "graph export",
+    "init",
+    "issue",
+    "issue close",
+    "issue create",
+    "issue delete",
+    "issue get",
+    "issue link",
+    "issue list",
+    "issue plan",
+    "issue reopen",
+    "issue unlink",
+    "issue update",
+    "profile",
+    "profile create",
+    "profile delete",
+    "profile evaluate",
+    "profile get",
+    "profile link",
+    "profile list",
+    "profile unlink",
+    "profile update",
+    "profile verify",
+    "registry",
+    "registry export",
+    "release",
+    "release add-claim",
+    "release add-evidence",
+    "release certify",
+    "release create",
+    "release delete",
+    "release get",
+    "release list",
+    "release promote",
+    "release publish",
+    "release remove-claim",
+    "release remove-evidence",
+    "release revoke",
+    "release update",
+    "risk",
+    "risk accept",
+    "risk create",
+    "risk delete",
+    "risk get",
+    "risk link",
+    "risk list",
+    "risk mitigate",
+    "risk retire",
+    "risk unlink",
+    "risk update",
+    "spec",
+    "spec create",
+    "spec delete",
+    "spec get",
+    "spec list",
+    "spec reserve",
+    "spec reserve create",
+    "spec reserve list",
+    "spec set-status",
+    "spec supersede",
+    "spec sync",
+    "spec update",
+    "test",
+    "test create",
+    "test delete",
+    "test get",
+    "test link",
+    "test list",
+    "test unlink",
+    "test update",
+    "upgrade",
+    "validate"
+  ],
+  "top_level_commands": [
+    "adr",
+    "boundary",
+    "claim",
+    "evidence",
+    "feature",
+    "graph",
+    "init",
+    "issue",
+    "profile",
+    "registry",
+    "release",
+    "risk",
+    "spec",
+    "test",
+    "upgrade",
+    "validate"
+  ]
+}
