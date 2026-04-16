@@ -1,21 +1,15 @@
 name: Release
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      bump_type:
-        description: "Version bump type {major,minor,patch,finalize}"
+      ref_name:
+        description: "Branch or ref name to release from"
         required: true
-        default: patch
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
-          - finalize
+        type: string
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ inputs.ref_name }}
   cancel-in-progress: false
 
 permissions:
@@ -23,12 +17,13 @@ permissions:
 
 jobs:
   build-and-release:
-    name: Bump, build and publish GitHub Release
+    name: Build and publish GitHub Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.ref_name }}
           fetch-depth: 0
 
       - name: Setup uv
@@ -42,12 +37,9 @@ jobs:
       - name: Install package
         run: uv sync --python 3.12
 
-      - name: Auto-increment package version
-        id: bump_version
-        env:
-          BUMP_TYPE: ${{ inputs.bump_type }}
+      - name: Determine release version and tag
+        id: release_meta
         run: |
-          python scripts/bump_pyproject_version.py --bump "$BUMP_TYPE" pyproject.toml
           VERSION=$(python - <<'PY'
           from pathlib import Path
           import tomllib
@@ -56,21 +48,8 @@ jobs:
           print(pyproject['project']['version'])
           PY
           )
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Commit bumped version
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pyproject.toml
-          git commit -m "chore(release): bump version to ${{ steps.bump_version.outputs.version }}"
-          git push origin "HEAD:${{ github.ref_name }}"
-
-      - name: Determine release tag
-        id: release_meta
-        run: |
-          VERSION="${{ steps.bump_version.outputs.version }}"
           TAG="ssot-registry==${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Create git tag from pyproject version
@@ -105,9 +84,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release_meta.outputs.tag }}
-          target_commitish: ${{ github.ref_name }}
-          name: ssot-registry ${{ steps.bump_version.outputs.version }}
+          target_commitish: ${{ inputs.ref_name }}
+          name: ssot-registry ${{ steps.release_meta.outputs.version }}
           files: dist/*
           generate_release_notes: true
           draft: false
-          prerelease: ${{ contains(steps.bump_version.outputs.version, '.dev') }}
+          prerelease: ${{ contains(steps.release_meta.outputs.version, '.dev') }}
