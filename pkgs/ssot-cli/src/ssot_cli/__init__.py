@@ -1,0 +1,1 @@
+"""ssot-cli package."""
