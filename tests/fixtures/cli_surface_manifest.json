@@ -1,0 +1,78 @@
+{
+  "issue create": {
+    "flags": [
+      "--id",
+      "--title",
+      "--status",
+      "--severity",
+      "--description",
+      "--horizon",
+      "--slot",
+      "--feature-ids",
+      "--claim-ids",
+      "--test-ids",
+      "--evidence-ids",
+      "--risk-ids",
+      "--release-blocking",
+      "--no-release-blocking"
+    ]
+  },
+  "risk update": {
+    "flags": [
+      "--id",
+      "--title",
+      "--severity",
+      "--description",
+      "--release-blocking",
+      "--no-release-blocking"
+    ]
+  },
+  "spec reserve create": {
+    "flags": [
+      "--name",
+      "--start",
+      "--end"
+    ]
+  },
+  "spec create": {
+    "flags": [
+      "--title",
+      "--slug",
+      "--body-file",
+      "--number",
+      "--origin",
+      "--kind",
+      "--status",
+      "--note",
+      "--reserve-range"
+    ]
+  },
+  "adr reserve create": {
+    "flags": [
+      "--name",
+      "--start",
+      "--end"
+    ]
+  },
+  "adr create": {
+    "flags": [
+      "--title",
+      "--slug",
+      "--body-file",
+      "--number",
+      "--status",
+      "--note",
+      "--origin",
+      "--reserve-range"
+    ]
+  },
+  "feature lifecycle set": {
+    "flags": [
+      "--ids",
+      "--stage",
+      "--replacement-feature-id",
+      "--effective-release-id",
+      "--note"
+    ]
+  }
+}
