@@ -10,6 +10,10 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
+dependencies = [
+  "ssot-registry>=0.2.3",
+  "textual>=8.2.3",
+]
 
 [project.urls]
 Homepage = "https://github.com/groupsum/ssot-registry"

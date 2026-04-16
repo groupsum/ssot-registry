@@ -1,1 +1,1 @@
-"""ssot-tui package."""
+"""Textual TUI package for ssot-registry."""

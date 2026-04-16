@@ -64,16 +64,20 @@ Packaged SSOT documents are manifest-driven, immutable, and synced into reserved
 ## Install
 
 ```bash
-python -m pip install ssot-registry
+python -m pip install ssot-registry   # core library
+python -m pip install ssot-cli        # primary CLI distribution
+python -m pip install ssot-tui        # Textual TUI
 # or for local development
 python -m pip install -e .
 ```
 
-If you already have a repository initialized on schema `3`, upgrade it explicitly after installing the new package (using either `ssot` or `ssot-registry`):
+`ssot-registry` remains the canonical import package. CLI implementation now lives in `ssot-cli`, while `ssot-registry` keeps legacy `ssot` and `ssot-registry` entrypoints during the transition.
+
+If you already have a repository initialized on schema `3`, upgrade it explicitly after installing the new package:
 
 ```bash
 ssot upgrade . --sync-docs --write-report
-# equivalent
+# compatibility alias
 ssot-registry upgrade . --sync-docs --write-report
 ```
 
@@ -83,10 +87,11 @@ Please review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
 
 ## CLI quick reference
 
-You can invoke the CLI with either `ssot` or `ssot-registry`; both aliases run the same command set.
+Install `ssot-cli` for the primary command surface. You can invoke the CLI with `ssot`, and `ssot-registry` remains supported as a compatibility alias.
 
 ```bash
 ssot --help
+ssot-cli --help
 ssot-registry --help
 ssot-registry init --help
 ssot-registry validate --help
@@ -110,6 +115,7 @@ ssot-registry registry --help
 ## CLI conventions
 
 - Most commands accept `[path]` as an optional positional argument. Default is current directory (`.`).
+- Prefer `ssot ...` in new documentation and automation; `ssot-registry ...` is a compatibility alias.
 - IDs are normalized prefixed identifiers (for example: `feat:*`, `clm:*`, `tst:*`, `evd:*`, `iss:*`, `rsk:*`, `bnd:*`, `rel:*`).
 - Commands emit JSON by default; use `--output-format {json,csv,df,yaml,toml}` for alternate renderings.
 - Use `--output-file PATH` to save rendered command output to disk.

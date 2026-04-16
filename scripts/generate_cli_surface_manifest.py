@@ -9,51 +9,16 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = REPO_ROOT / "src"
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
+CLI_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-cli" / "src"
+for path in (CLI_SRC_DIR, SRC_DIR):
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
 
-from ssot_registry.cli import main as cli_main
+from ssot_cli.main import build_parser
 
 
 def _build_root_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        prog="ssot-registry",
-        description=(
-            "Portable single-source-of-truth registry for features, tests, claims, "
-            "evidence, issues, risks, boundaries, and releases."
-        ),
-    )
-    parser.add_argument(
-        "--output-format",
-        default="json",
-        choices=["json", "csv", "df", "yaml", "toml"],
-        help="CLI output format.",
-    )
-    parser.add_argument(
-        "--output-file",
-        default=None,
-        help="Optional file to write the rendered command output.",
-    )
-    subparsers = parser.add_subparsers(dest="command", required=True)
-
-    cli_main.register_init(subparsers)
-    cli_main.register_validate(subparsers)
-    cli_main.register_upgrade(subparsers)
-    cli_main.register_adr(subparsers)
-    cli_main.register_spec(subparsers)
-    cli_main.register_feature(subparsers)
-    cli_main.register_profile(subparsers)
-    cli_main.register_test(subparsers)
-    cli_main.register_issue(subparsers)
-    cli_main.register_claim(subparsers)
-    cli_main.register_evidence(subparsers)
-    cli_main.register_risk(subparsers)
-    cli_main.register_boundary(subparsers)
-    cli_main.register_release(subparsers)
-    cli_main.register_graph(subparsers)
-    cli_main.register_registry(subparsers)
-
-    return parser
+    return build_parser(prog="ssot-registry")
 
 
 def _option_flags(parser: argparse.ArgumentParser) -> list[str]:

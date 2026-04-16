@@ -1,1 +1,5 @@
-"""ssot-cli package."""
+"""CLI package for ssot-registry."""
+
+from .main import build_parser, main
+
+__all__ = ["build_parser", "main"]

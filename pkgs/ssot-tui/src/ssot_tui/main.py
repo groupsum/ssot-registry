@@ -1,9 +1,11 @@
-"""Entry point for the ssot-tui package."""
+from __future__ import annotations
+
+from .app import SsotTuiApp
 
 
 def main() -> int:
-    """Run the ssot-tui command."""
-    print("ssot-tui is not implemented yet.")
+    app = SsotTuiApp()
+    app.run()
     return 0
 
 

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ssot-cli"
 version = "0.1.0"
-description = "CLI wrapper package for ssot-registry."
+description = "Primary CLI distribution for ssot-registry."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -20,7 +20,8 @@ Repository = "https://github.com/groupsum/ssot-registry"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
 
 [project.scripts]
-ssot-cli = "ssot_registry.cli.main:main"
+ssot = "ssot_cli.main:main"
+ssot-cli = "ssot_cli.main:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
