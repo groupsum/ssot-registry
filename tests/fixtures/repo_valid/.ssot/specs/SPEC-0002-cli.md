@@ -3,6 +3,12 @@
 ## Status
 Draft
 
+Primary distribution: `ssot-cli`
+
+Compatibility aliases retained during migration:
+- `ssot`
+- `ssot-registry`
+
 Public commands:
 - `ssot-registry init`
 - `ssot-registry validate`

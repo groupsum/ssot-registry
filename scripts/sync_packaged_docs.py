@@ -40,14 +40,6 @@ def sync_mirror(source: Path, destination: Path, *, check: bool) -> list[str]:
             else:
                 destination_path.write_text(source_text, encoding="utf-8")
 
-    for name, destination_path in destination_files.items():
-        if name in source_files:
-            continue
-        if check:
-            failures.append(f"Unexpected mirrored doc: {destination_path.relative_to(PROJECT_ROOT).as_posix()}")
-        else:
-            destination_path.unlink()
-
     return failures
 
 
