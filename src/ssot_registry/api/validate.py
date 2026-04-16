@@ -36,7 +36,7 @@ def validate_registry_document(
     validate_coverage(index, failures, warnings)
     validate_tiers(index, failures)
     validate_lifecycle_semantics(registry, index, failures, warnings)
-    validate_filesystem_paths(index, Path(repo_root), failures, warnings)
+    validate_filesystem_paths(registry, index, Path(repo_root), failures, warnings)
 
     return build_validation_report(registry, Path(registry_path).as_posix(), sorted(set(failures)), sorted(set(warnings)))
 

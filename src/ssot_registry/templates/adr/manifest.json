@@ -202,5 +202,22 @@
     "status": "accepted",
     "supersedes": [],
     "superseded_by": []
+  },
+  {
+    "id": "adr:0013",
+    "number": 13,
+    "slug": "ssot-path-and-filename-length-limits",
+    "title": "Enforce max path and filename lengths under `.ssot`",
+    "filename": "ADR-0013-ssot-path-and-filename-length-limits.md",
+    "target_path": ".ssot/adr/ADR-0013-ssot-path-and-filename-length-limits.md",
+    "sha256": "21585261fa35e76f7f1cbb7715730bef80eb26abb6933960e5c1049a48509234",
+    "origin": "ssot-core",
+    "reservation_owner": "ssot-core",
+    "immutable": true,
+    "minimum_schema_version": 4,
+    "introduced_in": "0.2.1",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": []
   }
 ]
