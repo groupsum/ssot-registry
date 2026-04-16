@@ -4,12 +4,14 @@ import argparse
 
 from ssot_registry.api import (
     add_boundary_features,
+    add_boundary_profiles,
     create_entity,
     delete_entity,
     freeze_boundary,
     get_entity,
     list_entities,
     remove_boundary_features,
+    remove_boundary_profiles,
     update_entity,
 )
 from ssot_registry.cli.common import add_optional_bool_argument, add_path_argument, compact_dict
@@ -26,6 +28,7 @@ def register_boundary(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--status", choices=["draft", "active", "frozen", "retired"], default="draft")
     add_optional_bool_argument(create, "--frozen", default=False, help_text="Whether the boundary is frozen.")
     create.add_argument("--feature-ids", nargs="*", default=[])
+    create.add_argument("--profile-ids", nargs="*", default=[])
     create.set_defaults(func=run_create)
 
     get = boundary_sub.add_parser("get", help="Get one boundary.")
@@ -62,6 +65,18 @@ def register_boundary(subparsers: argparse._SubParsersAction) -> None:
     remove_feature.add_argument("--feature-ids", nargs="+", required=True)
     remove_feature.set_defaults(func=run_remove_feature)
 
+    add_profile = boundary_sub.add_parser("add-profile", help="Add profile ids to a boundary.")
+    add_path_argument(add_profile)
+    add_profile.add_argument("--id", required=True)
+    add_profile.add_argument("--profile-ids", nargs="+", required=True)
+    add_profile.set_defaults(func=run_add_profile)
+
+    remove_profile = boundary_sub.add_parser("remove-profile", help="Remove profile ids from a boundary.")
+    add_path_argument(remove_profile)
+    remove_profile.add_argument("--id", required=True)
+    remove_profile.add_argument("--profile-ids", nargs="+", required=True)
+    remove_profile.set_defaults(func=run_remove_profile)
+
     freeze = boundary_sub.add_parser("freeze", help="Freeze a boundary and emit a snapshot.")
     add_path_argument(freeze)
     freeze.add_argument("--boundary-id", default=None, help="Boundary id. Defaults to the active boundary.")
@@ -75,6 +90,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "status": args.status,
         "frozen": args.frozen,
         "feature_ids": args.feature_ids,
+        "profile_ids": args.profile_ids,
     }
     return create_entity(args.path, "boundaries", row)
 
@@ -104,6 +120,14 @@ def run_add_feature(args: argparse.Namespace) -> dict[str, object]:
 
 def run_remove_feature(args: argparse.Namespace) -> dict[str, object]:
     return remove_boundary_features(args.path, args.id, args.feature_ids)
+
+
+def run_add_profile(args: argparse.Namespace) -> dict[str, object]:
+    return add_boundary_profiles(args.path, args.id, args.profile_ids)
+
+
+def run_remove_profile(args: argparse.Namespace) -> dict[str, object]:
+    return remove_boundary_profiles(args.path, args.id, args.profile_ids)
 
 
 def run_freeze(args: argparse.Namespace) -> dict[str, object]:

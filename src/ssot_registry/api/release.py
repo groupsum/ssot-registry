@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from ssot_registry.api.profile_resolution import resolve_boundary_feature_ids
 from ssot_registry.guards.certification import evaluate_release_certification_guard
 from ssot_registry.guards.promotion import evaluate_release_promotion_guard
 from ssot_registry.guards.publication import evaluate_release_publication_guard
@@ -96,7 +97,8 @@ def promote_release(path: str | Path, release_id: str | None = None) -> dict[str
     save_registry(registry_path, registry)
 
     release_claims = [claim_lookup[claim_id] for claim_id in release.get("claim_ids", []) if claim_id in claim_lookup]
-    boundary_features = [feature_lookup[feature_id] for feature_id in boundary.get("feature_ids", []) if feature_id in feature_lookup]
+    boundary_feature_ids = resolve_boundary_feature_ids(boundary, {"features": feature_lookup, "profiles": {row["id"]: row for row in registry.get("profiles", [])}})
+    boundary_features = [feature_lookup[feature_id] for feature_id in boundary_feature_ids if feature_id in feature_lookup]
     release_test_ids = sorted({test_id for claim in release_claims for test_id in claim.get("test_ids", []) if test_id in test_lookup})
     release_evidence_ids = sorted(
         set(release.get("evidence_ids", [])) | {evidence_id for claim in release_claims for evidence_id in claim.get("evidence_ids", [])}

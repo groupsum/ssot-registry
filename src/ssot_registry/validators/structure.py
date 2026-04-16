@@ -12,6 +12,9 @@ from ssot_registry.model.enums import (
     FEATURE_LIFECYCLE_STAGES,
     ISSUE_STATUSES,
     PLANNING_HORIZONS,
+    PROFILE_EVALUATION_MODES,
+    PROFILE_KINDS,
+    PROFILE_STATUSES,
     RELEASE_STATUSES,
     REQUIRED_ENTITY_FIELDS,
     REQUIRED_TOP_LEVEL_KEYS,
@@ -78,6 +81,37 @@ def _validate_feature(feature: dict[str, Any], failures: list[str]) -> None:
     if requires is not None and not _list_of_strings(requires):
         failures.append(f"features.{entity_id}.requires must be a list of strings when present")
 
+
+
+def _validate_profile(profile: dict[str, Any], failures: list[str]) -> None:
+    entity_id = profile.get("id", "<missing>")
+    if profile.get("status") not in PROFILE_STATUSES:
+        failures.append(f"profiles.{entity_id}.status must be one of {sorted(PROFILE_STATUSES)}")
+    if profile.get("kind") not in PROFILE_KINDS:
+        failures.append(f"profiles.{entity_id}.kind must be one of {sorted(PROFILE_KINDS)}")
+    if not isinstance(profile.get("description"), str):
+        failures.append(f"profiles.{entity_id}.description must be a string")
+    if not _list_of_strings(profile.get("feature_ids")):
+        failures.append(f"profiles.{entity_id}.feature_ids must be a list of strings")
+    if not _list_of_strings(profile.get("profile_ids")):
+        failures.append(f"profiles.{entity_id}.profile_ids must be a list of strings")
+
+    claim_tier = profile.get("claim_tier")
+    if claim_tier is not None and claim_tier not in CLAIM_TIERS:
+        failures.append(f"profiles.{entity_id}.claim_tier must be null or one of {sorted(CLAIM_TIERS)}")
+
+    evaluation = profile.get("evaluation")
+    if not isinstance(evaluation, dict):
+        failures.append(f"profiles.{entity_id}.evaluation must be an object")
+    else:
+        if evaluation.get("mode") not in PROFILE_EVALUATION_MODES:
+            failures.append(
+                f"profiles.{entity_id}.evaluation.mode must be one of {sorted(PROFILE_EVALUATION_MODES)}"
+            )
+        if not isinstance(evaluation.get("allow_feature_override_tier"), bool):
+            failures.append(
+                f"profiles.{entity_id}.evaluation.allow_feature_override_tier must be a boolean"
+            )
 
 def _validate_test(test: dict[str, Any], failures: list[str]) -> None:
     entity_id = test.get("id", "<missing>")
@@ -172,6 +206,8 @@ def _validate_boundary(boundary: dict[str, Any], failures: list[str]) -> None:
         failures.append(f"boundaries.{entity_id}.frozen must be a boolean")
     if not _list_of_strings(boundary.get("feature_ids")):
         failures.append(f"boundaries.{entity_id}.feature_ids must be a list of strings")
+    if not _list_of_strings(boundary.get("profile_ids", [])):
+        failures.append(f"boundaries.{entity_id}.profile_ids must be a list of strings")
 
 
 def _validate_release(release: dict[str, Any], failures: list[str]) -> None:
@@ -243,6 +279,7 @@ def validate_structure(registry: dict[str, Any], index: dict[str, dict[str, dict
 
     validators = {
         "features": _validate_feature,
+        "profiles": _validate_profile,
         "tests": _validate_test,
         "claims": _validate_claim,
         "evidence": _validate_evidence,

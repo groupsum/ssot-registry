@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from ssot_registry.api.profile_eval import evaluate_profile
+from ssot_registry.api.profile_resolution import resolve_boundary_feature_ids
 from ssot_registry.guards.feature_requirements import evaluate_required_feature_failures
+from ssot_registry.guards.profile_requirements import evaluate_required_profile_failures
 
 
 IN_SCOPE_HORIZONS = {"current", "explicit"}
@@ -32,6 +35,22 @@ def validate_coverage(index: dict[str, dict[str, dict[str, object]]], failures: 
                 else:
                     warnings.extend(non_cycle_failures)
 
+    for profile_id, profile in index["profiles"].items():
+        profile_failures = evaluate_required_profile_failures(profile_id, index)
+        cycle_failures = [failure for failure in profile_failures if "cycle detected" in failure.lower()]
+        if cycle_failures:
+            failures.extend(cycle_failures)
+        if not profile.get("feature_ids") and not profile.get("profile_ids"):
+            failures.append(f"profiles.{profile_id} must include at least one feature_id or profile_id")
+        result = evaluate_profile(profile, index, {})
+        structural_failures = [
+            failure for failure in result["failures"] if "cycle" in failure.lower() or "missing" in failure.lower()
+        ]
+        if structural_failures:
+            failures.extend(structural_failures)
+        if profile.get("status") == "active" and not result["passed"]:
+            warnings.append(f"profiles.{profile_id} is active but not passing")
+
     for test_id, row in index["tests"].items():
         if not row.get("feature_ids"):
             warnings.append(f"tests.{test_id} has no linked features")
@@ -52,7 +71,7 @@ def validate_coverage(index: dict[str, dict[str, dict[str, object]]], failures: 
         boundary = index["boundaries"].get(release.get("boundary_id"))
         if boundary is None:
             continue
-        for feature_id in boundary.get("feature_ids", []):
+        for feature_id in resolve_boundary_feature_ids(boundary, index):
             if not any(
                 claim_id in index["claims"] and feature_id in index["claims"][claim_id].get("feature_ids", [])
                 for claim_id in release.get("claim_ids", [])

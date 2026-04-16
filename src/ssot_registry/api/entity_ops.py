@@ -13,6 +13,7 @@ from .validate import validate_registry_document
 
 SECTION_LABELS = {
     "features": "feature",
+    "profiles": "profile",
     "tests": "test",
     "claims": "claim",
     "evidence": "evidence",
@@ -44,7 +45,8 @@ LINKABLE_FIELDS = {
     "evidence": {"claim_ids", "test_ids"},
     "issues": {"feature_ids", "claim_ids", "test_ids", "evidence_ids", "risk_ids"},
     "risks": {"feature_ids", "claim_ids", "test_ids", "evidence_ids", "issue_ids"},
-    "boundaries": {"feature_ids"},
+    "profiles": {"feature_ids", "profile_ids"},
+    "boundaries": {"feature_ids", "profile_ids"},
     "releases": {"claim_ids", "evidence_ids"},
 }
 
@@ -324,3 +326,11 @@ def add_release_evidence(path: str | Path, release_id: str, evidence_ids: list[s
 
 def remove_release_evidence(path: str | Path, release_id: str, evidence_ids: list[str]) -> dict[str, Any]:
     return unlink_entities(path, "releases", release_id, {"evidence_ids": evidence_ids})
+
+
+def add_boundary_profiles(path: str | Path, boundary_id: str, profile_ids: list[str]) -> dict[str, Any]:
+    return link_entities(path, "boundaries", boundary_id, {"profile_ids": profile_ids})
+
+
+def remove_boundary_profiles(path: str | Path, boundary_id: str, profile_ids: list[str]) -> dict[str, Any]:
+    return unlink_entities(path, "boundaries", boundary_id, {"profile_ids": profile_ids})

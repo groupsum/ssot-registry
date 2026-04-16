@@ -7,6 +7,7 @@ from ssot_registry.model.enums import REF_FIELD_TARGETS
 
 SINGULAR = {
     "features": "feature",
+    "profiles": "profile",
     "tests": "test",
     "claims": "claim",
     "evidence": "evidence",

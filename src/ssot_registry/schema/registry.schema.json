@@ -12,6 +12,7 @@
     "guard_policies",
     "document_id_reservations",
     "features",
+    "profiles",
     "tests",
     "claims",
     "evidence",
@@ -24,7 +25,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 4
+      "const": 5
     },
     "repo": {
       "$ref": "#/$defs/repo"
@@ -48,6 +49,12 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/feature"
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/profile"
       }
     },
     "tests": {
@@ -754,7 +761,8 @@
         "title",
         "status",
         "frozen",
-        "feature_ids"
+        "feature_ids",
+        "profile_ids"
       ],
       "properties": {
         "id": {
@@ -776,6 +784,9 @@
           "type": "boolean"
         },
         "feature_ids": {
+          "$ref": "#/$defs/stringList"
+        },
+        "profile_ids": {
           "$ref": "#/$defs/stringList"
         }
       },
@@ -959,6 +970,85 @@
         }
       },
       "additionalProperties": true
+    },
+    "profile": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "description",
+        "status",
+        "kind",
+        "feature_ids",
+        "profile_ids",
+        "claim_tier",
+        "evaluation"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "active",
+            "retired"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "capability",
+            "certification",
+            "deployment",
+            "interoperability"
+          ]
+        },
+        "feature_ids": {
+          "$ref": "#/$defs/stringList"
+        },
+        "profile_ids": {
+          "$ref": "#/$defs/stringList"
+        },
+        "claim_tier": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "T0",
+            "T1",
+            "T2",
+            "T3",
+            "T4",
+            null
+          ]
+        },
+        "evaluation": {
+          "type": "object",
+          "required": [
+            "mode",
+            "allow_feature_override_tier"
+          ],
+          "properties": {
+            "mode": {
+              "enum": [
+                "all_features_must_pass"
+              ]
+            },
+            "allow_feature_override_tier": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

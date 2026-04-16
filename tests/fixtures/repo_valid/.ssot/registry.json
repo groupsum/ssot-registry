@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "repo": {
     "id": "repo:advanced-example",
     "name": "advanced-example",
@@ -75,6 +75,7 @@
       "requires": []
     }
   ],
+  "profiles": [],
   "tests": [
     {
       "id": "tst:pytest.rfc.9000.connection-migration",
@@ -138,7 +139,8 @@
       "frozen": true,
       "feature_ids": [
         "feat:rfc.9000.connection-migration"
-      ]
+      ],
+      "profile_ids": []
     }
   ],
   "releases": [

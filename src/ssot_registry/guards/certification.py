@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from ssot_registry.api.profile_eval import evaluate_profile
+from ssot_registry.api.profile_resolution import resolve_boundary_feature_ids
 from ssot_registry.guards.claim_closure import evaluate_claim_guard
 from ssot_registry.model.enums import CLAIM_TIER_RANK
 
@@ -21,6 +23,7 @@ def evaluate_release_certification_guard(
             "warnings": [],
             "claims": [],
             "evidence": [],
+            "profiles": [],
         }
 
     boundary = index["boundaries"].get(release["boundary_id"])
@@ -33,6 +36,7 @@ def evaluate_release_certification_guard(
             "warnings": warnings,
             "claims": [],
             "evidence": [],
+            "profiles": [],
         }
 
     certification_policy = registry.get("guard_policies", {}).get("certification", {})
@@ -42,20 +46,19 @@ def evaluate_release_certification_guard(
                 f"Release {release_id} must be draft or candidate before certification; current status is {release.get('status')}"
             )
 
-    require_frozen_boundary = bool(certification_policy.get("require_frozen_boundary", True))
-    if require_frozen_boundary and not boundary.get("frozen", False):
+    if bool(certification_policy.get("require_frozen_boundary", True)) and not boundary.get("frozen", False):
         failures.append(f"Boundary {boundary['id']} is not frozen")
 
-    boundary_feature_ids = boundary.get("feature_ids", [])
+    boundary_feature_ids = resolve_boundary_feature_ids(boundary, index)
+    boundary_profile_ids = [profile_id for profile_id in boundary.get("profile_ids", []) if profile_id in index["profiles"]]
+
     if certification_policy.get("require_boundary_features_current_or_explicit", True):
         for feature_id in boundary_feature_ids:
             feature = index["features"].get(feature_id)
             if feature is None:
                 continue
             if feature.get("plan", {}).get("horizon") not in {"current", "explicit"}:
-                failures.append(
-                    f"Boundary {boundary['id']} contains feature {feature_id} that is not current or explicit"
-                )
+                failures.append(f"Boundary {boundary['id']} contains feature {feature_id} that is not current or explicit")
 
     release_claims = [index["claims"][claim_id] for claim_id in release.get("claim_ids", []) if claim_id in index["claims"]]
     claim_reports = [evaluate_claim_guard(claim, index, registry.get("guard_policies", {})) for claim in release_claims]
@@ -64,8 +67,7 @@ def evaluate_release_certification_guard(
 
     if certification_policy.get("require_release_claim_coverage_for_boundary_features", True):
         for feature_id in boundary_feature_ids:
-            covering_claims = [claim for claim in release_claims if feature_id in claim.get("feature_ids", [])]
-            if not covering_claims:
+            if not [claim for claim in release_claims if feature_id in claim.get("feature_ids", [])]:
                 failures.append(f"Release {release_id} has no claim coverage for boundary feature {feature_id}")
 
     if certification_policy.get("require_feature_target_tiers_met", True):
@@ -77,9 +79,7 @@ def evaluate_release_certification_guard(
             if target_tier is None:
                 continue
             covering_claims = [claim for claim in release_claims if feature_id in claim.get("feature_ids", [])]
-            if not covering_claims:
-                continue
-            if not any(CLAIM_TIER_RANK[claim["tier"]] >= CLAIM_TIER_RANK[target_tier] for claim in covering_claims):
+            if covering_claims and not any(CLAIM_TIER_RANK[claim["tier"]] >= CLAIM_TIER_RANK[target_tier] for claim in covering_claims):
                 failures.append(
                     f"Feature {feature_id} targets {target_tier}, but release {release_id} has no covering claim at or above that tier"
                 )
@@ -99,30 +99,25 @@ def evaluate_release_certification_guard(
             evidence_failures.append(f"Evidence {evidence_id} status is {evidence.get('status')}, expected passed")
         if not all(test.get("status") == "passing" for test in linked_tests):
             evidence_failures.append(f"Evidence {evidence_id} has non-passing linked tests")
-        evidence_reports.append(
-            {
-                "evidence_id": evidence_id,
-                "passed": not evidence_failures,
-                "failures": evidence_failures,
-            }
-        )
+        evidence_reports.append({"evidence_id": evidence_id, "passed": not evidence_failures, "failures": evidence_failures})
         failures.extend(evidence_failures)
 
     if certification_policy.get("forbid_open_release_blocking_issues", True):
         for issue in index["issues"].values():
-            if not issue.get("release_blocking"):
-                continue
-            if issue.get("status") in {"open", "in_progress", "blocked"} and (
-                set(issue.get("feature_ids", [])) & set(boundary_feature_ids)
-            ):
-                failures.append(f"Release-blocking issue remains open for boundary scope: {issue['id']}")
+            if issue.get("release_blocking") and issue.get("status") in {"open", "in_progress", "blocked"}:
+                if set(issue.get("feature_ids", [])) & set(boundary_feature_ids):
+                    failures.append(f"Release-blocking issue remains open for boundary scope: {issue['id']}")
 
     if certification_policy.get("forbid_active_release_blocking_risks", True):
         for risk in index["risks"].values():
-            if not risk.get("release_blocking"):
-                continue
-            if risk.get("status") == "active" and (set(risk.get("feature_ids", [])) & set(boundary_feature_ids)):
-                failures.append(f"Release-blocking risk remains active for boundary scope: {risk['id']}")
+            if risk.get("release_blocking") and risk.get("status") == "active":
+                if set(risk.get("feature_ids", [])) & set(boundary_feature_ids):
+                    failures.append(f"Release-blocking risk remains active for boundary scope: {risk['id']}")
+
+    profile_reports = [
+        evaluate_profile(index["profiles"][profile_id], index, registry.get("guard_policies", {}))
+        for profile_id in boundary_profile_ids
+    ]
 
     return {
         "release_id": release_id,
@@ -131,9 +126,11 @@ def evaluate_release_certification_guard(
         "warnings": warnings,
         "claims": claim_reports,
         "evidence": evidence_reports,
+        "profiles": profile_reports,
         "summary": {
             "boundary_id": boundary["id"],
             "boundary_feature_count": len(boundary_feature_ids),
+            "boundary_profile_count": len(boundary_profile_ids),
             "release_claim_count": len(release_claims),
             "release_evidence_count": len(evidence_reports),
         },

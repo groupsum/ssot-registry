@@ -13,6 +13,7 @@ from .documents import (
 )
 from .entity_ops import (
     add_boundary_features,
+    add_boundary_profiles,
     add_release_claims,
     add_release_evidence,
     create_entity,
@@ -21,6 +22,7 @@ from .entity_ops import (
     link_entities,
     list_entities,
     remove_boundary_features,
+    remove_boundary_profiles,
     remove_release_claims,
     remove_release_evidence,
     set_claim_status,
@@ -36,6 +38,7 @@ from .init import initialize_repo
 from .lifecycle import set_feature_lifecycle
 from .load import load_registry
 from .plan import plan_features, plan_issues
+from .profile_eval import evaluate_feature_passing, evaluate_profile, evaluate_profiles
 from .registry import export_registry
 from .release import certify_release, promote_release, publish_release, revoke_release
 from .save import save_registry
@@ -68,13 +71,18 @@ __all__ = [
     "set_issue_status",
     "set_risk_status",
     "add_boundary_features",
+    "add_boundary_profiles",
     "remove_boundary_features",
+    "remove_boundary_profiles",
     "add_release_claims",
     "remove_release_claims",
     "add_release_evidence",
     "remove_release_evidence",
     "plan_features",
     "plan_issues",
+    "evaluate_feature_passing",
+    "evaluate_profile",
+    "evaluate_profiles",
     "set_feature_lifecycle",
     "evaluate_claims",
     "verify_evidence_rows",
