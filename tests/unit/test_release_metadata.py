@@ -31,6 +31,13 @@ class ReleaseMetadataTests(unittest.TestCase):
         self.assertEqual(payload["targets"], ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-registry"])
         self.assertEqual(payload["core_version"], "0.2.3")
 
+    def test_all_train_resolves_to_canonical_release_order(self) -> None:
+        payload = json.loads(_run_release_metadata("targets", "--train", "all").stdout)
+        self.assertEqual(
+            payload,
+            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-registry", "ssot-cli", "ssot-tui"],
+        )
+
     def test_selected_targets_follow_release_order(self) -> None:
         payload = json.loads(
             _run_release_metadata("targets", "--train", "selected", "--packages", "ssot-contracts,ssot-registry").stdout

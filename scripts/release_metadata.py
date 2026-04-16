@@ -24,7 +24,7 @@ RELEASE_ORDER = (
     "ssot-cli",
     "ssot-tui",
 )
-RELEASE_TRAINS = ("core", *RELEASE_ORDER, "selected")
+RELEASE_TRAINS = ("core", "all", *RELEASE_ORDER, "selected")
 
 
 @dataclass(frozen=True)
@@ -124,6 +124,8 @@ def collect_metadata() -> dict[str, object]:
 def resolve_targets(train: str, selected_packages: str | None) -> list[str]:
     if train == "core":
         return list(CORE_PACKAGES)
+    if train == "all":
+        return list(RELEASE_ORDER)
     if train in PACKAGE_INFOS:
         return [train]
     if train != "selected":

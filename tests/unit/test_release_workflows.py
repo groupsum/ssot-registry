@@ -35,6 +35,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
     def test_release_workflow_targets_package_publish_wrappers(self) -> None:
         workflow = _read(".github/workflows/release.yml")
         self.assertIn("release_train", workflow)
+        self.assertIn("- all", workflow)
         self.assertIn("- ssot-contracts", workflow)
         self.assertIn("- ssot-views", workflow)
         self.assertIn("- ssot-codegen", workflow)
@@ -73,6 +74,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
 
     def test_prepare_release_uses_package_aware_bump_script(self) -> None:
         workflow = _read(".github/workflows/prepare-release.yml")
+        self.assertIn("- all", workflow)
         self.assertIn("scripts/bump_release_train.py", workflow)
         self.assertNotIn("python scripts/bump_pyproject_version.py --bump \"$BUMP_TYPE\" pyproject.toml", workflow)
 
