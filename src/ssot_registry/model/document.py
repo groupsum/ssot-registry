@@ -4,7 +4,7 @@ import re
 from importlib import resources
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 
 DOCUMENT_KINDS = ("adr", "spec")
@@ -33,7 +33,18 @@ DOCUMENT_RESERVATION_KEYS = {
     "spec": "spec",
 }
 DOCUMENT_ORIGINS = {"ssot-core", "repo-local"}
-ADR_STATUSES = {"proposed", "accepted", "superseded", "retired"}
+DOCUMENT_STATUSES = ("draft", "in_review", "accepted", "rejected", "superseded", "withdrawn", "retired")
+CREATE_ALLOWED_STATUSES = ("draft", "in_review", "accepted", "rejected", "withdrawn")
+TERMINAL_STATUSES = ("rejected", "withdrawn", "superseded", "retired")
+TRANSITION_RULES = {
+    "draft": {"in_review", "accepted", "rejected", "withdrawn"},
+    "in_review": {"draft", "accepted", "rejected", "withdrawn"},
+    "accepted": {"superseded", "retired"},
+    "rejected": set(),
+    "withdrawn": set(),
+    "superseded": set(),
+    "retired": set(),
+}
 SPEC_KINDS = {"normative", "operational", "repo-local"}
 DOCUMENT_SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 DOCUMENT_FILENAME_PATTERNS = {
@@ -56,6 +67,14 @@ DEFAULT_REPO_LOCAL_RANGE = {
     "deletable": True,
     "assignable_by_repo": True,
 }
+
+
+class StatusNote(TypedDict, total=False):
+    status: str
+    note: str
+    at: str
+    actor: str
+    reason: str
 
 
 def format_document_number(number: int) -> str:

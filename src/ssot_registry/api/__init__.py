@@ -7,8 +7,10 @@ from .documents import (
     get_document,
     list_document_reservations,
     list_documents,
+    set_document_status,
     sync_all_documents,
     sync_documents,
+    supersede_documents,
     update_document,
 )
 from .entity_ops import (
@@ -54,6 +56,8 @@ __all__ = [
     "get_document",
     "list_documents",
     "update_document",
+    "set_document_status",
+    "supersede_documents",
     "delete_document",
     "sync_documents",
     "sync_all_documents",

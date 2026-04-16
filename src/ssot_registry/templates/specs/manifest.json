@@ -12,7 +12,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "normative"
+    "kind": "normative",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0002",
@@ -27,7 +31,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "operational"
+    "kind": "operational",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0003",
@@ -42,7 +50,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "normative"
+    "kind": "normative",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0004",
@@ -57,7 +69,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "normative"
+    "kind": "normative",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0005",
@@ -72,7 +88,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "normative"
+    "kind": "normative",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0006",
@@ -87,7 +107,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "normative"
+    "kind": "normative",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0007",
@@ -102,7 +126,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "operational"
+    "kind": "operational",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0008",
@@ -111,13 +139,17 @@
     "title": "Repository policy",
     "filename": "SPEC-0008-repo-policy.md",
     "target_path": ".ssot/specs/SPEC-0008-repo-policy.md",
-    "sha256": "6e80832275da7d4c3609cbef3e39c1128bd14d559cdf315f78982dcc8f91edbf",
+    "sha256": "50a3826c4cf6599b81e0eecd57a4e987e235c62c7e71c61929af79e7dceb5786",
     "origin": "ssot-core",
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "operational"
+    "kind": "operational",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0009",
@@ -132,7 +164,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "normative"
+    "kind": "normative",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0010",
@@ -147,7 +183,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "normative"
+    "kind": "normative",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0011",
@@ -156,13 +196,17 @@
     "title": "File tree",
     "filename": "SPEC-0011-file-tree.md",
     "target_path": ".ssot/specs/SPEC-0011-file-tree.md",
-    "sha256": "739d774289548e1d10e9c20dd88d24e774b1ddfd68cdc16bf8424481ef4b705b",
+    "sha256": "939f282d4856a0e8755a52939ea0d70a35cc64f2549034302a7e998d16bfd7ec",
     "origin": "ssot-core",
     "reservation_owner": "ssot-core",
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "normative"
+    "kind": "normative",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0012",
@@ -177,7 +221,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "normative"
+    "kind": "normative",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0013",
@@ -192,7 +240,11 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "operational"
+    "kind": "operational",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   },
   {
     "id": "spc:0014",
@@ -207,6 +259,10 @@
     "immutable": true,
     "minimum_schema_version": 4,
     "introduced_in": "0.2.1",
-    "kind": "normative"
+    "kind": "normative",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   }
 ]

@@ -11,3 +11,13 @@ __all__ = [
     "evaluate_release_publication_guard",
     "evaluate_feature_lifecycle_transition_guard",
 ]
+from .document_lifecycle import apply_status_transition, assert_mutable_document, validate_create_status, validate_transition
+from .document_supersession import apply_supersession
+
+__all__ = [
+    "apply_status_transition",
+    "assert_mutable_document",
+    "validate_create_status",
+    "validate_transition",
+    "apply_supersession",
+]

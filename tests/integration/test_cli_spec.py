@@ -38,6 +38,32 @@ class CliSpecTests(unittest.TestCase):
             update = run_cli("spec", "update", str(repo), "--id", "spc:1000", "--title", "Local operating spec updated")
             self.assertEqual(update.returncode, 0, update.stderr)
             self.assertEqual(json.loads(update.stdout)["document"]["title"], "Local operating spec updated")
+            set_status = run_cli("spec", "set-status", str(repo), "--id", "spc:1000", "--status", "in_review", "--note", "review")
+            self.assertEqual(set_status.returncode, 0, set_status.stderr)
+            self.assertEqual(json.loads(set_status.stdout)["document"]["status"], "in_review")
+
+            body2 = repo / "spec-body-2.md"
+            body2.write_text("Local replacement spec body.\n", encoding="utf-8")
+            create2 = run_cli(
+                "spec",
+                "create",
+                str(repo),
+                "--title",
+                "Replacement spec",
+                "--slug",
+                "replacement-spec",
+                "--body-file",
+                str(body2),
+                "--kind",
+                "operational",
+                "--status",
+                "accepted",
+            )
+            self.assertEqual(create2.returncode, 0, create2.stderr)
+            supersede = run_cli("spec", "supersede", str(repo), "--id", "spc:1001", "--supersedes", "spc:1000", "--note", "newer")
+            self.assertEqual(supersede.returncode, 0, supersede.stderr)
+            superseded_doc = json.loads(run_cli("spec", "get", str(repo), "--id", "spc:1000").stdout)["document"]
+            self.assertEqual(superseded_doc["status"], "superseded")
 
             delete_ssot = run_cli("spec", "delete", str(repo), "--id", "spc:0001")
             self.assertEqual(delete_ssot.returncode, 1)

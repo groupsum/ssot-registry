@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "repo": {
     "id": "repo:advanced-example",
     "name": "advanced-example",
@@ -198,7 +198,8 @@
       "content_sha256": "9f5bb7d2ee345837ed30579c9e494a239f470855776ba5dc10e1e5285ec75997",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0002",
@@ -213,7 +214,8 @@
       "content_sha256": "c088e2e19d94b2751b170bff365d71361ee505e67c6467718b9dba9819fa98cb",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0003",
@@ -228,7 +230,8 @@
       "content_sha256": "5f9facd077de1b597cd92f881be2f24e7d2a84c53fbafadaa8d90e5a6fd43d36",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0004",
@@ -243,7 +246,8 @@
       "content_sha256": "9070a9343059aeb88c9c814eb6b09779259655b64db1c72c8dc87b67a5e0208b",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0005",
@@ -258,7 +262,8 @@
       "content_sha256": "1b3ac2ec39ede1aa4f393d70ba284d76e5fb8be43aaf76bed3461b5c0d8bf790",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0006",
@@ -273,7 +278,8 @@
       "content_sha256": "77b436414b489d834b4cfc3c9e73d3109253c1e69e4c5177773ba1b2e1a049b9",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0007",
@@ -288,7 +294,8 @@
       "content_sha256": "1d9827f1d9ac80e21c9eb01860525546a12414b6d4dd59f85e2d1bfe3d9386f2",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0008",
@@ -303,7 +310,8 @@
       "content_sha256": "05cdcfecdd0291bf70d83df6f759234a6e030bee813f9ffccc281339f1020020",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0009",
@@ -318,7 +326,8 @@
       "content_sha256": "b3e4968a2407889f0a369cb4cd09aa6b22e25a6404d4aeda17ef9d8b39f639b8",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0010",
@@ -333,7 +342,8 @@
       "content_sha256": "9384cc13dad85dc2ee3d65405edf92ae0cb8c90874db52beba33fa63f1fb1aad",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0011",
@@ -348,7 +358,8 @@
       "content_sha256": "476d6d2c6e8bd6f6775492f11f2de3f26b77545dda62bd6e78e34ff37b53ed4e",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "adr:0012",
@@ -363,7 +374,8 @@
       "content_sha256": "ba8ea2c1e20eda7094c2cf92c9fd63427c1ef3edf9c18d2f43357e761101ba79",
       "status": "accepted",
       "supersedes": [],
-      "superseded_by": []
+      "superseded_by": [],
+      "status_notes": []
     }
   ],
   "specs": [
@@ -378,7 +390,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "2244e964a2e98cbb8c96959e80f94fbb6684825aa41f64e34d9bc918cb229b35",
-      "kind": "normative"
+      "kind": "normative",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0002",
@@ -391,7 +407,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "921aecf6cf292ef841c49c73b45ab8a38bdae817ef850097a870dc5241473c39",
-      "kind": "operational"
+      "kind": "operational",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0003",
@@ -404,7 +424,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "dbf7093288b63b1fd3a1f38d60b66147d93c27511487de992ee0d59efb43b744",
-      "kind": "normative"
+      "kind": "normative",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0004",
@@ -417,7 +441,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "93f42169b551989e38f00598f899e6bfd9fc443a15467da77ead51c5bd01d02e",
-      "kind": "normative"
+      "kind": "normative",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0005",
@@ -430,7 +458,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "a22501ba039e61a6f438d50685a3e33a7928fb37179f4a8da31c8c3420ed9683",
-      "kind": "normative"
+      "kind": "normative",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0006",
@@ -443,7 +475,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "a86608fc0ae4b045cdf59257e666f0254df9a26f2dd93897628fafc142169163",
-      "kind": "normative"
+      "kind": "normative",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0007",
@@ -456,7 +492,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "47d3d3298a978e525b315a779db920714946011ccda92a0caf2e2a5d72cd21cb",
-      "kind": "operational"
+      "kind": "operational",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0008",
@@ -469,7 +509,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "6e80832275da7d4c3609cbef3e39c1128bd14d559cdf315f78982dcc8f91edbf",
-      "kind": "operational"
+      "kind": "operational",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0009",
@@ -482,7 +526,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "20ad0cb68eafaef7c0095136eef6ebe9b0704b5ad3d81211039ef73745bc02af",
-      "kind": "normative"
+      "kind": "normative",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0010",
@@ -495,7 +543,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "a217c496f8534f78906cf589ec07f14f3babfbf900d848a94bb58202ea06044f",
-      "kind": "normative"
+      "kind": "normative",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0011",
@@ -508,7 +560,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "739d774289548e1d10e9c20dd88d24e774b1ddfd68cdc16bf8424481ef4b705b",
-      "kind": "normative"
+      "kind": "normative",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0012",
@@ -521,7 +577,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "bd748f1d15321d770410ed04ebfe4e6e558e02a30bfbd4e4bddce327f2f7f2d0",
-      "kind": "normative"
+      "kind": "normative",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     },
     {
       "id": "spc:0013",
@@ -534,7 +594,11 @@
       "immutable": true,
       "package_version": "0.2.0",
       "content_sha256": "a18bcc7c72373487d8cd4a88b93b605ca6a46703dbd8d5fa5d9f8c86937348da",
-      "kind": "operational"
+      "kind": "operational",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     }
   ],
   "profiles": []
