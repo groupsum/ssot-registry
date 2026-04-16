@@ -24,6 +24,11 @@ def repo_root_from_registry_path(registry_path: str | Path) -> Path:
     return registry.parent.parent
 
 
+def sha256_normalized_text_path(path: str | Path) -> str:
+    target = Path(path)
+    return hashlib.sha256(target.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
 def sha256_path(path: str | Path) -> str:
     target = Path(path)
     digest = hashlib.sha256()

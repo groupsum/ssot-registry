@@ -13,7 +13,7 @@ from ssot_registry.model.document import (
 )
 from ssot_registry.model.enums import SCHEMA_VERSION
 from ssot_registry.util.errors import RegistryError, ValidationError
-from ssot_registry.util.fs import sha256_path
+from ssot_registry.util.fs import sha256_normalized_text_path
 from ssot_registry.util.jsonio import save_json
 from ssot_registry.version import __version__
 
@@ -111,7 +111,7 @@ def _collect_repo_local_documents(registry: dict[str, Any], repo_root: Path, kin
             "managed": False,
             "immutable": False,
             "package_version": target_version_from_registry(registry),
-            "content_sha256": sha256_path(path),
+            "content_sha256": sha256_normalized_text_path(path),
         }
         if kind == "adr":
             row["status"] = "draft"

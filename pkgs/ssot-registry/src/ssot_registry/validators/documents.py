@@ -12,7 +12,7 @@ from ssot_registry.model.document import (
     normalize_document_id,
     reservation_kind_key,
 )
-from ssot_registry.util.fs import sha256_path
+from ssot_registry.util.fs import sha256_normalized_text_path
 from ssot_registry.version import __version__
 
 
@@ -134,7 +134,7 @@ def validate_document_rows(
                 if not full_path.exists():
                     failures.append(f"{prefix}.path does not exist: {relative_path}")
                 else:
-                    actual_sha256 = sha256_path(full_path)
+                    actual_sha256 = sha256_normalized_text_path(full_path)
                     if not isinstance(content_sha256, str) or len(content_sha256) != 64:
                         failures.append(f"{prefix}.content_sha256 must be a 64-character sha256 hex digest")
                     elif actual_sha256 != content_sha256:

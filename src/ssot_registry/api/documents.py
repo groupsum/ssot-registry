@@ -25,7 +25,7 @@ from ssot_registry.model.document import (
     section_for_document_kind,
 )
 from ssot_registry.util.errors import ValidationError
-from ssot_registry.util.fs import sha256_path
+from ssot_registry.util.fs import sha256_normalized_text_path
 from ssot_registry.version import __version__
 
 from .load import load_registry
@@ -75,8 +75,9 @@ def _render_markdown(kind: str, number: int, title: str, body: str) -> str:
 def _write_document(repo_root: Path, row: dict[str, Any], body: str, kind: str) -> str:
     target = repo_root / row["path"]
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(_render_markdown(kind, row["number"], row["title"], body), encoding="utf-8")
-    return sha256_path(target)
+    with target.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(_render_markdown(kind, row["number"], row["title"], body))
+    return sha256_normalized_text_path(target)
 
 
 def _build_authored_row(
@@ -487,7 +488,7 @@ def _sync_manifest_document(
     payload = read_packaged_document_bytes(kind, manifest_entry["filename"])
     target = repo_root / expected_row["path"]
     target.parent.mkdir(parents=True, exist_ok=True)
-    actual_hash = sha256_path(target) if target.exists() else None
+    actual_hash = sha256_normalized_text_path(target) if target.exists() else None
     needs_write = (
         actual_hash != expected_row["content_sha256"]
         or current.get("content_sha256") != expected_row["content_sha256"]
