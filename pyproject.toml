@@ -40,6 +40,7 @@ Repository = "https://github.com/groupsum/ssot-registry"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
 
 [project.scripts]
+ssot = "ssot_registry.cli.main:main"
 ssot-registry = "ssot_registry.cli.main:main"
 
 [tool.setuptools]
