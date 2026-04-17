@@ -10,7 +10,7 @@ Generated projections include:
 
 - graph/report artifacts,
 - `docs/**` mirrors,
-- packaged template docs and manifests under `src/ssot_registry/templates/**`.
+- packaged template docs and manifests under `pkgs/ssot-registry/src/ssot_registry/templates/**`.
 
 ## Consequences
 - Canonical authorship remains singular.

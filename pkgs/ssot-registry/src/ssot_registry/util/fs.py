@@ -10,11 +10,29 @@ def ensure_directory(path: str | Path) -> Path:
     return target
 
 
+def _registry_candidate(path: Path) -> Path:
+    return path / ".ssot" / "registry.json"
+
+
 def resolve_registry_path(path: str | Path) -> Path:
-    candidate = Path(path)
-    if candidate.is_dir():
-        return candidate / ".ssot" / "registry.json"
-    return candidate
+    candidate = Path(path).expanduser()
+    if candidate.name == "registry.json" and candidate.parent.name == ".ssot":
+        return candidate
+    if candidate.name == ".ssot":
+        registry_path = candidate / "registry.json"
+        if registry_path.is_file():
+            return registry_path
+    search_roots = [candidate]
+    search_roots.extend(candidate.parents)
+    for root in search_roots:
+        registry_path = _registry_candidate(root)
+        if registry_path.is_file():
+            return registry_path
+    raise FileNotFoundError(
+        "Unable to locate .ssot/registry.json from "
+        f"{candidate}. Provide the repository root, the .ssot directory, "
+        "the registry.json file, or any path inside a repository that contains .ssot/registry.json."
+    )
 
 
 def repo_root_from_registry_path(registry_path: str | Path) -> Path:

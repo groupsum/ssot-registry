@@ -17,7 +17,6 @@ VIEWS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-views" / "src"
 CODEGEN_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-codegen" / "src"
 CLI_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-cli" / "src"
 TUI_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-tui" / "src"
-ROOT_SRC_ROOT = PROJECT_ROOT / "src"
 
 
 def _project_version() -> str:
@@ -44,7 +43,6 @@ def _package_pythonpath() -> str:
             str(CONTRACTS_SRC_ROOT),
             str(CLI_SRC_ROOT),
             str(TUI_SRC_ROOT),
-            str(ROOT_SRC_ROOT),
         ]
     )
 

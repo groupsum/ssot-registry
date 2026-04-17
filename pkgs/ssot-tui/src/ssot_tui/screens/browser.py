@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -43,27 +44,45 @@ class BrowserScreen(Screen[None]):
         detail = self.query_one(EntityDetailPane)
         detail.show_entity(None)
 
+    def _set_status(self, message: str) -> None:
+        self.query_one("#status", Static).update(message)
+
+    def _format_load_error(self, path: str, exc: Exception) -> str:
+        if isinstance(exc, FileNotFoundError):
+            return f"Registry not found for {path}. Point at a repo root, .ssot directory, registry.json file, or nested path inside the repo."
+        if isinstance(exc, json.JSONDecodeError):
+            return f"Registry JSON is invalid at {path}: line {exc.lineno}, column {exc.colno}."
+        return f"Unable to load registry from {path}: {exc}"
+
     def action_reload_workspace(self) -> None:
         path = self.query_one("#repo_path", Input).value.strip()
         if not path:
-            self.query_one("#status", Static).update("Enter a repository path to load.")
+            self._set_status("Enter a repository path to load.")
             return
-        self.workspace = self.service.load_workspace(Path(path))
-        self.query_one("#status", Static).update(
-            f"Loaded {self.workspace.repo.get('id', '<unknown repo>')} from {self.workspace.root_path}"
-        )
+        try:
+            self.workspace = self.service.load_workspace(Path(path))
+        except Exception as exc:
+            self.workspace = None
+            self._set_status(self._format_load_error(path, exc))
+            self._refresh_table()
+            return
+        self._set_status(f"Loaded {self.workspace.repo.get('id', '<unknown repo>')} from {self.workspace.root_path}")
         self._refresh_table()
 
     def action_validate_workspace(self) -> None:
         if self.workspace is None:
-            self.query_one("#status", Static).update("Load a repository before validating.")
+            self._set_status("Load a repository before validating.")
             return
-        validation = self.service.load_workspace(self.workspace.root_path).validation
+        try:
+            validation = self.service.load_workspace(self.workspace.root_path).validation
+        except Exception as exc:
+            self._set_status(self._format_load_error(self.workspace.root_path, exc))
+            return
         failures = validation.get("failures", [])
         if failures:
-            self.query_one("#status", Static).update(f"Validation failed: {failures[0]}")
+            self._set_status(f"Validation failed: {failures[0]}")
             return
-        self.query_one("#status", Static).update("Validation passed.")
+        self._set_status("Validation passed.")
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         if event.input.id == "repo_path":

@@ -168,7 +168,7 @@ wheels = [
 
 [[package]]
 name = "ssot-cli"
-version = "0.1.1.dev1"
+version = "0.1.1"
 source = { editable = "pkgs/ssot-cli" }
 dependencies = [
     { name = "ssot-contracts" },
@@ -185,7 +185,7 @@ requires-dist = [
 
 [[package]]
 name = "ssot-codegen"
-version = "0.2.4.dev1"
+version = "0.2.4"
 source = { editable = "pkgs/ssot-codegen" }
 dependencies = [
     { name = "ssot-contracts" },
@@ -202,7 +202,7 @@ requires-dist = [
 
 [[package]]
 name = "ssot-contracts"
-version = "0.2.4.dev1"
+version = "0.2.4"
 source = { editable = "pkgs/ssot-contracts" }
 dependencies = [
     { name = "tomli", marker = "python_full_version < '3.11'" },
@@ -213,7 +213,7 @@ requires-dist = [{ name = "tomli", marker = "python_full_version < '3.11'", spec
 
 [[package]]
 name = "ssot-registry"
-version = "0.2.4.dev1"
+version = "0.2.4"
 source = { editable = "pkgs/ssot-registry" }
 dependencies = [
     { name = "ssot-contracts" },
@@ -230,7 +230,7 @@ requires-dist = [
 
 [[package]]
 name = "ssot-tui"
-version = "0.1.1.dev1"
+version = "0.1.1"
 source = { editable = "pkgs/ssot-tui" }
 dependencies = [
     { name = "ssot-contracts" },
@@ -249,7 +249,7 @@ requires-dist = [
 
 [[package]]
 name = "ssot-views"
-version = "0.2.4.dev1"
+version = "0.2.4"
 source = { editable = "pkgs/ssot-views" }
 dependencies = [
     { name = "ssot-contracts" },

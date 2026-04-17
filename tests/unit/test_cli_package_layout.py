@@ -13,7 +13,6 @@ for path in (
     REPO_ROOT / "pkgs" / "ssot-contracts" / "src",
     REPO_ROOT / "pkgs" / "ssot-tui" / "src",
     REPO_ROOT / "pkgs" / "ssot-cli" / "src",
-    REPO_ROOT / "src",
 ):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))

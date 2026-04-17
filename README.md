@@ -837,8 +837,8 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 - Architecture decisions (`docs/adr/`)
   - Rationale and decision history for the model and release flow.
 
-- Examples (`docs/examples/`)
-  - Minimal repo walkthrough, advanced/e2e examples, and format/export workflows (`docs/examples/formats-and-exports.md`).
+- Examples (`examples/`)
+  - Minimal repo fixtures, advanced/e2e examples, and format/export workflows (`examples/formats-and-exports.md`).
 
 - Root reference docs
   - Verification notes: `VERIFICATION.md`
@@ -856,7 +856,7 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 
 - Specs: `docs/specs/`
 - ADRs: `docs/adr/`
-- Examples: `docs/examples/` and `examples/`
+- Examples: `examples/`
 - Source code: `pkgs/*/src/`
 
 ## Development

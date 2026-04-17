@@ -10,7 +10,6 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FIXTURES_ROOT = PROJECT_ROOT / "tests" / "fixtures"
-SRC_ROOT = PROJECT_ROOT / "src"
 REGISTRY_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-registry" / "src"
 CONTRACTS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src"
 VIEWS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-views" / "src"
@@ -41,7 +40,6 @@ def run_cli(*args: str, cwd: str | Path | None = None) -> subprocess.CompletedPr
         str(CONTRACTS_SRC_ROOT),
         str(CLI_SRC_ROOT),
         str(TUI_SRC_ROOT),
-        str(SRC_ROOT),
     ]
     existing = env.get("PYTHONPATH")
     if existing:

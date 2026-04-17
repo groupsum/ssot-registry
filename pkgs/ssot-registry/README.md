@@ -1,6 +1,6 @@
 <div align="center">
   <h1>🔷 ssot-registry</h1>
-  <p><strong>Single Source of Truth for features, claims, tests, releases, ADRs, and specs.</strong></p>
+  <p><strong>Single Source of Truth for features, profiles, claims, tests, releases, ADRs, and specs.</strong></p>
 </div>
 
 <div align="center">
@@ -10,122 +10,141 @@
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Hits" /></a>
 </div>
 
-`ssot-registry` is a portable, repository-agnostic single-source-of-truth system.
+`ssot-registry` is the core Python runtime package for SSOT.
+
+It owns the canonical registry model, core APIs for loading and mutating registries, validation and guard logic, planning and release workflows, and the domain operations that `ssot-cli` and `ssot-tui` build on top of.
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
-It provides a canonical registry for:
+## Core model
+
+`ssot-registry` treats `.ssot/registry.json` as the canonical machine-readable source of truth for:
 
 - features
+- profiles
 - tests
 - claims
 - evidence
 - issues
 - risks
-- frozen boundaries
+- boundaries
 - releases
 - ADRs
 - specs
 
-The canonical machine-readable artifact is:
-
-```text
-.ssot/registry.json
-```
-
 Everything else is derived from it.
 
-## Core model
+### Boundaries vs releases
 
-- Features are the only targetable units.
-- Features carry planning horizon and target claim tier.
-- Claims assert properties of features.
-- Tests verify claims.
-- Evidence supports claims and is linked to tests.
-- Issues and risks are plannable and can block certification, promotion, or publication.
-- Boundaries freeze scope.
-- Releases bundle claims and evidence against a frozen boundary.
+Boundaries are not releases.
+
+- A boundary is the frozen scope of features and profiles for a delivery unit.
+- Freezing a boundary validates the registry, locks that scope, and emits a boundary snapshot.
+- A release references a frozen boundary and then bundles the claims and evidence used for certify, promote, publish, and revoke workflows.
+
+If you omit this distinction, releases look redundant. They are not: boundaries freeze scope; releases attest and ship against that frozen scope.
 
 ## Canonical format
 
-The canonical authored format is JSON. Markdown, CSV, DOT, SQLite, and reports are derived projections.
-
-## Schema 4
-
-Schema `4` introduces first-class ADR and spec sections in `.ssot/registry.json`:
-
-- `tooling`
-- `document_id_reservations`
-- `adrs`
-- `specs`
-
-Packaged SSOT documents are manifest-driven, immutable, and synced into reserved SSOT-owned ranges. Repository-local ADRs and specs are created in separate non-overlapping ranges so local numbering cannot collide with SSOT-managed documents.
+The canonical authored format is JSON. Markdown, CSV, DOT, SQLite, reports, and snapshots are derived projections.
 
 ## Install
 
 ```bash
-python -m pip install ssot-registry   # core library
+python -m pip install ssot-registry   # core library/runtime
 python -m pip install ssot-cli        # primary CLI distribution
-python -m pip install ssot-tui        # Textual TUI
-# or for local development
+python -m pip install ssot-tui        # Textual terminal UI
+```
+
+For local development:
+
+```bash
 python -m pip install -e pkgs/ssot-registry
 ```
 
-`ssot-registry` remains the canonical import package. CLI entry points now ship from `ssot-cli`, including both `ssot` and the compatibility alias `ssot-registry`.
+`ssot-registry` remains the canonical import package. The preferred CLI distribution now ships from `ssot-cli`, including `ssot`, `ssot-cli`, and the compatibility alias `ssot-registry`.
 
-The repository root is now workspace tooling only. Canonical release artifacts are built from package roots under `pkgs/`, and the canonical Python runtime release target is `pkgs/ssot-registry`.
+## What this package owns
 
-If you already have a repository initialized on schema `3`, upgrade it explicitly after installing the new package:
+- the canonical `.ssot/registry.json` data model
+- runtime APIs under `ssot_registry.api`
+- validators, guards, graph builders, reports, and snapshot generation
+- planning, profile evaluation, evidence verification, document lifecycle, and release gating logic
 
-```bash
-ssot upgrade . --sync-docs --write-report
-# compatibility alias
-ssot-registry upgrade . --sync-docs --write-report
+## Python API examples
+
+Initialize and validate a repository:
+
+```python
+from ssot_registry.api import initialize_repo, validate_registry
+
+initialize_repo(".", repo_id="demo-repo", repo_name="Demo Repo", version="0.1.0")
+report = validate_registry(".")
+print(report["passed"])
 ```
 
-## Community
+Load and save a registry:
 
-Please review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
+```python
+from ssot_registry.api import load_registry, save_registry
+
+registry_path, repo_root, registry = load_registry(".")
+save_registry(registry_path, registry)
+```
+
+Freeze a boundary and export a graph:
+
+```python
+from ssot_registry.api import export_graph, freeze_boundary
+
+freeze_boundary(".", boundary_id="bnd:demo.v0")
+graph_result = export_graph(".", "json")
+print(graph_result["output_path"])
+```
+
+Representative API areas currently exposed from `ssot_registry.api` include:
+
+- repository initialization, load, save, validate, and upgrade
+- entity CRUD and linking operations
+- document creation, synchronization, supersession, and reservations
+- feature planning and lifecycle updates
+- profile evaluation and profile resolution
+- evidence verification and claim evaluation
+- boundary freezing and release certification, promotion, publication, and revocation
+- graph and registry export
 
 ## CLI quick reference
 
-Install `ssot-cli` for the primary command surface. You can invoke the CLI with `ssot`, and `ssot-registry` remains supported as a compatibility alias.
+Install `ssot-cli` for the primary command surface. The same parser is available under:
+
+- `ssot`
+- `ssot-cli`
+- `ssot-registry`
+
+Examples in the long-form reference below use `ssot-registry`, but every command can be invoked with any of the three executable names.
 
 ```bash
 ssot --help
 ssot-cli --help
 ssot-registry --help
-ssot-registry init --help
-ssot-registry validate --help
-ssot-registry upgrade --help
-ssot-registry adr --help
-ssot-registry spec --help
+ssot-registry profile --help
 ssot-registry feature --help
-ssot-registry test --help
-ssot-registry issue --help
-ssot-registry claim --help
-ssot-registry evidence --help
-ssot-registry risk --help
 ssot-registry boundary --help
 ssot-registry release --help
 ssot-registry graph --help
 ssot-registry registry --help
 ```
 
----
-
 ## CLI conventions
 
 - Most commands accept `[path]` as an optional positional argument. Default is current directory (`.`).
-- Prefer `ssot ...` in new documentation and automation; `ssot-registry ...` is a compatibility alias.
-- IDs are normalized prefixed identifiers (for example: `feat:*`, `clm:*`, `tst:*`, `evd:*`, `iss:*`, `rsk:*`, `bnd:*`, `rel:*`).
+- Prefer `ssot ...` in new automation and examples; `ssot-registry ...` remains a compatibility alias.
+- IDs are normalized prefixed identifiers such as `feat:*`, `prf:*`, `clm:*`, `tst:*`, `evd:*`, `iss:*`, `rsk:*`, `bnd:*`, `rel:*`, `adr:*`, and `spc:*`.
 - Commands emit JSON by default; use `--output-format {json,csv,df,yaml,toml}` for alternate renderings.
 - Use `--output-file PATH` to save rendered command output to disk.
 - Non-zero exit code indicates an operation failure or failed checks.
 
----
-
-## Command surface (all commands, subcommands, and flags)
+## Command surface
 
 ### Top-level commands
 
@@ -135,6 +154,7 @@ ssot-registry registry --help
 - `adr`
 - `spec`
 - `feature`
+- `profile`
 - `test`
 - `issue`
 - `claim`
@@ -175,7 +195,7 @@ ssot-registry upgrade [path]
 
 Subcommands:
 
-- `create`, `get`, `list`, `update`, `delete`, `sync`
+- `create`, `get`, `list`, `update`, `set-status`, `supersede`, `delete`, `sync`
 - `reserve create`, `reserve list`
 
 ```text
@@ -184,8 +204,9 @@ ssot-registry adr create [path]
   --slug SLUG (required)
   --body-file BODY_FILE (required)
   --number NUMBER
-  --status {proposed,accepted,superseded,retired}
-  --origin {repo-local}
+  --status {draft,in_review,accepted,rejected,withdrawn,superseded,retired}
+  --note NOTE
+  --origin {repo-local,ssot-origin,ssot-core}
   --reserve-range RANGE_NAME
 
 ssot-registry adr get [path]
@@ -197,7 +218,18 @@ ssot-registry adr update [path]
   --id ID (required)
   --title TITLE
   --body-file BODY_FILE
-  --status {proposed,accepted,superseded,retired}
+  --status {draft,in_review,accepted,rejected,withdrawn,superseded,retired}
+  --note NOTE
+
+ssot-registry adr set-status [path]
+  --id ID (required)
+  --status {draft,in_review,accepted,rejected,withdrawn,superseded,retired} (required)
+  --note NOTE
+
+ssot-registry adr supersede [path]
+  --id ID (required)
+  --supersedes IDS [IDS ...] (required)
+  --note NOTE
 
 ssot-registry adr delete [path]
   --id ID (required)
@@ -216,7 +248,7 @@ ssot-registry adr reserve list [path]
 
 Subcommands:
 
-- `create`, `get`, `list`, `update`, `delete`, `sync`
+- `create`, `get`, `list`, `update`, `set-status`, `supersede`, `delete`, `sync`
 - `reserve create`, `reserve list`
 
 ```text
@@ -225,8 +257,10 @@ ssot-registry spec create [path]
   --slug SLUG (required)
   --body-file BODY_FILE (required)
   --number NUMBER
-  --origin {repo-local}
-  --kind {normative,operational,repo-local}
+  --origin {repo-local,ssot-origin,ssot-core}
+  --kind {normative,operational,governance,local-policy}
+  --status {draft,in_review,accepted,rejected,withdrawn,superseded,retired}
+  --note NOTE
   --reserve-range RANGE_NAME
 
 ssot-registry spec get [path]
@@ -238,7 +272,19 @@ ssot-registry spec update [path]
   --id ID (required)
   --title TITLE
   --body-file BODY_FILE
-  --kind {normative,operational,repo-local}
+  --kind {normative,operational,governance,local-policy}
+  --status {draft,in_review,accepted,rejected,withdrawn,superseded,retired}
+  --note NOTE
+
+ssot-registry spec set-status [path]
+  --id ID (required)
+  --status {draft,in_review,accepted,rejected,withdrawn,superseded,retired} (required)
+  --note NOTE
+
+ssot-registry spec supersede [path]
+  --id ID (required)
+  --supersedes IDS [IDS ...] (required)
+  --note NOTE
 
 ssot-registry spec delete [path]
   --id ID (required)
@@ -257,28 +303,19 @@ ssot-registry spec reserve list [path]
 
 Subcommands:
 
-- `create`
-- `get`
-- `list`
-- `update`
-- `delete`
-- `link`
-- `unlink`
-- `plan`
+- `create`, `get`, `list`, `update`, `delete`, `link`, `unlink`, `plan`
 - `lifecycle set`
-
-Flags per subcommand:
 
 ```text
 ssot-registry feature create [path]
   --id ID (required)
   --title TITLE (required)
   --description DESCRIPTION
-  --implementation-status {absent,partial,implemented}
+  --implementation-status {absent,implemented,partial}
   --lifecycle-stage {active,deprecated,obsolete,removed}
   --replacement-feature-id [REPLACEMENT_FEATURE_ID ...]
   --note NOTE
-  --horizon {current,next,future,explicit,backlog,out_of_bounds}
+  --horizon {backlog,current,explicit,future,next,out_of_bounds}
   --claim-tier {T0,T1,T2,T3,T4}
   --target-lifecycle-stage {active,deprecated,obsolete,removed}
   --slot SLOT
@@ -295,7 +332,7 @@ ssot-registry feature update [path]
   --id ID (required)
   --title TITLE
   --description DESCRIPTION
-  --implementation-status {absent,partial,implemented}
+  --implementation-status {absent,implemented,partial}
 
 ssot-registry feature delete [path]
   --id ID (required)
@@ -314,7 +351,7 @@ ssot-registry feature unlink [path]
 
 ssot-registry feature plan [path]
   --ids IDS [IDS ...] (required)
-  --horizon {current,next,future,explicit,backlog,out_of_bounds} (required)
+  --horizon {backlog,current,explicit,future,next,out_of_bounds} (required)
   --claim-tier {T0,T1,T2,T3,T4}
   --target-lifecycle-stage {active,deprecated,obsolete,removed}
   --slot SLOT
@@ -325,6 +362,57 @@ ssot-registry feature lifecycle set [path]
   --replacement-feature-id [REPLACEMENT_FEATURE_ID ...]
   --effective-release-id EFFECTIVE_RELEASE_ID
   --note NOTE
+```
+
+### `profile`
+
+Subcommands:
+
+- `create`, `get`, `list`, `update`, `delete`, `link`, `unlink`, `evaluate`, `verify`
+
+```text
+ssot-registry profile create [path]
+  --id ID (required)
+  --title TITLE (required)
+  --description DESCRIPTION
+  --status {draft,active,retired}
+  --kind {capability,certification,deployment,interoperability}
+  --feature-ids [FEATURE_IDS ...]
+  --profile-ids [PROFILE_IDS ...]
+  --claim-tier {T0,T1,T2,T3,T4}
+  --allow-feature-override-tier | --no-allow-feature-override-tier
+
+ssot-registry profile get [path]
+  --id ID (required)
+
+ssot-registry profile list [path]
+
+ssot-registry profile update [path]
+  --id ID (required)
+  --title TITLE
+  --description DESCRIPTION
+  --status {draft,active,retired}
+  --kind {capability,certification,deployment,interoperability}
+  --claim-tier {T0,T1,T2,T3,T4}
+
+ssot-registry profile delete [path]
+  --id ID (required)
+
+ssot-registry profile link [path]
+  --id ID (required)
+  --feature-ids [FEATURE_IDS ...]
+  --profile-ids [PROFILE_IDS ...]
+
+ssot-registry profile unlink [path]
+  --id ID (required)
+  --feature-ids [FEATURE_IDS ...]
+  --profile-ids [PROFILE_IDS ...]
+
+ssot-registry profile evaluate [path]
+  --profile-id PROFILE_ID (required)
+
+ssot-registry profile verify [path]
+  --profile-id PROFILE_ID (required)
 ```
 
 ### `test`
@@ -605,7 +693,9 @@ ssot-registry risk retire [path]
 
 Subcommands:
 
-- `create`, `get`, `list`, `update`, `delete`, `add-feature`, `remove-feature`, `freeze`
+- `create`, `get`, `list`, `update`, `delete`
+- `add-feature`, `remove-feature`, `add-profile`, `remove-profile`
+- `freeze`
 
 ```text
 ssot-registry boundary create [path]
@@ -614,6 +704,7 @@ ssot-registry boundary create [path]
   --status {draft,active,frozen,retired}
   --frozen | --no-frozen
   --feature-ids [FEATURE_IDS ...]
+  --profile-ids [PROFILE_IDS ...]
 
 ssot-registry boundary get [path]
   --id ID (required)
@@ -636,6 +727,14 @@ ssot-registry boundary add-feature [path]
 ssot-registry boundary remove-feature [path]
   --id ID (required)
   --feature-ids FEATURE_IDS [FEATURE_IDS ...] (required)
+
+ssot-registry boundary add-profile [path]
+  --id ID (required)
+  --profile-ids PROFILE_IDS [PROFILE_IDS ...] (required)
+
+ssot-registry boundary remove-profile [path]
+  --id ID (required)
+  --profile-ids PROFILE_IDS [PROFILE_IDS ...] (required)
 
 ssot-registry boundary freeze [path]
   --boundary-id BOUNDARY_ID
@@ -727,144 +826,49 @@ ssot-registry registry export [path]
   --output OUTPUT
 ```
 
----
+## End-to-end examples
 
-## End-to-end usage examples
-
-### E2E example 1: initialize and validate a repo
+### Initialize and inspect a repo
 
 ```bash
-# Initialize registry under current repo
 ssot-registry init . --repo-id repo:demo.app --repo-name "Demo App" --version 0.1.0
-
-# Validate and write machine-readable report
 ssot-registry validate . --write-report
-
-# Inspect top-level entities
 ssot-registry feature list .
-ssot-registry claim list .
-ssot-registry test list .
+ssot-registry profile list .
 ssot-registry adr list .
 ssot-registry spec list .
 ```
 
-### E2E example 1b: create repo-local ADRs and specs
+### Freeze scope and release against it
 
 ```bash
-# Create local ADR/spec bodies
-cat > adr-body.md <<'EOF'
-Adopt local numbering for repository-owned decisions.
-EOF
-
-cat > spec-body.md <<'EOF'
-Repository-local operational conventions for maintainers.
-EOF
-
-# Create repo-local documents from the local reservation range
-ssot-registry adr create . --title "Use repo-local ADR numbering" --slug use-repo-local-adr-numbering --body-file adr-body.md
-ssot-registry spec create . --title "Maintainer operating conventions" --slug maintainer-operating-conventions --body-file spec-body.md --kind operational
-
-# Inspect or sync the document sets
-ssot-registry adr list .
-ssot-registry spec list .
-ssot-registry adr sync .
-ssot-registry spec sync .
-```
-
-### E2E example 2: plan + implementation lifecycle + release flow
-
-```bash
-# 1) Create feature, claim, test, and evidence
-ssot-registry feature create . --id feat:demo.login --title "User login"
-ssot-registry claim create . --id clm:demo.login.t1 --title "Login succeeds" --kind behavior --tier T1
-ssot-registry test create . --id tst:demo.login.unit --title "Login unit" --kind unit --test-path tests/test_login.py
-ssot-registry evidence create . --id evd:demo.login.pytest --title "Pytest login run" --kind test_run --evidence-path artifacts/login.json --tier T1
-
-# 2) Wire references
-ssot-registry feature link . --id feat:demo.login --claim-ids clm:demo.login.t1 --test-ids tst:demo.login.unit
-ssot-registry claim link . --id clm:demo.login.t1 --feature-ids feat:demo.login --test-ids tst:demo.login.unit --evidence-ids evd:demo.login.pytest
-ssot-registry test link . --id tst:demo.login.unit --feature-ids feat:demo.login --claim-ids clm:demo.login.t1 --evidence-ids evd:demo.login.pytest
-
-# 3) Plan and set lifecycle
-ssot-registry feature plan . --ids feat:demo.login --horizon current --claim-tier T1 --target-lifecycle-stage active
-ssot-registry feature lifecycle set . --ids feat:demo.login --stage active --note "Initial rollout"
-
-# 4) Freeze boundary and create release
-ssot-registry boundary create . --id bnd:demo.v0 --title "Demo v0 scope" --feature-ids feat:demo.login
+ssot-registry boundary create . --id bnd:demo.v0 --title "Demo v0 scope" --feature-ids feat:demo.login --profile-ids prf:demo.core
 ssot-registry boundary freeze . --boundary-id bnd:demo.v0
 ssot-registry release create . --id rel:0.1.0 --version 0.1.0 --boundary-id bnd:demo.v0 --claim-ids clm:demo.login.t1 --evidence-ids evd:demo.login.pytest
-
-# 5) Gate progression
 ssot-registry release certify . --release-id rel:0.1.0 --write-report
 ssot-registry release promote . --release-id rel:0.1.0
 ssot-registry release publish . --release-id rel:0.1.0
 ```
 
-### E2E example 3: graph exports and focused checks
+### Graphs and exports
 
 ```bash
-# Evaluate one claim
-ssot-registry claim evaluate . --claim-id clm:demo.login.t1
-
-# Verify one evidence row
-ssot-registry evidence verify . --evidence-id evd:demo.login.pytest
-
-# Export graph in JSON, DOT, and PNG formats
 ssot-registry graph export . --format json --output .ssot/graphs/registry.graph.json
 ssot-registry graph export . --format dot --output .ssot/graphs/registry.graph.dot
-ssot-registry graph export . --format png --output .ssot/graphs/registry.graph.png
-
-# Render list output as YAML/CSV and export full registry as TOML
-ssot-registry --output-format yaml feature list .
-ssot-registry --output-format csv claim list .
 ssot-registry registry export . --format toml --output .ssot/exports/registry.toml
 ```
 
----
+## Documentation map
 
-## Documentation map (pointers to docs subdirectories)
-
-- Specifications (`docs/specs/`)
-  - CLI contract: `docs/specs/SPEC-0002-cli.md`
-  - Registry core: `docs/specs/SPEC-0001-registry-core.md`
-  - Graph model: `docs/specs/SPEC-0003-graph-model.md`
-  - Lifecycle: `docs/specs/SPEC-0004-feature-lifecycle.md`
-  - Claims and tiers: `docs/specs/SPEC-0005-claim-statuses.md`, `docs/specs/SPEC-0006-claim-tiers.md`
-  - Boundaries/releases/snapshots: `docs/specs/SPEC-0007-snapshots-and-reports.md`
-  - Validation policy: `docs/specs/SPEC-0008-repo-policy.md`, `docs/specs/SPEC-0009-gates-and-fences.md`
-  - IDs and file tree: `docs/specs/SPEC-0010-id-normalization.md`, `docs/specs/SPEC-0011-file-tree.md`
-
-- Architecture decisions (`docs/adr/`)
-  - Rationale and decision history for the model and release flow.
-
-- Examples (`docs/examples/`)
-  - Minimal repo walkthrough, advanced/e2e examples, and format/export workflows (`docs/examples/formats-and-exports.md`).
-
-- Root reference docs
-  - Verification notes: `VERIFICATION.md`
-  - Changelog: `CHANGELOG.md`
-
-## Public operator surfaces
-
-- Canonical JSON registry: `.ssot/registry.json`
-- JSON Schema pack
-- Noun-scoped CLI emitting JSON by default (with optional CSV/DF/YAML/TOML renderers)
-- Python API under `ssot_registry.api`
-- Derived graph, report, and snapshot artifacts
-
-## Repository layout
-
-- Specs: `docs/specs/`
-- ADRs: `docs/adr/`
-- Examples: `docs/examples/` and `examples/`
+- Specifications: `docs/specs/`
+- Architecture decisions: `docs/adr/`
+- Examples: `examples/`
 - Source code: `pkgs/*/src/`
 
-## Development
+## Package relationships
 
-```bash
-python -m venv .venv
-. .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e pkgs/ssot-registry
-python -m unittest discover -s tests -v
-```
+- Package type: core runtime/library package
+- Depends on: `ssot-contracts`, `ssot-views`
+- Consumed by: `ssot-cli`, `ssot-tui`, direct Python integrations, and automation
+
+If you are embedding SSOT behavior inside Python code, this is the package to import. If you need the primary CLI distribution, install `ssot-cli` alongside it.
