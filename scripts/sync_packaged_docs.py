@@ -10,6 +10,9 @@ MIRRORS = (
     (PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "adr", PROJECT_ROOT / "docs" / "adr"),
     (PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "specs", PROJECT_ROOT / "docs" / "specs"),
 )
+EXCLUDED_MIRROR_FILES = {
+    ("adr", "ADR-0010-generated-projections-are-non-canonical.md"),
+}
 
 
 def _iter_markdown(directory: Path) -> list[Path]:
@@ -19,11 +22,14 @@ def _iter_markdown(directory: Path) -> list[Path]:
 def sync_mirror(source: Path, destination: Path, *, check: bool) -> list[str]:
     destination.mkdir(parents=True, exist_ok=True)
     failures: list[str] = []
+    mirror_kind = destination.name
 
     source_files = {path.name: path for path in _iter_markdown(source)}
     destination_files = {path.name: path for path in _iter_markdown(destination)}
 
     for name, source_path in source_files.items():
+        if (mirror_kind, name) in EXCLUDED_MIRROR_FILES:
+            continue
         destination_path = destination / name
         source_text = source_path.read_text(encoding="utf-8")
         if not destination_path.exists():

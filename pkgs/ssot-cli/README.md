@@ -70,6 +70,8 @@ ssot registry --help
 
 ## Screenshots
 
+Regenerate these assets with `python scripts/generate_terminal_screenshots.py --cli-only`.
+
 Top-level command help:
 
 ![ssot top-level help](assets/ssot-cli-help.svg)

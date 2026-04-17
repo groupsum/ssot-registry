@@ -4,15 +4,16 @@
 Draft
 
 ## Decision
-Only upstream authored sources are canonical.
+In the `ssot-registry` upstream repository, canonical authored sources are the package-owned contract and runtime artifacts that maintainers edit directly.
 
 Generated projections include:
 
-- graph/report artifacts,
-- `docs/**` mirrors,
-- packaged template docs and manifests under `pkgs/ssot-registry/src/ssot_registry/templates/**`.
+- mirrored maintainer docs under `docs/**`,
+- packaged operator-facing document copies emitted from upstream contract sources,
+- generated metadata, reports, snapshots, and graph exports,
+- rendered assets such as CLI/TUI screenshots and exported SVG/PNG/DOT artifacts.
 
 ## Consequences
-- Canonical authorship remains singular.
+- Maintainers SHALL edit upstream canonical sources rather than mirrored or generated projections.
 - Projection generation MUST be deterministic.
-- Manual edits to generated projections are treated as drift.
+- Manual edits to generated projections are treated as drift and MAY be overwritten by regeneration.

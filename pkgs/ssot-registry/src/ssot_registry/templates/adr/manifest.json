@@ -168,7 +168,7 @@
     "title": "Generated projections are non-canonical",
     "filename": "ADR-0010-generated-projections-are-non-canonical.md",
     "target_path": ".ssot/adr/ADR-0010-generated-projections-are-non-canonical.md",
-    "sha256": "44f099d0554d4dff4aa3959a149140dcf7b0915648a5f68cbdd3d405c0775a3c",
+    "sha256": "68e76079f3ade23c5626ce75e91655ab7c90865926969e872c1adc23b9932e0a",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,

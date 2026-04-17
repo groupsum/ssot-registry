@@ -60,6 +60,8 @@ The current entry point launches `SsotTuiApp`, which mounts a browser-oriented s
 
 ## Screenshots
 
+Regenerate these assets with `python scripts/generate_terminal_screenshots.py --tui-only`.
+
 Captured against [`examples/minimal-repo`](../../examples/minimal-repo/README.md) in this workspace:
 
 ![SSOT TUI browser](assets/ssot-tui-browser.svg)
