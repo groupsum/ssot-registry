@@ -67,7 +67,7 @@ class CliAdrTests(unittest.TestCase):
             superseded_doc = json.loads(run_cli("adr", "get", str(repo), "--id", "adr:1000").stdout)["document"]
             self.assertEqual(superseded_doc["status"], "superseded")
 
-            delete_ssot = run_cli("adr", "delete", str(repo), "--id", "adr:0001")
+            delete_ssot = run_cli("adr", "delete", str(repo), "--id", "adr:0600")
             self.assertEqual(delete_ssot.returncode, 1)
             self.assertIn("immutable", delete_ssot.stdout)
 

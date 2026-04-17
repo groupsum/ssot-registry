@@ -41,7 +41,7 @@ class DocumentOriginBoundaryTests(unittest.TestCase):
                     slug="should-fail",
                     body_file=body,
                     origin="ssot-origin",
-                    number=120,
+                    number=620,
                 )
 
     def test_upstream_sync_is_skipped(self) -> None:
@@ -69,7 +69,7 @@ class DocumentOriginBoundaryTests(unittest.TestCase):
                 slug="upstream-contract",
                 body_file=body,
                 origin="ssot-origin",
-                number=101,
+                number=601,
             )
 
             self.assertTrue(result["passed"])

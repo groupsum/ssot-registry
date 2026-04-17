@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 CONTRACT_DATA = {
-    "schema_version": 7,
+    "schema_version": 8,
     "output_formats": ["json", "csv", "df", "yaml", "toml"],
     "entity_sections": [
         {"key": "features", "label": "Features"},
@@ -78,13 +78,13 @@ CONTRACT_DATA = {
         "reservation_keys": {"adr": "adr", "spec": "spec"},
         "default_reservations": {
             "adr": [
-                {"owner": "ssot-origin", "start": 1, "end": 499, "immutable": True, "deletable": False, "assignable_by_repo": False},
-                {"owner": "ssot-core", "start": 500, "end": 999, "immutable": True, "deletable": False, "assignable_by_repo": False},
+                {"owner": "ssot-core", "start": 1, "end": 599, "immutable": True, "deletable": False, "assignable_by_repo": False},
+                {"owner": "ssot-origin", "start": 600, "end": 999, "immutable": True, "deletable": False, "assignable_by_repo": False},
                 {"owner": "repo-local-default", "start": 1000, "end": 4999, "immutable": False, "deletable": True, "assignable_by_repo": True},
             ],
             "spec": [
-                {"owner": "ssot-origin", "start": 1, "end": 499, "immutable": True, "deletable": False, "assignable_by_repo": False},
-                {"owner": "ssot-core", "start": 500, "end": 999, "immutable": True, "deletable": False, "assignable_by_repo": False},
+                {"owner": "ssot-core", "start": 1, "end": 599, "immutable": True, "deletable": False, "assignable_by_repo": False},
+                {"owner": "ssot-origin", "start": 600, "end": 999, "immutable": True, "deletable": False, "assignable_by_repo": False},
                 {"owner": "repo-local-default", "start": 1000, "end": 4999, "immutable": False, "deletable": True, "assignable_by_repo": True},
             ],
         },

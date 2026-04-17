@@ -24,6 +24,7 @@ from .validate import validate_registry_document
 
 
 LEGACY_V3_VERSION = "0.1.2"
+SSOT_ORIGIN_V8_OFFSET = 599
 
 
 def _extract_title(kind: str, path: Path) -> str:
@@ -57,6 +58,24 @@ def _rename_legacy_packaged_specs(registry: dict[str, Any], repo_root: Path) -> 
             legacy.unlink()
             renames.append({"from": legacy.relative_to(repo_root).as_posix(), "to": target.relative_to(repo_root).as_posix()})
     return renames
+
+
+def _remove_legacy_numbered_packaged_docs(registry: dict[str, Any], repo_root: Path, kind: str) -> list[str]:
+    removed: list[str] = []
+    document_root = repo_root / registry["paths"]["adr_root" if kind == "adr" else "spec_root"]
+    if not document_root.exists():
+        return removed
+
+    prefix = "ADR" if kind == "adr" else "SPEC"
+    for entry in load_document_manifest(kind):
+        legacy_number = entry["number"] - SSOT_ORIGIN_V8_OFFSET
+        if legacy_number < 1:
+            continue
+        legacy = document_root / f"{prefix}-{legacy_number:04d}-{entry['slug']}.md"
+        if legacy.exists():
+            legacy.unlink()
+            removed.append(legacy.relative_to(repo_root).as_posix())
+    return removed
 
 
 def _seed_tooling_v4(registry: dict[str, Any], *, previous_version: str, target_version: str) -> None:
@@ -135,6 +154,8 @@ def migrate_v3_to_v4(registry: dict[str, Any], repo_root: Path, *, previous_vers
     migrated = deepcopy(registry)
     _seed_tooling_v4(migrated, previous_version=previous_version, target_version=target_version)
     _rename_legacy_packaged_specs(migrated, repo_root)
+    _remove_legacy_numbered_packaged_docs(migrated, repo_root, "adr")
+    _remove_legacy_numbered_packaged_docs(migrated, repo_root, "spec")
     migrated["adrs"] = []
     migrated["specs"] = []
     sync_documents_in_memory(migrated, repo_root, "adr")
@@ -217,6 +238,78 @@ def migrate_v6_to_v7(
     return migrated
 
 
+def _manifest_id_map(kind: str) -> dict[int, str]:
+    return {entry["number"]: entry["id"] for entry in load_document_manifest(kind)}
+
+
+def _remove_legacy_ssot_origin_documents(
+    registry: dict[str, Any],
+    repo_root: Path,
+    kind: str,
+) -> dict[str, str]:
+    section = "adrs" if kind == "adr" else "specs"
+    manifest_id_by_number = _manifest_id_map(kind)
+    retained: list[dict[str, Any]] = []
+    remapped_ids: dict[str, str] = {}
+
+    for row in registry.get(section, []):
+        if row.get("origin") != "ssot-origin":
+            retained.append(row)
+            continue
+
+        old_id = row.get("id")
+        number = row.get("number")
+        if isinstance(old_id, str) and isinstance(number, int) and number < 600:
+            remapped_ids[old_id] = manifest_id_by_number.get(number + SSOT_ORIGIN_V8_OFFSET, old_id)
+
+        path_value = row.get("path")
+        if isinstance(path_value, str):
+            target = repo_root / path_value
+            if target.exists():
+                target.unlink()
+
+    registry[section] = retained
+    return remapped_ids
+
+
+def _remap_document_links(registry: dict[str, Any], remapped_ids: dict[str, str]) -> None:
+    if not remapped_ids:
+        return
+    for section in ("adrs", "specs"):
+        for row in registry.get(section, []):
+            for field_name in ("supersedes", "superseded_by"):
+                value = row.get(field_name)
+                if isinstance(value, list):
+                    row[field_name] = [remapped_ids.get(ref_id, ref_id) for ref_id in value]
+
+
+def migrate_v7_to_v8(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    _ = previous_version, target_version
+    migrated = deepcopy(registry)
+    migrated["schema_version"] = 8
+    migrated["document_id_reservations"] = default_document_id_reservations()
+
+    repo = migrated.get("repo")
+    repo_kind = repo.get("kind") if isinstance(repo, dict) else "operator-repo"
+    if repo_kind != "operator-repo":
+        return migrated
+
+    remapped_ids: dict[str, str] = {}
+    remapped_ids.update(_remove_legacy_ssot_origin_documents(migrated, repo_root, "adr"))
+    remapped_ids.update(_remove_legacy_ssot_origin_documents(migrated, repo_root, "spec"))
+    _remap_document_links(migrated, remapped_ids)
+
+    sync_documents_in_memory(migrated, repo_root, "adr")
+    sync_documents_in_memory(migrated, repo_root, "spec")
+    return migrated
+
+
 def target_version_from_registry(registry: dict[str, Any]) -> str:
     tooling = registry.get("tooling")
     if isinstance(tooling, dict):
@@ -264,8 +357,12 @@ def upgrade_registry(
     if source_schema == 6:
         working = migrate_v6_to_v7(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
         migrations.append("migrate_v6_to_v7")
+        source_schema = 7
+    if source_schema == 7:
+        working = migrate_v7_to_v8(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
+        migrations.append("migrate_v7_to_v8")
     elif source_schema != SCHEMA_VERSION:
-        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6 or {SCHEMA_VERSION}")
+        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7 or {SCHEMA_VERSION}")
 
     if not migrations and not sync_docs:
         report = validate_registry_document(working, registry_path, repo_root)

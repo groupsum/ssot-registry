@@ -822,20 +822,21 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 
 ---
 
-## Documentation map (pointers to docs subdirectories)
+## Documentation map (core vs origin)
 
-- Specifications (`docs/specs/`)
-  - CLI contract: `docs/specs/SPEC-0002-cli.md`
-  - Registry core: `docs/specs/SPEC-0001-registry-core.md`
-  - Graph model: `docs/specs/SPEC-0003-graph-model.md`
-  - Lifecycle: `docs/specs/SPEC-0004-feature-lifecycle.md`
-  - Claims and tiers: `docs/specs/SPEC-0005-claim-statuses.md`, `docs/specs/SPEC-0006-claim-tiers.md`
-  - Boundaries/releases/snapshots: `docs/specs/SPEC-0007-snapshots-and-reports.md`
-  - Validation policy: `docs/specs/SPEC-0008-repo-policy.md`, `docs/specs/SPEC-0009-gates-and-fences.md`
-  - IDs and file tree: `docs/specs/SPEC-0010-id-normalization.md`, `docs/specs/SPEC-0011-file-tree.md`
+- Canonical upstream `ssot-core` docs (`.ssot/`)
+  - Upstream ADR inventory: `.ssot/adr/`
+  - Upstream spec inventory: `.ssot/specs/`
 
-- Architecture decisions (`docs/adr/`)
-  - Rationale and decision history for the model and release flow.
+- Maintainer-facing mirrors of `ssot-core` (`docs/specs/`, `docs/adr/`)
+  - Package topology and release order: `docs/specs/SPEC-0500-package-topology-and-release-order.md`
+  - Canonical release targets: `docs/specs/SPEC-0510-canonical-release-targets-and-tag-naming.md`
+  - Origin/core boundary rules: `docs/specs/SPEC-0512-document-origin-boundaries-and-id-ranges.md`
+  - Architecture decisions for package layout and release flow: `docs/adr/`
+
+- Public operator `ssot-origin` templates (`pkgs/ssot-contracts/src/ssot_contracts/templates/`)
+  - ADRs copied into downstream repos: `pkgs/ssot-contracts/src/ssot_contracts/templates/adr/`
+  - Specs copied into downstream repos: `pkgs/ssot-contracts/src/ssot_contracts/templates/specs/`
 
 - Examples (`examples/`)
   - Minimal repo fixtures, advanced/e2e examples, and format/export workflows (`examples/formats-and-exports.md`).

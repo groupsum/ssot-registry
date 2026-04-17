@@ -1,5 +1,5 @@
 {
-  "schema_version": 7,
+  "schema_version": 8,
   "repo": {
     "id": "repo:advanced-example",
     "name": "advanced-example",
@@ -59,16 +59,16 @@
   "document_id_reservations": {
     "adr": [
       {
-        "owner": "ssot-origin",
+        "owner": "ssot-core",
         "start": 1,
-        "end": 499,
+        "end": 599,
         "immutable": true,
         "deletable": false,
         "assignable_by_repo": false
       },
       {
-        "owner": "ssot-core",
-        "start": 500,
+        "owner": "ssot-origin",
+        "start": 600,
         "end": 999,
         "immutable": true,
         "deletable": false,
@@ -85,16 +85,16 @@
     ],
     "spec": [
       {
-        "owner": "ssot-origin",
+        "owner": "ssot-core",
         "start": 1,
-        "end": 499,
+        "end": 599,
         "immutable": true,
         "deletable": false,
         "assignable_by_repo": false
       },
       {
-        "owner": "ssot-core",
-        "start": 500,
+        "owner": "ssot-origin",
+        "start": 600,
         "end": 999,
         "immutable": true,
         "deletable": false,

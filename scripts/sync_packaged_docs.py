@@ -1,17 +1,43 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import shutil
+import re
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-MIRRORS = (
-    (PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "adr", PROJECT_ROOT / "docs" / "adr"),
-    (PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "specs", PROJECT_ROOT / "docs" / "specs"),
+CORE_MIRRORS = (
+    (PROJECT_ROOT / ".ssot" / "adr", PROJECT_ROOT / "docs" / "adr"),
+    (PROJECT_ROOT / ".ssot" / "specs", PROJECT_ROOT / "docs" / "specs"),
 )
-EXCLUDED_MIRROR_FILES = {
-    ("adr", "ADR-0010-generated-projections-are-non-canonical.md"),
+ORIGIN_MIRRORS = (
+    (
+        PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "adr",
+        PROJECT_ROOT / "pkgs" / "ssot-registry" / "src" / "ssot_registry" / "templates" / "adr",
+    ),
+    (
+        PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "specs",
+        PROJECT_ROOT / "pkgs" / "ssot-registry" / "src" / "ssot_registry" / "templates" / "specs",
+    ),
+)
+FILENAME_PATTERNS = {
+    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.md$"),
+    "specs": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.md$"),
+}
+EXPECTED_RANGES = {
+    "ssot-core": {"adr": (1, 599), "specs": (1, 599)},
+    "ssot-origin": {"adr": (600, 999), "specs": (600, 999)},
+}
+ORIGIN_ROOTS = {
+    "adr": PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "adr",
+    "specs": PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "specs",
+}
+CORE_ROOTS = {
+    "adr": PROJECT_ROOT / ".ssot" / "adr",
+    "specs": PROJECT_ROOT / ".ssot" / "specs",
 }
 
 
@@ -19,17 +45,113 @@ def _iter_markdown(directory: Path) -> list[Path]:
     return sorted(path for path in directory.glob("*.md") if path.is_file())
 
 
-def sync_mirror(source: Path, destination: Path, *, check: bool) -> list[str]:
+def _iter_mirror_files(directory: Path) -> list[Path]:
+    paths = list(_iter_markdown(directory))
+    paths.extend(path for path in directory.glob("*.json") if path.is_file())
+    return sorted(paths)
+
+
+def _sha256_normalized_text(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def _extract_title(path: Path, kind: str, slug: str) -> str:
+    for line in path.read_text(encoding="utf-8").splitlines():
+        normalized = line.lstrip("\ufeff")
+        if not normalized.startswith("# "):
+            continue
+        title = normalized[2:].strip()
+        if kind == "adr":
+            title = re.sub(r"^ADR-\d{4}:\s*", "", title)
+        else:
+            title = re.sub(r"^SPEC-\d{4}:\s*", "", title)
+        return title
+    return slug.replace("-", " ").title()
+
+
+def _extract_status(path: Path) -> str:
+    lines = path.read_text(encoding="utf-8").splitlines()
+    for index, line in enumerate(lines):
+        if line.strip() != "## Status":
+            continue
+        for candidate in lines[index + 1 :]:
+            stripped = candidate.strip()
+            if stripped:
+                return stripped.lower()
+        break
+    return "draft"
+
+
+def _load_existing_manifest(manifest_path: Path) -> dict[str, dict[str, object]]:
+    if not manifest_path.exists():
+        return {}
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list):
+        raise ValueError(f"Manifest must be a list: {manifest_path}")
+    existing: dict[str, dict[str, object]] = {}
+    for entry in payload:
+        if isinstance(entry, dict):
+            slug = entry.get("slug")
+            if isinstance(slug, str):
+                existing[slug] = entry
+    return existing
+
+
+def _build_manifest_entry(path: Path, kind: str, existing: dict[str, object]) -> dict[str, object]:
+    match = FILENAME_PATTERNS[kind].match(path.name)
+    if match is None:
+        raise ValueError(f"Invalid {kind} filename: {path}")
+    number = int(match.group("number"))
+    slug = match.group("slug")
+    target_dir = "adr" if kind == "adr" else "specs"
+    entity_prefix = "adr" if kind == "adr" else "spc"
+    entry = {
+        "id": f"{entity_prefix}:{number:04d}",
+        "number": number,
+        "slug": slug,
+        "title": _extract_title(path, kind, slug),
+        "filename": path.name,
+        "target_path": f".ssot/{target_dir}/{path.name}",
+        "sha256": _sha256_normalized_text(path),
+        "origin": "ssot-origin",
+        "reservation_owner": "ssot-origin",
+        "immutable": True,
+        "minimum_schema_version": int(existing.get("minimum_schema_version", 4)),
+        "introduced_in": str(existing.get("introduced_in", "0.2.1")),
+        "status": _extract_status(path),
+        "supersedes": list(existing.get("supersedes", [])),
+        "superseded_by": list(existing.get("superseded_by", [])),
+        "status_notes": list(existing.get("status_notes", [])),
+    }
+    if kind == "specs":
+        entry["kind"] = str(existing.get("kind", "normative"))
+    return entry
+
+
+def sync_manifest(source: Path, kind: str, *, check: bool) -> list[str]:
+    manifest_path = source / "manifest.json"
+    existing_manifest = _load_existing_manifest(manifest_path)
+    manifest = [
+        _build_manifest_entry(path, kind, existing_manifest.get(FILENAME_PATTERNS[kind].match(path.name).group("slug"), {}))
+        for path in _iter_markdown(source)
+    ]
+    expected_text = json.dumps(manifest, indent=2) + "\n"
+    if manifest_path.exists() and manifest_path.read_text(encoding="utf-8") == expected_text:
+        return []
+    if check:
+        return [f"Manifest drift: {manifest_path.relative_to(PROJECT_ROOT).as_posix()}"]
+    manifest_path.write_text(expected_text, encoding="utf-8")
+    return []
+
+
+def sync_mirror(source: Path, destination: Path, *, check: bool, prune: bool = False) -> list[str]:
     destination.mkdir(parents=True, exist_ok=True)
     failures: list[str] = []
-    mirror_kind = destination.name
 
-    source_files = {path.name: path for path in _iter_markdown(source)}
-    destination_files = {path.name: path for path in _iter_markdown(destination)}
+    source_files = {path.name: path for path in _iter_mirror_files(source)}
+    destination_files = {path.name: path for path in _iter_mirror_files(destination)}
 
     for name, source_path in source_files.items():
-        if (mirror_kind, name) in EXCLUDED_MIRROR_FILES:
-            continue
         destination_path = destination / name
         source_text = source_path.read_text(encoding="utf-8")
         if not destination_path.exists():
@@ -46,17 +168,67 @@ def sync_mirror(source: Path, destination: Path, *, check: bool) -> list[str]:
             else:
                 destination_path.write_text(source_text, encoding="utf-8")
 
+    if prune:
+        for name, destination_path in destination_files.items():
+            if name in source_files:
+                continue
+            if check:
+                failures.append(f"Unexpected mirrored doc: {destination_path.relative_to(PROJECT_ROOT).as_posix()}")
+            else:
+                destination_path.unlink()
+
+    return failures
+
+
+def _collect_numbers(directory: Path, kind: str) -> tuple[set[int], list[str]]:
+    failures: list[str] = []
+    numbers: set[int] = set()
+    pattern = FILENAME_PATTERNS[kind]
+    for path in _iter_markdown(directory):
+        match = pattern.match(path.name)
+        if match is None:
+            failures.append(f"Invalid {kind} filename: {path.relative_to(PROJECT_ROOT).as_posix()}")
+            continue
+        numbers.add(int(match.group("number")))
+    return numbers, failures
+
+
+def validate_number_ranges() -> list[str]:
+    failures: list[str] = []
+    inventory_numbers: dict[str, dict[str, set[int]]] = {"ssot-core": {}, "ssot-origin": {}}
+
+    for owner, roots in (("ssot-core", CORE_ROOTS), ("ssot-origin", ORIGIN_ROOTS)):
+        for kind, root in roots.items():
+            numbers, parse_failures = _collect_numbers(root, kind)
+            failures.extend(parse_failures)
+            inventory_numbers[owner][kind] = numbers
+            start, end = EXPECTED_RANGES[owner][kind]
+            for number in sorted(numbers):
+                if number < start or number > end:
+                    failures.append(
+                        f"{owner} {kind} id {number:04d} is outside reserved range {start:04d}..{end:04d}"
+                    )
+
+    for kind in ("adr", "specs"):
+        conflicts = sorted(inventory_numbers["ssot-origin"][kind] & inventory_numbers["ssot-core"][kind])
+        for number in conflicts:
+            failures.append(
+                f"Conflicting {kind} id {number:04d} is present in both ssot-origin templates and ssot-core docs"
+            )
     return failures
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Sync or verify docs/ mirrors for packaged ADRs and specs.")
-    parser.add_argument("--check", action="store_true", help="Fail if docs/ differs from packaged templates.")
+    parser = argparse.ArgumentParser(description="Sync core/origin doc mirrors and verify ADR/SPEC inventory boundaries.")
+    parser.add_argument("--check", action="store_true", help="Fail if mirrors or inventory boundaries drift.")
     args = parser.parse_args()
 
     failures: list[str] = []
-    for source, destination in MIRRORS:
-        failures.extend(sync_mirror(source, destination, check=args.check))
+    for kind, source in ORIGIN_ROOTS.items():
+        failures.extend(sync_manifest(source, kind, check=args.check))
+    for source, destination in CORE_MIRRORS + ORIGIN_MIRRORS:
+        failures.extend(sync_mirror(source, destination, check=args.check, prune=True))
+    failures.extend(validate_number_ranges())
 
     if failures:
         for failure in failures:

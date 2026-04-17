@@ -87,7 +87,8 @@ class ReleaseWorkflowTests(unittest.TestCase):
         script = _read("scripts/sync_packaged_docs.py")
         self.assertIn("pkgs", script)
         self.assertIn("ssot_contracts", script)
-        self.assertNotIn('PROJECT_ROOT / "src" / "ssot_registry" / "templates"', script)
+        self.assertIn("ssot_registry", script)
+        self.assertIn("validate_number_ranges", script)
 
 
 if __name__ == "__main__":

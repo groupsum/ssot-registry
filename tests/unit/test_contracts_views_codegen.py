@@ -26,7 +26,7 @@ from tests.helpers import temp_repo_from_fixture
 class ContractsViewsCodegenTests(unittest.TestCase):
     def test_contracts_expose_schema_and_manifest_resources(self) -> None:
         self.assertIn("registry.schema.json", list_schema_names())
-        self.assertIn("adr:0001", list_document_manifest_entries("adr"))
+        self.assertIn("adr:0600", list_document_manifest_entries("adr"))
         self.assertTrue(load_schema_text("registry.schema.json").startswith("{"))
 
     def test_codegen_emits_json_metadata_indexes(self) -> None:

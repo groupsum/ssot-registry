@@ -23,8 +23,10 @@ class MigrateV6ToV7Tests(unittest.TestCase):
         self.assertEqual("operator-repo", migrated["repo"]["kind"])
         self.assertEqual("ssot-origin", migrated["adrs"][0]["origin"])
         self.assertEqual("ssot-origin", migrated["specs"][0]["origin"])
-        self.assertEqual("ssot-origin", migrated["document_id_reservations"]["adr"][0]["owner"])
-        self.assertEqual(500, migrated["document_id_reservations"]["adr"][1]["start"])
+        self.assertEqual("ssot-core", migrated["document_id_reservations"]["adr"][0]["owner"])
+        self.assertEqual(1, migrated["document_id_reservations"]["adr"][0]["start"])
+        self.assertEqual("ssot-origin", migrated["document_id_reservations"]["adr"][1]["owner"])
+        self.assertEqual(600, migrated["document_id_reservations"]["adr"][1]["start"])
 
 
 if __name__ == "__main__":

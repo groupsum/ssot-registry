@@ -23,7 +23,7 @@ class CliUpgradeTests(unittest.TestCase):
         payload = json.loads(upgrade.stdout)
         self.assertIn("migrate_v3_to_v4", payload["migrations"])
         self.assertEqual(payload["to_version"], __version__)
-        self.assertTrue((repo / ".ssot" / "specs" / "SPEC-0001-registry-core.md").exists())
+        self.assertTrue((repo / ".ssot" / "specs" / "SPEC-0600-registry-core.md").exists())
         self.assertFalse((repo / ".ssot" / "specs" / "registry-core.md").exists())
         self.assertTrue((repo / ".ssot" / "reports" / "upgrade.report.json").exists())
 

@@ -4,16 +4,16 @@
 Draft
 
 ## Decision
-In the `ssot-registry` upstream repository, canonical authored sources are the package-owned contract and runtime artifacts that maintainers edit directly.
+In the upstream `ssot-registry` repository, canonical governance documents are the `ssot-core` ADRs and specs authored under `.ssot/`.
 
 Generated projections include:
 
-- mirrored maintainer docs under `docs/**`,
-- packaged operator-facing document copies emitted from upstream contract sources,
-- generated metadata, reports, snapshots, and graph exports,
-- rendered assets such as CLI/TUI screenshots and exported SVG/PNG/DOT artifacts.
+- graph/report artifacts,
+- maintainer-facing `docs/**` mirrors,
+- packaged `ssot-origin` template docs and manifests under `pkgs/ssot-contracts/src/ssot_contracts/templates/**`,
+- mirrored package copies under `pkgs/ssot-registry/src/ssot_registry/templates/**`.
 
 ## Consequences
-- Maintainers SHALL edit upstream canonical sources rather than mirrored or generated projections.
+- Maintainers SHALL edit upstream `.ssot/**` sources, not their mirrors or packaged copies.
 - Projection generation MUST be deterministic.
-- Manual edits to generated projections are treated as drift and MAY be overwritten by regeneration.
+- Manual edits to generated projections are treated as drift.

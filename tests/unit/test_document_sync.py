@@ -13,7 +13,7 @@ class DocumentSyncTests(unittest.TestCase):
         self.addCleanup(temp_dir.cleanup)
         repo = Path(temp_dir.name) / "repo"
 
-        target = repo / ".ssot" / "adr" / "ADR-0001-canonical-json-registry.md"
+        target = repo / ".ssot" / "adr" / "ADR-0600-canonical-json-registry.md"
         target.write_text(target.read_text(encoding="utf-8") + "\nlocal edit\n", encoding="utf-8")
 
         report = validate_registry(repo)
@@ -21,7 +21,7 @@ class DocumentSyncTests(unittest.TestCase):
         self.assertIn("content hash does not match file content", "\n".join(report["failures"]))
 
         sync_result = sync_documents(repo, "adr")
-        self.assertIn("adr:0001", sync_result["updated"])
+        self.assertIn("adr:0600", sync_result["updated"])
 
         report_after = validate_registry(repo)
         self.assertTrue(report_after["passed"], report_after)

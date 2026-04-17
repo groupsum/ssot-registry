@@ -65,7 +65,7 @@ class CliSpecTests(unittest.TestCase):
             superseded_doc = json.loads(run_cli("spec", "get", str(repo), "--id", "spc:1000").stdout)["document"]
             self.assertEqual(superseded_doc["status"], "superseded")
 
-            delete_ssot = run_cli("spec", "delete", str(repo), "--id", "spc:0001")
+            delete_ssot = run_cli("spec", "delete", str(repo), "--id", "spc:0600")
             self.assertEqual(delete_ssot.returncode, 1)
             self.assertIn("immutable", delete_ssot.stdout)
 
