@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssot-contracts"
-version = "0.2.5.dev1"
+version = "0.2.5"
 description = "Canonical schemas, templates, manifests, and generated Python contract artifacts for SSOT."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
