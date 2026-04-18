@@ -860,8 +860,8 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 
 ## Documentation map
 
-- Specifications: `docs/specs/`
-- Architecture decisions: `docs/adr/`
+- Specifications: `.ssot/specs/`
+- Architecture decisions: `.ssot/adr/`
 - Examples: `examples/`
 - Source code: `pkgs/*/src/`
 

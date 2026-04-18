@@ -9,10 +9,6 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CORE_MIRRORS = (
-    (PROJECT_ROOT / ".ssot" / "adr", PROJECT_ROOT / "docs" / "adr"),
-    (PROJECT_ROOT / ".ssot" / "specs", PROJECT_ROOT / "docs" / "specs"),
-)
 ORIGIN_MIRRORS = (
     (
         PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "adr",
@@ -219,14 +215,16 @@ def validate_number_ranges() -> list[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Sync core/origin doc mirrors and verify ADR/SPEC inventory boundaries.")
+    parser = argparse.ArgumentParser(
+        description="Sync packaged ssot-origin docs/manifests and verify ADR/SPEC inventory boundaries."
+    )
     parser.add_argument("--check", action="store_true", help="Fail if mirrors or inventory boundaries drift.")
     args = parser.parse_args()
 
     failures: list[str] = []
     for kind, source in ORIGIN_ROOTS.items():
         failures.extend(sync_manifest(source, kind, check=args.check))
-    for source, destination in CORE_MIRRORS + ORIGIN_MIRRORS:
+    for source, destination in ORIGIN_MIRRORS:
         failures.extend(sync_mirror(source, destination, check=args.check, prune=True))
     failures.extend(validate_number_ranges())
 
