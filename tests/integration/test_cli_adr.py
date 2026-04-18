@@ -37,7 +37,9 @@ class CliAdrTests(unittest.TestCase):
 
             get_result = run_cli("adr", "get", str(repo), "--id", "adr:1000")
             self.assertEqual(get_result.returncode, 0, get_result.stderr)
-            self.assertEqual(json.loads(get_result.stdout)["document"]["title"], "Local decision")
+            get_payload = json.loads(get_result.stdout)
+            self.assertEqual(get_payload["document"]["title"], "Local decision")
+            self.assertEqual(get_payload["payload"]["body"], "Local ADR body.")
 
             body.write_text("Updated ADR body.\n", encoding="utf-8")
             update = run_cli("adr", "update", str(repo), "--id", "adr:1000", "--title", "Local decision updated", "--body-file", str(body))

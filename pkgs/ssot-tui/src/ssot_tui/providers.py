@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from ssot_registry.api import list_entities, load_registry, validate_registry
+from ssot_registry.api import get_document, list_entities, load_registry, validate_registry
 from ssot_registry.api.documents import list_documents
 
 from .presentations import SECTION_TO_COMMAND
@@ -177,13 +177,13 @@ class BridgeActionProvider:
 
     def preview_cli_read(self, repo_path: str | Path, section: str, entity_id: str | None = None) -> str:
         if section in {"adrs", "specs"}:
-            payload = list_documents(repo_path, "adr" if section == "adrs" else "spec")
+            kind = "adr" if section == "adrs" else "spec"
             if entity_id is None:
-                return _preview_json(payload)
-            for row in payload.get("documents", []):
-                if row.get("id") == entity_id:
-                    return _preview_json(row)
-            return f"{entity_id} not found in {section}"
+                return _preview_json(list_documents(repo_path, kind))
+            try:
+                return _preview_json(get_document(repo_path, kind, entity_id))
+            except ValueError:
+                return f"{entity_id} not found in {section}"
         if entity_id is None:
             payload = list_entities(repo_path, section)
             return _preview_json(payload)

@@ -37,6 +37,12 @@ class CliSpecTests(unittest.TestCase):
             self.assertTrue(created_path.exists())
             self.assertFalse(created_path.read_text(encoding="utf-8").lstrip().startswith("{"))
 
+            get_result = run_cli("spec", "get", str(repo), "--id", "spc:1000")
+            self.assertEqual(get_result.returncode, 0, get_result.stderr)
+            get_payload = json.loads(get_result.stdout)
+            self.assertEqual(get_payload["document"]["title"], "Local operating spec")
+            self.assertEqual(get_payload["payload"]["body"], "Local spec body.")
+
             update = run_cli("spec", "update", str(repo), "--id", "spc:1000", "--title", "Local operating spec updated")
             self.assertEqual(update.returncode, 0, update.stderr)
             self.assertEqual(json.loads(update.stdout)["document"]["title"], "Local operating spec updated")

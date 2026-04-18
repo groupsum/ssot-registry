@@ -24,11 +24,11 @@ class RegistryWorkspaceService:
         collections: dict[str, list[dict[str, Any]]] = {}
         for section, _label in ENTITY_SECTIONS:
             if section == "adrs":
-                payload = list_documents(repo_root, "adr")
+                payload = list_documents(repo_root, "adr", include_payload=True)
                 collections[section] = payload.get("documents", [])
                 continue
             if section == "specs":
-                payload = list_documents(repo_root, "spec")
+                payload = list_documents(repo_root, "spec", include_payload=True)
                 collections[section] = payload.get("documents", [])
                 continue
             payload = list_entities(repo_root, section)

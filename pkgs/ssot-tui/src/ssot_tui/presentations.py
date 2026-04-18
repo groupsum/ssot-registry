@@ -131,16 +131,27 @@ def render_structured_detail(view_model: EntityDetailViewModel) -> str:
         lines.extend(["", "Badges", *[f"- {badge}" for badge in view_model.badges]])
     if view_model.primary_fields:
         lines.extend(["", "Primary"])
-        lines.extend(f"- {field.label}: {field.value}" for field in view_model.primary_fields)
+        for field in view_model.primary_fields:
+            _append_field(lines, field)
     if view_model.secondary_fields:
         lines.extend(["", "Details"])
-        lines.extend(f"- {field.label}: {field.value}" for field in view_model.secondary_fields[:12])
+        for field in view_model.secondary_fields[:12]:
+            _append_field(lines, field)
         if len(view_model.secondary_fields) > 12:
             lines.append(f"- ... {len(view_model.secondary_fields) - 12} more fields")
     if view_model.resources:
         lines.extend(["", "Related"])
         lines.extend(f"- {resource.kind}: {resource.field_path} -> {resource.label}" for resource in view_model.resources)
     return "\n".join(lines)
+
+
+def _append_field(lines: list[str], field: DetailFieldViewModel) -> None:
+    if "\n" not in field.value:
+        lines.append(f"- {field.label}: {field.value}")
+        return
+    lines.append(f"- {field.label}:")
+    for line in field.value.splitlines():
+        lines.append(f"  {line}" if line else "  ")
 
 
 def _preferred_primary_fields(section: str) -> tuple[str, ...]:
@@ -154,8 +165,8 @@ def _preferred_primary_fields(section: str) -> tuple[str, ...]:
         "risks": ("id", "title", "status", "severity"),
         "boundaries": ("id", "title", "status"),
         "releases": ("id", "version", "status", "boundary_id"),
-        "adrs": ("id", "title", "status", "path"),
-        "specs": ("id", "title", "status", "path"),
+        "adrs": ("id", "summary", "path"),
+        "specs": ("id", "summary", "path"),
     }
     return defaults.get(section, ("id", "title", "status"))
 

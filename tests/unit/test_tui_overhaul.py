@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from ssot_tui.actions import ActionDefinition, ActionRegistry
 from ssot_tui.persistence import SessionStore
-from ssot_tui.presentations import build_detail_view_model, build_section_specs
+from ssot_tui.presentations import build_detail_view_model, build_section_specs, render_structured_detail
 from ssot_tui.providers import BridgeActionProvider, WorkspaceProvider
 from ssot_tui.services import ENTITY_SECTIONS, RegistryWorkspaceService
 from ssot_tui.state import SessionState
@@ -140,6 +140,50 @@ class TuiOverhaulUnitTests(unittest.TestCase):
         kinds = {resource.kind for resource in view_model.resources}
         self.assertIn("entity", kinds)
         self.assertIn("file", kinds)
+
+    def test_workspace_service_enriches_document_rows_with_body(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        try:
+            workspace = RegistryWorkspaceService().load_workspace(repo)
+        finally:
+            temp_dir.cleanup()
+
+        adr = next(row for row in workspace.collections["adrs"] if row["id"] == "adr:0600")
+        self.assertIn("body", adr)
+        self.assertIn(".ssot/registry.json", adr["body"])
+
+    def test_bridge_preview_cli_get_for_document_includes_payload_body(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        try:
+            preview = BridgeActionProvider().preview_cli_read(repo, "adrs", "adr:0600")
+        finally:
+            temp_dir.cleanup()
+
+        self.assertIn("\"payload\"", preview)
+        self.assertIn("\"body\"", preview)
+
+    def test_document_detail_renders_multiline_body(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        try:
+            workspace = RegistryWorkspaceService().load_workspace(repo)
+            specs = build_section_specs(ENTITY_SECTIONS)
+            entity_index = {}
+            for section, rows in workspace.collections.items():
+                for row in rows:
+                    entity_id = row.get("id")
+                    if isinstance(entity_id, str):
+                        entity_index[entity_id] = (section, row)
+            adr = next(row for row in workspace.collections["adrs"] if row["id"] == "adr:0609")
+            view_model = build_detail_view_model(adr, specs["adrs"], workspace_root=workspace.root_path, entity_index=entity_index)
+        finally:
+            temp_dir.cleanup()
+
+        rendered = render_structured_detail(view_model)
+        self.assertIn("- Body:", rendered)
+        self.assertIn("Generated projections include", rendered)
 
 
 @unittest.skipUnless(BrowserScreen is not None, "textual is not installed")
