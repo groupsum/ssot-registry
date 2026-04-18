@@ -20,8 +20,8 @@ ORIGIN_MIRRORS = (
     ),
 )
 FILENAME_PATTERNS = {
-    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.md$"),
-    "specs": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.md$"),
+    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.yaml$"),
+    "specs": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.yaml$"),
 }
 EXPECTED_RANGES = {
     "ssot-core": {"adr": (1, 599), "specs": (1, 599)},
@@ -37,12 +37,12 @@ CORE_ROOTS = {
 }
 
 
-def _iter_markdown(directory: Path) -> list[Path]:
-    return sorted(path for path in directory.glob("*.md") if path.is_file())
+def _iter_documents(directory: Path) -> list[Path]:
+    return sorted(path for path in directory.glob("*.yaml") if path.is_file())
 
 
 def _iter_mirror_files(directory: Path) -> list[Path]:
-    paths = list(_iter_markdown(directory))
+    paths = list(_iter_documents(directory))
     paths.extend(path for path in directory.glob("*.json") if path.is_file())
     return sorted(paths)
 
@@ -51,31 +51,23 @@ def _sha256_normalized_text(path: Path) -> str:
     return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
+def _load_document_payload(path: Path) -> dict[str, object]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"Document payload must be an object: {path}")
+    return payload
+
+
 def _extract_title(path: Path, kind: str, slug: str) -> str:
-    for line in path.read_text(encoding="utf-8").splitlines():
-        normalized = line.lstrip("\ufeff")
-        if not normalized.startswith("# "):
-            continue
-        title = normalized[2:].strip()
-        if kind == "adr":
-            title = re.sub(r"^ADR-\d{4}:\s*", "", title)
-        else:
-            title = re.sub(r"^SPEC-\d{4}:\s*", "", title)
-        return title
-    return slug.replace("-", " ").title()
+    payload = _load_document_payload(path)
+    title = payload.get("title")
+    return str(title) if isinstance(title, str) and title.strip() else slug.replace("-", " ").title()
 
 
 def _extract_status(path: Path) -> str:
-    lines = path.read_text(encoding="utf-8").splitlines()
-    for index, line in enumerate(lines):
-        if line.strip() != "## Status":
-            continue
-        for candidate in lines[index + 1 :]:
-            stripped = candidate.strip()
-            if stripped:
-                return stripped.lower()
-        break
-    return "draft"
+    payload = _load_document_payload(path)
+    status = payload.get("status")
+    return str(status).lower() if isinstance(status, str) and status.strip() else "draft"
 
 
 def _load_existing_manifest(manifest_path: Path) -> dict[str, dict[str, object]]:
@@ -129,7 +121,7 @@ def sync_manifest(source: Path, kind: str, *, check: bool) -> list[str]:
     existing_manifest = _load_existing_manifest(manifest_path)
     manifest = [
         _build_manifest_entry(path, kind, existing_manifest.get(FILENAME_PATTERNS[kind].match(path.name).group("slug"), {}))
-        for path in _iter_markdown(source)
+        for path in _iter_documents(source)
     ]
     expected_text = json.dumps(manifest, indent=2) + "\n"
     if manifest_path.exists() and manifest_path.read_text(encoding="utf-8") == expected_text:
@@ -180,7 +172,7 @@ def _collect_numbers(directory: Path, kind: str) -> tuple[set[int], list[str]]:
     failures: list[str] = []
     numbers: set[int] = set()
     pattern = FILENAME_PATTERNS[kind]
-    for path in _iter_markdown(directory):
+    for path in _iter_documents(directory):
         match = pattern.match(path.name)
         if match is None:
             failures.append(f"Invalid {kind} filename: {path.relative_to(PROJECT_ROOT).as_posix()}")

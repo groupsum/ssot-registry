@@ -1,0 +1,26 @@
+{
+  "schema_version": 9,
+  "kind": "spec",
+  "id": "spc:0510",
+  "number": 510,
+  "slug": "canonical-release-targets-and-tag-naming",
+  "title": "Canonical release targets and tag naming",
+  "status": "draft",
+  "origin": "ssot-core",
+  "decision_date": null,
+  "tags": [],
+  "summary": "`pkgs/ssot-registry` is the canonical Python runtime release target.",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {
+    "canonical_targets": [
+      "- `pkgs/ssot-contracts`\n- `pkgs/ssot-views`\n- `pkgs/ssot-codegen`\n- `pkgs/ssot-registry`\n- `pkgs/ssot-cli`\n- `pkgs/ssot-tui`\n\n`pkgs/ssot-registry` is the canonical Python runtime release target."
+    ],
+    "tag_format": [
+      "Each package SHALL publish with a package-specific tag:\n\n- `ssot-contracts==X.Y.Z`\n- `ssot-views==X.Y.Z`\n- `ssot-codegen==X.Y.Z`\n- `ssot-registry==X.Y.Z`\n- `ssot-cli==X.Y.Z`\n- `ssot-tui==X.Y.Z`"
+    ]
+  },
+  "spec_kind": "governance"
+}

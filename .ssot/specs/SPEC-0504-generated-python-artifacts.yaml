@@ -1,0 +1,23 @@
+{
+  "schema_version": 9,
+  "kind": "spec",
+  "id": "spc:0504",
+  "number": 504,
+  "slug": "generated-python-artifacts",
+  "title": "Generated Python artifacts",
+  "status": "draft",
+  "origin": "ssot-core",
+  "decision_date": null,
+  "tags": [],
+  "summary": "Initial generated Python outputs:",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {
+    "content": [
+      "Initial generated Python outputs:\n\n- enums / constants\n- ID prefix tables\n- schema and manifest indexes\n- CLI metadata\n- TUI metadata"
+    ]
+  },
+  "spec_kind": "governance"
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 9,
+  "kind": "spec",
+  "id": "spc:0506",
+  "number": 506,
+  "slug": "tui-metadata-contract",
+  "title": "TUI metadata contract",
+  "status": "draft",
+  "origin": "ssot-core",
+  "decision_date": null,
+  "tags": [],
+  "summary": "TUI metadata SHALL describe:",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {
+    "content": [
+      "TUI metadata SHALL describe:\n\n- entity sections\n- table columns\n- form / detail sections\n- future action metadata\n\n`ssot-tui` SHALL consume generated TUI metadata where practical."
+    ]
+  },
+  "spec_kind": "governance"
+}

@@ -7,8 +7,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PATTERNS = {
-    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.md$"),
-    "specs": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.md$"),
+    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.yaml$"),
+    "specs": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.yaml$"),
 }
 ORIGIN_ROOTS = {
     "adr": REPO_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "adr",
@@ -22,7 +22,7 @@ CORE_ROOTS = {
 
 def _numbers(root: Path, kind: str) -> set[int]:
     numbers: set[int] = set()
-    for path in sorted(root.glob("*.md")):
+    for path in sorted(root.glob("*.yaml")):
         match = PATTERNS[kind].match(path.name)
         if match is None:
             raise AssertionError(f"Unexpected {kind} filename: {path.relative_to(REPO_ROOT).as_posix()}")

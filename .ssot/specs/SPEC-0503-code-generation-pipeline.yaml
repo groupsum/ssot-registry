@@ -1,0 +1,23 @@
+{
+  "schema_version": 9,
+  "kind": "spec",
+  "id": "spc:0503",
+  "number": 503,
+  "slug": "code-generation-pipeline",
+  "title": "Code generation pipeline",
+  "status": "draft",
+  "origin": "ssot-core",
+  "decision_date": null,
+  "tags": [],
+  "summary": "Inputs:",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {
+    "content": [
+      "Inputs:\n\n- `ssot-contracts`\n- `ssot-views`\n\nOutputs:\n\n- generated Python metadata modules\n- parity JSON indexes\n- future TypeScript placeholders\n\nGenerated outputs SHALL be deterministic."
+    ]
+  },
+  "spec_kind": "governance"
+}

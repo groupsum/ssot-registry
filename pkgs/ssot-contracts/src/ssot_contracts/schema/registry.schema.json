@@ -25,7 +25,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 8
+      "const": 9
     },
     "repo": {
       "$ref": "#/$defs/repo"

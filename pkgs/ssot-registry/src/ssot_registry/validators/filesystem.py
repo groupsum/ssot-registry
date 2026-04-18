@@ -72,6 +72,16 @@ def validate_filesystem_paths(
             if isinstance(path, str) and _is_ssot_relative_path(path, ssot_root):
                 _validate_ssot_path_length(path, failures, f"{section}.{document_id}.path")
 
+    for path_key in ("adr_root", "spec_root"):
+        configured = paths.get(path_key) if isinstance(paths, dict) else None
+        if not isinstance(configured, str):
+            continue
+        document_root = repo_root / configured
+        if not document_root.exists() or not document_root.is_dir():
+            continue
+        for legacy_path in sorted(document_root.glob("*.md")):
+            failures.append(f"Legacy markdown document is not allowed after migration: {legacy_path.relative_to(repo_root).as_posix()}")
+
     ssot_dir = repo_root / ssot_root
     if ssot_dir.exists() and ssot_dir.is_dir():
         for target in ssot_dir.rglob("*"):

@@ -18,15 +18,30 @@ class SyncPackagedDocsTests(unittest.TestCase):
         source.mkdir()
         destination.mkdir()
 
-        (source / "ADR-0001-example.md").write_text("# Example\n", encoding="utf-8")
-        (destination / "ADR-0001-example.md").write_text("# Example\n", encoding="utf-8")
-        (destination / "ADR-0500-core.md").write_text("# Core\n", encoding="utf-8")
+        doc_text = json.dumps(
+            {
+                "schema_version": 9,
+                "kind": "adr",
+                "id": "adr:0001",
+                "number": 1,
+                "slug": "example",
+                "title": "Example",
+                "status": "draft",
+                "origin": "ssot-origin",
+                "summary": "Example",
+                "sections": {"decision": ["Example"]},
+            },
+            indent=2,
+        ) + "\n"
+        (source / "ADR-0001-example.yaml").write_text(doc_text, encoding="utf-8")
+        (destination / "ADR-0001-example.yaml").write_text(doc_text, encoding="utf-8")
+        (destination / "ADR-0500-core.yaml").write_text(doc_text, encoding="utf-8")
 
         failures = sync_mirror(source, destination, check=True)
 
         self.assertEqual(failures, [])
 
-    def test_prune_removes_stale_mirrored_markdown(self) -> None:
+    def test_prune_removes_stale_mirrored_yaml(self) -> None:
         temp_dir = workspace_tempdir()
         self.addCleanup(temp_dir.cleanup)
         root = Path(temp_dir.name)
@@ -35,15 +50,30 @@ class SyncPackagedDocsTests(unittest.TestCase):
         source.mkdir()
         destination.mkdir()
 
-        (source / "ADR-0600-example.md").write_text("# ADR-0600: Example\n", encoding="utf-8")
-        stale = destination / "ADR-0001-stale.md"
-        stale.write_text("# ADR-0001: Stale\n", encoding="utf-8")
+        doc_text = json.dumps(
+            {
+                "schema_version": 9,
+                "kind": "adr",
+                "id": "adr:0600",
+                "number": 600,
+                "slug": "example",
+                "title": "Example",
+                "status": "draft",
+                "origin": "ssot-origin",
+                "summary": "Example",
+                "sections": {"decision": ["Example"]},
+            },
+            indent=2,
+        ) + "\n"
+        (source / "ADR-0600-example.yaml").write_text(doc_text, encoding="utf-8")
+        stale = destination / "ADR-0001-stale.yaml"
+        stale.write_text(doc_text, encoding="utf-8")
 
         failures = sync_mirror(source, destination, check=False, prune=True)
 
         self.assertEqual(failures, [])
         self.assertFalse(stale.exists())
-        self.assertTrue((destination / "ADR-0600-example.md").exists())
+        self.assertTrue((destination / "ADR-0600-example.yaml").exists())
 
     def test_sync_manifest_rewrites_stale_hashes(self) -> None:
         temp_dir = workspace_tempdir()
@@ -51,7 +81,26 @@ class SyncPackagedDocsTests(unittest.TestCase):
         root = Path(temp_dir.name)
         specs = root / "specs"
         specs.mkdir()
-        (specs / "SPEC-0607-repo-policy.md").write_text("# Repository policy\n\n## Status\nDraft\n", encoding="utf-8")
+        (specs / "SPEC-0607-repo-policy.yaml").write_text(
+            json.dumps(
+                {
+                    "schema_version": 9,
+                    "kind": "spec",
+                    "id": "spc:0607",
+                    "number": 607,
+                    "slug": "repo-policy",
+                    "title": "Repository policy",
+                    "status": "draft",
+                    "origin": "ssot-origin",
+                    "summary": "Repository policy",
+                    "spec_kind": "normative",
+                    "sections": {"rules": ["Repository policy"]},
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
         (specs / "manifest.json").write_text(
             json.dumps(
                 [
@@ -60,8 +109,8 @@ class SyncPackagedDocsTests(unittest.TestCase):
                         "number": 607,
                         "slug": "repo-policy",
                         "title": "Repository policy",
-                        "filename": "SPEC-0607-repo-policy.md",
-                        "target_path": ".ssot/specs/SPEC-0607-repo-policy.md",
+                        "filename": "SPEC-0607-repo-policy.yaml",
+                        "target_path": ".ssot/specs/SPEC-0607-repo-policy.yaml",
                         "sha256": "0" * 64,
                         "origin": "ssot-origin",
                         "reservation_owner": "ssot-origin",
@@ -86,7 +135,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
         self.assertEqual(failures, [])
         manifest = json.loads((specs / "manifest.json").read_text(encoding="utf-8"))
         self.assertNotEqual(manifest[0]["sha256"], "0" * 64)
-        self.assertEqual(manifest[0]["filename"], "SPEC-0607-repo-policy.md")
+        self.assertEqual(manifest[0]["filename"], "SPEC-0607-repo-policy.yaml")
 
     def test_range_validation_detects_cross_origin_collision(self) -> None:
         temp_dir = workspace_tempdir()
@@ -99,10 +148,41 @@ class SyncPackagedDocsTests(unittest.TestCase):
         for path in (origin_adr, origin_specs, core_adr, core_specs):
             path.mkdir()
 
-        (origin_adr / "ADR-0010-origin.md").write_text("# Origin\n", encoding="utf-8")
-        (origin_specs / "SPEC-0008-origin.md").write_text("# Origin\n", encoding="utf-8")
-        (core_adr / "ADR-0010-core-collision.md").write_text("# Core\n", encoding="utf-8")
-        (core_specs / "SPEC-0508-core.md").write_text("# Core\n", encoding="utf-8")
+        doc_text = json.dumps(
+            {
+                "schema_version": 9,
+                "kind": "adr",
+                "id": "adr:0010",
+                "number": 10,
+                "slug": "origin",
+                "title": "Origin",
+                "status": "draft",
+                "origin": "ssot-origin",
+                "summary": "Origin",
+                "sections": {"decision": ["Origin"]},
+            },
+            indent=2,
+        ) + "\n"
+        spec_text = json.dumps(
+            {
+                "schema_version": 9,
+                "kind": "spec",
+                "id": "spc:0008",
+                "number": 8,
+                "slug": "origin",
+                "title": "Origin",
+                "status": "draft",
+                "origin": "ssot-origin",
+                "summary": "Origin",
+                "spec_kind": "normative",
+                "sections": {"content": ["Origin"]},
+            },
+            indent=2,
+        ) + "\n"
+        (origin_adr / "ADR-0010-origin.yaml").write_text(doc_text, encoding="utf-8")
+        (origin_specs / "SPEC-0008-origin.yaml").write_text(spec_text, encoding="utf-8")
+        (core_adr / "ADR-0010-core-collision.yaml").write_text(doc_text, encoding="utf-8")
+        (core_specs / "SPEC-0508-core.yaml").write_text(spec_text.replace('0008', '0508'), encoding="utf-8")
 
         from scripts import sync_packaged_docs
 

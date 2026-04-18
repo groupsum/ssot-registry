@@ -55,8 +55,8 @@ This package currently includes:
 
 - schemas under `ssot_contracts.schema`
 - registry templates under `ssot_contracts.templates`
-- packaged ADR manifests and markdown files under `ssot_contracts.templates.adr`
-- packaged spec manifests and markdown files under `ssot_contracts.templates.specs`
+- packaged ADR manifests and YAML files under `ssot_contracts.templates.adr`
+- packaged spec manifests and YAML files under `ssot_contracts.templates.specs`
 - generated Python metadata under `ssot_contracts.generated.python`
 
 Representative schemas include:
@@ -105,7 +105,7 @@ Read packaged document bodies:
 ```python
 from ssot_contracts import read_packaged_document_text
 
-text = read_packaged_document_text("adr", "ADR-0600-canonical-json-registry.md")
+text = read_packaged_document_text("adr", "ADR-0600-canonical-json-registry.yaml")
 print(text.splitlines()[0])
 ```
 

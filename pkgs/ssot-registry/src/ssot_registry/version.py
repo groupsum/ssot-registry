@@ -35,6 +35,8 @@ def _read_version_from_pyproject(pyproject_path: Path = _PYPROJECT_PATH) -> str:
 
 
 def _resolve_version() -> str:
+    if _PYPROJECT_PATH.exists():
+        return _read_version_from_pyproject()
     try:
         return package_version(_PACKAGE_NAME)
     except PackageNotFoundError:

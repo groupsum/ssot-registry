@@ -22,7 +22,7 @@ class MigrateV3ToV4Tests(unittest.TestCase):
         self.assertEqual(migrated["tooling"]["ssot_registry_version"], __version__)
         self.assertTrue(any(row["id"] == "adr:0600" for row in migrated["adrs"]))
         self.assertTrue(any(row["id"] == "spc:0600" for row in migrated["specs"]))
-        self.assertTrue((repo / ".ssot" / "specs" / "SPEC-0600-registry-core.md").exists())
+        self.assertTrue((repo / ".ssot" / "specs" / "SPEC-0600-registry-core.yaml").exists())
         self.assertFalse((repo / ".ssot" / "specs" / "registry-core.md").exists())
 
 

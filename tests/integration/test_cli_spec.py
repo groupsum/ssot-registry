@@ -33,7 +33,7 @@ class CliSpecTests(unittest.TestCase):
             self.assertEqual(create.returncode, 0, create.stderr)
             payload = json.loads(create.stdout)
             self.assertEqual(payload["document"]["id"], "spc:1000")
-            self.assertTrue((repo / ".ssot" / "specs" / "SPEC-1000-local-operating-spec.md").exists())
+            self.assertTrue((repo / ".ssot" / "specs" / "SPEC-1000-local-operating-spec.yaml").exists())
 
             update = run_cli("spec", "update", str(repo), "--id", "spc:1000", "--title", "Local operating spec updated")
             self.assertEqual(update.returncode, 0, update.stderr)

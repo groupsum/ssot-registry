@@ -1,0 +1,23 @@
+{
+  "schema_version": 9,
+  "kind": "spec",
+  "id": "spc:0502",
+  "number": 502,
+  "slug": "view-artifact-format",
+  "title": "View artifact format",
+  "status": "draft",
+  "origin": "ssot-core",
+  "decision_date": null,
+  "tags": [],
+  "summary": "`ssot-views` SHALL publish:",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {
+    "content": [
+      "`ssot-views` SHALL publish:\n\n- validation report builders\n- certification report builders\n- graph exporters\n- future shared view-definition metadata"
+    ]
+  },
+  "spec_kind": "governance"
+}

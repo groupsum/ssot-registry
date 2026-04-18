@@ -1,0 +1,22 @@
+{
+  "schema_version": 9,
+  "kind": "adr",
+  "id": "adr:0502",
+  "number": 502,
+  "slug": "generated-artifacts-are-derived-and-non-canonical",
+  "title": "Generated artifacts are derived and non-canonical",
+  "status": "draft",
+  "origin": "ssot-core",
+  "decision_date": null,
+  "tags": [],
+  "summary": "Generated outputs from `ssot-codegen` are derived artifacts.",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {
+    "decision": [
+      "Generated outputs from `ssot-codegen` are derived artifacts.\n\n- Contracts and governance remain canonical.\n- Generated Python metadata MAY be committed for stability and parity testing.\n- Generated outputs SHALL not become the source of truth."
+    ]
+  }
+}

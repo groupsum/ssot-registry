@@ -1,0 +1,26 @@
+{
+  "schema_version": 9,
+  "kind": "spec",
+  "id": "spc:0511",
+  "number": 511,
+  "slug": "release-train-order-and-compatibility-gates",
+  "title": "Release train order and compatibility gates",
+  "status": "draft",
+  "origin": "ssot-core",
+  "decision_date": null,
+  "tags": [],
+  "summary": "4. `ssot-registry`",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {
+    "release_order": [
+      "1. `ssot-contracts`\n2. `ssot-views`\n3. `ssot-codegen`\n4. `ssot-registry`\n5. `ssot-cli`\n6. `ssot-tui`"
+    ],
+    "compatibility_gates": [
+      "- Core packages SHALL share one version.\n- Core package dependencies SHALL pin the shared core version exactly.\n- `ssot-cli` and `ssot-tui` SHALL depend on a compatible `ssot-registry` range.\n- Release automation SHALL validate train order and dependency constraints before tags are created."
+    ]
+  },
+  "spec_kind": "governance"
+}

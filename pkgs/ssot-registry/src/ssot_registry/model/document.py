@@ -32,8 +32,8 @@ TRANSITION_RULES = {
 SPEC_KINDS = set(CONTRACT_DATA["choice_sets"]["spec_kinds"])
 DOCUMENT_SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 DOCUMENT_FILENAME_PATTERNS = {
-    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.md$"),
-    "spec": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.md$"),
+    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.yaml$"),
+    "spec": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.yaml$"),
 }
 
 
@@ -54,7 +54,7 @@ def normalize_document_id(kind: str, number: int) -> str:
 
 
 def build_document_filename(kind: str, number: int, slug: str) -> str:
-    return f"{DOCUMENT_FILENAME_PREFIXES[kind]}-{format_document_number(number)}-{slug}.md"
+    return f"{DOCUMENT_FILENAME_PREFIXES[kind]}-{format_document_number(number)}-{slug}.yaml"
 
 
 def build_document_path(paths: dict[str, str], kind: str, number: int, slug: str) -> str:

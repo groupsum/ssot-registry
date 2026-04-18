@@ -12,6 +12,7 @@ from ssot_registry.model.document import (
     normalize_document_id,
     reservation_kind_key,
 )
+from ssot_registry.util.document_io import load_document_yaml, validate_document_payload
 from ssot_registry.util.fs import sha256_normalized_text_path
 from ssot_registry.version import __version__
 
@@ -130,6 +131,8 @@ def validate_document_rows(
                 expected_path = build_document_path(paths, kind, number, slug) if isinstance(paths, dict) and isinstance(slug, str) else None
                 if expected_path is not None and relative_path != expected_path:
                     failures.append(f"{prefix}.path must match number and slug: expected {expected_path}")
+                if not relative_path.endswith(".yaml"):
+                    failures.append(f"{prefix}.path must end with .yaml")
                 full_path = repo_root / relative_path
                 if not full_path.exists():
                     failures.append(f"{prefix}.path does not exist: {relative_path}")
@@ -139,6 +142,11 @@ def validate_document_rows(
                         failures.append(f"{prefix}.content_sha256 must be a 64-character sha256 hex digest")
                     elif actual_sha256 != content_sha256:
                         failures.append(f"{prefix} content hash does not match file content: {relative_path}")
+                    try:
+                        payload = load_document_yaml(full_path)
+                        validate_document_payload(kind, payload, expected_row=row)
+                    except Exception as exc:
+                        failures.append(f"{prefix} document content is invalid: {exc}")
             if origin not in DOCUMENT_ORIGINS:
                 failures.append(f"{prefix}.origin must be one of {sorted(DOCUMENT_ORIGINS)}")
             if not isinstance(managed, bool):

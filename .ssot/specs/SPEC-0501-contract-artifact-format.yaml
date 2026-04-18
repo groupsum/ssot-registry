@@ -1,0 +1,23 @@
+{
+  "schema_version": 9,
+  "kind": "spec",
+  "id": "spc:0501",
+  "number": 501,
+  "slug": "contract-artifact-format",
+  "title": "Contract artifact format",
+  "status": "draft",
+  "origin": "ssot-core",
+  "decision_date": null,
+  "tags": [],
+  "summary": "`ssot-contracts` SHALL publish:",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {
+    "content": [
+      "`ssot-contracts` SHALL publish:\n\n- JSON Schemas\n- registry seed templates\n- ADR and SPEC manifests\n- packaged ssot-origin document content\n- generated Python contract metadata"
+    ]
+  },
+  "spec_kind": "governance"
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 9,
+  "kind": "spec",
+  "id": "spc:0500",
+  "number": 500,
+  "slug": "package-topology-and-release-order",
+  "title": "Package topology and release order",
+  "status": "draft",
+  "origin": "ssot-core",
+  "decision_date": null,
+  "tags": [],
+  "summary": "Packages:",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {
+    "content": [
+      "Packages:\n\n- `ssot-contracts`\n- `ssot-views`\n- `ssot-codegen`\n- `ssot-registry`\n- `ssot-cli`\n- `ssot-tui`\n\nRelease order:\n\n1. `ssot-contracts`\n2. `ssot-views`\n3. `ssot-codegen`\n4. `ssot-registry`\n5. `ssot-cli`\n6. `ssot-tui`"
+    ]
+  },
+  "spec_kind": "governance"
+}

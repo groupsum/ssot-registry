@@ -12,6 +12,7 @@ from ssot_registry.model.document import (
     parse_document_filename,
 )
 from ssot_registry.model.enums import SCHEMA_VERSION
+from ssot_registry.util.document_io import build_document_payload, dump_document_yaml, parse_markdown_document
 from ssot_registry.util.errors import RegistryError, ValidationError
 from ssot_registry.util.fs import sha256_normalized_text_path
 from ssot_registry.util.jsonio import save_json
@@ -28,15 +29,8 @@ SSOT_ORIGIN_V8_OFFSET = 599
 
 
 def _extract_title(kind: str, path: Path) -> str:
-    lines = path.read_text(encoding="utf-8").splitlines()
-    if not lines:
-        return path.stem
-    first = lines[0].strip()
-    if kind == "adr" and first.startswith("# ADR-") and ":" in first:
-        return first.split(":", 1)[1].strip()
-    if first.startswith("#"):
-        return first.lstrip("#").strip()
-    return path.stem
+    title, _status, _sections = parse_markdown_document(kind, path.read_text(encoding="utf-8"), fallback_title=path.stem)
+    return title
 
 
 def _rename_legacy_packaged_specs(registry: dict[str, Any], repo_root: Path) -> list[dict[str, str]]:
@@ -125,7 +119,7 @@ def _collect_repo_local_documents(registry: dict[str, Any], repo_root: Path, kin
             "number": number,
             "slug": slug,
             "title": _extract_title(kind, path),
-            "path": build_document_path(registry["paths"], kind, number, slug),
+            "path": relative_path,
             "origin": "repo-local",
             "managed": False,
             "immutable": False,
@@ -310,6 +304,82 @@ def migrate_v7_to_v8(
     return migrated
 
 
+def _migrate_document_files_to_yaml(
+    registry: dict[str, Any],
+    repo_root: Path,
+    kind: str,
+) -> dict[str, list[str]]:
+    section = "adrs" if kind == "adr" else "specs"
+    summary: dict[str, list[str]] = {"converted": [], "skipped": [], "failed": []}
+
+    for row in registry.get(section, []):
+        relative_path = row.get("path")
+        if not isinstance(relative_path, str) or not relative_path.strip():
+            summary["failed"].append(str(row.get("id", "<missing>")))
+            continue
+
+        current_path = repo_root / relative_path
+        target_relative = build_document_path(registry["paths"], kind, row["number"], row["slug"])
+        target_path = repo_root / target_relative
+
+        if relative_path.endswith(".yaml") and current_path.exists():
+            row["path"] = target_relative
+            row["content_sha256"] = sha256_normalized_text_path(current_path)
+            summary["skipped"].append(row["id"])
+            continue
+
+        if relative_path.endswith(".yaml") and not current_path.exists():
+            legacy_path = repo_root / Path(relative_path).with_suffix(".md")
+            if legacy_path.exists():
+                current_path = legacy_path
+            else:
+                summary["failed"].append(row["id"])
+                continue
+
+        if not current_path.exists():
+            summary["failed"].append(row["id"])
+            continue
+
+        if current_path.suffix.lower() != ".md":
+            summary["failed"].append(row["id"])
+            continue
+
+        title, status, sections = parse_markdown_document(kind, current_path.read_text(encoding="utf-8"), fallback_title=row["title"])
+        row["title"] = title
+        if status is not None:
+            row["status"] = status
+        if kind == "spec":
+            row.setdefault("kind", "local-policy" if row.get("origin") == "repo-local" else "normative")
+        payload = build_document_payload(kind, row, sections)
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        target_path.write_text(dump_document_yaml(payload), encoding="utf-8", newline="\n")
+        if current_path != target_path and current_path.exists():
+            current_path.unlink()
+        row["path"] = target_relative
+        row["content_sha256"] = sha256_normalized_text_path(target_path)
+        summary["converted"].append(row["id"])
+
+    registry[section] = sorted(registry.get(section, []), key=lambda row: (row["number"], row["id"]))
+    return summary
+
+
+def migrate_v8_to_v9(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> tuple[dict[str, Any], dict[str, dict[str, list[str]]]]:
+    _ = previous_version, target_version
+    migrated = deepcopy(registry)
+    migrated["schema_version"] = 9
+    summary = {
+        "adr": _migrate_document_files_to_yaml(migrated, repo_root, "adr"),
+        "spec": _migrate_document_files_to_yaml(migrated, repo_root, "spec"),
+    }
+    return migrated, summary
+
+
 def target_version_from_registry(registry: dict[str, Any]) -> str:
     tooling = registry.get("tooling")
     if isinstance(tooling, dict):
@@ -338,6 +408,7 @@ def upgrade_registry(
     migrations: list[str] = []
     rename_summary: list[dict[str, str]] = []
     sync_summary: dict[str, dict[str, list[str]]] | None = None
+    migration_summary: dict[str, Any] | None = None
 
     working = deepcopy(registry)
 
@@ -361,8 +432,17 @@ def upgrade_registry(
     if source_schema == 7:
         working = migrate_v7_to_v8(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
         migrations.append("migrate_v7_to_v8")
+        source_schema = 8
+    if source_schema == 8:
+        working, migration_summary = migrate_v8_to_v9(
+            working,
+            repo_root,
+            previous_version=source_tooling_version,
+            target_version=target_version,
+        )
+        migrations.append("migrate_v8_to_v9")
     elif source_schema != SCHEMA_VERSION:
-        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7 or {SCHEMA_VERSION}")
+        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8 or {SCHEMA_VERSION}")
 
     if not migrations and not sync_docs:
         report = validate_registry_document(working, registry_path, repo_root)
@@ -377,6 +457,7 @@ def upgrade_registry(
             "to_version": target_version,
             "migrations": migrations,
             "renamed_specs": rename_summary,
+            "document_migration": migration_summary,
             "sync": None,
             "changed": False,
         }
@@ -412,6 +493,7 @@ def upgrade_registry(
         "to_version": target_version,
         "migrations": migrations,
         "renamed_specs": rename_summary,
+        "document_migration": migration_summary,
         "sync": sync_summary,
         "changed": True,
     }

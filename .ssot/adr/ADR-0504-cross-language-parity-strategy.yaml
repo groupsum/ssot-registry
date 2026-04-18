@@ -1,0 +1,22 @@
+{
+  "schema_version": 9,
+  "kind": "adr",
+  "id": "adr:0504",
+  "number": 504,
+  "slug": "cross-language-parity-strategy",
+  "title": "Cross-language parity strategy",
+  "status": "draft",
+  "origin": "ssot-core",
+  "decision_date": null,
+  "tags": [],
+  "summary": "Parity SHALL be established in this order:",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {
+    "decision": [
+      "Parity SHALL be established in this order:\n\n1. shared contracts\n2. shared generated Python artifacts\n3. metadata parity across CLI / TUI\n4. future TypeScript / npm outputs\n\nParity SHALL be enforced with committed golden artifacts and tests."
+    ]
+  }
+}

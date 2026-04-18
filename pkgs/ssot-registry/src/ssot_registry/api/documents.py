@@ -24,6 +24,13 @@ from ssot_registry.model.document import (
     reservation_kind_key,
     section_for_document_kind,
 )
+from ssot_registry.util.document_io import (
+    build_document_payload,
+    dump_document_yaml,
+    load_document_yaml,
+    parse_markdown_document,
+    validate_document_payload,
+)
 from ssot_registry.util.errors import ValidationError
 from ssot_registry.util.fs import sha256_normalized_text_path
 from ssot_registry.version import __version__
@@ -61,23 +68,30 @@ def _read_body(body_file: str | Path) -> str:
     return Path(body_file).read_text(encoding="utf-8").strip()
 
 
-def _render_markdown(kind: str, number: int, title: str, body: str) -> str:
-    if kind == "adr":
-        heading = f"# ADR-{number:04d}: {title}"
-    else:
-        heading = f"# {title}"
-    body = body.strip()
-    if body:
-        return f"{heading}\n\n{body}\n"
-    return f"{heading}\n"
-
-
 def _write_document(repo_root: Path, row: dict[str, Any], body: str, kind: str) -> str:
+    body_title, body_status, sections = parse_markdown_document(kind, body, fallback_title=row["title"])
+    if body_title and body_title != row["title"]:
+        row["title"] = body_title
+    if body_status is not None:
+        row["status"] = body_status
+    payload = build_document_payload(kind, row, sections)
+    validate_document_payload(kind, payload, expected_row=row)
     target = repo_root / row["path"]
     target.parent.mkdir(parents=True, exist_ok=True)
     with target.open("w", encoding="utf-8", newline="\n") as handle:
-        handle.write(_render_markdown(kind, row["number"], row["title"], body))
+        handle.write(dump_document_yaml(payload))
     return sha256_normalized_text_path(target)
+
+
+def _rewrite_document_from_existing_payload(repo_root: Path, row: dict[str, Any], kind: str) -> str:
+    payload = load_document_yaml(repo_root / row["path"])
+    validate_document_payload(kind, payload)
+    sections = payload.get("sections", {})
+    body = "\n\n".join(
+        f"## {section_name.replace('_', ' ').title()}\n\n" + "\n\n".join(values)
+        for section_name, values in sections.items()
+    ).strip()
+    return _write_document(repo_root, row, body, kind)
 
 
 def _build_authored_row(
@@ -373,13 +387,13 @@ def update_document(
         row["kind"] = spec_kind
 
     if body_file is None:
-        body_text = (repo_root / row["path"]).read_text(encoding="utf-8").split("\n", 2)
-        if len(body_text) == 1:
-            body = ""
-        elif len(body_text) == 2:
-            body = body_text[1].strip()
-        else:
-            body = body_text[2].strip()
+        payload = load_document_yaml(repo_root / row["path"])
+        validate_document_payload(kind, payload)
+        sections = payload.get("sections", {})
+        body = "\n\n".join(
+            f"## {section_name.replace('_', ' ').title()}\n\n" + "\n\n".join(values)
+            for section_name, values in sections.items()
+        ).strip()
     else:
         body = _read_body(body_file)
 
@@ -445,6 +459,9 @@ def supersede_documents(
     section = section_for_document_kind(kind)
     rows = _row_lookup(registry, kind)
     apply_supersession(rows, source_id=source_id, target_ids=supersedes, label=_document_label(kind), note=note)
+    for document_id in [source_id, *supersedes]:
+        rows[document_id]["content_sha256"] = _rewrite_document_from_existing_payload(repo_root, rows[document_id], kind)
+        rows[document_id]["package_version"] = registry.get("tooling", {}).get("ssot_registry_version", __version__)
     _sort_document_rows(registry, kind)
     _validate_and_save(registry_path, repo_root, registry, f"superseding {kind} {source_id}")
     return {
