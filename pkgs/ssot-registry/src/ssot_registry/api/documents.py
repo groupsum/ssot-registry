@@ -233,60 +233,24 @@ def _validate_and_save(registry_path: Path, repo_root: Path, registry: dict[str,
     return report
 
 
-def _load_document_payload_for_row(repo_root: Path, row: dict[str, Any], kind: str) -> dict[str, Any]:
+def load_document_payload_for_row(repo_root: Path, row: dict[str, Any], kind: str) -> dict[str, Any]:
     payload = normalize_document_payload(kind, load_document_yaml(repo_root / row["path"]))
     validate_document_payload(kind, payload, expected_row=row)
     return payload
 
 
-def _document_view_from_row(repo_root: Path, row: dict[str, Any], kind: str) -> dict[str, Any]:
-    document = deepcopy(row)
-    payload = _load_document_payload_for_row(repo_root, row, kind)
-    document["body"] = payload["body"]
-    document["summary"] = payload["summary"]
-    document["decision_date"] = payload.get("decision_date")
-    document["tags"] = list(payload.get("tags", []))
-    document["references"] = list(payload.get("references", []))
-    document["document_schema_version"] = payload.get("schema_version")
-    document["document_kind"] = payload.get("kind")
-    if kind == "spec":
-        document["spec_kind"] = payload.get("spec_kind", row.get("kind"))
-    return document
-
-
-def list_documents(path: str | Path, kind: str, *, include_payload: bool = False) -> dict[str, Any]:
-    registry_path, repo_root, registry = load_registry(path)
+def list_documents(path: str | Path, kind: str) -> list[dict[str, Any]]:
+    _registry_path, _repo_root, registry = load_registry(path)
     section = section_for_document_kind(kind)
-    documents = sorted(
-        (
-            _document_view_from_row(repo_root, row, kind) if include_payload else deepcopy(row)
-            for row in registry.get(section, [])
-        ),
-        key=lambda row: (row["number"], row["id"]),
-    )
-    return {
-        "passed": True,
-        "registry_path": registry_path.as_posix(),
-        "section": section,
-        "count": len(documents),
-        "documents": documents,
-    }
+    return sorted((deepcopy(row) for row in registry.get(section, [])), key=lambda row: (row["number"], row["id"]))
 
 
 def get_document(path: str | Path, kind: str, document_id: str) -> dict[str, Any]:
-    registry_path, repo_root, registry = load_registry(path)
+    _registry_path, _repo_root, registry = load_registry(path)
     try:
-        row = deepcopy(_row_lookup(registry, kind)[document_id])
+        return deepcopy(_row_lookup(registry, kind)[document_id])
     except KeyError as exc:
         raise ValueError(f"Unknown {_document_label(kind)} id: {document_id}") from exc
-    payload = _load_document_payload_for_row(repo_root, row, kind)
-    return {
-        "passed": True,
-        "registry_path": registry_path.as_posix(),
-        "section": section_for_document_kind(kind),
-        "document": row,
-        "payload": payload,
-    }
 
 
 def create_document(

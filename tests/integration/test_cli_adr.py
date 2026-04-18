@@ -38,8 +38,8 @@ class CliAdrTests(unittest.TestCase):
             get_result = run_cli("adr", "get", str(repo), "--id", "adr:1000")
             self.assertEqual(get_result.returncode, 0, get_result.stderr)
             get_payload = json.loads(get_result.stdout)
-            self.assertEqual(get_payload["document"]["title"], "Local decision")
-            self.assertEqual(get_payload["payload"]["body"], "Local ADR body.")
+            self.assertEqual(get_payload["title"], "Local decision")
+            self.assertNotIn("payload", get_payload)
 
             body.write_text("Updated ADR body.\n", encoding="utf-8")
             update = run_cli("adr", "update", str(repo), "--id", "adr:1000", "--title", "Local decision updated", "--body-file", str(body))
@@ -68,7 +68,7 @@ class CliAdrTests(unittest.TestCase):
 
             supersede = run_cli("adr", "supersede", str(repo), "--id", "adr:1001", "--supersedes", "adr:1000", "--note", "replaced")
             self.assertEqual(supersede.returncode, 0, supersede.stderr)
-            superseded_doc = json.loads(run_cli("adr", "get", str(repo), "--id", "adr:1000").stdout)["document"]
+            superseded_doc = json.loads(run_cli("adr", "get", str(repo), "--id", "adr:1000").stdout)
             self.assertEqual(superseded_doc["status"], "superseded")
 
             delete_ssot = run_cli("adr", "delete", str(repo), "--id", "adr:0600")

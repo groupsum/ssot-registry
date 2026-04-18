@@ -155,26 +155,13 @@ def create_entity(path: str | Path, section: str, row: dict[str, Any]) -> dict[s
 
 
 def get_entity(path: str | Path, section: str, entity_id: str) -> dict[str, Any]:
-    registry_path, _repo_root, registry = load_registry(path)
-    row = deepcopy(_entity_row(registry, section, entity_id))
-    return {
-        "passed": True,
-        "registry_path": registry_path.as_posix(),
-        "section": section,
-        "entity": row,
-    }
+    _registry_path, _repo_root, registry = load_registry(path)
+    return deepcopy(_entity_row(registry, section, entity_id))
 
 
-def list_entities(path: str | Path, section: str) -> dict[str, Any]:
-    registry_path, _repo_root, registry = load_registry(path)
-    rows = sorted((deepcopy(row) for row in registry.get(section, [])), key=lambda row: row["id"])
-    return {
-        "passed": True,
-        "registry_path": registry_path.as_posix(),
-        "section": section,
-        "count": len(rows),
-        "entities": rows,
-    }
+def list_entities(path: str | Path, section: str) -> list[dict[str, Any]]:
+    _registry_path, _repo_root, registry = load_registry(path)
+    return sorted((deepcopy(row) for row in registry.get(section, [])), key=lambda row: row["id"])
 
 
 def update_entity(path: str | Path, section: str, entity_id: str, changes: dict[str, Any]) -> dict[str, Any]:

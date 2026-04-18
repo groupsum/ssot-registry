@@ -41,11 +41,13 @@ class CliEvidenceSurfaceTests(unittest.TestCase):
 
         get_result = run_cli("evidence", "get", str(repo), "--id", "evd:t2.cli.generated.bundle")
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
-        self.assertEqual(json.loads(get_result.stdout)["entity"]["tier"], "T2")
+        self.assertEqual(json.loads(get_result.stdout)["tier"], "T2")
 
         list_result = run_cli("evidence", "list", str(repo))
         self.assertEqual(list_result.returncode, 0, list_result.stderr)
-        ids = {row["id"] for row in json.loads(list_result.stdout)["entities"]}
+        list_payload = json.loads(list_result.stdout)
+        self.assertIsInstance(list_payload, list)
+        ids = {row["id"] for row in list_payload}
         self.assertIn("evd:t2.cli.generated.bundle", ids)
 
         update = run_cli(

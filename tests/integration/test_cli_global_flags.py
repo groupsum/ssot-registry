@@ -21,8 +21,8 @@ class CliGlobalFlagsTests(unittest.TestCase):
         stdout_payload = json.loads(result.stdout)
         file_payload = json.loads(output_path.read_text(encoding="utf-8"))
         self.assertEqual(file_payload, stdout_payload)
-        self.assertTrue(file_payload["passed"])
-        self.assertGreater(len(file_payload["entities"]), 0)
+        self.assertIsInstance(file_payload, list)
+        self.assertGreater(len(file_payload), 0)
 
     def test_output_format_and_output_file_work_together(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
@@ -44,8 +44,8 @@ class CliGlobalFlagsTests(unittest.TestCase):
 
         rendered = output_path.read_text(encoding="utf-8")
         self.assertEqual(rendered, result.stdout)
-        self.assertIn("passed:", rendered)
-        self.assertIn("entities:", rendered)
+        self.assertIn("-\n", rendered)
+        self.assertIn("id:", rendered)
 
 
 if __name__ == "__main__":

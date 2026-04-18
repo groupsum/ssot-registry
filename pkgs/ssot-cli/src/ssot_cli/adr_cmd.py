@@ -14,7 +14,7 @@ from ssot_registry.api import (
     supersede_documents,
     update_document,
 )
-from ssot_cli.common import add_path_argument, compact_dict, documents_only
+from ssot_cli.common import add_path_argument, compact_dict
 
 
 def register_adr(subparsers: argparse._SubParsersAction) -> None:
@@ -108,7 +108,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return documents_only(list_documents(args.path, "adr"))
+    return list_documents(args.path, "adr")
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:

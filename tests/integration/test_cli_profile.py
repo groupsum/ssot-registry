@@ -36,11 +36,13 @@ class CliProfileSurfaceTests(unittest.TestCase):
 
         get_result = run_cli("profile", "get", str(repo), "--id", "prf:http3-core")
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
-        self.assertEqual(json.loads(get_result.stdout)["entity"]["id"], "prf:http3-core")
+        self.assertEqual(json.loads(get_result.stdout)["id"], "prf:http3-core")
 
         list_result = run_cli("profile", "list", str(repo))
         self.assertEqual(list_result.returncode, 0, list_result.stderr)
-        ids = {row["id"] for row in json.loads(list_result.stdout)["entities"]}
+        list_payload = json.loads(list_result.stdout)
+        self.assertIsInstance(list_payload, list)
+        ids = {row["id"] for row in list_payload}
         self.assertIn("prf:http3-core", ids)
 
         update = run_cli("profile", "update", str(repo), "--id", "prf:http3-core", "--title", "HTTP/3 core updated")
@@ -189,7 +191,7 @@ class CliProfileSurfaceTests(unittest.TestCase):
         get_after_unlink = run_cli("profile", "get", str(repo), "--id", "prf:cli.primary")
         self.assertEqual(get_after_unlink.returncode, 0, get_after_unlink.stderr)
         after_unlink_payload = json.loads(get_after_unlink.stdout)
-        self.assertEqual(after_unlink_payload["entity"]["profile_ids"], [])
+        self.assertEqual(after_unlink_payload["profile_ids"], [])
 
         verify = run_cli("profile", "verify", str(repo), "--profile-id", "prf:cli.nested")
         self.assertEqual(verify.returncode, 0, verify.stderr)

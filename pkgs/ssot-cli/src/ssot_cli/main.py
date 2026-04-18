@@ -64,7 +64,7 @@ def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
     return parser
 
 
-def _print(payload: dict[str, Any], output_format: str) -> None:
+def _print(payload: Any, output_format: str) -> None:
     print(render_payload(payload, output_format), end="")
 
 
@@ -84,4 +84,6 @@ def main(argv: list[str] | None = None) -> int:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(rendered, encoding="utf-8")
     print(rendered, end="")
-    return 0 if payload.get("passed", False) else 1
+    if isinstance(payload, dict):
+        return 0 if payload.get("passed", True) else 1
+    return 0

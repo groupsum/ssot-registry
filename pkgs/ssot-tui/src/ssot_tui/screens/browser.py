@@ -236,11 +236,13 @@ class BrowserScreen(Screen[None]):
             self.query_one(EntityDetailPane).show_entity(None)
             return
         self._current_detail_entity_id = str(entity.get("id", ""))
+        detail_entity = self.service.build_detail_entity(self.workspace.root_path, self.active_section, entity)
         self._detail_view_model = build_detail_view_model(
-            entity,
+            detail_entity,
             self.section_specs[self.active_section],
             workspace_root=self.workspace.root_path,
             entity_index=self._entity_index(),
+            raw_entity=entity,
         )
         raw_mode = self.state_store.state.session.pane_mode == "raw"
         self.query_one(EntityDetailPane).show_view_model(self._detail_view_model, raw_mode=raw_mode)

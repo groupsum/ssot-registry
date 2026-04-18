@@ -16,8 +16,8 @@ class CliOutputFormatsTests(unittest.TestCase):
 
         yaml_result = run_cli("--output-format", "yaml", "feature", "list", str(repo))
         self.assertEqual(yaml_result.returncode, 0, yaml_result.stderr)
-        self.assertIn("passed:", yaml_result.stdout)
-        self.assertIn("entities:", yaml_result.stdout)
+        self.assertIn("-\n", yaml_result.stdout)
+        self.assertIn("id:", yaml_result.stdout)
 
         csv_result = run_cli("--output-format", "csv", "feature", "list", str(repo))
         self.assertEqual(csv_result.returncode, 0, csv_result.stderr)

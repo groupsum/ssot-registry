@@ -34,12 +34,13 @@ class CliFeatureTests(unittest.TestCase):
         get_result = run_cli("feature", "get", str(repo), "--id", "feat:cli.generated")
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
         get_payload = json.loads(get_result.stdout)
-        self.assertEqual(get_payload["entity"]["id"], "feat:cli.generated")
+        self.assertEqual(get_payload["id"], "feat:cli.generated")
 
         list_result = run_cli("feature", "list", str(repo))
         self.assertEqual(list_result.returncode, 0, list_result.stderr)
         list_payload = json.loads(list_result.stdout)
-        ids = {row["id"] for row in list_payload["entities"]}
+        self.assertIsInstance(list_payload, list)
+        ids = {row["id"] for row in list_payload}
         self.assertIn("feat:cli.generated", ids)
 
         update = run_cli(

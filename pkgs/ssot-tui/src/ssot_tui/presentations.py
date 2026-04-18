@@ -99,6 +99,7 @@ def build_detail_view_model(
     *,
     workspace_root: str | Path | None,
     entity_index: dict[str, tuple[str, dict[str, Any]]],
+    raw_entity: dict[str, Any] | None = None,
 ) -> EntityDetailViewModel:
     title = str(entity.get("title") or entity.get("version") or entity.get("id") or "<unnamed>")
     subtitle = str(entity.get("id") or spec.label)
@@ -121,7 +122,7 @@ def build_detail_view_model(
         primary_fields=primary_fields,
         secondary_fields=secondary_fields,
         resources=resources,
-        raw_json=json.dumps(entity, indent=2, sort_keys=True),
+        raw_json=json.dumps(raw_entity if raw_entity is not None else entity, indent=2, sort_keys=True),
     )
 
 

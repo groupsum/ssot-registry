@@ -6,7 +6,7 @@ from typing import Any
 
 from ssot_contracts.generated.python.tui_metadata import ENTITY_SECTIONS
 from ssot_registry.api import create_entity, delete_entity, list_entities, load_registry, update_entity, validate_registry
-from ssot_registry.api.documents import list_documents
+from ssot_registry.api.documents import list_documents, load_document_payload_for_row
 
 
 @dataclass(slots=True)
@@ -24,15 +24,12 @@ class RegistryWorkspaceService:
         collections: dict[str, list[dict[str, Any]]] = {}
         for section, _label in ENTITY_SECTIONS:
             if section == "adrs":
-                payload = list_documents(repo_root, "adr", include_payload=True)
-                collections[section] = payload.get("documents", [])
+                collections[section] = list_documents(repo_root, "adr")
                 continue
             if section == "specs":
-                payload = list_documents(repo_root, "spec", include_payload=True)
-                collections[section] = payload.get("documents", [])
+                collections[section] = list_documents(repo_root, "spec")
                 continue
-            payload = list_entities(repo_root, section)
-            collections[section] = payload.get("entities", [])
+            collections[section] = list_entities(repo_root, section)
 
         return RegistryWorkspace(
             root_path=repo_root.as_posix(),
@@ -53,3 +50,19 @@ class RegistryWorkspaceService:
 
     def section_counts(self, workspace: RegistryWorkspace) -> dict[str, int]:
         return {section: len(rows) for section, rows in workspace.collections.items()}
+
+    def build_detail_entity(self, repo_root: str | Path, section: str, entity: dict[str, Any]) -> dict[str, Any]:
+        if section not in {"adrs", "specs"}:
+            return entity
+
+        kind = "adr" if section == "adrs" else "spec"
+        detail = dict(entity)
+        payload = load_document_payload_for_row(Path(repo_root), entity, kind)
+        detail["summary"] = payload["summary"]
+        detail["body"] = payload["body"]
+        detail["decision_date"] = payload.get("decision_date")
+        detail["tags"] = list(payload.get("tags", []))
+        detail["references"] = list(payload.get("references", []))
+        if kind == "spec":
+            detail["spec_kind"] = payload.get("spec_kind", entity.get("kind"))
+        return detail

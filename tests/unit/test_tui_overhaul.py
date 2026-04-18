@@ -141,7 +141,7 @@ class TuiOverhaulUnitTests(unittest.TestCase):
         self.assertIn("entity", kinds)
         self.assertIn("file", kinds)
 
-    def test_workspace_service_enriches_document_rows_with_body(self) -> None:
+    def test_workspace_service_keeps_document_rows_as_registry_rows(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"
         try:
@@ -150,10 +150,10 @@ class TuiOverhaulUnitTests(unittest.TestCase):
             temp_dir.cleanup()
 
         adr = next(row for row in workspace.collections["adrs"] if row["id"] == "adr:0600")
-        self.assertIn("body", adr)
-        self.assertIn(".ssot/registry.json", adr["body"])
+        self.assertNotIn("body", adr)
+        self.assertNotIn("summary", adr)
 
-    def test_bridge_preview_cli_get_for_document_includes_payload_body(self) -> None:
+    def test_bridge_preview_cli_get_for_document_returns_row_only(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"
         try:
@@ -161,8 +161,9 @@ class TuiOverhaulUnitTests(unittest.TestCase):
         finally:
             temp_dir.cleanup()
 
-        self.assertIn("\"payload\"", preview)
-        self.assertIn("\"body\"", preview)
+        self.assertIn("\"id\": \"adr:0600\"", preview)
+        self.assertNotIn("\"payload\"", preview)
+        self.assertNotIn("\"body\"", preview)
 
     def test_document_detail_renders_multiline_body(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
@@ -177,13 +178,21 @@ class TuiOverhaulUnitTests(unittest.TestCase):
                     if isinstance(entity_id, str):
                         entity_index[entity_id] = (section, row)
             adr = next(row for row in workspace.collections["adrs"] if row["id"] == "adr:0609")
-            view_model = build_detail_view_model(adr, specs["adrs"], workspace_root=workspace.root_path, entity_index=entity_index)
+            detail = RegistryWorkspaceService().build_detail_entity(workspace.root_path, "adrs", adr)
+            view_model = build_detail_view_model(
+                detail,
+                specs["adrs"],
+                workspace_root=workspace.root_path,
+                entity_index=entity_index,
+                raw_entity=adr,
+            )
         finally:
             temp_dir.cleanup()
 
         rendered = render_structured_detail(view_model)
         self.assertIn("- Body:", rendered)
         self.assertIn("Generated projections include", rendered)
+        self.assertNotIn('"body"', view_model.raw_json)
 
 
 @unittest.skipUnless(BrowserScreen is not None, "textual is not installed")

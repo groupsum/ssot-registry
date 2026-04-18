@@ -40,8 +40,8 @@ class CliSpecTests(unittest.TestCase):
             get_result = run_cli("spec", "get", str(repo), "--id", "spc:1000")
             self.assertEqual(get_result.returncode, 0, get_result.stderr)
             get_payload = json.loads(get_result.stdout)
-            self.assertEqual(get_payload["document"]["title"], "Local operating spec")
-            self.assertEqual(get_payload["payload"]["body"], "Local spec body.")
+            self.assertEqual(get_payload["title"], "Local operating spec")
+            self.assertNotIn("payload", get_payload)
 
             update = run_cli("spec", "update", str(repo), "--id", "spc:1000", "--title", "Local operating spec updated")
             self.assertEqual(update.returncode, 0, update.stderr)
@@ -70,7 +70,7 @@ class CliSpecTests(unittest.TestCase):
             self.assertEqual(create2.returncode, 0, create2.stderr)
             supersede = run_cli("spec", "supersede", str(repo), "--id", "spc:1001", "--supersedes", "spc:1000", "--note", "newer")
             self.assertEqual(supersede.returncode, 0, supersede.stderr)
-            superseded_doc = json.loads(run_cli("spec", "get", str(repo), "--id", "spc:1000").stdout)["document"]
+            superseded_doc = json.loads(run_cli("spec", "get", str(repo), "--id", "spc:1000").stdout)
             self.assertEqual(superseded_doc["status"], "superseded")
 
             delete_ssot = run_cli("spec", "delete", str(repo), "--id", "spc:0600")
