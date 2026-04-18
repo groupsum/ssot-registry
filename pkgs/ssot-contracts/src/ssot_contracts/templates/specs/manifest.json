@@ -6,7 +6,7 @@
     "title": "Registry core",
     "filename": "SPEC-0600-registry-core.yaml",
     "target_path": ".ssot/specs/SPEC-0600-registry-core.yaml",
-    "sha256": "f7cbfb73f6f686d41a2fbf72cff65e56bcff53964c0a535ee7cd3998b319b69b",
+    "sha256": "376d6ff5f8943b0c9eb31f4cf1e9066bf21e46dd0398c6832c933662582a25d2",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,

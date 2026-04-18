@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from ssot_registry.model.registry import REPO_KINDS
 
 def validate_document_reservations(registry: dict[str, Any], failures: list[str]) -> None:
     reservations = registry.get("document_id_reservations")
@@ -27,6 +28,10 @@ def validate_document_reservations(registry: dict[str, Any], failures: list[str]
             end = row.get("end")
             if not isinstance(owner, str) or not owner.strip():
                 failures.append(f"{prefix}.owner must be a non-empty string")
+            elif owner == "repo-local-default":
+                failures.append(f"{prefix}.owner must be 'repo-local', not 'repo-local-default'")
+            elif owner in {"ssot-core", "ssot-origin", "repo-local"} | REPO_KINDS:
+                pass
             if not isinstance(start, int) or start < 1:
                 failures.append(f"{prefix}.start must be an integer >= 1")
             if not isinstance(end, int) or end < 1:

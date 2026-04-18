@@ -4,7 +4,7 @@
     "id": "repo:minimal-example",
     "name": "minimal-example",
     "version": "0.1.0",
-    "kind": "operator-repo"
+    "kind": "repo-local"
   },
   "tooling": {
     "ssot_registry_version": "0.2.1",
@@ -75,7 +75,7 @@
         "assignable_by_repo": false
       },
       {
-        "owner": "repo-local-default",
+        "owner": "repo-local",
         "start": 1000,
         "end": 4999,
         "immutable": false,
@@ -101,7 +101,7 @@
         "assignable_by_repo": false
       },
       {
-        "owner": "repo-local-default",
+        "owner": "repo-local",
         "start": 1000,
         "end": 4999,
         "immutable": false,

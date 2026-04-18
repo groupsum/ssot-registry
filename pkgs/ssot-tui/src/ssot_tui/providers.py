@@ -9,7 +9,6 @@ from typing import Any
 
 from ssot_registry.api import list_entities, load_registry, validate_registry
 from ssot_registry.api.documents import list_documents
-from ssot_registry.util.fs import resolve_registry_path
 
 from .presentations import SECTION_TO_COMMAND
 from .state import ValidationSummary
@@ -24,7 +23,79 @@ class BridgeCommand:
 
 class WorkspaceProvider:
     def resolve_startup_repo(self, path: str | Path) -> str:
-        return resolve_registry_path(path).parent.parent.as_posix()
+        return self.resolve_preferred_repo(path)
+
+    def resolve_preferred_repo(self, path: str | Path) -> str:
+        return self.resolve_preferred_registry_path(path).parent.parent.as_posix()
+
+    def resolve_preferred_registry_path(self, path: str | Path) -> Path:
+        candidate = Path(path).expanduser()
+        if candidate.name == "registry.json" and candidate.parent.name == ".ssot" and candidate.is_file():
+            return candidate
+        if candidate.name == ".ssot":
+            direct = candidate / "registry.json"
+            if direct.is_file():
+                return direct
+        direct = candidate / ".ssot" / "registry.json"
+        if direct.is_file():
+            return direct
+
+        repo_boundary = self._nearest_git_boundary(candidate)
+        roots = [candidate, *candidate.parents]
+        if repo_boundary is not None:
+            bounded_roots: list[Path] = []
+            for root in roots:
+                bounded_roots.append(root)
+                if root == repo_boundary:
+                    break
+            ancestor_match: Path | None = None
+            for root in bounded_roots:
+                registry_path = root / ".ssot" / "registry.json"
+                if registry_path.is_file():
+                    ancestor_match = registry_path
+            if ancestor_match is not None:
+                return ancestor_match
+            search_root = candidate if candidate.is_dir() else candidate.parent
+            descendants = self._descendant_candidates(search_root)
+            if descendants:
+                return descendants[0]
+            raise FileNotFoundError(
+                "Unable to locate .ssot/registry.json from "
+                f"{candidate}. Provide the repository root, the .ssot directory, "
+                "the registry.json file, or any path inside a repository that contains .ssot/registry.json."
+            )
+
+        for root in roots:
+            registry_path = root / ".ssot" / "registry.json"
+            if registry_path.is_file():
+                return registry_path
+
+        search_root = candidate if candidate.is_dir() else candidate.parent
+        descendants = self._descendant_candidates(search_root)
+        if descendants:
+            return descendants[0]
+
+        raise FileNotFoundError(
+            "Unable to locate .ssot/registry.json from "
+            f"{candidate}. Provide the repository root, the .ssot directory, "
+            "the registry.json file, or any path inside a repository that contains .ssot/registry.json."
+        )
+
+    def _nearest_git_boundary(self, path: Path) -> Path | None:
+        for root in [path, *path.parents]:
+            if (root / ".git").exists():
+                return root
+        return None
+
+    def _descendant_candidates(self, search_root: Path) -> list[Path]:
+        return sorted(
+            (
+                registry_path
+                for registry_path in search_root.rglob("registry.json")
+                if registry_path.parent.name == ".ssot" and registry_path.is_file()
+            ),
+            key=lambda registry_path: (len(registry_path.relative_to(search_root).parts), registry_path.as_posix()),
+        )
 
     def build_validation_summary(self, validation: dict[str, Any]) -> ValidationSummary:
         failures = [str(item) for item in validation.get("failures", [])]

@@ -9,6 +9,46 @@ from ssot_registry.version import __version__
 from .enums import SCHEMA_VERSION
 
 
+REPO_KINDS = {"ssot-core", "ssot-origin", "repo-local"}
+REPO_KIND_ALIASES = {
+    "ssot-upstream": "ssot-core",
+    "operator-repo": "repo-local",
+}
+LEGACY_REPO_KIND_CUTOFF = (0, 3, 0)
+
+
+def _parse_version_triplet(version: str) -> tuple[int, int, int]:
+    numbers: list[int] = []
+    current = []
+    for char in version:
+        if char.isdigit():
+            current.append(char)
+            continue
+        if current:
+            numbers.append(int("".join(current)))
+            current = []
+        if len(numbers) >= 3:
+            break
+    if current and len(numbers) < 3:
+        numbers.append(int("".join(current)))
+    while len(numbers) < 3:
+        numbers.append(0)
+    return tuple(numbers[:3])
+
+
+def legacy_repo_kinds_allowed(version: str | None = None) -> bool:
+    current_version = version or __version__
+    return _parse_version_triplet(current_version) < LEGACY_REPO_KIND_CUTOFF
+
+
+def normalize_repo_kind(kind: str | None) -> str:
+    if kind in REPO_KIND_ALIASES:
+        return REPO_KIND_ALIASES[kind]
+    if kind in REPO_KINDS:
+        return kind
+    return "repo-local"
+
+
 def default_paths() -> dict[str, str]:
     return {
         "ssot_root": ".ssot",
@@ -61,7 +101,7 @@ def build_minimal_registry(
     repo_name: str,
     version: str,
     *,
-    repo_kind: str = "operator-repo",
+    repo_kind: str = "repo-local",
 ) -> dict[str, Any]:
     return {
         "schema_version": SCHEMA_VERSION,

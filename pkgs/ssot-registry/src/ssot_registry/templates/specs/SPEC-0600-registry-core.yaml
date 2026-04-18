@@ -16,7 +16,7 @@
   "references": [],
   "sections": {
     "repository_discriminator": [
-      "`repo.kind` is required and MUST be one of:\n\n- `ssot-upstream`\n- `operator-repo`"
+      "`repo.kind` is required and MUST be one of:\n\n- `ssot-core`\n- `ssot-origin`\n- `repo-local`"
     ],
     "top_level_sections": [
       "- `schema_version`\n- `repo`\n- `tooling`\n- `paths`\n- `program`\n- `guard_policies`\n- `document_id_reservations`\n- `features`\n- `profiles`\n- `tests`\n- `claims`\n- `evidence`\n- `issues`\n- `risks`\n- `boundaries`\n- `releases`\n- `adrs`\n- `specs`"

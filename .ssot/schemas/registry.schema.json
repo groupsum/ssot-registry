@@ -145,8 +145,9 @@
         },
         "kind": {
           "enum": [
-            "ssot-upstream",
-            "operator-repo"
+            "ssot-core",
+            "ssot-origin",
+            "repo-local"
           ]
         }
       },
@@ -1141,7 +1142,7 @@
             "type": "object",
             "properties": {
               "kind": {
-                "const": "operator-repo"
+                    "const": "repo-local"
               }
             },
             "required": [

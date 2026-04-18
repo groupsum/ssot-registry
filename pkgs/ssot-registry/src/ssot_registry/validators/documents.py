@@ -12,6 +12,7 @@ from ssot_registry.model.document import (
     normalize_document_id,
     reservation_kind_key,
 )
+from ssot_registry.model.registry import normalize_repo_kind
 from ssot_registry.util.document_io import load_document_yaml, validate_document_payload
 from ssot_registry.util.fs import sha256_normalized_text_path
 from ssot_registry.version import __version__
@@ -56,9 +57,7 @@ def validate_document_rows(
     reservations = registry.get("document_id_reservations", {})
     paths = registry.get("paths", {})
     repo = registry.get("repo", {})
-    repo_kind = repo.get("kind") if isinstance(repo, dict) else None
-    if repo_kind not in {"ssot-upstream", "operator-repo"}:
-        repo_kind = "operator-repo"
+    repo_kind = normalize_repo_kind(repo.get("kind") if isinstance(repo, dict) else None)
 
     manifest_lookup = {
         "adrs": {entry["id"]: entry for entry in load_document_manifest("adr")},
@@ -72,7 +71,7 @@ def validate_document_rows(
     for section, kind in kinds.items():
         rows = index.get(section, {})
         seen_numbers: dict[int, str] = {}
-        seen_slugs: dict[str, str] = {}
+        seen_slugs: dict[tuple[str, str], str] = {}
         seen_paths: dict[str, str] = {}
         reservation_rows = reservations.get(reservation_kind_key(kind), [])
         if not isinstance(reservation_rows, list):
@@ -113,10 +112,13 @@ def validate_document_rows(
                 failures.append(f"{prefix}.id must match its number: expected {expected_id}")
             if not isinstance(slug, str) or not slug:
                 failures.append(f"{prefix}.slug must be a non-empty string")
-            if isinstance(slug, str):
-                if slug in seen_slugs:
-                    failures.append(f"Duplicate {section} slug: {slug} in {prefix} and {section}.{seen_slugs[slug]}")
-                seen_slugs[slug] = entity_id
+            if isinstance(slug, str) and isinstance(origin, str):
+                slug_key = (origin, slug)
+                if slug_key in seen_slugs:
+                    failures.append(
+                        f"Duplicate {section} slug for origin {origin}: {slug} in {prefix} and {section}.{seen_slugs[slug_key]}"
+                    )
+                seen_slugs[slug_key] = entity_id
             if number in seen_numbers:
                 failures.append(f"Duplicate {section} number: {number} in {prefix} and {section}.{seen_numbers[number]}")
             seen_numbers[number] = entity_id
@@ -169,26 +171,26 @@ def validate_document_rows(
                 failures.append(
                     f"{prefix}.number belongs to reservation owner {reservation.get('owner')} but origin is {origin}"
                 )
-            if repo_kind == "operator-repo":
+            if repo_kind == "repo-local":
                 if origin == "ssot-core":
-                    failures.append(f"{prefix}.origin must not be ssot-core in operator-repo")
+                    failures.append(f"{prefix}.origin must not be ssot-core in repo-local")
                 if origin == "ssot-origin":
                     if managed is not True:
-                        failures.append(f"{prefix}.managed must be true for ssot-origin documents in operator-repo")
+                        failures.append(f"{prefix}.managed must be true for ssot-origin documents in repo-local")
                     if immutable is not True:
-                        failures.append(f"{prefix}.immutable must be true for ssot-origin documents in operator-repo")
+                        failures.append(f"{prefix}.immutable must be true for ssot-origin documents in repo-local")
                 if origin == "repo-local":
                     if managed is not False:
                         failures.append(f"{prefix}.managed must be false for repo-local documents")
                     if immutable is not False:
                         failures.append(f"{prefix}.immutable must be false for repo-local documents")
-            elif repo_kind == "ssot-upstream":
+            else:
                 if origin == "repo-local":
-                    failures.append(f"{prefix}.origin must not be repo-local in ssot-upstream")
+                    failures.append(f"{prefix}.origin must not be repo-local in {repo_kind}")
                 if managed is not False:
-                    failures.append(f"{prefix}.managed must be false in ssot-upstream")
+                    failures.append(f"{prefix}.managed must be false in {repo_kind}")
                 if immutable is not False:
-                    failures.append(f"{prefix}.immutable must be false in ssot-upstream")
+                    failures.append(f"{prefix}.immutable must be false in {repo_kind}")
 
             if section == "adrs":
                 pass
@@ -221,7 +223,7 @@ def validate_document_rows(
             if status != "superseded" and isinstance(superseded_by, list) and superseded_by:
                 failures.append(f"{prefix}.superseded_by must be empty unless status is superseded")
 
-            if repo_kind == "operator-repo" and origin == "ssot-origin":
+            if repo_kind == "repo-local" and origin == "ssot-origin":
                 manifest_entry = manifest_lookup[section].get(entity_id)
                 if manifest_entry is None:
                     failures.append(f"{prefix} is ssot-origin managed but not present in the packaged manifest")

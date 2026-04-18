@@ -53,10 +53,10 @@ class BrowserScreen(Screen[None]):
     ) -> None:
         super().__init__()
         self.service = service or RegistryWorkspaceService()
-        self.session_store = session_store or SessionStore()
+        self.workspace_provider = workspace_provider or WorkspaceProvider()
+        self.session_store = session_store or SessionStore(workspace_provider=self.workspace_provider)
         session = self.session_store.load()
         self.state_store = AppStateStore(AppState(session=session))
-        self.workspace_provider = workspace_provider or WorkspaceProvider()
         self.bridge_provider = bridge_provider or BridgeActionProvider()
         self.workspace: RegistryWorkspace | None = None
         self.active_section = session.active_section or ENTITY_SECTIONS[0][0]
@@ -79,6 +79,7 @@ class BrowserScreen(Screen[None]):
             yield EntityDetailPane("No entity selected.", id="detail_pane")
         with Horizontal(id="summary_row"):
             yield Static("No workspace loaded.", id="summary_status")
+            yield Static("Repo: n/a | Registry: n/a", id="workspace_status")
             yield Static("Validation: n/a", id="validation_status")
         yield StatusCenter(id="status_center")
 
@@ -101,7 +102,7 @@ class BrowserScreen(Screen[None]):
             try:
                 return self.workspace_provider.resolve_startup_repo(self.initial_path)
             except FileNotFoundError:
-                return self.initial_path.as_posix()
+                return None
         return self.session_store.resolve_startup_path(Path.cwd(), self.state_store.state.session)
 
     def _register_actions(self) -> None:
@@ -270,6 +271,7 @@ class BrowserScreen(Screen[None]):
     def _update_summary(self) -> None:
         if self.workspace is None:
             self.query_one("#summary_status", Static).update("No workspace loaded.")
+            self.query_one("#workspace_status", Static).update("Repo: n/a | Registry: n/a")
             self.query_one("#validation_status", Static).update("Validation: n/a")
             return
         total = len(self._rows_for_active_section())
@@ -278,12 +280,17 @@ class BrowserScreen(Screen[None]):
         self.query_one("#summary_status", Static).update(
             f"{repo_id} | {self.active_section} | {filtered}/{total} rows | mode={self.state_store.state.session.table_mode}"
         )
+        self.query_one("#workspace_status", Static).update(
+            f"Repo: {self.workspace.root_path} | Registry: {self.workspace.registry_path}"
+        )
         validation = self.state_store.state.validation
         status = "passed" if validation.passed else f"{validation.failure_count} failures"
         self.query_one("#validation_status", Static).update(
             f"Validation: {status}; warnings={validation.warning_count}; checked={validation.last_checked_label}"
         )
-        self._set_startup_message(f"Current repo: {self.workspace.root_path}")
+        self._set_startup_message(
+            f"Loaded repo root: {self.workspace.root_path}\nLoaded registry: {self.workspace.registry_path}"
+        )
 
     def _persist_session(self, **changes: object) -> None:
         session = self.state_store.state.session
@@ -311,7 +318,8 @@ class BrowserScreen(Screen[None]):
             self._push_status("Enter a repository path to load.", level="warning")
             return
         try:
-            workspace = self.service.load_workspace(Path(path))
+            normalized_path = self.workspace_provider.resolve_preferred_repo(Path(path))
+            workspace = self.service.load_workspace(Path(normalized_path))
             validation = self.workspace_provider.build_validation_summary(workspace.validation)
         except Exception as exc:
             self.workspace = None
@@ -377,6 +385,9 @@ class BrowserScreen(Screen[None]):
 
     def action_activate_selection(self) -> None:
         focused = self.focused
+        if isinstance(focused, EntityTable):
+            self._show_entity(focused.entity_for_row_index(focused.cursor_row))
+            return
         if isinstance(focused, OptionList):
             option = focused.highlighted
             if option is not None and getattr(option, "id", None) is not None:
@@ -440,6 +451,12 @@ class BrowserScreen(Screen[None]):
 
     def on_data_table_row_selected(self, event: EntityTable.RowSelected) -> None:
         self._show_entity(self.query_one(EntityTable).entity_for_row_index(event.cursor_row))
+
+    def on_data_table_cell_selected(self, event: EntityTable.CellSelected) -> None:
+        self._show_entity(self.query_one(EntityTable).entity_for_row_index(event.coordinate.row))
+
+    def on_data_table_cell_highlighted(self, event: EntityTable.CellHighlighted) -> None:
+        self._show_entity(self.query_one(EntityTable).entity_for_row_index(event.coordinate.row))
 
     def on_entity_detail_pane_resource_selected(self, event: EntityDetailPane.ResourceSelected) -> None:
         if event.target.kind == "entity":

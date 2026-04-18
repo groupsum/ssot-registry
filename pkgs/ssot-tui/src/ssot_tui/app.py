@@ -55,6 +55,12 @@ class SsotTuiApp(App[None]):
         color: $text-muted;
     }
 
+    #workspace_status {
+        width: 1fr;
+        color: $text;
+        padding: 0 1;
+    }
+
     #validation_status {
         width: auto;
         color: $warning;

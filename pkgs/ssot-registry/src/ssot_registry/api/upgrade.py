@@ -12,6 +12,7 @@ from ssot_registry.model.document import (
     parse_document_filename,
 )
 from ssot_registry.model.enums import SCHEMA_VERSION
+from ssot_registry.model.registry import normalize_repo_kind
 from ssot_registry.util.document_io import build_document_payload, dump_document_yaml, parse_markdown_document
 from ssot_registry.util.errors import RegistryError, ValidationError
 from ssot_registry.util.fs import sha256_normalized_text_path
@@ -26,6 +27,14 @@ from .validate import validate_registry_document
 
 LEGACY_V3_VERSION = "0.1.2"
 SSOT_ORIGIN_V8_OFFSET = 599
+MIGRATION_RELEASE_WINDOWS = {
+    (3, 4): "0.1.x->0.2.1",
+    (4, 5): "0.2.1->0.2.2",
+    (5, 6): "0.2.2->0.2.3",
+    (6, 7): "0.2.3->0.2.4",
+    (7, 8): "0.2.4->0.2.5",
+    (8, 9): "0.2.5->0.2.6",
+}
 
 
 def _extract_title(kind: str, path: Path) -> str:
@@ -218,9 +227,9 @@ def migrate_v6_to_v7(
     migrated["schema_version"] = 7
     repo = migrated.setdefault("repo", {})
     if not isinstance(repo, dict):
-        migrated["repo"] = {"kind": "operator-repo"}
+        migrated["repo"] = {"kind": "repo-local"}
     else:
-        repo.setdefault("kind", "operator-repo")
+        repo["kind"] = normalize_repo_kind(repo.get("kind"))
 
     migrated["document_id_reservations"] = default_document_id_reservations()
     for section in ("adrs", "specs"):
@@ -290,8 +299,8 @@ def migrate_v7_to_v8(
     migrated["document_id_reservations"] = default_document_id_reservations()
 
     repo = migrated.get("repo")
-    repo_kind = repo.get("kind") if isinstance(repo, dict) else "operator-repo"
-    if repo_kind != "operator-repo":
+    repo_kind = normalize_repo_kind(repo.get("kind") if isinstance(repo, dict) else None)
+    if repo_kind != "repo-local":
         return migrated
 
     remapped_ids: dict[str, str] = {}
@@ -389,6 +398,35 @@ def target_version_from_registry(registry: dict[str, Any]) -> str:
     return __version__
 
 
+def _migration_window_label(from_schema_version: int, to_schema_version: int) -> str:
+    release_window = MIGRATION_RELEASE_WINDOWS.get((from_schema_version, to_schema_version))
+    if release_window is None:
+        return f"schema {from_schema_version}->{to_schema_version}"
+    return f"{release_window} (schema {from_schema_version}->{to_schema_version})"
+
+
+def _normalize_current_registry(registry: dict[str, Any]) -> bool:
+    changed = False
+    repo = registry.get("repo")
+    if isinstance(repo, dict):
+        normalized_kind = normalize_repo_kind(repo.get("kind"))
+        if repo.get("kind") != normalized_kind:
+            repo["kind"] = normalized_kind
+            changed = True
+
+    reservations = registry.get("document_id_reservations")
+    if isinstance(reservations, dict):
+        for kind in ("adr", "spec"):
+            rows = reservations.get(kind)
+            if not isinstance(rows, list):
+                continue
+            for row in rows:
+                if isinstance(row, dict) and row.get("owner") == "repo-local-default":
+                    row["owner"] = "repo-local"
+                    changed = True
+    return changed
+
+
 def upgrade_registry(
     path: str | Path,
     *,
@@ -406,6 +444,7 @@ def upgrade_registry(
     source_schema = registry.get("schema_version")
     source_tooling_version = registry.get("tooling", {}).get("ssot_registry_version", LEGACY_V3_VERSION)
     migrations: list[str] = []
+    schema_migrations: list[str] = []
     rename_summary: list[dict[str, str]] = []
     sync_summary: dict[str, dict[str, list[str]]] | None = None
     migration_summary: dict[str, Any] | None = None
@@ -415,23 +454,28 @@ def upgrade_registry(
     if source_schema == 3:
         rename_summary = _rename_legacy_packaged_specs(working, repo_root)
         working = migrate_v3_to_v4(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
-        migrations.append("migrate_v3_to_v4")
+        schema_migrations.append("migrate_v3_to_v4")
+        migrations.append(_migration_window_label(3, 4))
         source_schema = 4
     if source_schema == 4:
         working = migrate_v4_to_v5(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
-        migrations.append("migrate_v4_to_v5")
+        schema_migrations.append("migrate_v4_to_v5")
+        migrations.append(_migration_window_label(4, 5))
         source_schema = 5
     if source_schema == 5:
         working = migrate_v5_to_v6(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
-        migrations.append("migrate_v5_to_v6")
+        schema_migrations.append("migrate_v5_to_v6")
+        migrations.append(_migration_window_label(5, 6))
         source_schema = 6
     if source_schema == 6:
         working = migrate_v6_to_v7(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
-        migrations.append("migrate_v6_to_v7")
+        schema_migrations.append("migrate_v6_to_v7")
+        migrations.append(_migration_window_label(6, 7))
         source_schema = 7
     if source_schema == 7:
         working = migrate_v7_to_v8(working, repo_root, previous_version=source_tooling_version, target_version=target_version)
-        migrations.append("migrate_v7_to_v8")
+        schema_migrations.append("migrate_v7_to_v8")
+        migrations.append(_migration_window_label(7, 8))
         source_schema = 8
     if source_schema == 8:
         working, migration_summary = migrate_v8_to_v9(
@@ -440,11 +484,14 @@ def upgrade_registry(
             previous_version=source_tooling_version,
             target_version=target_version,
         )
-        migrations.append("migrate_v8_to_v9")
+        schema_migrations.append("migrate_v8_to_v9")
+        migrations.append(_migration_window_label(8, 9))
     elif source_schema != SCHEMA_VERSION:
         raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8 or {SCHEMA_VERSION}")
 
-    if not migrations and not sync_docs:
+    normalized_current = _normalize_current_registry(working)
+
+    if not migrations and not sync_docs and not normalized_current:
         report = validate_registry_document(working, registry_path, repo_root)
         if not report["passed"]:
             raise ValidationError("; ".join(report["failures"]))
@@ -456,6 +503,7 @@ def upgrade_registry(
             "from_version": source_tooling_version,
             "to_version": target_version,
             "migrations": migrations,
+            "schema_migrations": schema_migrations,
             "renamed_specs": rename_summary,
             "document_migration": migration_summary,
             "sync": None,
@@ -492,6 +540,7 @@ def upgrade_registry(
         "from_version": source_tooling_version,
         "to_version": target_version,
         "migrations": migrations,
+        "schema_migrations": schema_migrations,
         "renamed_specs": rename_summary,
         "document_migration": migration_summary,
         "sync": sync_summary,

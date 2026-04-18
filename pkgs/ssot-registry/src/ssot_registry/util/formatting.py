@@ -139,6 +139,8 @@ def _render_toml(payload: Any) -> str:
 
 
 def render_payload(payload: Any, output_format: str) -> str:
+    if isinstance(payload, dict) and "__rows_only__" in payload:
+        payload = payload["__rows_only__"]
     normalized = output_format.lower()
     if normalized == "json":
         return json.dumps(payload, indent=2, sort_keys=False) + "\n"

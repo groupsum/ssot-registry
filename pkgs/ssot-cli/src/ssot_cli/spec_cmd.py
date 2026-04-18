@@ -14,7 +14,7 @@ from ssot_registry.api import (
     supersede_documents,
     update_document,
 )
-from ssot_cli.common import add_path_argument, compact_dict
+from ssot_cli.common import add_path_argument, compact_dict, documents_only
 
 
 def register_spec(subparsers: argparse._SubParsersAction) -> None:
@@ -111,7 +111,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_documents(args.path, "spec")
+    return documents_only(list_documents(args.path, "spec"))
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:

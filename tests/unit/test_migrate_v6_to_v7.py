@@ -20,7 +20,7 @@ class MigrateV6ToV7Tests(unittest.TestCase):
         migrated = migrate_v6_to_v7(original, repo, previous_version="0.2.1", target_version="0.2.1")
 
         self.assertEqual(7, migrated["schema_version"])
-        self.assertEqual("operator-repo", migrated["repo"]["kind"])
+        self.assertEqual("repo-local", migrated["repo"]["kind"])
         self.assertEqual("ssot-origin", migrated["adrs"][0]["origin"])
         self.assertEqual("ssot-origin", migrated["specs"][0]["origin"])
         self.assertEqual("ssot-core", migrated["document_id_reservations"]["adr"][0]["owner"])

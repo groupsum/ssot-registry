@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from ssot_registry import __version__
-from tests.helpers import run_cli, temp_repo_from_fixture
+from tests.helpers import run_cli, temp_repo_from_fixture, workspace_tempdir
 
 
 class CliUpgradeTests(unittest.TestCase):
@@ -21,7 +21,8 @@ class CliUpgradeTests(unittest.TestCase):
         upgrade = run_cli("upgrade", str(repo), "--target-version", __version__, "--sync-docs", "--write-report")
         self.assertEqual(upgrade.returncode, 0, upgrade.stderr)
         payload = json.loads(upgrade.stdout)
-        self.assertIn("migrate_v3_to_v4", payload["migrations"])
+        self.assertIn("0.1.x->0.2.1 (schema 3->4)", payload["migrations"])
+        self.assertIn("migrate_v3_to_v4", payload["schema_migrations"])
         self.assertEqual(payload["to_version"], __version__)
         self.assertTrue((repo / ".ssot" / "specs" / "SPEC-0600-registry-core.yaml").exists())
         self.assertFalse((repo / ".ssot" / "specs" / "registry-core.md").exists())
@@ -37,17 +38,20 @@ class CliUpgradeTests(unittest.TestCase):
         self.assertEqual(second_payload["sync"]["spec"]["created"], [])
 
     def test_upgrade_target_version_allows_noop_for_current_version(self) -> None:
-        temp_dir = temp_repo_from_fixture("repo_valid")
-        self.addCleanup(temp_dir.cleanup)
-        repo = Path(temp_dir.name) / "repo"
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            init = run_cli("init", str(repo), "--repo-id", "repo:upgrade-noop", "--repo-name", "upgrade-noop", "--version", "1.0.0")
+            self.assertEqual(init.returncode, 0, init.stderr)
 
-        result = run_cli("upgrade", str(repo), "--target-version", __version__)
-        self.assertEqual(result.returncode, 0, result.stderr)
-        payload = json.loads(result.stdout)
-        self.assertTrue(payload["passed"])
-        self.assertEqual(payload["to_version"], __version__)
-        self.assertEqual(payload["migrations"], [])
-        self.assertFalse(payload["changed"])
+            result = run_cli("upgrade", str(repo), "--target-version", __version__)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            payload = json.loads(result.stdout)
+            self.assertTrue(payload["passed"])
+            self.assertEqual(payload["to_version"], __version__)
+            self.assertEqual(payload["migrations"], [])
+            self.assertEqual(payload["schema_migrations"], [])
+            self.assertFalse(payload["changed"])
 
 
 if __name__ == "__main__":

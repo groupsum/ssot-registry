@@ -78,13 +78,13 @@ The detail pane can traverse linked entity ids, preview file-backed resources, a
 
 ## Screenshots
 
-Regenerate these assets with `python scripts/generate_terminal_screenshots.py --tui-only`.
+Regenerate these assets with `python scripts/generate_tui_screenshots.py`.
 
 Captured against [`examples/minimal-repo`](../../examples/minimal-repo/README.md) in this workspace:
 
-![SSOT TUI browser](assets/ssot-tui-browser.svg)
+![SSOT TUI browser](assets/ssot-tui-browser.png)
 
-![SSOT TUI validation status](assets/ssot-tui-validated.svg)
+![SSOT TUI validation status](assets/ssot-tui-validated.png)
 
 ## Current scope
 

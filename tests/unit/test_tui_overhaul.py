@@ -7,7 +7,7 @@ from pathlib import Path
 from ssot_tui.actions import ActionDefinition, ActionRegistry
 from ssot_tui.persistence import SessionStore
 from ssot_tui.presentations import build_detail_view_model, build_section_specs
-from ssot_tui.providers import BridgeActionProvider
+from ssot_tui.providers import BridgeActionProvider, WorkspaceProvider
 from ssot_tui.services import ENTITY_SECTIONS, RegistryWorkspaceService
 from ssot_tui.state import SessionState
 from tests.helpers import temp_repo_from_fixture
@@ -56,6 +56,54 @@ class TuiOverhaulUnitTests(unittest.TestCase):
             temp_dir.cleanup()
 
         self.assertEqual(resolved, repo.as_posix())
+
+    def test_workspace_provider_prefers_nearest_ancestor_registry_over_outer_workspace(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        nested_repo = repo / "nested" / "child"
+        try:
+            (repo / ".git").mkdir()
+            (nested_repo / ".ssot").mkdir(parents=True)
+            (nested_repo / ".ssot" / "registry.json").write_text("{}", encoding="utf-8")
+            candidate = nested_repo / "deeper" / "workspace"
+            candidate.mkdir(parents=True)
+            resolved = WorkspaceProvider().resolve_preferred_repo(candidate)
+        finally:
+            temp_dir.cleanup()
+
+        self.assertEqual(resolved, repo.as_posix())
+
+    def test_workspace_provider_falls_back_to_shallowest_descendant_registry(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        root = Path(temp_dir.name)
+        outer = root / "workspace"
+        repo = outer / "project"
+        try:
+            (outer / ".git").mkdir(parents=True)
+            repo.mkdir(parents=True)
+            fixture = temp_repo_from_fixture("repo_valid")
+            fixture_repo = Path(fixture.name) / "repo"
+            (repo / ".ssot").mkdir(parents=True)
+            (repo / ".ssot" / "registry.json").write_text((fixture_repo / ".ssot" / "registry.json").read_text(encoding="utf-8"), encoding="utf-8")
+            resolved = WorkspaceProvider().resolve_preferred_repo(outer)
+        finally:
+            fixture.cleanup()
+            temp_dir.cleanup()
+
+        self.assertEqual(resolved, repo.as_posix())
+
+    def test_session_store_returns_none_when_no_registry_exists(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        empty_root = Path(temp_dir.name) / "empty"
+        empty_root.mkdir(parents=True)
+        (empty_root / ".git").mkdir()
+        try:
+            store = SessionStore(Path(temp_dir.name) / "session")
+            resolved = store.resolve_startup_path(empty_root, SessionState())
+        finally:
+            temp_dir.cleanup()
+
+        self.assertIsNone(resolved)
 
     def test_action_registry_filters_disabled_actions(self) -> None:
         registry = ActionRegistry()
@@ -142,6 +190,29 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
                 raw = str(body.content)
                 self.assertIn("Badges", structured)
                 self.assertIn('"id": "feat:rfc.9000.connection-migration"', raw)
+        finally:
+            temp_dir.cleanup()
+
+    async def test_action_activate_selection_shows_current_entity(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.screen
+                table = screen.query_one(EntityTable)
+                table.focus()
+                screen.action_activate_selection()
+                await pilot.pause()
+                body = screen.query_one("#entity_detail_body")
+                self.assertIn("Badges", str(body.content))
         finally:
             temp_dir.cleanup()
 

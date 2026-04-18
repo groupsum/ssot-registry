@@ -23,6 +23,7 @@ from ssot_registry.model.enums import (
     SEVERITIES,
     TEST_STATUSES,
 )
+from ssot_registry.model.registry import REPO_KINDS, REPO_KIND_ALIASES, legacy_repo_kinds_allowed
 
 
 def _list_of_strings(value: Any) -> bool:
@@ -236,8 +237,11 @@ def validate_structure(registry: dict[str, Any], index: dict[str, dict[str, dict
         for field_name in ("id", "name", "version", "kind"):
             if not isinstance(repo.get(field_name), str) or not repo[field_name].strip():
                 failures.append(f"repo.{field_name} must be a non-empty string")
-        if repo.get("kind") not in {"ssot-upstream", "operator-repo"}:
-            failures.append("repo.kind must be one of ['operator-repo', 'ssot-upstream']")
+        allowed_repo_kinds = set(REPO_KINDS)
+        if legacy_repo_kinds_allowed():
+            allowed_repo_kinds |= set(REPO_KIND_ALIASES)
+        if repo.get("kind") not in allowed_repo_kinds:
+            failures.append(f"repo.kind must be one of {sorted(REPO_KINDS)}")
 
     tooling = registry.get("tooling")
     if not isinstance(tooling, dict):

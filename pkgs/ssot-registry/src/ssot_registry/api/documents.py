@@ -24,6 +24,7 @@ from ssot_registry.model.document import (
     reservation_kind_key,
     section_for_document_kind,
 )
+from ssot_registry.model.registry import normalize_repo_kind
 from ssot_registry.util.document_io import (
     build_document_payload,
     dump_document_yaml,
@@ -134,10 +135,8 @@ def _build_authored_row(
 def _repo_kind(registry: dict[str, Any]) -> str:
     repo = registry.get("repo")
     if isinstance(repo, dict):
-        kind = repo.get("kind")
-        if isinstance(kind, str) and kind:
-            return kind
-    return "operator-repo"
+        return normalize_repo_kind(repo.get("kind"))
+    return "repo-local"
 
 
 def _manifest_row_to_registry_row(registry: dict[str, Any], kind: str, manifest_entry: dict[str, Any]) -> dict[str, Any]:
@@ -291,20 +290,20 @@ def create_document(
 
     registry_path, repo_root, registry = load_registry(path)
     repo_kind = _repo_kind(registry)
-    if repo_kind == "operator-repo" and origin != "repo-local":
-        raise ValidationError(f"Operator repositories may only create repo-local {_document_label(kind)} rows")
-    if repo_kind == "ssot-upstream" and origin == "repo-local":
-        raise ValidationError(f"Upstream repositories may only create ssot-core or ssot-origin {_document_label(kind)} rows")
+    if repo_kind == "repo-local" and origin != "repo-local":
+        raise ValidationError(f"Repo-local repositories may only create repo-local {_document_label(kind)} rows")
+    if repo_kind in {"ssot-core", "ssot-origin"} and origin == "repo-local":
+        raise ValidationError(f"{repo_kind} repositories may only create ssot-core or ssot-origin {_document_label(kind)} rows")
     if number is None:
-        if repo_kind == "ssot-upstream" and origin in {"ssot-core", "ssot-origin"}:
-            raise ValidationError(f"Upstream {_document_label(kind)} creation for {origin} requires an explicit --number")
+        if repo_kind in {"ssot-core", "ssot-origin"} and origin in {"ssot-core", "ssot-origin"}:
+            raise ValidationError(f"{repo_kind} {_document_label(kind)} creation for {origin} requires an explicit --number")
         number = _allocate_number(registry, kind, reserve_range)
     else:
         _ensure_assignable_number(
             registry,
             kind,
             number,
-            allow_non_assignable=repo_kind == "ssot-upstream" and origin in {"ssot-core", "ssot-origin"},
+            allow_non_assignable=repo_kind in {"ssot-core", "ssot-origin"} and origin in {"ssot-core", "ssot-origin"},
         )
     reservation = _reservation_for_number(registry, kind, number)
     if origin in {"ssot-core", "ssot-origin"} and reservation.get("owner") != origin:
@@ -549,7 +548,7 @@ def sync_documents_in_memory(registry: dict[str, Any], repo_root: Path, kind: st
 def sync_documents(path: str | Path, kind: str) -> dict[str, Any]:
     registry_path, repo_root, registry = load_registry(path)
     section = section_for_document_kind(kind)
-    if _repo_kind(registry) == "ssot-upstream":
+    if _repo_kind(registry) in {"ssot-core", "ssot-origin"}:
         return {
             "passed": True,
             "registry_path": registry_path.as_posix(),

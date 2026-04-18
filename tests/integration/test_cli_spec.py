@@ -104,8 +104,8 @@ class CliSpecTests(unittest.TestCase):
             list_result = run_cli("spec", "list", str(repo))
             self.assertEqual(list_result.returncode, 0, list_result.stderr)
             list_payload = json.loads(list_result.stdout)
-            self.assertTrue(list_payload["passed"])
-            baseline_count = list_payload["count"]
+            self.assertIsInstance(list_payload, list)
+            baseline_count = len(list_payload)
 
             sync_result = run_cli("spec", "sync", str(repo))
             self.assertEqual(sync_result.returncode, 0, sync_result.stderr)
@@ -115,10 +115,10 @@ class CliSpecTests(unittest.TestCase):
             list_after_sync = run_cli("spec", "list", str(repo))
             self.assertEqual(list_after_sync.returncode, 0, list_after_sync.stderr)
             list_after_sync_payload = json.loads(list_after_sync.stdout)
-            self.assertTrue(list_after_sync_payload["passed"])
-            self.assertGreaterEqual(list_after_sync_payload["count"], baseline_count)
+            self.assertIsInstance(list_after_sync_payload, list)
+            self.assertGreaterEqual(len(list_after_sync_payload), baseline_count)
             synced_ids = set(sync_payload["created"] + sync_payload["updated"] + sync_payload["unchanged"])
-            listed_ids = {row["id"] for row in list_after_sync_payload["documents"]}
+            listed_ids = {row["id"] for row in list_after_sync_payload}
             self.assertTrue(synced_ids.issubset(listed_ids))
 
             reserve_create = run_cli("spec", "reserve", "create", str(repo), "--name", "origin:repo-test", "--start", "5200", "--end", "5299")

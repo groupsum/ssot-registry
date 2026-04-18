@@ -80,12 +80,12 @@ CONTRACT_DATA = {
             "adr": [
                 {"owner": "ssot-core", "start": 1, "end": 599, "immutable": True, "deletable": False, "assignable_by_repo": False},
                 {"owner": "ssot-origin", "start": 600, "end": 999, "immutable": True, "deletable": False, "assignable_by_repo": False},
-                {"owner": "repo-local-default", "start": 1000, "end": 4999, "immutable": False, "deletable": True, "assignable_by_repo": True},
+                {"owner": "repo-local", "start": 1000, "end": 4999, "immutable": False, "deletable": True, "assignable_by_repo": True},
             ],
             "spec": [
                 {"owner": "ssot-core", "start": 1, "end": 599, "immutable": True, "deletable": False, "assignable_by_repo": False},
                 {"owner": "ssot-origin", "start": 600, "end": 999, "immutable": True, "deletable": False, "assignable_by_repo": False},
-                {"owner": "repo-local-default", "start": 1000, "end": 4999, "immutable": False, "deletable": True, "assignable_by_repo": True},
+                {"owner": "repo-local", "start": 1000, "end": 4999, "immutable": False, "deletable": True, "assignable_by_repo": True},
             ],
         },
     },

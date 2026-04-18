@@ -34,3 +34,10 @@ def collect_list_fields(args: argparse.Namespace, mapping: dict[str, str]) -> di
         if value:
             links[field_name] = value
     return links
+
+
+def documents_only(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "passed": bool(payload.get("passed", False)),
+        "__rows_only__": list(payload.get("documents", [])),
+    }
