@@ -86,6 +86,7 @@ class BrowserScreen(Screen[None]):
         self.state_store.subscribe(self._render_state)
         self._register_actions()
         self.query_one(SectionNavigation).load_sections(ENTITY_SECTIONS)
+        self.query_one("#filter_input", Input).value = self.state_store.state.session.filter_text or ""
         startup_path = self._startup_path()
         if startup_path is not None:
             self.query_one("#repo_path", Input).value = startup_path
@@ -173,7 +174,10 @@ class BrowserScreen(Screen[None]):
 
     def _filtered_rows(self) -> list[dict[str, Any]]:
         rows = self._rows_for_active_section()
-        needle = self.state_store.state.session.filter_text.strip().lower()
+        filter_text = self.state_store.state.session.filter_text
+        if filter_text is None:
+            return rows
+        needle = filter_text.strip().lower()
         if not needle:
             return rows
         return [row for row in rows if needle in json.dumps(row, sort_keys=True).lower()]
@@ -414,7 +418,7 @@ class BrowserScreen(Screen[None]):
         filter_input = self.query_one("#filter_input", Input)
         if filter_input.value:
             filter_input.value = ""
-            self._persist_session(filter_text="")
+            self._persist_session(filter_text=None)
             self._refresh_table(selected_entity_id=self._current_detail_entity_id)
             self._push_status("Cleared filter.")
             return
@@ -441,7 +445,7 @@ class BrowserScreen(Screen[None]):
 
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "filter_input":
-            self._persist_session(filter_text=event.value)
+            self._persist_session(filter_text=event.value or None)
             self._refresh_table(selected_entity_id=self._current_detail_entity_id)
 
     def on_tree_node_selected(self, event: SectionNavigation.NodeSelected[str]) -> None:

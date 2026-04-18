@@ -46,6 +46,16 @@ class TuiOverhaulUnitTests(unittest.TestCase):
         self.assertEqual(loaded.recent_repos, ["E:/repo", "E:/other"])
         self.assertEqual(loaded.selected_columns["claims"], ["id", "title", "tier"])
 
+    def test_session_store_defaults_filter_to_null(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        session_root = Path(temp_dir.name) / "session"
+        try:
+            loaded = SessionStore(session_root).load()
+        finally:
+            temp_dir.cleanup()
+
+        self.assertIsNone(loaded.filter_text)
+
     def test_session_store_prefers_last_valid_repo_then_cwd(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"
@@ -197,6 +207,27 @@ class TuiOverhaulUnitTests(unittest.TestCase):
 
 @unittest.skipUnless(BrowserScreen is not None, "textual is not installed")
 class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
+    async def test_unset_filter_leaves_rows_unfiltered(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.screen
+                table = screen.query_one(EntityTable)
+                self.assertIsNone(screen.state_store.state.session.filter_text)
+                self.assertEqual(screen.query_one("#filter_input").value, "")
+                self.assertEqual(table.row_count, len(screen.workspace.collections["features"]))
+        finally:
+            temp_dir.cleanup()
+
     async def test_filter_updates_visible_rows(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"

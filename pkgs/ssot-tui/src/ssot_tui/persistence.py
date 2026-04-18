@@ -50,7 +50,7 @@ class SessionStore:
             recent_repos=_coerce_string_list(payload.get("recent_repos")),
             active_section=_coerce_string(payload.get("active_section")) or "features",
             selected_entity_id=_coerce_string(payload.get("selected_entity_id")),
-            filter_text=_coerce_string(payload.get("filter_text")) or "",
+            filter_text=_coerce_optional_filter(payload.get("filter_text")),
             pane_mode=_coerce_string(payload.get("pane_mode")) or "structured",
             table_mode=_coerce_string(payload.get("table_mode")) or "fit",
             selected_columns=_coerce_columns(payload.get("selected_columns")),
@@ -106,3 +106,11 @@ def _coerce_columns(value: object) -> dict[str, list[str]]:
         if filtered:
             selected[section] = filtered
     return selected
+
+
+def _coerce_optional_filter(value: object) -> str | None:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return value or None
+    return None

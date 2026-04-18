@@ -16,7 +16,7 @@ class SessionState:
     recent_repos: list[str] = field(default_factory=list)
     active_section: str = "features"
     selected_entity_id: str | None = None
-    filter_text: str = ""
+    filter_text: str | None = None
     pane_mode: str = "structured"
     table_mode: str = "fit"
     selected_columns: dict[str, list[str]] = field(default_factory=dict)
