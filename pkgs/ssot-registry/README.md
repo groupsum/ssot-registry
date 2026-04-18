@@ -137,6 +137,24 @@ ssot-registry graph --help
 ssot-registry registry --help
 ```
 
+## Screenshots
+
+CLI screenshots from `ssot-cli`:
+
+![ssot top-level help](../ssot-cli/assets/ssot-cli-help.png)
+
+![ssot boundary help](../ssot-cli/assets/ssot-cli-boundary-help.png)
+
+TUI screenshots from `ssot-tui`:
+
+![SSOT TUI browser](../ssot-tui/assets/ssot-tui-browser.png)
+
+![SSOT TUI ADR browser](../ssot-tui/assets/ssot-tui-adrs.png)
+
+![SSOT TUI spec browser](../ssot-tui/assets/ssot-tui-specs.png)
+
+![SSOT TUI validation status](../ssot-tui/assets/ssot-tui-validated.png)
+
 ## CLI conventions
 
 - Most commands accept `[path]` as an optional positional argument. Default is current directory (`.`).

@@ -72,13 +72,11 @@ ssot registry --help
 
 Regenerate these assets with `python scripts/generate_cli_screenshots.py`.
 
-Top-level command help:
-
 ![ssot top-level help](assets/ssot-cli-help.png)
 
 Boundary command help:
 
-![ssot boundary help](assets/ssot-cli-boundary-help.svg)
+![ssot boundary help](assets/ssot-cli-boundary-help.png)
 
 ## CLI conventions
 

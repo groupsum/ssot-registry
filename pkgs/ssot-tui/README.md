@@ -84,6 +84,10 @@ Captured against [`examples/minimal-repo`](../../examples/minimal-repo/README.md
 
 ![SSOT TUI browser](assets/ssot-tui-browser.png)
 
+![SSOT TUI ADR browser](assets/ssot-tui-adrs.png)
+
+![SSOT TUI spec browser](assets/ssot-tui-specs.png)
+
 ![SSOT TUI validation status](assets/ssot-tui-validated.png)
 
 ## Current scope
