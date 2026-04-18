@@ -22,6 +22,7 @@ build-all:
 	uv build --project pkgs/ssot-contracts
 	uv build --project pkgs/ssot-views
 	uv build --project pkgs/ssot-codegen
+	uv build --project pkgs/ssot-core
 	uv build --project pkgs/ssot-registry
 	uv build --project pkgs/ssot-cli
 	uv build --project pkgs/ssot-tui

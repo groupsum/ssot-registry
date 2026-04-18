@@ -11,10 +11,13 @@ requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = ["tomli>=2.0.1; python_version < '3.11'"]
-keywords = ["ssot", "contracts", "schemas", "templates", "manifests"]
+keywords = ["ssot", "contracts", "schema", "json-schema", "templates", "manifests", "registry"]
 classifiers = [
   "Development Status :: 3 - Alpha",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
@@ -24,7 +27,10 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Topic :: File Formats :: JSON",
   "Topic :: File Formats :: JSON :: JSON Schema",
+  "Topic :: Software Development :: Documentation",
   "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Utilities",
 ]
 
 [project.urls]

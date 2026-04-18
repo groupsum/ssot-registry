@@ -12,7 +12,7 @@
 
 `ssot-cli` is the primary command-line distribution for SSOT.
 
-It installs `ssot`, `ssot-cli`, and `ssot-registry` as equivalent executables over the same parser and runtime. The command surface is implemented here, while domain logic lives in `ssot-registry` and shared contract metadata comes from `ssot-contracts`.
+It installs `ssot`, `ssot-cli`, and `ssot-registry` as equivalent executables over the same parser and runtime. The command surface is implemented here, while domain logic lives in `ssot-core` and shared contract metadata comes from `ssot-contracts`.
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
@@ -34,7 +34,7 @@ For local development:
 python -m pip install -e pkgs/ssot-cli
 ```
 
-This package depends on `ssot-registry` and `ssot-contracts`, so installing it gives you the full CLI runtime stack.
+This package depends on `ssot-core` and `ssot-contracts`, so installing it gives you the full CLI runtime stack.
 
 ## Executable names
 

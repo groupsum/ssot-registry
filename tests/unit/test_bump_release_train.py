@@ -40,9 +40,10 @@ class BumpReleaseTrainTests(unittest.TestCase):
                 "ssot-contracts": ("0.2.3", []),
                 "ssot-views": ("0.2.3", ["ssot-contracts==0.2.3"]),
                 "ssot-codegen": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-views==0.2.3"]),
-                "ssot-registry": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-views==0.2.3"]),
-                "ssot-cli": ("0.1.0", ["ssot-contracts>=0.2.3,<0.3.0", "ssot-registry>=0.2.3,<0.3.0"]),
-                "ssot-tui": ("0.1.0", ["ssot-contracts>=0.2.3,<0.3.0", "ssot-registry>=0.2.3,<0.3.0"]),
+                "ssot-core": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-views==0.2.3"]),
+                "ssot-registry": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-core==0.2.3", "ssot-cli>=0.1.0,<0.2.0"]),
+                "ssot-cli": ("0.1.0", ["ssot-contracts>=0.2.3,<0.3.0", "ssot-core>=0.2.3,<0.3.0"]),
+                "ssot-tui": ("0.1.0", ["ssot-contracts>=0.2.3,<0.3.0", "ssot-core>=0.2.3,<0.3.0"]),
             }
             package_infos: dict[str, PackageInfo] = {}
             for package_name, (version, dependencies) in packages.items():
@@ -60,10 +61,11 @@ class BumpReleaseTrainTests(unittest.TestCase):
                 changed = bump_release_train.bump_train("all", "patch", None)
 
             changed_paths = {path.as_posix() for path in changed}
-            self.assertEqual(len(changed_paths), 6)
+            self.assertEqual(len(changed_paths), 7)
 
             views_text = (root / "ssot-views" / "pyproject.toml").read_text(encoding="utf-8")
             codegen_text = (root / "ssot-codegen" / "pyproject.toml").read_text(encoding="utf-8")
+            core_text = (root / "ssot-core" / "pyproject.toml").read_text(encoding="utf-8")
             registry_text = (root / "ssot-registry" / "pyproject.toml").read_text(encoding="utf-8")
             cli_text = (root / "ssot-cli" / "pyproject.toml").read_text(encoding="utf-8")
             tui_text = (root / "ssot-tui" / "pyproject.toml").read_text(encoding="utf-8")
@@ -73,14 +75,18 @@ class BumpReleaseTrainTests(unittest.TestCase):
             self.assertIn('ssot-contracts==0.2.4.dev1', views_text)
             self.assertIn('ssot-contracts==0.2.4.dev1', codegen_text)
             self.assertIn('ssot-views==0.2.4.dev1', codegen_text)
+            self.assertIn('version = "0.2.4.dev1"', core_text)
+            self.assertIn('ssot-contracts==0.2.4.dev1', core_text)
+            self.assertIn('ssot-views==0.2.4.dev1', core_text)
             self.assertIn('ssot-contracts==0.2.4.dev1', registry_text)
-            self.assertIn('ssot-views==0.2.4.dev1', registry_text)
+            self.assertIn('ssot-core==0.2.4.dev1', registry_text)
+            self.assertIn('ssot-cli>=0.1.1.dev1,<0.2.0', registry_text)
             self.assertIn('version = "0.1.1.dev1"', cli_text)
             self.assertIn('ssot-contracts>=0.2.4.dev1,<0.3.0', cli_text)
-            self.assertIn('ssot-registry>=0.2.4.dev1,<0.3.0', cli_text)
+            self.assertIn('ssot-core>=0.2.4.dev1,<0.3.0', cli_text)
             self.assertIn('version = "0.1.1.dev1"', tui_text)
             self.assertIn('ssot-contracts>=0.2.4.dev1,<0.3.0', tui_text)
-            self.assertIn('ssot-registry>=0.2.4.dev1,<0.3.0', tui_text)
+            self.assertIn('ssot-core>=0.2.4.dev1,<0.3.0', tui_text)
 
 
 if __name__ == "__main__":

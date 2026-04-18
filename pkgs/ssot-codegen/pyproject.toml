@@ -15,11 +15,13 @@ dependencies = [
   "ssot-views==0.2.6",
   "tomli>=2.0.1; python_version < '3.11'",
 ]
-keywords = ["ssot", "codegen", "generators", "contracts"]
+keywords = ["ssot", "codegen", "generators", "contracts", "metadata", "automation", "registry"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: Console",
   "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
@@ -28,7 +30,9 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Code Generators",
+  "Topic :: Software Development :: Documentation",
   "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Utilities",
 ]
 
 [project.scripts]

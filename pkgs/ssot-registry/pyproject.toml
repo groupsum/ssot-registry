@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ssot-registry"
 version = "0.2.6"
-description = "Portable single-source-of-truth registry for features, tests, claims, evidence, issues, risks, boundaries, releases, ADRs, and specs."
+description = "Umbrella distribution for SSOT that installs the core runtime and primary CLI together."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
@@ -13,25 +13,19 @@ authors = [
   { name = "Jacob Stewart", email = "jacob@swarmauri.com" }
 ]
 dependencies = [
+  "ssot-core==0.2.6",
+  "ssot-cli>=0.1.2,<0.2.0",
   "ssot-contracts==0.2.6",
-  "ssot-views==0.2.6",
   "tomli>=2.0.1; python_version < '3.11'",
 ]
-keywords = [
-  "ssot",
-  "registry",
-  "claims",
-  "evidence",
-  "release-management",
-  "certification",
-  "governance"
-]
+keywords = ["ssot", "bundle", "registry", "cli", "governance", "release-management", "developer-tools"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: Console",
   "Intended Audience :: Developers",
   "Intended Audience :: Information Technology",
   "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
@@ -44,30 +38,21 @@ classifiers = [
   "Topic :: File Formats :: JSON",
   "Topic :: File Formats :: JSON :: JSON Schema",
   "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Software Development :: Build Tools",
   "Topic :: Software Development :: Documentation",
-  "Topic :: Software Development :: Libraries",
-  "Topic :: Software Development :: Libraries :: Python Modules",
   "Topic :: Software Development :: Quality Assurance",
   "Topic :: Software Development :: Testing",
   "Topic :: Software Development :: Testing :: Acceptance",
   "Topic :: Software Development :: Testing :: Unit",
-  "Topic :: Software Development :: Version Control :: Git",
   "Topic :: System :: Archiving",
   "Topic :: System :: Archiving :: Packaging",
   "Topic :: Utilities",
 ]
+[project.optional-dependencies]
+tui = ["ssot-tui>=0.1.2,<0.2.0"]
+all = ["ssot-tui>=0.1.2,<0.2.0"]
 
 [project.urls]
 Homepage = "https://github.com/groupsum/ssot-registry"
 Repository = "https://github.com/groupsum/ssot-registry"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
-
-[tool.setuptools]
-package-dir = {"" = "src"}
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-data]
-"ssot_registry.schema" = ["*.json"]
-"ssot_registry.templates" = ["*.json"]

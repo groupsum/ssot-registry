@@ -24,6 +24,7 @@ jobs:
           - ssot-contracts
           - ssot-views
           - ssot-codegen
+          - ssot-core
           - ssot-registry
           - ssot-cli
           - ssot-tui
@@ -44,9 +45,14 @@ jobs:
             compile_paths: pkgs/ssot-codegen/src tests/unit/test_contracts_views_codegen.py tests/unit/test_release_metadata.py tests/unit/test_release_workflows.py tests/unit/test_pyproject_metadata.py
             test_command: python -m unittest tests.unit.test_contracts_views_codegen tests.unit.test_release_metadata tests.unit.test_release_workflows tests.unit.test_pyproject_metadata -v
             verify_packaged_docs: false
+          - package_name: ssot-core
+            project_path: pkgs/ssot-core
+            compile_paths: pkgs/ssot-core/src tests
+            test_command: python -m unittest discover -s tests -v
+            verify_packaged_docs: false
           - package_name: ssot-registry
             project_path: pkgs/ssot-registry
-            compile_paths: pkgs/ssot-registry/src tests
+            compile_paths: tests
             test_command: python -m unittest discover -s tests -v
             verify_packaged_docs: false
           - package_name: ssot-cli
@@ -92,6 +98,7 @@ jobs:
           uv build --project pkgs/ssot-contracts --out-dir pkgs/ssot-contracts/dist
           uv build --project pkgs/ssot-views --out-dir pkgs/ssot-views/dist
           uv build --project pkgs/ssot-codegen --out-dir pkgs/ssot-codegen/dist
+          uv build --project pkgs/ssot-core --out-dir pkgs/ssot-core/dist
           uv build --project pkgs/ssot-registry --out-dir pkgs/ssot-registry/dist
           uv build --project pkgs/ssot-cli --out-dir pkgs/ssot-cli/dist
           uv build --project pkgs/ssot-tui --out-dir pkgs/ssot-tui/dist
@@ -104,6 +111,7 @@ jobs:
           python -m pip install pkgs/ssot-contracts/dist/*.whl
           python -m pip install pkgs/ssot-views/dist/*.whl
           python -m pip install pkgs/ssot-codegen/dist/*.whl
+          python -m pip install pkgs/ssot-core/dist/*.whl
           python -m pip install pkgs/ssot-registry/dist/*.whl
           python -m pip install pkgs/ssot-cli/dist/*.whl
 

@@ -28,12 +28,12 @@ Use `ssot-tui` when you want:
 - a navigable view across entity sections with filters, recent repos, and keyboard-first navigation
 - structured entity detail views with a raw JSON fallback
 - safe workflow bridges such as validation, CLI read previews, and opening repo resources
-- a Textual UI on top of the `ssot-registry` runtime
+- a Textual UI on top of the `ssot-core` runtime
 
 Use another package when you want:
 
 - `ssot-cli` for full command-line workflow coverage
-- `ssot-registry` for direct Python API access
+- `ssot-core` for direct Python API access
 - `ssot-contracts` for packaged schemas and templates
 - `ssot-views` for report and graph builders
 - `ssot-codegen` for regeneration of metadata artifacts

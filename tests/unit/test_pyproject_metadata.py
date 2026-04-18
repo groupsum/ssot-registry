@@ -41,6 +41,7 @@ class PyprojectMetadataTests(unittest.TestCase):
             "pkgs/ssot-contracts/pyproject.toml",
             "pkgs/ssot-views/pyproject.toml",
             "pkgs/ssot-codegen/pyproject.toml",
+            "pkgs/ssot-core/pyproject.toml",
             "pkgs/ssot-registry/pyproject.toml",
             "pkgs/ssot-cli/pyproject.toml",
             "pkgs/ssot-tui/pyproject.toml",
@@ -72,9 +73,9 @@ class PyprojectMetadataTests(unittest.TestCase):
         core_version = _load_toml("pkgs/ssot-contracts/pyproject.toml")["project"]["version"]
         compatible_range = f">={core_version},<{_next_minor_upper_bound(core_version)}"
         self.assertIn(f"ssot-contracts{compatible_range}", cli)
-        self.assertIn(f"ssot-registry{compatible_range}", cli)
+        self.assertIn(f"ssot-core{compatible_range}", cli)
         self.assertIn(f"ssot-contracts{compatible_range}", tui)
-        self.assertIn(f"ssot-registry{compatible_range}", tui)
+        self.assertIn(f"ssot-core{compatible_range}", tui)
         self.assertIn("textual>=8.2.3", tui)
 
     def test_core_train_packages_remain_lockstep(self) -> None:
@@ -83,6 +84,7 @@ class PyprojectMetadataTests(unittest.TestCase):
             "pkgs/ssot-contracts/pyproject.toml",
             "pkgs/ssot-views/pyproject.toml",
             "pkgs/ssot-codegen/pyproject.toml",
+            "pkgs/ssot-core/pyproject.toml",
             "pkgs/ssot-registry/pyproject.toml",
         ):
             versions.append(_load_toml(path)["project"]["version"])
@@ -93,6 +95,7 @@ class PyprojectMetadataTests(unittest.TestCase):
             "pkgs/ssot-contracts/pyproject.toml",
             "pkgs/ssot-views/pyproject.toml",
             "pkgs/ssot-codegen/pyproject.toml",
+            "pkgs/ssot-core/pyproject.toml",
             "pkgs/ssot-registry/pyproject.toml",
             "pkgs/ssot-cli/pyproject.toml",
             "pkgs/ssot-tui/pyproject.toml",

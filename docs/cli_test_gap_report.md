@@ -1,6 +1,6 @@
 # CLI Test Gap Report
 
-Generated on 2026-04-16 by comparing the argparse CLI surface in `pkgs/ssot-registry/src/ssot_registry/cli/*.py` against integration tests that invoke `run_cli`/`_run_ok` in `tests/integration/test_cli*.py`.
+Generated on 2026-04-16 by comparing the argparse CLI surface in `pkgs/ssot-core/src/ssot_registry/cli/*.py` against integration tests that invoke `run_cli`/`_run_ok` in `tests/integration/test_cli*.py`.
 
 ## Quick answer by coverage category
 

@@ -39,6 +39,7 @@ on:
           - ssot-contracts
           - ssot-views
           - ssot-codegen
+          - ssot-core
           - ssot-registry
           - ssot-cli
           - ssot-tui
@@ -118,6 +119,7 @@ jobs:
               "ssot_contracts": "ssot-contracts" in targets,
               "ssot_views": "ssot-views" in targets,
               "ssot_codegen": "ssot-codegen" in targets,
+              "ssot_core": "ssot-core" in targets,
               "ssot_registry": "ssot-registry" in targets,
               "ssot_cli": "ssot-cli" in targets,
               "ssot_tui": "ssot-tui" in targets,
@@ -165,10 +167,22 @@ jobs:
       create_github_release: ${{ inputs.create_github_release }}
     secrets: inherit
 
+  publish-ssot-core:
+    name: Publish ssot-core
+    needs: [validate, publish-ssot-codegen]
+    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_core && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-codegen.result) }}
+    uses: ./.github/workflows/publish-ssot-core.yml
+    with:
+      ref_name: ${{ inputs.ref_name }}
+      publish_to_pypi: ${{ inputs.publish_to_pypi }}
+      create_tag: true
+      create_github_release: ${{ inputs.create_github_release }}
+    secrets: inherit
+
   publish-ssot-registry:
     name: Publish ssot-registry
-    needs: [validate, publish-ssot-codegen]
-    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_registry && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-codegen.result) }}
+    needs: [validate, publish-ssot-core]
+    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_registry && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-core.result) }}
     uses: ./.github/workflows/publish-ssot-registry.yml
     with:
       ref_name: ${{ inputs.ref_name }}

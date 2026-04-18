@@ -66,16 +66,18 @@ Packaged SSOT documents are manifest-driven, immutable, and synced into reserved
 ## Install
 
 ```bash
-python -m pip install ssot-registry   # core library
-python -m pip install ssot-cli        # primary CLI distribution
-python -m pip install ssot-tui        # Textual TUI
+python -m pip install ssot-registry         # ssot-core + ssot-cli
+python -m pip install "ssot-registry[tui]"  # add optional TUI
+python -m pip install ssot-core             # runtime only
+python -m pip install ssot-cli              # primary CLI distribution
+python -m pip install ssot-tui              # Textual TUI only
 # or for local development
-python -m pip install -e pkgs/ssot-registry
+python -m pip install -e pkgs/ssot-core
 ```
 
-`ssot-registry` remains the canonical import package. CLI entry points now ship from `ssot-cli`, including both `ssot` and the compatibility alias `ssot-registry`.
+`ssot_registry` remains the canonical import package. The runtime now ships from `ssot-core`, while CLI entry points ship from `ssot-cli`, including both `ssot` and the compatibility alias `ssot-registry`.
 
-The repository root is now workspace tooling only. Canonical release artifacts are built from package roots under `pkgs/`, and the canonical Python runtime release target is `pkgs/ssot-registry`.
+The repository root is workspace tooling only. Canonical release artifacts are built from package roots under `pkgs/`, and the canonical Python runtime release target is `pkgs/ssot-core`.
 
 If you already have a repository initialized on schema `3`, upgrade it explicitly after installing the new package:
 

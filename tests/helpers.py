@@ -10,7 +10,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FIXTURES_ROOT = PROJECT_ROOT / "tests" / "fixtures"
-REGISTRY_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-registry" / "src"
+CORE_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-core" / "src"
 CONTRACTS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src"
 VIEWS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-views" / "src"
 CODEGEN_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-codegen" / "src"
@@ -34,7 +34,7 @@ def temp_repo_from_fixture(name: str) -> tempfile.TemporaryDirectory[str]:
 def run_cli(*args: str, cwd: str | Path | None = None) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
     pythonpath_parts = [
-        str(REGISTRY_SRC_ROOT),
+        str(CORE_SRC_ROOT),
         str(CODEGEN_SRC_ROOT),
         str(VIEWS_SRC_ROOT),
         str(CONTRACTS_SRC_ROOT),

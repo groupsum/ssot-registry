@@ -10,8 +10,8 @@ from pathlib import Path
 from tests.helpers import PROJECT_ROOT, workspace_tempdir
 
 
-REGISTRY_PROJECT_ROOT = PROJECT_ROOT / "pkgs" / "ssot-registry"
-REGISTRY_SRC_ROOT = REGISTRY_PROJECT_ROOT / "src"
+CORE_PROJECT_ROOT = PROJECT_ROOT / "pkgs" / "ssot-core"
+CORE_SRC_ROOT = CORE_PROJECT_ROOT / "src"
 CONTRACTS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src"
 VIEWS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-views" / "src"
 CODEGEN_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-codegen" / "src"
@@ -20,7 +20,7 @@ TUI_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-tui" / "src"
 
 
 def _project_version() -> str:
-    pyproject = REGISTRY_PROJECT_ROOT / "pyproject.toml"
+    pyproject = CORE_PROJECT_ROOT / "pyproject.toml"
     in_project_section = False
 
     for line in pyproject.read_text(encoding="utf-8").splitlines():
@@ -31,13 +31,13 @@ def _project_version() -> str:
         if in_project_section and stripped.startswith("version"):
             return stripped.split("=", 1)[1].strip().strip('"')
 
-    raise RuntimeError("Unable to resolve version from registry package pyproject.toml")
+    raise RuntimeError("Unable to resolve version from core package pyproject.toml")
 
 
 def _package_pythonpath() -> str:
     return os.pathsep.join(
         [
-            str(REGISTRY_SRC_ROOT),
+            str(CORE_SRC_ROOT),
             str(CODEGEN_SRC_ROOT),
             str(VIEWS_SRC_ROOT),
             str(CONTRACTS_SRC_ROOT),
@@ -48,7 +48,7 @@ def _package_pythonpath() -> str:
 
 
 class VersionResolutionTests(unittest.TestCase):
-    def test_registry_package_pyproject_version_matches_runtime_version(self) -> None:
+    def test_core_package_pyproject_version_matches_runtime_version(self) -> None:
         expected = _project_version()
         env = dict(os.environ, PYTHONPATH=_package_pythonpath())
         result = subprocess.run(
@@ -67,7 +67,7 @@ class VersionResolutionTests(unittest.TestCase):
         versions = result.stdout.strip().splitlines()
         self.assertEqual(versions, [expected, expected])
 
-    def test_subprocess_import_uses_registry_package_path(self) -> None:
+    def test_subprocess_import_uses_core_package_path(self) -> None:
         expected = _project_version()
         env = dict(os.environ, PYTHONPATH=_package_pythonpath())
         result = subprocess.run(
@@ -81,7 +81,7 @@ class VersionResolutionTests(unittest.TestCase):
 
         self.assertEqual(result.stdout.strip(), expected)
 
-    def test_python_m_ssot_registry_sets_tooling_version_from_registry_package(self) -> None:
+    def test_python_m_ssot_registry_sets_tooling_version_from_core_package(self) -> None:
         expected = _project_version()
         env = dict(os.environ, PYTHONPATH=_package_pythonpath())
 

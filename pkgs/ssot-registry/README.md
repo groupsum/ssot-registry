@@ -10,15 +10,15 @@
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Hits" /></a>
 </div>
 
-`ssot-registry` is the core Python runtime package for SSOT.
+`ssot-registry` is the umbrella distribution for SSOT.
 
-It owns the canonical registry model, core APIs for loading and mutating registries, validation and guard logic, planning and release workflows, and the domain operations that `ssot-cli` and `ssot-tui` build on top of.
+It installs `ssot-core` and `ssot-cli` together so users get the canonical `ssot_registry` Python package and the primary command surface in one install. The optional `tui` extra adds `ssot-tui`.
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
 ## Core model
 
-`ssot-registry` treats `.ssot/registry.json` as the canonical machine-readable source of truth for:
+The bundled runtime treats `.ssot/registry.json` as the canonical machine-readable source of truth for:
 
 - features
 - profiles
@@ -53,9 +53,10 @@ ADR and SPEC companion documents are canonically authored as YAML for readabilit
 ## Install
 
 ```bash
-python -m pip install ssot-registry   # core library/runtime
-python -m pip install ssot-cli        # primary CLI distribution
-python -m pip install ssot-tui        # Textual terminal UI
+python -m pip install ssot-registry         # ssot-core + ssot-cli
+python -m pip install "ssot-registry[tui]"  # ssot-core + ssot-cli + ssot-tui
+python -m pip install ssot-core             # runtime only
+python -m pip install ssot-cli              # CLI + runtime
 ```
 
 For local development:
@@ -64,14 +65,13 @@ For local development:
 python -m pip install -e pkgs/ssot-registry
 ```
 
-`ssot-registry` remains the canonical import package. The preferred CLI distribution now ships from `ssot-cli`, including `ssot`, `ssot-cli`, and the compatibility alias `ssot-registry`.
+`ssot_registry` remains the canonical import package, but it is now distributed by `ssot-core`. The `ssot-registry` package is the convenience bundle, and the CLI entry points continue to ship from `ssot-cli`.
 
 ## What this package owns
 
-- the canonical `.ssot/registry.json` data model
-- runtime APIs under `ssot_registry.api`
-- validators, guards, graph builders, reports, and snapshot generation
-- planning, profile evaluation, evidence verification, document lifecycle, and release gating logic
+- the convenience install bundle for the SSOT runtime and CLI
+- optional extras that add the Textual TUI without making it mandatory
+- a stable package name for users who want "install SSOT" rather than choose individual subpackages
 
 ## Python API examples
 

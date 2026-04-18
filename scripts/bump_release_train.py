@@ -39,7 +39,8 @@ def _rewrite_dependency(pyproject_path: Path, dependency_name: str, expected_spe
 def sync_release_dependencies() -> list[Path]:
     updated_files: list[Path] = []
     core_version = read_project_version(Path(PACKAGE_INFOS["ssot-contracts"].project_path) / "pyproject.toml")
-    for package_name, expectations in expected_dependency_specs(core_version).items():
+    cli_version = read_project_version(Path(PACKAGE_INFOS["ssot-cli"].project_path) / "pyproject.toml")
+    for package_name, expectations in expected_dependency_specs(core_version, cli_version=cli_version).items():
         pyproject_path = Path(PACKAGE_INFOS[package_name].project_path) / "pyproject.toml"
         changed = False
         for dependency_name, expected_spec in expectations.items():
@@ -90,7 +91,7 @@ def main() -> int:
     parser.add_argument(
         "--train",
         required=True,
-        choices=["core", "all", "ssot-contracts", "ssot-views", "ssot-codegen", "ssot-registry", "ssot-cli", "ssot-tui", "selected"],
+        choices=["core", "all", "ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-registry", "ssot-cli", "ssot-tui", "selected"],
     )
     parser.add_argument("--bump", required=True, choices=["major", "minor", "patch", "finalize"])
     parser.add_argument("--packages", help="Comma-separated package list when --train=selected")

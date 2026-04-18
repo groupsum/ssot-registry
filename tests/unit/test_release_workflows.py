@@ -39,10 +39,12 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("- ssot-contracts", workflow)
         self.assertIn("- ssot-views", workflow)
         self.assertIn("- ssot-codegen", workflow)
+        self.assertIn("- ssot-core", workflow)
         self.assertIn("- ssot-registry", workflow)
         self.assertIn("publish-ssot-contracts.yml", workflow)
         self.assertIn("publish-ssot-views.yml", workflow)
         self.assertIn("publish-ssot-codegen.yml", workflow)
+        self.assertIn("publish-ssot-core.yml", workflow)
         self.assertIn("publish-ssot-registry.yml", workflow)
         self.assertIn("publish-ssot-cli.yml", workflow)
         self.assertIn("publish-ssot-tui.yml", workflow)
@@ -54,6 +56,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
             "ssot-contracts",
             "ssot-views",
             "ssot-codegen",
+            "ssot-core",
             "ssot-registry",
             "ssot-cli",
             "ssot-tui",
@@ -66,6 +69,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
             ".github/workflows/publish-ssot-contracts.yml",
             ".github/workflows/publish-ssot-views.yml",
             ".github/workflows/publish-ssot-codegen.yml",
+            ".github/workflows/publish-ssot-core.yml",
             ".github/workflows/publish-ssot-registry.yml",
             ".github/workflows/publish-ssot-cli.yml",
             ".github/workflows/publish-ssot-tui.yml",

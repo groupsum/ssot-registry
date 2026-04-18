@@ -14,6 +14,7 @@ on:
           - ssot-contracts
           - ssot-views
           - ssot-codegen
+          - ssot-core
           - ssot-registry
           - ssot-cli
           - ssot-tui

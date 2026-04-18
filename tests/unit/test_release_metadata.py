@@ -25,18 +25,18 @@ class ReleaseMetadataTests(unittest.TestCase):
         payload = json.loads(_run_release_metadata("show").stdout)
         core_versions = [
             payload["packages"][name]["version"]
-            for name in ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-registry")
+            for name in ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-registry")
         ]
         self.assertEqual(len(set(core_versions)), 1)
 
-    def test_show_reports_registry_package_root(self) -> None:
+    def test_show_reports_core_package_root(self) -> None:
         payload = json.loads(_run_release_metadata("show").stdout)
-        self.assertEqual(payload["packages"]["ssot-registry"]["project_path"], "pkgs/ssot-registry")
-        self.assertEqual(payload["packages"]["ssot-registry"]["workflow"], "publish-ssot-registry.yml")
+        self.assertEqual(payload["packages"]["ssot-core"]["project_path"], "pkgs/ssot-core")
+        self.assertEqual(payload["packages"]["ssot-core"]["workflow"], "publish-ssot-core.yml")
 
     def test_validate_core_train_enforces_lockstep_group(self) -> None:
         payload = json.loads(_run_release_metadata("validate-train", "--train", "core").stdout)
-        self.assertEqual(payload["targets"], ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-registry"])
+        self.assertEqual(payload["targets"], ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-registry"])
         show_payload = json.loads(_run_release_metadata("show").stdout)
         self.assertEqual(payload["core_version"], show_payload["packages"]["ssot-contracts"]["version"])
 
@@ -44,20 +44,21 @@ class ReleaseMetadataTests(unittest.TestCase):
         payload = json.loads(_run_release_metadata("targets", "--train", "all").stdout)
         self.assertEqual(
             payload,
-            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-registry", "ssot-cli", "ssot-tui"],
+            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-registry", "ssot-cli", "ssot-tui"],
         )
 
     def test_selected_targets_follow_release_order(self) -> None:
         payload = json.loads(
-            _run_release_metadata("targets", "--train", "selected", "--packages", "ssot-contracts,ssot-registry").stdout
+            _run_release_metadata("targets", "--train", "selected", "--packages", "ssot-contracts,ssot-core").stdout
         )
-        self.assertEqual(payload, ["ssot-contracts", "ssot-registry"])
+        self.assertEqual(payload, ["ssot-contracts", "ssot-core"])
 
     def test_each_package_has_a_direct_release_train(self) -> None:
         for package_name in (
             "ssot-contracts",
             "ssot-views",
             "ssot-codegen",
+            "ssot-core",
             "ssot-registry",
             "ssot-cli",
             "ssot-tui",
