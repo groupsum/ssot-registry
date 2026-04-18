@@ -11,6 +11,8 @@ from textual.message import Message
 from textual.widgets import OptionList, Static
 from textual.widgets.option_list import Option
 
+from ssot_tui.presentations import EntityDetailViewModel, RelatedResourceViewModel, render_structured_detail
+
 
 @dataclass(frozen=True, slots=True)
 class TraversalTarget:
@@ -33,6 +35,7 @@ class EntityDetailPane(Vertical):
         super().__init__(*args, **kwargs)
         self._placeholder = placeholder
         self._targets: dict[str, TraversalTarget] = {}
+        self._raw_json = ""
 
     def compose(self) -> ComposeResult:
         yield Static(self._placeholder, id="entity_detail_body")
@@ -48,14 +51,39 @@ class EntityDetailPane(Vertical):
         body = self.query_one("#entity_detail_body", Static)
         if entity is None:
             body.update(self._placeholder)
+            self._raw_json = ""
             self._set_targets([])
             return
         body.update(json.dumps(entity, indent=2, sort_keys=True))
+        self._raw_json = json.dumps(entity, indent=2, sort_keys=True)
         self._set_targets(self._build_targets(entity, workspace_root=workspace_root, entity_index=entity_index or {}))
 
     def show_resource_text(self, title: str, text: str) -> None:
         self.query_one("#entity_detail_body", Static).update(f"{title}\n\n{text}")
         self._set_targets([])
+
+    def show_view_model(self, view_model: EntityDetailViewModel, *, raw_mode: bool) -> None:
+        body = self.query_one("#entity_detail_body", Static)
+        self._raw_json = view_model.raw_json
+        body.update(view_model.raw_json if raw_mode else render_structured_detail(view_model))
+        self._set_targets(
+            [
+                TraversalTarget(
+                    kind=resource.kind,
+                    value=resource.value,
+                    label=resource.label,
+                    field_path=resource.field_path,
+                    section=resource.section,
+                    absolute_path=resource.absolute_path,
+                )
+                for resource in view_model.resources
+            ]
+        )
+
+    def toggle_raw_mode(self, *, raw_mode: bool, view_model: EntityDetailViewModel | None) -> None:
+        if view_model is None:
+            return
+        self.show_view_model(view_model, raw_mode=raw_mode)
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         option = event.option

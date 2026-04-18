@@ -7,6 +7,7 @@ import unittest
 import uuid
 
 from ssot_registry.util.fs import resolve_registry_path
+from ssot_tui.persistence import SessionStore
 from ssot_tui.services import RegistryWorkspaceService
 from tests.helpers import temp_repo_from_fixture
 
@@ -90,16 +91,17 @@ class TuiBrowserInteractionTests(unittest.IsolatedAsyncioTestCase):
     async def test_browser_auto_loads_and_populates_table(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
 
         class TestApp(App[None]):
-            def compose(self) -> ComposeResult:
-                yield BrowserScreen(initial_path=repo)
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
 
         try:
             app = TestApp()
             async with app.run_test() as pilot:
                 await pilot.pause()
-                screen = app.query_one(BrowserScreen)
+                screen = app.screen
                 table = screen.query_one(EntityTable)
                 self.assertIsNotNone(screen.workspace)
                 self.assertGreater(table.row_count, 0)
@@ -110,16 +112,17 @@ class TuiBrowserInteractionTests(unittest.IsolatedAsyncioTestCase):
     async def test_resource_traversal_jumps_to_linked_entity(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
 
         class TestApp(App[None]):
-            def compose(self) -> ComposeResult:
-                yield BrowserScreen(initial_path=repo)
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
 
         try:
             app = TestApp()
             async with app.run_test() as pilot:
                 await pilot.pause()
-                screen = app.query_one(BrowserScreen)
+                screen = app.screen
                 screen._select_entity_id("feat:rfc.9000.connection-migration")
                 await pilot.pause()
 
@@ -138,16 +141,17 @@ class TuiBrowserInteractionTests(unittest.IsolatedAsyncioTestCase):
     async def test_resource_traversal_previews_file_resource(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
 
         class TestApp(App[None]):
-            def compose(self) -> ComposeResult:
-                yield BrowserScreen(initial_path=repo)
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
 
         try:
             app = TestApp()
             async with app.run_test() as pilot:
                 await pilot.pause()
-                screen = app.query_one(BrowserScreen)
+                screen = app.screen
                 screen._select_entity_id("tst:pytest.rfc.9000.connection-migration")
                 await pilot.pause()
 

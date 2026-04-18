@@ -6,6 +6,7 @@ from typing import Any
 
 from ssot_contracts.generated.python.tui_metadata import ENTITY_SECTIONS
 from ssot_registry.api import create_entity, delete_entity, list_entities, load_registry, update_entity, validate_registry
+from ssot_registry.api.documents import list_documents
 
 
 @dataclass(slots=True)
@@ -22,9 +23,13 @@ class RegistryWorkspaceService:
         registry_path, repo_root, registry = load_registry(path)
         collections: dict[str, list[dict[str, Any]]] = {}
         for section, _label in ENTITY_SECTIONS:
-            if section in {"adrs", "specs"}:
-                values = registry.get(section, [])
-                collections[section] = [row for row in values if isinstance(row, dict)]
+            if section == "adrs":
+                payload = list_documents(repo_root, "adr")
+                collections[section] = payload.get("documents", [])
+                continue
+            if section == "specs":
+                payload = list_documents(repo_root, "spec")
+                collections[section] = payload.get("documents", [])
                 continue
             payload = list_entities(repo_root, section)
             collections[section] = payload.get("entities", [])
@@ -45,3 +50,6 @@ class RegistryWorkspaceService:
 
     def delete(self, path: str | Path, section: str, entity_id: str) -> dict[str, Any]:
         return delete_entity(path, section, entity_id)
+
+    def section_counts(self, workspace: RegistryWorkspace) -> dict[str, int]:
+        return {section: len(rows) for section, rows in workspace.collections.items()}
