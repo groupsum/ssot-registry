@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssot-codegen"
-version = "0.2.6.dev1"
+version = "0.2.6.dev2"
 description = "Generators for SSOT contract, CLI, and TUI artifacts."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = [
-  "ssot-contracts==0.2.6.dev1",
-  "ssot-views==0.2.6.dev1",
+  "ssot-contracts==0.2.6.dev2",
+  "ssot-views==0.2.6.dev2",
   "tomli>=2.0.1; python_version < '3.11'",
 ]
 keywords = ["ssot", "codegen", "generators", "contracts"]
