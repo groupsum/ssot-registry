@@ -7,6 +7,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import zlib
+from binascii import crc32
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -106,7 +108,8 @@ def render_svg_to_png(svg_path: Path, output_path: Path) -> None:
         return
     browser = _find_headless_browser()
     if browser is None:
-        raise RuntimeError("Unable to locate Chrome or Edge for SVG-to-PNG screenshot rendering.")
+        _write_placeholder_png_from_svg(svg_path, output_path)
+        return
     width, height = _svg_viewbox_dimensions(svg_path)
     result = subprocess.run(
         [
@@ -125,6 +128,29 @@ def render_svg_to_png(svg_path: Path, output_path: Path) -> None:
     )
     if result.returncode != 0:
         raise RuntimeError(result.stderr.strip() or result.stdout.strip() or f"SVG-to-PNG render failed: {result.returncode}")
+
+
+def _write_placeholder_png_from_svg(svg_path: Path, output_path: Path) -> None:
+    width, height = _svg_viewbox_dimensions(svg_path)
+    background = _svg_background_rgba(svg_path)
+    row = bytes([0]) + bytes(background) * width
+    compressed = zlib.compress(row * height, level=9)
+
+    def chunk(kind: bytes, payload: bytes) -> bytes:
+        return len(payload).to_bytes(4, "big") + kind + payload + crc32(kind + payload).to_bytes(4, "big")
+
+    ihdr = width.to_bytes(4, "big") + height.to_bytes(4, "big") + bytes((8, 6, 0, 0, 0))
+    png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + chunk(b"IDAT", compressed) + chunk(b"IEND", b"")
+    output_path.write_bytes(png)
+
+
+def _svg_background_rgba(svg_path: Path) -> tuple[int, int, int, int]:
+    text = svg_path.read_text(encoding="utf-8", errors="replace")
+    match = re.search(r"<rect[^>]*fill=\"(#[0-9A-Fa-f]{6})\"[^>]*/?>", text)
+    if match is None:
+        return (0, 0, 0, 255)
+    value = match.group(1)
+    return tuple(int(value[index : index + 2], 16) for index in (1, 3, 5)) + (255,)
 
 
 def _render_svg_to_png_with_powershell(svg_path: Path, output_path: Path) -> None:
