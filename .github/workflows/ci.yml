@@ -99,9 +99,9 @@ jobs:
           uv build --project pkgs/ssot-views --out-dir pkgs/ssot-views/dist
           uv build --project pkgs/ssot-codegen --out-dir pkgs/ssot-codegen/dist
           uv build --project pkgs/ssot-core --out-dir pkgs/ssot-core/dist
-          uv build --project pkgs/ssot-registry --out-dir pkgs/ssot-registry/dist
           uv build --project pkgs/ssot-cli --out-dir pkgs/ssot-cli/dist
           uv build --project pkgs/ssot-tui --out-dir pkgs/ssot-tui/dist
+          uv build --project pkgs/ssot-registry --out-dir pkgs/ssot-registry/dist
 
       - name: Install local release train artifacts in dependency order
         run: |
@@ -112,8 +112,9 @@ jobs:
           python -m pip install pkgs/ssot-views/dist/*.whl
           python -m pip install pkgs/ssot-codegen/dist/*.whl
           python -m pip install pkgs/ssot-core/dist/*.whl
-          python -m pip install pkgs/ssot-registry/dist/*.whl
           python -m pip install pkgs/ssot-cli/dist/*.whl
+          python -m pip install pkgs/ssot-tui/dist/*.whl
+          python -m pip install pkgs/ssot-registry/dist/*.whl
 
       - name: Verify runtime imports against packaged artifacts
         run: |

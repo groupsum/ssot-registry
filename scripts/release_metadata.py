@@ -15,15 +15,15 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10 fallback
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CORE_PACKAGES = ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-registry")
+CORE_PACKAGES = ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core")
 RELEASE_ORDER = (
     "ssot-contracts",
     "ssot-views",
     "ssot-codegen",
     "ssot-core",
-    "ssot-registry",
     "ssot-cli",
     "ssot-tui",
+    "ssot-registry",
 )
 RELEASE_TRAINS = ("core", "all", *RELEASE_ORDER, "selected")
 

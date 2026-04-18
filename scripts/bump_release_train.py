@@ -62,8 +62,14 @@ def bump_train(train: str, bump_type: str, selected_packages: str | None) -> lis
             package_current = read_project_version(pyproject_path)
             write_project_version(pyproject_path, package_current, new_version)
             updated_files.append(pyproject_path)
+        registry_pyproject = Path(PACKAGE_INFOS["ssot-registry"].project_path) / "pyproject.toml"
+        registry_current = read_project_version(registry_pyproject)
+        write_project_version(registry_pyproject, registry_current, new_version)
+        updated_files.append(registry_pyproject)
         if train == "all":
-            for package_name in targets[len(CORE_PACKAGES) :]:
+            for package_name in targets:
+                if package_name in (*CORE_PACKAGES, "ssot-registry"):
+                    continue
                 pyproject_path = Path(PACKAGE_INFOS[package_name].project_path) / "pyproject.toml"
                 current_version = read_project_version(pyproject_path)
                 next_version = bump_version(current_version, bump_type)
