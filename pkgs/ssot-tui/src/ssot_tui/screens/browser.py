@@ -7,8 +7,7 @@ from typing import Any
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
-from textual.widgets import Input, OptionList, Static
-from textual.widgets.option_list import Option
+from textual.widgets import Input, Static
 
 from ssot_tui.actions import ActionDefinition, ActionRegistry
 from ssot_tui.persistence import SessionStore
@@ -64,14 +63,14 @@ class BrowserScreen(Screen[None]):
         self._current_detail_entity_id: str | None = None
         self._detail_view_model = None
         self._last_filtered_count = 0
+        self._last_navigation_signature: tuple[tuple[tuple[str, int], ...], tuple[tuple[str, int], ...]] | None = None
         self.section_specs: dict[str, SectionPresentationSpec] = build_section_specs(ENTITY_SECTIONS)
         self.action_registry = ActionRegistry()
 
     def compose(self) -> ComposeResult:
         with Vertical(id="startup_panel"):
-            yield Static("Resolve a repo from the current directory, recent repos, or enter a path.", id="startup_message")
+            yield Static("Resolve a repo from the current directory or enter a path.", id="startup_message")
             yield Input(placeholder="Repository root or .ssot/registry.json", id="repo_path")
-            yield OptionList(id="recent_repos")
         yield Input(placeholder="Filter current section", id="filter_input")
         with Horizontal(id="browser"):
             yield SectionNavigation(id="section_nav")
@@ -92,8 +91,7 @@ class BrowserScreen(Screen[None]):
             self.query_one("#repo_path", Input).value = startup_path
             self.action_reload_workspace()
         else:
-            self._refresh_recent_repos()
-            self._set_startup_message("No repo auto-detected. Enter a path or pick a recent repo.")
+            self._set_startup_message("No repo auto-detected. Enter a path.")
             self.query_one("#repo_path", Input).focus()
         self._render_state(self.state_store.state)
 
@@ -137,30 +135,33 @@ class BrowserScreen(Screen[None]):
     def _render_state(self, state: AppState) -> None:
         self.workspace = state.workspace
         self.active_section = state.session.active_section
-        self._refresh_recent_repos()
         self.query_one(StatusCenter).show_messages([entry.message for entry in state.status_history])
         self._update_summary()
         if self.workspace is None:
             self.query_one(EntityTable).load_rows(["id", "title", "status"], [])
             self.query_one(EntityDetailPane).show_entity(None)
+            self._last_navigation_signature = None
             return
-        self.query_one(SectionNavigation).load_sections(
-            ENTITY_SECTIONS,
-            counts=self.service.section_counts(self.workspace),
-            failures=state.validation.section_failures,
-        )
+        self._refresh_navigation(state.validation.section_failures)
         self._refresh_table(selected_entity_id=state.session.selected_entity_id)
         if state.filter_focus_requested:
             self.query_one("#filter_input", Input).focus()
             self.state_store.clear_filter_focus_request()
 
-    def _refresh_recent_repos(self) -> None:
-        option_list = self.query_one("#recent_repos", OptionList)
-        repos = self.state_store.state.session.recent_repos
-        if not repos:
-            option_list.set_options([Option("No recent repos yet", id="recent-none", disabled=True)])
+    def _refresh_navigation(self, failures: dict[str, int]) -> None:
+        if self.workspace is None:
+            self._last_navigation_signature = None
             return
-        option_list.set_options([Option(repo, id=f"recent-{index}") for index, repo in enumerate(repos)])
+        counts = self.service.section_counts(self.workspace)
+        signature = (tuple(sorted(counts.items())), tuple(sorted(failures.items())))
+        if self._last_navigation_signature == signature:
+            return
+        self._last_navigation_signature = signature
+        self.query_one(SectionNavigation).load_sections(
+            ENTITY_SECTIONS,
+            counts=counts,
+            failures=failures,
+        )
 
     def _set_startup_message(self, message: str) -> None:
         self.query_one("#startup_message", Static).update(message)
@@ -208,7 +209,7 @@ class BrowserScreen(Screen[None]):
         table = self.query_one(EntityTable)
         rows = self._filtered_rows()
         columns = self._columns_for_section(rows)
-        table.load_rows(columns, build_row_view_models(columns, rows))
+        reloaded = table.load_rows(columns, build_row_view_models(columns, rows))
         self._last_filtered_count = len(rows)
         if not rows:
             self._current_detail_entity_id = None
@@ -221,8 +222,11 @@ class BrowserScreen(Screen[None]):
             selected_index = table.row_index_for_entity_id(selected_entity_id)
             if selected_index is not None:
                 row_index = selected_index
-        table.move_cursor(row=row_index, column=0, animate=False, scroll=False)
-        self._show_entity(rows[row_index])
+        if reloaded or table.cursor_row != row_index:
+            table.move_cursor(row=row_index, column=0, animate=False, scroll=False)
+        entity = rows[row_index]
+        if self._current_detail_entity_id != str(entity.get("id", "")) or reloaded:
+            self._show_entity(entity)
         self._update_summary()
 
     def _show_entity(self, entity: dict[str, Any] | None) -> None:
@@ -240,7 +244,8 @@ class BrowserScreen(Screen[None]):
         )
         raw_mode = self.state_store.state.session.pane_mode == "raw"
         self.query_one(EntityDetailPane).show_view_model(self._detail_view_model, raw_mode=raw_mode)
-        self._persist_session(selected_entity_id=self._current_detail_entity_id)
+        if self.state_store.state.session.selected_entity_id != self._current_detail_entity_id:
+            self._persist_session(selected_entity_id=self._current_detail_entity_id)
 
     def _select_entity_id(self, entity_id: str) -> None:
         if self.workspace is None:
@@ -367,14 +372,10 @@ class BrowserScreen(Screen[None]):
         focused = self.focused
         if isinstance(focused, EntityTable):
             focused.action_cursor_down()
-        elif isinstance(focused, OptionList):
-            focused.action_cursor_down()
 
     def action_move_up(self) -> None:
         focused = self.focused
         if isinstance(focused, EntityTable):
-            focused.action_cursor_up()
-        elif isinstance(focused, OptionList):
             focused.action_cursor_up()
 
     def action_focus_sections(self) -> None:
@@ -388,10 +389,6 @@ class BrowserScreen(Screen[None]):
         if isinstance(focused, EntityTable):
             self._show_entity(focused.entity_for_row_index(focused.cursor_row))
             return
-        if isinstance(focused, OptionList):
-            option = focused.highlighted
-            if option is not None and getattr(option, "id", None) is not None:
-                focused.post_message(OptionList.OptionSelected(focused, option, option_index=0))
 
     def action_escape_mode(self) -> None:
         filter_input = self.query_one("#filter_input", Input)
@@ -427,18 +424,6 @@ class BrowserScreen(Screen[None]):
             self._persist_session(filter_text=event.value)
             self._refresh_table(selected_entity_id=self._current_detail_entity_id)
 
-    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        if event.option_list.id != "recent_repos":
-            return
-        option_id = getattr(event.option, "id", "")
-        if not option_id.startswith("recent-"):
-            return
-        index = int(option_id.split("-", 1)[1])
-        repos = self.state_store.state.session.recent_repos
-        if 0 <= index < len(repos):
-            self.query_one("#repo_path", Input).value = repos[index]
-            self.action_reload_workspace()
-
     def on_tree_node_selected(self, event: SectionNavigation.NodeSelected[str]) -> None:
         if event.node.data is None:
             return
@@ -472,7 +457,6 @@ class BrowserScreen(Screen[None]):
             self.query_one(SectionNavigation),
             self.query_one(EntityTable),
             self.query_one(EntityDetailPane),
-            self.query_one("#recent_repos", OptionList),
         ]
         current = self.focused
         try:

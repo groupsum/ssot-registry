@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from ssot_tui.actions import ActionDefinition, ActionRegistry
 from ssot_tui.persistence import SessionStore
@@ -213,6 +214,48 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
                 await pilot.pause()
                 body = screen.query_one("#entity_detail_body")
                 self.assertIn("Badges", str(body.content))
+        finally:
+            temp_dir.cleanup()
+
+    async def test_same_entity_highlight_does_not_rewrite_session(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.screen
+                entity = next(row for row in screen.workspace.collections["features"] if row["id"] == "feat:rfc.9000.connection-migration")
+                screen._show_entity(entity)
+                await pilot.pause()
+                with patch.object(screen.state_store, "update_session", wraps=screen.state_store.update_session) as update_session:
+                    screen._show_entity(entity)
+                    await pilot.pause()
+                update_session.assert_not_called()
+        finally:
+            temp_dir.cleanup()
+
+    async def test_startup_panel_no_longer_renders_recent_repo_selector(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                self.assertEqual(screen := app.screen, app.screen)
+                self.assertEqual(len(screen.query("#recent_repos")), 0)
         finally:
             temp_dir.cleanup()
 

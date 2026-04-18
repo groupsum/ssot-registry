@@ -13,13 +13,27 @@ class EntityTable(DataTable):
         self.cursor_type = "row"
         self.zebra_stripes = True
         self._rows: list[EntityRowViewModel] = []
+        self._columns: list[str] = []
+        self._content_signature: tuple[tuple[str, ...], tuple[tuple[str, tuple[tuple[str, str], ...]], ...]] | None = None
 
-    def load_rows(self, columns: list[str], rows: list[EntityRowViewModel]) -> None:
+    def load_rows(self, columns: list[str], rows: list[EntityRowViewModel]) -> bool:
+        signature = (
+            tuple(columns),
+            tuple((row.entity_id, tuple((column, row.cells.get(column, "")) for column in columns)) for row in rows),
+        )
+        self._rows = list(rows)
+        if self._content_signature == signature:
+            return False
+        self._content_signature = signature
+        self._columns = list(columns)
         self._rows = list(rows)
         self.clear(columns=True)
-        self.add_columns(*columns)
+        widths = self._column_widths(columns, rows)
+        for column in columns:
+            self.add_column(column, width=widths[column], key=column)
         for row in rows:
             self.add_row(*(row.cells.get(column, "") for column in columns), key=row.entity_id)
+        return True
 
     def entity_for_row_index(self, row_index: int) -> dict[str, Any] | None:
         if row_index < 0 or row_index >= len(self._rows):
@@ -31,3 +45,10 @@ class EntityTable(DataTable):
             if row.entity_id == entity_id:
                 return index
         return None
+
+    def _column_widths(self, columns: list[str], rows: list[EntityRowViewModel]) -> dict[str, int]:
+        widths: dict[str, int] = {}
+        for column in columns:
+            max_cell_width = max((len(row.cells.get(column, "")) for row in rows), default=0)
+            widths[column] = min(max(len(column), max_cell_width, 8), 36)
+        return widths
