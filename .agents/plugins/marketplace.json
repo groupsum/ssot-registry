@@ -1,11 +1,11 @@
 {
-  "name": "[TODO: marketplace-name]",
+  "name": "ssot-registry",
   "interface": {
-    "displayName": "[TODO: Marketplace Display Name]"
+    "displayName": "SSOT Registry Local Plugins"
   },
   "plugins": [
     {
-      "name": "ssot-registry-cli",
+      "name": "ssot-cli",
       "source": {
         "source": "local",
         "path": "./plugins/ssot-registry-cli"

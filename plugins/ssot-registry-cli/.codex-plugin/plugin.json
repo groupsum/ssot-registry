@@ -1,46 +1,39 @@
 {
-  "name": "ssot-registry-cli",
-  "version": "[TODO: plugin-version]",
-  "description": "[TODO: Brief plugin description for a Codex plugin centered around the ssot-registry CLI.]",
+  "name": "ssot-cli",
+  "version": "0.1.0",
+  "description": "Operate SSOT repositories through the PyPI-published ssot-registry distribution and its CLI aliases.",
   "author": {
-    "name": "[TODO: Author Name]",
-    "email": "[TODO: author@example.com]",
-    "url": "[TODO: https://github.com/author]"
+    "name": "Swarmauri",
+    "email": "jacob@swarmauri.com",
+    "url": "https://github.com/cobycloud"
   },
-  "homepage": "[TODO: https://docs.example.com/plugin]",
-  "repository": "[TODO: https://github.com/author/plugin]",
-  "license": "[TODO: SPDX license identifier]",
+  "homepage": "https://github.com/groupsum/ssot-registry",
+  "repository": "https://github.com/groupsum/ssot-registry",
+  "license": "Apache-2.0",
   "keywords": [
-    "[TODO: keyword1]",
-    "[TODO: keyword2]",
-    "[TODO: keyword3]"
+    "ssot",
+    "registry",
+    "cli"
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "[TODO: Plugin Display Name]",
-    "shortDescription": "[TODO: Short subtitle for the ssot-registry CLI plugin]",
-    "longDescription": "[TODO: Longer details page copy describing how Codex should use the ssot-registry CLI]",
-    "developerName": "[TODO: Developer Name]",
-    "category": "[TODO: Category]",
+    "displayName": "SSOT",
+    "shortDescription": "Use the published ssot-registry package to inspect and manage SSOT repos.",
+    "longDescription": "Gives Codex a focused workflow for operating SSOT repositories through the PyPI-published ssot-registry package, including validation, planning, release, and export commands.",
+    "developerName": "Swarmauri",
+    "category": "Developer Tools",
     "capabilities": [
-      "[TODO: capability1]",
-      "[TODO: capability2]"
+      "Read",
+      "Write"
     ],
-    "websiteURL": "[TODO: https://example.com]",
-    "privacyPolicyURL": "[TODO: https://example.com/privacy]",
-    "termsOfServiceURL": "[TODO: https://example.com/terms]",
+    "websiteURL": "https://github.com/groupsum/ssot-registry",
+    "privacyPolicyURL": "https://github.com/groupsum/ssot-registry",
+    "termsOfServiceURL": "https://github.com/groupsum/ssot-registry",
     "defaultPrompt": [
-      "[TODO: Prompt 1 about inspecting the ssot CLI]",
-      "[TODO: Prompt 2 about validating a repository with ssot]",
-      "[TODO: Prompt 3 about planning a release using ssot]"
+      "Inspect this repository with the published ssot-registry CLI.",
+      "Validate the current repo with ssot-registry and explain any failures.",
+      "Plan a boundary and release flow using ssot-registry commands."
     ],
-    "brandColor": "[TODO: #RRGGBB]",
-    "composerIcon": "./assets/icon.png",
-    "logo": "./assets/logo.png",
-    "screenshots": [
-      "./assets/screenshot1.png",
-      "./assets/screenshot2.png",
-      "./assets/screenshot3.png"
-    ]
+    "brandColor": "#0F766E"
   }
 }
