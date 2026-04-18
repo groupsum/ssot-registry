@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSOT Claim/Evidence Linking"
+  short_description: "Manage claims, evidence, and supporting feature links."
+  default_prompt: "Use $ssot-claim-evidence-linking to create or connect claims, features, tests, and evidence."

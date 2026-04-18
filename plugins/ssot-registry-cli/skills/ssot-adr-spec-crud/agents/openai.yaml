@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSOT ADR/SPEC CRUD"
+  short_description: "Create, update, link, and retire ADRs and specs."
+  default_prompt: "Use $ssot-adr-spec-crud to create or link ADRs and SPECs in this SSOT repo."

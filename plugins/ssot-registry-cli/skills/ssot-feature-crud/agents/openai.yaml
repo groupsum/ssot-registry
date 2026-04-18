@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSOT Feature CRUD"
+  short_description: "Create, plan, link, and retire SSOT features."
+  default_prompt: "Use $ssot-feature-crud to create, update, plan, or link features in this SSOT repo."

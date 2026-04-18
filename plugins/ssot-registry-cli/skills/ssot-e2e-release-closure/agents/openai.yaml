@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSOT E2E Release Closure"
+  short_description: "Run SSOT flows from docs to freeze to certification."
+  default_prompt: "Use $ssot-e2e-release-closure to drive an SSOT repo from ADR/spec through freeze, certification, and closure."
