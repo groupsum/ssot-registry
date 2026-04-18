@@ -2,16 +2,19 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from pathlib import Path
 import unittest
 import uuid
-from pathlib import Path
 
 from ssot_registry.util.fs import resolve_registry_path
 from ssot_tui.services import RegistryWorkspaceService
 from tests.helpers import temp_repo_from_fixture
 
 if importlib.util.find_spec("textual") is not None:
+    from textual.app import App, ComposeResult
+
     from ssot_tui.screens.browser import BrowserScreen
+    from ssot_tui.widgets import EntityDetailPane, EntityTable
 else:
     BrowserScreen = None
 
@@ -80,6 +83,83 @@ class TuiRegistryResolutionTests(unittest.TestCase):
 
         self.assertIn("Registry JSON is invalid", message)
         self.assertIn("line 1, column 2", message)
+
+
+@unittest.skipUnless(BrowserScreen is not None, "textual is not installed")
+class TuiBrowserInteractionTests(unittest.IsolatedAsyncioTestCase):
+    async def test_browser_auto_loads_and_populates_table(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+
+        class TestApp(App[None]):
+            def compose(self) -> ComposeResult:
+                yield BrowserScreen(initial_path=repo)
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.query_one(BrowserScreen)
+                table = screen.query_one(EntityTable)
+                self.assertIsNotNone(screen.workspace)
+                self.assertGreater(table.row_count, 0)
+                self.assertEqual(screen.query_one("#repo_path").value, repo.as_posix())
+        finally:
+            temp_dir.cleanup()
+
+    async def test_resource_traversal_jumps_to_linked_entity(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+
+        class TestApp(App[None]):
+            def compose(self) -> ComposeResult:
+                yield BrowserScreen(initial_path=repo)
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.query_one(BrowserScreen)
+                screen._select_entity_id("feat:rfc.9000.connection-migration")
+                await pilot.pause()
+
+                detail = screen.query_one(EntityDetailPane)
+                target = next(target for target in detail._targets.values() if target.value == "clm:rfc.9000.connection-migration.t3")
+                screen.on_entity_detail_pane_resource_selected(EntityDetailPane.ResourceSelected(detail, target))
+                await pilot.pause()
+
+                self.assertEqual(screen.active_section, "claims")
+                selected = screen.query_one(EntityTable).entity_for_row_index(screen.query_one(EntityTable).cursor_row)
+                self.assertIsNotNone(selected)
+                self.assertEqual(selected["id"], "clm:rfc.9000.connection-migration.t3")
+        finally:
+            temp_dir.cleanup()
+
+    async def test_resource_traversal_previews_file_resource(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+
+        class TestApp(App[None]):
+            def compose(self) -> ComposeResult:
+                yield BrowserScreen(initial_path=repo)
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.query_one(BrowserScreen)
+                screen._select_entity_id("tst:pytest.rfc.9000.connection-migration")
+                await pilot.pause()
+
+                detail = screen.query_one(EntityDetailPane)
+                target = next(target for target in detail._targets.values() if target.kind == "file")
+                screen.on_entity_detail_pane_resource_selected(EntityDetailPane.ResourceSelected(detail, target))
+                await pilot.pause()
+
+                body = detail.query_one("#entity_detail_body")
+                self.assertIn("test_connection_migration.py", str(body.content))
+        finally:
+            temp_dir.cleanup()
 
 
 if __name__ == "__main__":
