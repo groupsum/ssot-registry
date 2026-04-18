@@ -1,0 +1,46 @@
+{
+  "name": "ssot-registry-cli",
+  "version": "[TODO: plugin-version]",
+  "description": "[TODO: Brief plugin description for a Codex plugin centered around the ssot-registry CLI.]",
+  "author": {
+    "name": "[TODO: Author Name]",
+    "email": "[TODO: author@example.com]",
+    "url": "[TODO: https://github.com/author]"
+  },
+  "homepage": "[TODO: https://docs.example.com/plugin]",
+  "repository": "[TODO: https://github.com/author/plugin]",
+  "license": "[TODO: SPDX license identifier]",
+  "keywords": [
+    "[TODO: keyword1]",
+    "[TODO: keyword2]",
+    "[TODO: keyword3]"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "[TODO: Plugin Display Name]",
+    "shortDescription": "[TODO: Short subtitle for the ssot-registry CLI plugin]",
+    "longDescription": "[TODO: Longer details page copy describing how Codex should use the ssot-registry CLI]",
+    "developerName": "[TODO: Developer Name]",
+    "category": "[TODO: Category]",
+    "capabilities": [
+      "[TODO: capability1]",
+      "[TODO: capability2]"
+    ],
+    "websiteURL": "[TODO: https://example.com]",
+    "privacyPolicyURL": "[TODO: https://example.com/privacy]",
+    "termsOfServiceURL": "[TODO: https://example.com/terms]",
+    "defaultPrompt": [
+      "[TODO: Prompt 1 about inspecting the ssot CLI]",
+      "[TODO: Prompt 2 about validating a repository with ssot]",
+      "[TODO: Prompt 3 about planning a release using ssot]"
+    ],
+    "brandColor": "[TODO: #RRGGBB]",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "screenshots": [
+      "./assets/screenshot1.png",
+      "./assets/screenshot2.png",
+      "./assets/screenshot3.png"
+    ]
+  }
+}
