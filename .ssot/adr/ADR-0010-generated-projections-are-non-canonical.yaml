@@ -1,25 +1,23 @@
-{
-  "schema_version": 9,
-  "kind": "adr",
-  "id": "adr:0010",
-  "number": 10,
-  "slug": "generated-projections-are-non-canonical",
-  "title": "Generated projections are non-canonical",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "In the upstream `ssot-registry` repository, canonical governance documents are the `ssot-core` ADRs and specs authored under `.ssot/`.",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "decision": [
-      "In the upstream `ssot-registry` repository, canonical governance documents are the `ssot-core` ADRs and specs authored under `.ssot/`.\n\nGenerated projections include:\n\n- graph/report artifacts,\n- packaged `ssot-origin` template docs and manifests under `pkgs/ssot-contracts/src/ssot_contracts/templates/**`,\n- mirrored package copies under `pkgs/ssot-registry/src/ssot_registry/templates/**`."
-    ],
-    "consequences": [
-      "- Maintainers SHALL edit upstream `.ssot/**` sources, not packaged copies or other derived projections.\n- Projection generation MUST be deterministic.\n- Manual edits to generated projections are treated as drift."
-    ]
-  }
-}
+schema_version: 9
+kind: "adr"
+id: "adr:0010"
+number: 10
+slug: "generated-projections-are-non-canonical"
+title: "Generated projections are non-canonical"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "In the upstream `ssot-registry` repository, canonical governance documents are the `ssot-core` ADRs and specs authored under `.ssot/`."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  In the upstream `ssot-registry` repository, canonical governance documents are the `ssot-core` ADRs and specs authored under `.ssot/`.
+  
+  Generated projections include:
+  
+  - graph/report artifacts,
+  - packaged `ssot-origin` template docs and manifests under `pkgs/ssot-contracts/src/ssot_contracts/templates/**`,
+  - mirrored package copies under `pkgs/ssot-registry/src/ssot_registry/templates/**`.

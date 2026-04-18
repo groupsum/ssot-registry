@@ -1,28 +1,41 @@
-{
-  "schema_version": 9,
-  "kind": "adr",
-  "id": "adr:0014",
-  "number": 14,
-  "slug": "profiles-as-reusable-feature-bundles",
-  "title": "Profiles are reusable feature bundles with derived pass status",
-  "status": "accepted",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "The registry needed an entity between atomic features and release boundaries:",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "context": [
-      "The registry needed an entity between atomic features and release boundaries:\n\n- features are independently targetable,\n- boundaries are release/freeze artifacts,\n- releases certify a boundary scope.\n\nTeams also need reusable capability bundles that can be composed and evaluated."
-    ],
-    "decision": [
-      "Introduce a first-class `profiles` entity:\n\n- profile rows bundle `feature_ids` and nested `profile_ids`,\n- profile pass/fail is computed (never stored),\n- feature pass still requires satisfying claims and guard checks,\n- boundary scope may include both direct `feature_ids` and `profile_ids`,\n- boundary feature scope is resolved dynamically at evaluation/reporting time.\n\nTier resolution is fail-closed:\n\n1. feature `plan.target_claim_tier`,\n2. profile `claim_tier`,\n3. no tier => failing evaluation."
-    ],
-    "consequences": [
-      "- reusable capability and certification bundles become explicit and composable,\n- release and validation surfaces can report profile-level results,\n- boundaries remain canonical for freeze/release semantics,\n- no write-time expansion of boundary features from profiles."
-    ]
-  }
-}
+schema_version: 9
+kind: "adr"
+id: "adr:0014"
+number: 14
+slug: "profiles-as-reusable-feature-bundles"
+title: "Profiles are reusable feature bundles with derived pass status"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "The registry needed an entity between atomic features and release boundaries:"
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Context
+  
+  The registry needed an entity between atomic features and release boundaries:
+  
+  - features are independently targetable,
+  - boundaries are release/freeze artifacts,
+  - releases certify a boundary scope.
+  
+  Teams also need reusable capability bundles that can be composed and evaluated.
+  
+  ## Decision
+  
+  Introduce a first-class `profiles` entity:
+  
+  - profile rows bundle `feature_ids` and nested `profile_ids`,
+  - profile pass/fail is computed (never stored),
+  - feature pass still requires satisfying claims and guard checks,
+  - boundary scope may include both direct `feature_ids` and `profile_ids`,
+  - boundary feature scope is resolved dynamically at evaluation/reporting time.
+  
+  Tier resolution is fail-closed:
+  
+  1. feature `plan.target_claim_tier`,
+  2. profile `claim_tier`,
+  3. no tier => failing evaluation.

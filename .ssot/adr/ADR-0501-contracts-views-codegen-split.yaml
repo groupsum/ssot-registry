@@ -1,25 +1,20 @@
-{
-  "schema_version": 9,
-  "kind": "adr",
-  "id": "adr:0501",
-  "number": 501,
-  "slug": "contracts-views-codegen-split",
-  "title": "Contracts, views, and codegen split",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "Contracts, views, and codegen split",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "decision": [
-      "- `ssot-contracts` owns canonical schemas, manifests, packaged templates, and generated contract metadata.\n- `ssot-views` owns derived projections and report / graph builders.\n- `ssot-codegen` generates derived Python artifacts from contracts and views.\n- `ssot-registry` remains the runtime behavior engine."
-    ],
-    "consequences": [
-      "- Static definitions move out of the runtime package.\n- UI and future npm consumers can share generated metadata."
-    ]
-  }
-}
+schema_version: 9
+kind: "adr"
+id: "adr:0501"
+number: 501
+slug: "contracts-views-codegen-split"
+title: "Contracts, views, and codegen split"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Contracts, views, and codegen split"
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  - `ssot-contracts` owns canonical schemas, manifests, packaged templates, and generated contract metadata.
+  - `ssot-views` owns derived projections and report / graph builders.
+  - `ssot-codegen` generates derived Python artifacts from contracts and views.
+  - `ssot-registry` remains the runtime behavior engine.

@@ -1,35 +1,40 @@
-{
-  "schema_version": 9,
-  "kind": "spec",
-  "id": "spc:0512",
-  "number": 512,
-  "slug": "document-origin-boundaries-and-id-ranges",
-  "title": "Document origin boundaries and ID ranges",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "This is an `ssot-core` maintainer specification for the upstream `ssot-registry` repository.",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "scope": [
-      "This is an `ssot-core` maintainer specification for the upstream `ssot-registry` repository."
-    ],
-    "rules": [
-      "- Upstream `ssot-core` ADRs and specs SHALL be authored canonically under `.ssot/adr/` and `.ssot/specs/` in `ssot-registry`.\n- Packaged downstream templates SHALL live under `pkgs/ssot-contracts/src/ssot_contracts/templates/`.\n- Packaged template ADRs/specs are `ssot-origin` content intended to be copied into operator repositories.\n- Repo-local ADRs/specs are authored inside downstream repositories under `.ssot/adr/` and `.ssot/specs/`."
-    ],
-    "number_ranges": [
-      "- `ADR-0001..ADR-0599` and `SPEC-0001..SPEC-0599` are reserved for `ssot-core`.\n- `ADR-0600..ADR-0999` and `SPEC-0600..SPEC-0999` are reserved for `ssot-origin`.\n- `ADR-1000..ADR-4999` and `SPEC-1000..SPEC-4999` are reserved for repo-local downstream use."
-    ],
-    "uniqueness": [
-      "- ADR numbers SHALL be unique across `ssot-origin`, `ssot-core`, and repo-local scopes.\n- SPEC numbers SHALL be unique across `ssot-origin`, `ssot-core`, and repo-local scopes.\n- Upstream maintainers SHALL NOT publish core ADRs or specs that reuse an `ssot-origin` number.\n- Packaged `ssot-origin` templates SHALL NOT consume `ssot-core` or repo-local ranges."
-    ],
-    "consequences": [
-      "- `.ssot/` in `ssot-registry` is the canonical `ssot-core` source for upstream governance docs.\n- Public operator docs stay downstream-facing and MUST avoid upstream repository layout assumptions.\n- Range and collision checks MUST fail CI when the inventories drift."
-    ]
-  },
-  "spec_kind": "governance"
-}
+schema_version: 9
+kind: "spec"
+id: "spc:0512"
+number: 512
+slug: "document-origin-boundaries-and-id-ranges"
+title: "Document origin boundaries and ID ranges"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This is an `ssot-core` maintainer specification for the upstream `ssot-registry` repository."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+spec_kind: "governance"
+body: |-
+  ## Scope
+  
+  This is an `ssot-core` maintainer specification for the upstream `ssot-registry` repository.
+  
+  ## Rules
+  
+  - Upstream `ssot-core` ADRs and specs SHALL be authored canonically under `.ssot/adr/` and `.ssot/specs/` in `ssot-registry`.
+  - Packaged downstream templates SHALL live under `pkgs/ssot-contracts/src/ssot_contracts/templates/`.
+  - Packaged template ADRs/specs are `ssot-origin` content intended to be copied into operator repositories.
+  - Repo-local ADRs/specs are authored inside downstream repositories under `.ssot/adr/` and `.ssot/specs/`.
+  
+  ## Number Ranges
+  
+  - `ADR-0001..ADR-0599` and `SPEC-0001..SPEC-0599` are reserved for `ssot-core`.
+  - `ADR-0600..ADR-0999` and `SPEC-0600..SPEC-0999` are reserved for `ssot-origin`.
+  - `ADR-1000..ADR-4999` and `SPEC-1000..SPEC-4999` are reserved for repo-local downstream use.
+  
+  ## Uniqueness
+  
+  - ADR numbers SHALL be unique across `ssot-origin`, `ssot-core`, and repo-local scopes.
+  - SPEC numbers SHALL be unique across `ssot-origin`, `ssot-core`, and repo-local scopes.
+  - Upstream maintainers SHALL NOT publish core ADRs or specs that reuse an `ssot-origin` number.
+  - Packaged `ssot-origin` templates SHALL NOT consume `ssot-core` or repo-local ranges.

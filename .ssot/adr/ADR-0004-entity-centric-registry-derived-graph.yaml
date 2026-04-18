@@ -1,25 +1,17 @@
-{
-  "schema_version": 9,
-  "kind": "adr",
-  "id": "adr:0004",
-  "number": 4,
-  "slug": "entity-centric-registry-derived-graph",
-  "title": "Entity-centric registry with a derived graph export",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "The canonical registry is entity-centric JSON with explicit references. A graph export is derived from it.",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "decision": [
-      "The canonical registry is entity-centric JSON with explicit references. A graph export is derived from it."
-    ],
-    "consequences": [
-      "- Authoring stays practical in Git.\n- Programmatic graph traversal remains available."
-    ]
-  }
-}
+schema_version: 9
+kind: "adr"
+id: "adr:0004"
+number: 4
+slug: "entity-centric-registry-derived-graph"
+title: "Entity-centric registry with a derived graph export"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "The canonical registry is entity-centric JSON with explicit references. A graph export is derived from it."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  The canonical registry is entity-centric JSON with explicit references. A graph export is derived from it.

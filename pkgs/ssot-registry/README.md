@@ -46,7 +46,9 @@ If you omit this distinction, releases look redundant. They are not: boundaries 
 
 ## Canonical format
 
-The canonical authored format is JSON. Markdown, CSV, DOT, SQLite, reports, and snapshots are derived projections.
+`.ssot/registry.json` remains the canonical machine-readable registry.
+
+ADR and SPEC companion documents are canonically authored as YAML for readability, and may also be stored as JSON when a repository prefers machine-oriented document files. Markdown, CSV, DOT, SQLite, reports, and snapshots are derived projections.
 
 ## Install
 

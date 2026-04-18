@@ -48,7 +48,9 @@ Everything else is derived from it.
 
 ## Canonical format
 
-The canonical authored format is JSON. Markdown, CSV, DOT, SQLite, and reports are derived projections.
+`.ssot/registry.json` remains the canonical machine-readable registry.
+
+ADR and SPEC companion documents are canonically authored as YAML for readability, and may also be stored as JSON when a repository prefers machine-oriented document files. Markdown, CSV, DOT, SQLite, and reports are derived projections.
 
 ## Schema 4
 

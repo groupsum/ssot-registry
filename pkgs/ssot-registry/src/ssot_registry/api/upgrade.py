@@ -7,13 +7,21 @@ from typing import Any
 from ssot_registry.model.document import (
     build_document_path,
     default_document_id_reservations,
+    document_path_has_supported_suffix,
     load_document_manifest,
     normalize_document_id,
     parse_document_filename,
 )
 from ssot_registry.model.enums import SCHEMA_VERSION
 from ssot_registry.model.registry import normalize_repo_kind
-from ssot_registry.util.document_io import build_document_payload, dump_document_yaml, parse_markdown_document
+from ssot_registry.util.document_io import (
+    build_document_payload,
+    dump_document_text,
+    load_document_yaml,
+    normalize_document_payload,
+    parse_markdown_document,
+    validate_document_payload,
+)
 from ssot_registry.util.errors import RegistryError, ValidationError
 from ssot_registry.util.fs import sha256_normalized_text_path
 from ssot_registry.util.jsonio import save_json
@@ -38,7 +46,7 @@ MIGRATION_RELEASE_WINDOWS = {
 
 
 def _extract_title(kind: str, path: Path) -> str:
-    title, _status, _sections = parse_markdown_document(kind, path.read_text(encoding="utf-8"), fallback_title=path.stem)
+    title, _status, _body = parse_markdown_document(kind, path.read_text(encoding="utf-8"), fallback_title=path.stem)
     return title
 
 
@@ -331,10 +339,34 @@ def _migrate_document_files_to_yaml(
         target_relative = build_document_path(registry["paths"], kind, row["number"], row["slug"])
         target_path = repo_root / target_relative
 
-        if relative_path.endswith(".yaml") and current_path.exists():
-            row["path"] = target_relative
-            row["content_sha256"] = sha256_normalized_text_path(current_path)
-            summary["skipped"].append(row["id"])
+        if document_path_has_supported_suffix(relative_path) and current_path.exists():
+            payload = normalize_document_payload(kind, load_document_yaml(current_path))
+            title = payload.get("title")
+            if isinstance(title, str) and title.strip():
+                row["title"] = title
+            status = payload.get("status")
+            if isinstance(status, str) and status.strip():
+                row["status"] = status
+            if kind == "spec":
+                row["kind"] = payload.get("spec_kind", row.get("kind", "local-policy" if row.get("origin") == "repo-local" else "normative"))
+
+            validate_document_payload(kind, payload, expected_row=row)
+
+            desired_relative = relative_path if current_path.suffix.lower() == ".json" else target_relative
+            desired_path = repo_root / desired_relative
+            rendered = dump_document_text(payload, desired_path)
+            current_text = current_path.read_text(encoding="utf-8")
+            changed = rendered != current_text or desired_path != current_path
+
+            if changed:
+                desired_path.parent.mkdir(parents=True, exist_ok=True)
+                desired_path.write_text(rendered, encoding="utf-8", newline="\n")
+                if current_path != desired_path and current_path.exists():
+                    current_path.unlink()
+
+            row["path"] = desired_relative
+            row["content_sha256"] = sha256_normalized_text_path(desired_path)
+            summary["converted" if changed else "skipped"].append(row["id"])
             continue
 
         if relative_path.endswith(".yaml") and not current_path.exists():
@@ -350,18 +382,22 @@ def _migrate_document_files_to_yaml(
             continue
 
         if current_path.suffix.lower() != ".md":
+            if document_path_has_supported_suffix(relative_path):
+                row["content_sha256"] = sha256_normalized_text_path(current_path)
+                summary["skipped"].append(row["id"])
+                continue
             summary["failed"].append(row["id"])
             continue
 
-        title, status, sections = parse_markdown_document(kind, current_path.read_text(encoding="utf-8"), fallback_title=row["title"])
+        title, status, body = parse_markdown_document(kind, current_path.read_text(encoding="utf-8"), fallback_title=row["title"])
         row["title"] = title
         if status is not None:
             row["status"] = status
         if kind == "spec":
             row.setdefault("kind", "local-policy" if row.get("origin") == "repo-local" else "normative")
-        payload = build_document_payload(kind, row, sections)
+        payload = build_document_payload(kind, row, body)
         target_path.parent.mkdir(parents=True, exist_ok=True)
-        target_path.write_text(dump_document_yaml(payload), encoding="utf-8", newline="\n")
+        target_path.write_text(dump_document_text(payload, target_path), encoding="utf-8", newline="\n")
         if current_path != target_path and current_path.exists():
             current_path.unlink()
         row["path"] = target_relative

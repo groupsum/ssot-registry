@@ -1,23 +1,27 @@
-{
-  "schema_version": 9,
-  "kind": "spec",
-  "id": "spc:0507",
-  "number": 507,
-  "slug": "runtime-boundary-for-ssot-registry",
-  "title": "Runtime boundary for `ssot-registry`",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "`ssot-registry` SHALL keep:",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "content": [
-      "`ssot-registry` SHALL keep:\n\n- load / save\n- validators\n- guards\n- migrations\n- entity and document mutation behavior\n- release and lifecycle behavior\n\n`ssot-registry` SHALL import contracts and views rather than owning those artifacts."
-    ]
-  },
-  "spec_kind": "governance"
-}
+schema_version: 9
+kind: "spec"
+id: "spc:0507"
+number: 507
+slug: "runtime-boundary-for-ssot-registry"
+title: "Runtime boundary for `ssot-registry`"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "`ssot-registry` SHALL keep:"
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+spec_kind: "governance"
+body: |-
+  `ssot-registry` SHALL keep:
+  
+  - load / save
+  - validators
+  - guards
+  - migrations
+  - entity and document mutation behavior
+  - release and lifecycle behavior
+  
+  `ssot-registry` SHALL import contracts and views rather than owning those artifacts.

@@ -1,25 +1,17 @@
-{
-  "schema_version": 9,
-  "kind": "adr",
-  "id": "adr:0005",
-  "number": 5,
-  "slug": "normalized-prefixed-ids",
-  "title": "Normalized prefixed IDs",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "Every first-class entity uses a normalized prefixed ID.",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "decision": [
-      "Every first-class entity uses a normalized prefixed ID."
-    ],
-    "consequences": [
-      "- Stable references across repositories and generated artifacts.\n- Easy namespace validation and filesystem-safe projection."
-    ]
-  }
-}
+schema_version: 9
+kind: "adr"
+id: "adr:0005"
+number: 5
+slug: "normalized-prefixed-ids"
+title: "Normalized prefixed IDs"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Every first-class entity uses a normalized prefixed ID."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  Every first-class entity uses a normalized prefixed ID.

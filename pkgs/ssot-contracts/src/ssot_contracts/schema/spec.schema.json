@@ -12,7 +12,7 @@
     "status",
     "origin",
     "summary",
-    "sections",
+    "body",
     "spec_kind"
   ],
   "properties": {
@@ -105,22 +105,9 @@
         "type": "string"
       }
     },
-    "sections": {
-      "type": "object",
-      "minProperties": 1,
-      "additionalProperties": {
-        "$ref": "#/$defs/sectionValues"
-      }
-    }
-  },
-  "$defs": {
-    "sectionValues": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "string",
-        "minLength": 1
-      }
+    "body": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "additionalProperties": true

@@ -5,9 +5,10 @@ from typing import Any
 
 from ssot_registry.model.document import (
     DOCUMENT_STATUSES,
+    document_path_has_supported_suffix,
+    document_path_variants,
     DOCUMENT_ORIGINS,
     SPEC_KINDS,
-    build_document_path,
     load_document_manifest,
     normalize_document_id,
     reservation_kind_key,
@@ -130,11 +131,13 @@ def validate_document_rows(
                 if relative_path in seen_paths:
                     failures.append(f"Duplicate {section} path: {relative_path} in {prefix} and {section}.{seen_paths[relative_path]}")
                 seen_paths[relative_path] = entity_id
-                expected_path = build_document_path(paths, kind, number, slug) if isinstance(paths, dict) and isinstance(slug, str) else None
-                if expected_path is not None and relative_path != expected_path:
-                    failures.append(f"{prefix}.path must match number and slug: expected {expected_path}")
-                if not relative_path.endswith(".yaml"):
-                    failures.append(f"{prefix}.path must end with .yaml")
+                expected_paths = document_path_variants(paths, kind, number, slug) if isinstance(paths, dict) and isinstance(slug, str) else None
+                if expected_paths is not None and relative_path not in expected_paths:
+                    failures.append(
+                        f"{prefix}.path must match number and slug using .yaml or .json: expected one of {sorted(expected_paths)}"
+                    )
+                if not document_path_has_supported_suffix(relative_path):
+                    failures.append(f"{prefix}.path must end with .yaml or .json")
                 full_path = repo_root / relative_path
                 if not full_path.exists():
                     failures.append(f"{prefix}.path does not exist: {relative_path}")

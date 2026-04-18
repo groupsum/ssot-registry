@@ -1,25 +1,21 @@
-{
-  "schema_version": 9,
-  "kind": "adr",
-  "id": "adr:0506",
-  "number": 506,
-  "slug": "hybrid-package-versioning-policy",
-  "title": "Hybrid package versioning policy",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "Python package versioning SHALL follow a hybrid model.",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "decision": [
-      "Python package versioning SHALL follow a hybrid model.\n\n- `ssot-contracts`, `ssot-views`, `ssot-codegen`, and `ssot-registry` SHALL remain in lockstep.\n- `ssot-cli` and `ssot-tui` SHALL version independently.\n- Surface packages SHALL depend on compatible released `ssot-registry` ranges rather than exact lockstep versions."
-    ],
-    "consequences": [
-      "- Core compatibility stays explicit and easy to validate.\n- UI surfaces can ship independently without forcing a full core release train."
-    ]
-  }
-}
+schema_version: 9
+kind: "adr"
+id: "adr:0506"
+number: 506
+slug: "hybrid-package-versioning-policy"
+title: "Hybrid package versioning policy"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Python package versioning SHALL follow a hybrid model."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  Python package versioning SHALL follow a hybrid model.
+  
+  - `ssot-contracts`, `ssot-views`, `ssot-codegen`, and `ssot-registry` SHALL remain in lockstep.
+  - `ssot-cli` and `ssot-tui` SHALL version independently.
+  - Surface packages SHALL depend on compatible released `ssot-registry` ranges rather than exact lockstep versions.

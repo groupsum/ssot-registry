@@ -1,23 +1,23 @@
-{
-  "schema_version": 9,
-  "kind": "spec",
-  "id": "spc:0508",
-  "number": 508,
-  "slug": "future-npm-parity-contract",
-  "title": "Future npm parity contract",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "This spec reserves the future TypeScript / npm parity boundary.",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "content": [
-      "This spec reserves the future TypeScript / npm parity boundary.\n\nCurrent requirement:\n\n- Python-side contracts and codegen SHALL not block future npm generation.\n- Generated metadata names and shapes SHALL remain language-neutral where practical."
-    ]
-  },
-  "spec_kind": "governance"
-}
+schema_version: 9
+kind: "spec"
+id: "spc:0508"
+number: 508
+slug: "future-npm-parity-contract"
+title: "Future npm parity contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This spec reserves the future TypeScript / npm parity boundary."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+spec_kind: "governance"
+body: |-
+  This spec reserves the future TypeScript / npm parity boundary.
+  
+  Current requirement:
+  
+  - Python-side contracts and codegen SHALL not block future npm generation.
+  - Generated metadata names and shapes SHALL remain language-neutral where practical.

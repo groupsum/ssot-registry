@@ -1,22 +1,25 @@
-{
-  "schema_version": 9,
-  "kind": "adr",
-  "id": "adr:0503",
-  "number": 503,
-  "slug": "python-runtime-remains-canonical-behavior-engine",
-  "title": "Python runtime remains the canonical behavior engine",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "`ssot-registry` SHALL remain the canonical implementation of:",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "decision": [
-      "`ssot-registry` SHALL remain the canonical implementation of:\n\n- validation semantics\n- guards\n- migrations\n- mutations\n- lifecycle and release behavior\n\nGenerated code and views SHALL not replace those semantics."
-    ]
-  }
-}
+schema_version: 9
+kind: "adr"
+id: "adr:0503"
+number: 503
+slug: "python-runtime-remains-canonical-behavior-engine"
+title: "Python runtime remains the canonical behavior engine"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "`ssot-registry` SHALL remain the canonical implementation of:"
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  `ssot-registry` SHALL remain the canonical implementation of:
+  
+  - validation semantics
+  - guards
+  - migrations
+  - mutations
+  - lifecycle and release behavior
+  
+  Generated code and views SHALL not replace those semantics.

@@ -16,6 +16,7 @@ DOCUMENT_ID_PREFIXES = {"adr": "adr:", "spec": "spc:"}
 DOCUMENT_FILENAME_PREFIXES = CONTRACT_DATA["document_contract"]["filename_prefixes"]
 DOCUMENT_PATH_KEYS = CONTRACT_DATA["document_contract"]["path_keys"]
 DOCUMENT_RESERVATION_KEYS = CONTRACT_DATA["document_contract"]["reservation_keys"]
+DOCUMENT_FILE_SUFFIXES = (".yaml", ".json")
 DOCUMENT_ORIGINS = {"ssot-core", "ssot-origin", "repo-local"}
 DOCUMENT_STATUSES = tuple(CONTRACT_DATA["choice_sets"]["document_statuses"])
 CREATE_ALLOWED_STATUSES = ("draft", "in_review", "accepted", "rejected", "withdrawn")
@@ -60,6 +61,15 @@ def build_document_filename(kind: str, number: int, slug: str) -> str:
 def build_document_path(paths: dict[str, str], kind: str, number: int, slug: str) -> str:
     root = paths[DOCUMENT_PATH_KEYS[kind]].strip("/\\")
     return Path(root, build_document_filename(kind, number, slug)).as_posix()
+
+
+def document_path_variants(paths: dict[str, str], kind: str, number: int, slug: str) -> set[str]:
+    canonical = Path(build_document_path(paths, kind, number, slug))
+    return {canonical.as_posix(), canonical.with_suffix(".json").as_posix()}
+
+
+def document_path_has_supported_suffix(path: str) -> bool:
+    return any(path.endswith(suffix) for suffix in DOCUMENT_FILE_SUFFIXES)
 
 
 def parse_document_filename(kind: str, filename: str) -> tuple[int, str] | None:

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 from copy import deepcopy
 from typing import Any
 
+from ssot_contracts import load_template_text
 from ssot_registry.model.document import default_document_id_reservations
 from ssot_registry.version import __version__
 
@@ -103,56 +105,50 @@ def build_minimal_registry(
     *,
     repo_kind: str = "repo-local",
 ) -> dict[str, Any]:
-    return {
-        "schema_version": SCHEMA_VERSION,
-        "repo": {
-            "id": repo_id,
-            "name": repo_name,
-            "version": version,
-            "kind": repo_kind,
-        },
-        "tooling": {
-            "ssot_registry_version": __version__,
-            "initialized_with_version": __version__,
-            "last_upgraded_from_version": __version__,
-        },
-        "paths": default_paths(),
-        "program": {
-            "active_boundary_id": "bnd:default",
-            "active_release_id": f"rel:{version}",
-        },
-        "guard_policies": default_guard_policies(),
-        "document_id_reservations": default_document_id_reservations(),
-        "features": [],
-        "profiles": [],
-        "tests": [],
-        "claims": [],
-        "evidence": [],
-        "issues": [],
-        "risks": [],
-        "boundaries": [
-            {
-                "id": "bnd:default",
-                "title": "Default boundary",
-                "status": "draft",
-                "frozen": False,
-                "feature_ids": [],
-                "profile_ids": [],
-            }
-        ],
-        "releases": [
-            {
-                "id": f"rel:{version}",
-                "version": version,
-                "status": "draft",
-                "boundary_id": "bnd:default",
-                "claim_ids": [],
-                "evidence_ids": [],
-            }
-        ],
-        "adrs": [],
-        "specs": [],
+    registry = json.loads(load_template_text("registry.minimal.json"))
+    registry["schema_version"] = SCHEMA_VERSION
+    registry["repo"] = {
+        "id": repo_id,
+        "name": repo_name,
+        "version": version,
+        "kind": repo_kind,
     }
+    registry["tooling"] = {
+        "ssot_registry_version": __version__,
+        "initialized_with_version": __version__,
+        "last_upgraded_from_version": __version__,
+    }
+    registry["paths"] = default_paths()
+    registry["program"] = {
+        "active_boundary_id": "bnd:default",
+        "active_release_id": f"rel:{version}",
+    }
+    registry["guard_policies"] = default_guard_policies()
+    registry["document_id_reservations"] = default_document_id_reservations()
+    registry["boundaries"] = [
+        {
+            "id": "bnd:default",
+            "title": "Default boundary",
+            "status": "draft",
+            "frozen": False,
+            "feature_ids": [],
+            "profile_ids": [],
+        }
+    ]
+    registry["releases"] = [
+        {
+            "id": f"rel:{version}",
+            "version": version,
+            "status": "draft",
+            "boundary_id": "bnd:default",
+            "claim_ids": [],
+            "evidence_ids": [],
+        }
+    ]
+    registry["adrs"] = []
+    registry["specs"] = []
+    registry.setdefault("profiles", [])
+    return registry
 
 
 def count_entities(registry: dict[str, Any]) -> dict[str, int]:

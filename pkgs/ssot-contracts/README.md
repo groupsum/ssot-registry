@@ -12,13 +12,13 @@
 
 `ssot-contracts` is the canonical artifact package for SSOT.
 
-It ships machine-readable schemas, registry templates, packaged ADR/spec manifests, and generated Python metadata that other SSOT packages consume at runtime.
+It ships machine-readable schemas, registry templates, upstream-derived packaged ADR/spec manifests, and generated Python metadata that other SSOT packages consume at runtime.
 
 ## What this package owns
 
 - JSON Schemas for registries, reports, graph exports, and snapshots
 - Packaged registry templates such as `registry.minimal.json` and `registry.full.json`
-- Immutable packaged ADR and spec document manifests
+- Immutable packaged ADR and spec document manifests derived from the upstream `.ssot/registry.json` `ssot-origin` inventory
 - Generated Python contract metadata used by CLI and TUI packages
 
 ## When to use this package

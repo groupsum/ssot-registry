@@ -27,8 +27,10 @@ from ssot_registry.model.document import (
 from ssot_registry.model.registry import normalize_repo_kind
 from ssot_registry.util.document_io import (
     build_document_payload,
-    dump_document_yaml,
+    document_body_from_payload,
+    dump_document_text,
     load_document_yaml,
+    normalize_document_payload,
     parse_markdown_document,
     validate_document_payload,
 )
@@ -70,29 +72,24 @@ def _read_body(body_file: str | Path) -> str:
 
 
 def _write_document(repo_root: Path, row: dict[str, Any], body: str, kind: str) -> str:
-    body_title, body_status, sections = parse_markdown_document(kind, body, fallback_title=row["title"])
+    body_title, body_status, normalized_body = parse_markdown_document(kind, body, fallback_title=row["title"])
     if body_title and body_title != row["title"]:
         row["title"] = body_title
     if body_status is not None:
         row["status"] = body_status
-    payload = build_document_payload(kind, row, sections)
+    payload = build_document_payload(kind, row, normalized_body)
     validate_document_payload(kind, payload, expected_row=row)
     target = repo_root / row["path"]
     target.parent.mkdir(parents=True, exist_ok=True)
     with target.open("w", encoding="utf-8", newline="\n") as handle:
-        handle.write(dump_document_yaml(payload))
+        handle.write(dump_document_text(payload, target))
     return sha256_normalized_text_path(target)
 
 
 def _rewrite_document_from_existing_payload(repo_root: Path, row: dict[str, Any], kind: str) -> str:
-    payload = load_document_yaml(repo_root / row["path"])
+    payload = normalize_document_payload(kind, load_document_yaml(repo_root / row["path"]))
     validate_document_payload(kind, payload)
-    sections = payload.get("sections", {})
-    body = "\n\n".join(
-        f"## {section_name.replace('_', ' ').title()}\n\n" + "\n\n".join(values)
-        for section_name, values in sections.items()
-    ).strip()
-    return _write_document(repo_root, row, body, kind)
+    return _write_document(repo_root, row, payload["body"], kind)
 
 
 def _build_authored_row(
@@ -387,12 +384,7 @@ def update_document(
 
     if body_file is None:
         payload = load_document_yaml(repo_root / row["path"])
-        validate_document_payload(kind, payload)
-        sections = payload.get("sections", {})
-        body = "\n\n".join(
-            f"## {section_name.replace('_', ' ').title()}\n\n" + "\n\n".join(values)
-            for section_name, values in sections.items()
-        ).strip()
+        body = document_body_from_payload(kind, payload)
     else:
         body = _read_body(body_file)
 

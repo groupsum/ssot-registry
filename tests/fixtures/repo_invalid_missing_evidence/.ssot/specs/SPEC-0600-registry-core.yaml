@@ -1,29 +1,65 @@
-{
-  "schema_version": 9,
-  "kind": "spec",
-  "id": "spc:0600",
-  "number": 600,
-  "slug": "registry-core",
-  "title": "Registry core",
-  "status": "draft",
-  "origin": "ssot-origin",
-  "decision_date": null,
-  "tags": [],
-  "summary": "`repo.kind` is required and MUST be one of:",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "repository_discriminator": [
-      "`repo.kind` is required and MUST be one of:\n\n- `ssot-upstream`\n- `operator-repo`"
-    ],
-    "top_level_sections": [
-      "- `schema_version`\n- `repo`\n- `tooling`\n- `paths`\n- `program`\n- `guard_policies`\n- `document_id_reservations`\n- `features`\n- `profiles`\n- `tests`\n- `claims`\n- `evidence`\n- `issues`\n- `risks`\n- `boundaries`\n- `releases`\n- `adrs`\n- `specs`"
-    ],
-    "adr_spec_row_contract": [
-      "ADR and SPEC rows MUST include:\n\n- identity/location: `id`, `number`, `slug`, `title`, `path`\n- provenance/materialization: `origin`, `managed`, `immutable`, `package_version`, `content_sha256`\n- lifecycle/supersession: `status`, `supersedes`, `superseded_by`, `status_notes`\n\nAllowed `origin` values:\n\n- `ssot-core`\n- `ssot-origin`\n- `repo-local`\n\nSPEC `kind` is a non-provenance label and MUST be one of:\n\n- `normative`\n- `operational`\n- `governance`\n- `local-policy`"
-    ]
-  },
-  "spec_kind": "normative"
-}
+schema_version: 9
+kind: "spec"
+id: "spc:0600"
+number: 600
+slug: "registry-core"
+title: "Registry core"
+status: "draft"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "`repo.kind` is required and MUST be one of:"
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+spec_kind: "normative"
+body: |-
+  ## Repository Discriminator
+  
+  `repo.kind` is required and MUST be one of:
+  
+  - `ssot-upstream`
+  - `operator-repo`
+  
+  ## Top Level Sections
+  
+  - `schema_version`
+  - `repo`
+  - `tooling`
+  - `paths`
+  - `program`
+  - `guard_policies`
+  - `document_id_reservations`
+  - `features`
+  - `profiles`
+  - `tests`
+  - `claims`
+  - `evidence`
+  - `issues`
+  - `risks`
+  - `boundaries`
+  - `releases`
+  - `adrs`
+  - `specs`
+  
+  ## Adr Spec Row Contract
+  
+  ADR and SPEC rows MUST include:
+  
+  - identity/location: `id`, `number`, `slug`, `title`, `path`
+  - provenance/materialization: `origin`, `managed`, `immutable`, `package_version`, `content_sha256`
+  - lifecycle/supersession: `status`, `supersedes`, `superseded_by`, `status_notes`
+  
+  Allowed `origin` values:
+  
+  - `ssot-core`
+  - `ssot-origin`
+  - `repo-local`
+  
+  SPEC `kind` is a non-provenance label and MUST be one of:
+  
+  - `normative`
+  - `operational`
+  - `governance`
+  - `local-policy`

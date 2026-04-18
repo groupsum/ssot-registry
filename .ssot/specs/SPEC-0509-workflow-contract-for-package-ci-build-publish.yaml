@@ -1,23 +1,23 @@
-{
-  "schema_version": 9,
-  "kind": "spec",
-  "id": "spc:0509",
-  "number": 509,
-  "slug": "workflow-contract-for-package-ci-build-publish",
-  "title": "Workflow contract for package CI/build/publish",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "Workflow contract for package CI/build/publish",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "requirements": [
-      "- CI SHALL build packages from `pkgs/<name>`.\n- CI SHALL fail if release workflows rely on root `uv build` or root package version metadata.\n- Package publish workflows SHALL validate package-local tags and versions before publishing.\n- Reusable workflows SHALL define the shared package CI and package publish contract."
-    ]
-  },
-  "spec_kind": "governance"
-}
+schema_version: 9
+kind: "spec"
+id: "spc:0509"
+number: 509
+slug: "workflow-contract-for-package-ci-build-publish"
+title: "Workflow contract for package CI/build/publish"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Workflow contract for package CI/build/publish"
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+spec_kind: "governance"
+body: |-
+  ## Requirements
+  
+  - CI SHALL build packages from `pkgs/<name>`.
+  - CI SHALL fail if release workflows rely on root `uv build` or root package version metadata.
+  - Package publish workflows SHALL validate package-local tags and versions before publishing.
+  - Reusable workflows SHALL define the shared package CI and package publish contract.

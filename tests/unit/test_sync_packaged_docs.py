@@ -4,104 +4,174 @@ import json
 import unittest
 from pathlib import Path
 
-from scripts.sync_packaged_docs import sync_manifest, sync_mirror
+from scripts import sync_packaged_docs
+from ssot_registry.util.document_io import dump_document_yaml
 from tests.helpers import workspace_tempdir
 
 
+def _adr_payload(number: int, slug: str) -> dict[str, object]:
+    return {
+        "schema_version": 9,
+        "kind": "adr",
+        "id": f"adr:{number:04d}",
+        "number": number,
+        "slug": slug,
+        "title": slug.replace("-", " ").title(),
+        "status": "draft",
+        "origin": "ssot-origin",
+        "decision_date": None,
+        "tags": [],
+        "summary": slug.replace("-", " ").title(),
+        "supersedes": [],
+        "superseded_by": [],
+        "status_notes": [],
+        "references": [],
+        "body": slug.replace("-", " ").title(),
+    }
+
+
+def _spec_payload(number: int, slug: str) -> dict[str, object]:
+    return {
+        "schema_version": 9,
+        "kind": "spec",
+        "id": f"spc:{number:04d}",
+        "number": number,
+        "slug": slug,
+        "title": slug.replace("-", " ").title(),
+        "status": "draft",
+        "origin": "ssot-origin",
+        "decision_date": None,
+        "tags": [],
+        "summary": slug.replace("-", " ").title(),
+        "spec_kind": "normative",
+        "supersedes": [],
+        "superseded_by": [],
+        "status_notes": [],
+        "references": [],
+        "body": slug.replace("-", " ").title(),
+    }
+
+
 class SyncPackagedDocsTests(unittest.TestCase):
-    def test_check_ignores_non_packaged_docs_in_destination(self) -> None:
+    def _with_project_root(self, root: Path) -> tuple[Path, Path]:
+        upstream = root / ".ssot"
+        packaged = root / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates"
+        for path in (upstream / "adr", upstream / "specs", packaged / "adr", packaged / "specs"):
+            path.mkdir(parents=True, exist_ok=True)
+        return upstream, packaged
+
+    def _patch_project_root(self, root: Path) -> tuple[Path, Path]:
+        original_root = sync_packaged_docs.PROJECT_ROOT
+        original_registry = sync_packaged_docs.UPSTREAM_REGISTRY_PATH
+        sync_packaged_docs.PROJECT_ROOT = root
+        sync_packaged_docs.UPSTREAM_REGISTRY_PATH = root / ".ssot" / "registry.json"
+        self.addCleanup(setattr, sync_packaged_docs, "PROJECT_ROOT", original_root)
+        self.addCleanup(setattr, sync_packaged_docs, "UPSTREAM_REGISTRY_PATH", original_registry)
+        return original_root, original_registry
+
+    def test_check_detects_missing_packaged_doc(self) -> None:
         temp_dir = workspace_tempdir()
         self.addCleanup(temp_dir.cleanup)
         root = Path(temp_dir.name)
-        source = root / "source"
-        destination = root / "destination"
-        source.mkdir()
-        destination.mkdir()
+        upstream, packaged = self._with_project_root(root)
+        self._patch_project_root(root)
 
-        doc_text = json.dumps(
-            {
-                "schema_version": 9,
-                "kind": "adr",
-                "id": "adr:0001",
-                "number": 1,
-                "slug": "example",
-                "title": "Example",
-                "status": "draft",
-                "origin": "ssot-origin",
-                "summary": "Example",
-                "sections": {"decision": ["Example"]},
-            },
-            indent=2,
-        ) + "\n"
-        (source / "ADR-0001-example.yaml").write_text(doc_text, encoding="utf-8")
-        (destination / "ADR-0001-example.yaml").write_text(doc_text, encoding="utf-8")
-        (destination / "ADR-0500-core.yaml").write_text(doc_text, encoding="utf-8")
-
-        failures = sync_mirror(source, destination, check=True)
-
-        self.assertEqual(failures, [])
-
-    def test_prune_removes_stale_mirrored_yaml(self) -> None:
-        temp_dir = workspace_tempdir()
-        self.addCleanup(temp_dir.cleanup)
-        root = Path(temp_dir.name)
-        source = root / "source"
-        destination = root / "destination"
-        source.mkdir()
-        destination.mkdir()
-
-        doc_text = json.dumps(
-            {
-                "schema_version": 9,
-                "kind": "adr",
-                "id": "adr:0600",
-                "number": 600,
-                "slug": "example",
-                "title": "Example",
-                "status": "draft",
-                "origin": "ssot-origin",
-                "summary": "Example",
-                "sections": {"decision": ["Example"]},
-            },
-            indent=2,
-        ) + "\n"
-        (source / "ADR-0600-example.yaml").write_text(doc_text, encoding="utf-8")
-        stale = destination / "ADR-0001-stale.yaml"
-        stale.write_text(doc_text, encoding="utf-8")
-
-        failures = sync_mirror(source, destination, check=False, prune=True)
-
-        self.assertEqual(failures, [])
-        self.assertFalse(stale.exists())
-        self.assertTrue((destination / "ADR-0600-example.yaml").exists())
-
-    def test_sync_manifest_rewrites_stale_hashes(self) -> None:
-        temp_dir = workspace_tempdir()
-        self.addCleanup(temp_dir.cleanup)
-        root = Path(temp_dir.name)
-        specs = root / "specs"
-        specs.mkdir()
-        (specs / "SPEC-0607-repo-policy.yaml").write_text(
-            json.dumps(
+        source_path = upstream / "adr" / "ADR-0600-example.yaml"
+        source_path.write_text(dump_document_yaml(_adr_payload(600, "example")), encoding="utf-8")
+        registry = {
+            "schema_version": 9,
+            "tooling": {"ssot_registry_version": "0.2.6.dev1"},
+            "adrs": [
                 {
-                    "schema_version": 9,
-                    "kind": "spec",
+                    "id": "adr:0600",
+                    "number": 600,
+                    "slug": "example",
+                    "title": "Example",
+                    "path": ".ssot/adr/ADR-0600-example.yaml",
+                    "origin": "ssot-origin",
+                    "status": "draft",
+                    "supersedes": [],
+                    "superseded_by": [],
+                    "status_notes": [],
+                }
+            ],
+            "specs": [],
+        }
+
+        failures = sync_packaged_docs.sync_packaged_files(registry, "adr", packaged / "adr", check=True)
+
+        self.assertEqual(
+            [f"Missing packaged doc: {(packaged / 'adr' / 'ADR-0600-example.yaml').relative_to(root).as_posix()}"],
+            failures,
+        )
+
+    def test_prune_removes_stale_packaged_doc(self) -> None:
+        temp_dir = workspace_tempdir()
+        self.addCleanup(temp_dir.cleanup)
+        root = Path(temp_dir.name)
+        upstream, packaged = self._with_project_root(root)
+        self._patch_project_root(root)
+
+        source_path = upstream / "adr" / "ADR-0600-example.yaml"
+        source_path.write_text(dump_document_yaml(_adr_payload(600, "example")), encoding="utf-8")
+        stale = packaged / "adr" / "ADR-0601-stale.yaml"
+        stale.write_text(dump_document_yaml(_adr_payload(601, "stale")), encoding="utf-8")
+        registry = {
+            "schema_version": 9,
+            "tooling": {"ssot_registry_version": "0.2.6.dev1"},
+            "adrs": [
+                {
+                    "id": "adr:0600",
+                    "number": 600,
+                    "slug": "example",
+                    "title": "Example",
+                    "path": ".ssot/adr/ADR-0600-example.yaml",
+                    "origin": "ssot-origin",
+                    "status": "draft",
+                    "supersedes": [],
+                    "superseded_by": [],
+                    "status_notes": [],
+                }
+            ],
+            "specs": [],
+        }
+
+        failures = sync_packaged_docs.sync_packaged_files(registry, "adr", packaged / "adr", check=False, prune=True)
+
+        self.assertEqual([], failures)
+        self.assertTrue((packaged / "adr" / "ADR-0600-example.yaml").exists())
+        self.assertFalse(stale.exists())
+
+    def test_sync_manifest_rewrites_stale_hashes_from_upstream_registry(self) -> None:
+        temp_dir = workspace_tempdir()
+        self.addCleanup(temp_dir.cleanup)
+        root = Path(temp_dir.name)
+        upstream, packaged = self._with_project_root(root)
+        self._patch_project_root(root)
+
+        source_path = upstream / "specs" / "SPEC-0607-repo-policy.yaml"
+        source_path.write_text(dump_document_yaml(_spec_payload(607, "repo-policy")), encoding="utf-8")
+        registry = {
+            "schema_version": 9,
+            "tooling": {"ssot_registry_version": "0.2.6.dev1"},
+            "adrs": [],
+            "specs": [
+                {
                     "id": "spc:0607",
                     "number": 607,
                     "slug": "repo-policy",
                     "title": "Repository policy",
-                    "status": "draft",
+                    "path": ".ssot/specs/SPEC-0607-repo-policy.yaml",
                     "origin": "ssot-origin",
-                    "summary": "Repository policy",
-                    "spec_kind": "normative",
-                    "sections": {"rules": ["Repository policy"]},
-                },
-                indent=2,
-            )
-            + "\n",
-            encoding="utf-8",
-        )
-        (specs / "manifest.json").write_text(
+                    "status": "draft",
+                    "kind": "normative",
+                    "supersedes": [],
+                    "superseded_by": [],
+                    "status_notes": [],
+                }
+            ],
+        }
+        (packaged / "specs" / "manifest.json").write_text(
             json.dumps(
                 [
                     {
@@ -130,78 +200,77 @@ class SyncPackagedDocsTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-        failures = sync_manifest(specs, "specs", check=False)
+        failures = sync_packaged_docs.sync_manifest(registry, "specs", packaged / "specs", check=False)
 
-        self.assertEqual(failures, [])
-        manifest = json.loads((specs / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual([], failures)
+        manifest = json.loads((packaged / "specs" / "manifest.json").read_text(encoding="utf-8"))
         self.assertNotEqual(manifest[0]["sha256"], "0" * 64)
         self.assertEqual(manifest[0]["filename"], "SPEC-0607-repo-policy.yaml")
+        self.assertEqual(manifest[0]["kind"], "normative")
 
     def test_range_validation_detects_cross_origin_collision(self) -> None:
         temp_dir = workspace_tempdir()
         self.addCleanup(temp_dir.cleanup)
         root = Path(temp_dir.name)
-        origin_adr = root / "origin-adr"
-        origin_specs = root / "origin-specs"
-        core_adr = root / "core-adr"
-        core_specs = root / "core-specs"
-        for path in (origin_adr, origin_specs, core_adr, core_specs):
-            path.mkdir()
+        upstream, _packaged = self._with_project_root(root)
+        self._patch_project_root(root)
 
-        doc_text = json.dumps(
-            {
-                "schema_version": 9,
-                "kind": "adr",
-                "id": "adr:0010",
-                "number": 10,
-                "slug": "origin",
-                "title": "Origin",
-                "status": "draft",
-                "origin": "ssot-origin",
-                "summary": "Origin",
-                "sections": {"decision": ["Origin"]},
-            },
-            indent=2,
-        ) + "\n"
-        spec_text = json.dumps(
-            {
-                "schema_version": 9,
-                "kind": "spec",
-                "id": "spc:0008",
-                "number": 8,
-                "slug": "origin",
-                "title": "Origin",
-                "status": "draft",
-                "origin": "ssot-origin",
-                "summary": "Origin",
-                "spec_kind": "normative",
-                "sections": {"content": ["Origin"]},
-            },
-            indent=2,
-        ) + "\n"
-        (origin_adr / "ADR-0010-origin.yaml").write_text(doc_text, encoding="utf-8")
-        (origin_specs / "SPEC-0008-origin.yaml").write_text(spec_text, encoding="utf-8")
-        (core_adr / "ADR-0010-core-collision.yaml").write_text(doc_text, encoding="utf-8")
-        (core_specs / "SPEC-0508-core.yaml").write_text(spec_text.replace('0008', '0508'), encoding="utf-8")
+        (upstream / "adr" / "ADR-0010-origin.yaml").write_text(dump_document_yaml(_adr_payload(10, "origin")), encoding="utf-8")
+        (upstream / "specs" / "SPEC-0008-origin.yaml").write_text(
+            dump_document_yaml(_spec_payload(8, "origin")),
+            encoding="utf-8",
+        )
+        registry = {
+            "schema_version": 9,
+            "tooling": {"ssot_registry_version": "0.2.6.dev1"},
+            "adrs": [
+                {
+                    "id": "adr:0010",
+                    "number": 10,
+                    "slug": "origin",
+                    "title": "Origin",
+                    "path": ".ssot/adr/ADR-0010-origin.yaml",
+                    "origin": "ssot-origin",
+                    "status": "draft",
+                    "supersedes": [],
+                    "superseded_by": [],
+                    "status_notes": [],
+                },
+                {
+                    "id": "adr:0010",
+                    "number": 10,
+                    "slug": "core-collision",
+                    "title": "Core collision",
+                    "path": ".ssot/adr/ADR-0010-core-collision.yaml",
+                    "origin": "ssot-core",
+                    "status": "draft",
+                    "supersedes": [],
+                    "superseded_by": [],
+                    "status_notes": [],
+                },
+            ],
+            "specs": [
+                {
+                    "id": "spc:0008",
+                    "number": 8,
+                    "slug": "origin",
+                    "title": "Origin",
+                    "path": ".ssot/specs/SPEC-0008-origin.yaml",
+                    "origin": "ssot-origin",
+                    "status": "draft",
+                    "kind": "normative",
+                    "supersedes": [],
+                    "superseded_by": [],
+                    "status_notes": [],
+                }
+            ],
+        }
 
-        from scripts import sync_packaged_docs
-
-        original_origin_roots = sync_packaged_docs.ORIGIN_ROOTS
-        original_core_roots = sync_packaged_docs.CORE_ROOTS
-        try:
-            sync_packaged_docs.ORIGIN_ROOTS = {"adr": origin_adr, "specs": origin_specs}
-            sync_packaged_docs.CORE_ROOTS = {"adr": core_adr, "specs": core_specs}
-            failures = sync_packaged_docs.validate_number_ranges()
-        finally:
-            sync_packaged_docs.ORIGIN_ROOTS = original_origin_roots
-            sync_packaged_docs.CORE_ROOTS = original_core_roots
+        failures = sync_packaged_docs.validate_number_ranges(registry)
 
         self.assertIn("ssot-origin adr id 0010 is outside reserved range 0600..0999", failures)
         self.assertIn("ssot-origin specs id 0008 is outside reserved range 0600..0999", failures)
-        self.assertIn(
-            "Conflicting adr id 0010 is present in both ssot-origin templates and ssot-core docs",
-            failures,
-        )
+        self.assertIn("Conflicting adr id 0010 is present in both ssot-origin and ssot-core upstream docs", failures)
 
 
 if __name__ == "__main__":

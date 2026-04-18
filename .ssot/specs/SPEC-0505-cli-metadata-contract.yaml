@@ -1,23 +1,24 @@
-{
-  "schema_version": 9,
-  "kind": "spec",
-  "id": "spc:0505",
-  "number": 505,
-  "slug": "cli-metadata-contract",
-  "title": "CLI metadata contract",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "CLI metadata SHALL describe:",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "content": [
-      "CLI metadata SHALL describe:\n\n- output formats\n- entity families\n- future command / flag metadata\n\n`ssot-cli` SHALL consume generated CLI metadata where practical."
-    ]
-  },
-  "spec_kind": "governance"
-}
+schema_version: 9
+kind: "spec"
+id: "spc:0505"
+number: 505
+slug: "cli-metadata-contract"
+title: "CLI metadata contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "CLI metadata SHALL describe:"
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+spec_kind: "governance"
+body: |-
+  CLI metadata SHALL describe:
+  
+  - output formats
+  - entity families
+  - future command / flag metadata
+  
+  `ssot-cli` SHALL consume generated CLI metadata where practical.

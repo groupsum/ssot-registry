@@ -16,6 +16,13 @@ class CliInitTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads(result.stdout)
             self.assertTrue(payload["passed"], payload)
+            registry = json.loads((repo / ".ssot" / "registry.json").read_text(encoding="utf-8"))
+            self.assertTrue(registry["adrs"])
+            self.assertTrue(registry["specs"])
+            self.assertEqual({"ssot-origin"}, {row["origin"] for row in registry["adrs"]})
+            self.assertEqual({"ssot-origin"}, {row["origin"] for row in registry["specs"]})
+            first_adr = repo / registry["adrs"][0]["path"]
+            self.assertFalse(first_adr.read_text(encoding="utf-8").lstrip().startswith("{"))
 
             validate = run_cli("validate", str(repo))
             self.assertEqual(validate.returncode, 0, validate.stderr)

@@ -1,25 +1,17 @@
-{
-  "schema_version": 9,
-  "kind": "adr",
-  "id": "adr:0002",
-  "number": 2,
-  "slug": "features-are-targetable-units",
-  "title": "Features are the targetable units",
-  "status": "draft",
-  "origin": "ssot-core",
-  "decision_date": null,
-  "tags": [],
-  "summary": "Features are the only targetable implementation units. There is no separate `targets[]` section.",
-  "supersedes": [],
-  "superseded_by": [],
-  "status_notes": [],
-  "references": [],
-  "sections": {
-    "decision": [
-      "Features are the only targetable implementation units. There is no separate `targets[]` section."
-    ],
-    "consequences": [
-      "- Planning horizon and target claim tier live on feature rows.\n- Scope is defined by selected feature IDs inside boundaries."
-    ]
-  }
-}
+schema_version: 9
+kind: "adr"
+id: "adr:0002"
+number: 2
+slug: "features-are-targetable-units"
+title: "Features are the targetable units"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Features are the only targetable implementation units. There is no separate `targets[]` section."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  Features are the only targetable implementation units. There is no separate `targets[]` section.
