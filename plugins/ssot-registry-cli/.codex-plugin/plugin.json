@@ -1,7 +1,7 @@
 {
   "name": "ssot-cli",
   "version": "0.1.0",
-  "description": "Operate SSOT repositories through the PyPI-published ssot-registry distribution and its CLI aliases.",
+  "description": "Operate SSOT repositories through a local uv virtual environment using the PyPI-published ssot-registry CLI aliases.",
   "author": {
     "name": "Swarmauri",
     "email": "jacob@swarmauri.com",
@@ -18,8 +18,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "SSOT",
-    "shortDescription": "Use the published ssot-registry package to inspect and manage SSOT repos.",
-    "longDescription": "Gives Codex a focused workflow for operating SSOT repositories through the PyPI-published ssot-registry package, including validation, planning, release, and export commands.",
+    "shortDescription": "Use a uv venv with the PyPI SSOT CLI.",
+    "longDescription": "Gives Codex a focused workflow for operating SSOT repositories through a local uv virtual environment with the PyPI-published ssot-registry package, including validation, planning, release, and export commands.",
     "developerName": "Swarmauri",
     "category": "Developer Tools",
     "capabilities": [
@@ -30,9 +30,9 @@
     "privacyPolicyURL": "https://github.com/groupsum/ssot-registry",
     "termsOfServiceURL": "https://github.com/groupsum/ssot-registry",
     "defaultPrompt": [
-      "Inspect this repository with the published ssot-registry CLI.",
-      "Validate the current repo with ssot-registry and explain any failures.",
-      "Plan a boundary and release flow using ssot-registry commands."
+      "Inspect this repository with a uv venv running the PyPI ssot-registry CLI.",
+      "Validate the current repo with uv run ssot and explain any failures.",
+      "Plan a boundary and release flow using uv-run ssot commands from a local venv."
     ],
     "brandColor": "#0F766E"
   }
