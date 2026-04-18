@@ -294,6 +294,40 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
         finally:
             temp_dir.cleanup()
 
+    async def test_browser_can_switch_to_document_sections_with_visible_rows(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.screen
+                table = screen.query_one(EntityTable)
+
+                screen._select_section("adrs")
+                await pilot.pause()
+                self.assertEqual(screen.active_section, "adrs")
+                self.assertGreater(table.row_count, 0)
+                adr = table.entity_for_row_index(table.cursor_row)
+                self.assertIsNotNone(adr)
+                self.assertTrue(adr["id"].startswith("adr:"))
+
+                screen._select_section("specs")
+                await pilot.pause()
+                self.assertEqual(screen.active_section, "specs")
+                self.assertGreater(table.row_count, 0)
+                spec = table.entity_for_row_index(table.cursor_row)
+                self.assertIsNotNone(spec)
+                self.assertTrue(spec["id"].startswith("spc:"))
+        finally:
+            temp_dir.cleanup()
+
     async def test_startup_panel_no_longer_renders_recent_repo_selector(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"

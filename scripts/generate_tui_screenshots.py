@@ -4,7 +4,7 @@ import argparse
 import asyncio
 from pathlib import Path
 
-from _screenshot_common import DEFAULT_REPO, TUI_ASSET_ROOT, bootstrap_paths, display_path
+from _screenshot_common import DEFAULT_REPO, TUI_ASSET_ROOT, bootstrap_paths, display_path, save_textual_screenshot_png
 
 
 bootstrap_paths()
@@ -14,21 +14,35 @@ async def capture_tui_screenshots(repo_path: Path, asset_root: Path) -> list[Pat
     from textual.widgets import Input
 
     from ssot_tui.app import SsotTuiApp
+    from ssot_tui.widgets import EntityTable
 
     app = SsotTuiApp()
     browser_output = asset_root / "ssot-tui-browser.png"
+    adr_output = asset_root / "ssot-tui-adrs.png"
+    spec_output = asset_root / "ssot-tui-specs.png"
     validated_output = asset_root / "ssot-tui-validated.png"
     browser_output.parent.mkdir(parents=True, exist_ok=True)
+
+    async def capture_section(section: str, output_path: Path) -> None:
+        app.screen._select_section(section)
+        await pilot.pause()
+        table = app.screen.query_one(EntityTable)
+        if table.row_count == 0:
+            raise RuntimeError(f"No rows visible in the {section} table for screenshot generation.")
+        save_textual_screenshot_png(app, output_path)
+
     async with app.run_test(size=(140, 40)) as pilot:
         input_widget = app.screen.query_one("#repo_path", Input)
         input_widget.value = str(repo_path)
         app.screen.action_reload_workspace()
         await pilot.pause()
-        app.save_screenshot(filename=browser_output.name, path=str(browser_output.parent))
+        save_textual_screenshot_png(app, browser_output)
+        await capture_section("adrs", adr_output)
+        await capture_section("specs", spec_output)
         app.screen.action_validate_workspace()
         await pilot.pause()
-        app.save_screenshot(filename=validated_output.name, path=str(validated_output.parent))
-    return [browser_output, validated_output]
+        save_textual_screenshot_png(app, validated_output)
+    return [browser_output, adr_output, spec_output, validated_output]
 
 
 def main() -> int:

@@ -263,6 +263,24 @@ class BrowserScreen(Screen[None]):
         label = row.get("title") or row.get("version") or entity_id
         self._push_status(f"Selected {entity_id} in {section}: {label}")
 
+    def _select_section(
+        self,
+        section: str,
+        *,
+        selected_entity_id: str | None = None,
+        announce: bool = False,
+    ) -> None:
+        if self.workspace is None:
+            return
+        if section not in self.workspace.collections:
+            self._push_status(f"Unknown section: {section}", level="warning")
+            return
+        self.active_section = section
+        self._persist_session(active_section=section, selected_entity_id=selected_entity_id)
+        self._refresh_table(selected_entity_id=selected_entity_id)
+        if announce:
+            self._push_status(f"Switched to {section} ({len(self.workspace.collections.get(section, []))} rows).")
+
     def _show_file_resource(self, relative_path: str, absolute_path: str) -> None:
         path = Path(absolute_path)
         try:
@@ -429,9 +447,7 @@ class BrowserScreen(Screen[None]):
     def on_tree_node_selected(self, event: SectionNavigation.NodeSelected[str]) -> None:
         if event.node.data is None:
             return
-        self.active_section = event.node.data
-        self._persist_session(active_section=self.active_section, selected_entity_id=None)
-        self._refresh_table()
+        self._select_section(event.node.data)
 
     def on_data_table_row_highlighted(self, event: EntityTable.RowHighlighted) -> None:
         self._show_entity(self.query_one(EntityTable).entity_for_row_index(event.cursor_row))
