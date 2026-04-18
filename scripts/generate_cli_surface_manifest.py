@@ -9,12 +9,12 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = REPO_ROOT / "src"
-REGISTRY_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-registry" / "src"
+CORE_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-core" / "src"
 CONTRACTS_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-contracts" / "src"
 VIEWS_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-views" / "src"
 CODEGEN_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-codegen" / "src"
 CLI_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-cli" / "src"
-for path in (REGISTRY_SRC_DIR, CODEGEN_SRC_DIR, VIEWS_SRC_DIR, CONTRACTS_SRC_DIR, CLI_SRC_DIR, SRC_DIR):
+for path in (CORE_SRC_DIR, CODEGEN_SRC_DIR, VIEWS_SRC_DIR, CONTRACTS_SRC_DIR, CLI_SRC_DIR, SRC_DIR):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 

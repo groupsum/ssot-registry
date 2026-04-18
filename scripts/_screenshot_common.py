@@ -21,7 +21,7 @@ DEFAULT_REPO = PROJECT_ROOT
 
 def bootstrap_paths() -> None:
     candidate_paths = [
-        PROJECT_ROOT / "pkgs" / "ssot-registry" / "src",
+        PROJECT_ROOT / "pkgs" / "ssot-core" / "src",
         PROJECT_ROOT / "pkgs" / "ssot-codegen" / "src",
         PROJECT_ROOT / "pkgs" / "ssot-views" / "src",
         PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src",

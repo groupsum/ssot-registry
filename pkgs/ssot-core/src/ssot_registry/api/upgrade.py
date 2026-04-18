@@ -472,7 +472,7 @@ def upgrade_registry(
 ) -> dict[str, Any]:
     if target_version is not None and target_version != __version__:
         raise RegistryError(
-            f"Installed ssot-registry version is {__version__}; install {target_version} before running upgrade"
+            f"Installed ssot-core version is {__version__}; install {target_version} before running upgrade"
         )
 
     target_version = __version__

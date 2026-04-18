@@ -47,7 +47,7 @@ def validate_registry(path: str | Path) -> dict[str, object]:
     if schema_version != SCHEMA_VERSION:
         if isinstance(schema_version, int) and schema_version < SCHEMA_VERSION:
             failures = [
-                f"Registry schema_version {schema_version} is older than supported schema_version {SCHEMA_VERSION}; run `ssot-registry upgrade {repo_root.as_posix()}`"
+                f"Registry schema_version {schema_version} is older than supported schema_version {SCHEMA_VERSION}; run `ssot upgrade {repo_root.as_posix()}`"
             ]
         else:
             failures = [f"Registry schema_version must be {SCHEMA_VERSION}"]

@@ -167,7 +167,7 @@ class BridgeActionProvider:
             repo_root = Path(cwd).resolve()
             src_paths = [
                 repo_root / "pkgs" / "ssot-cli" / "src",
-                repo_root / "pkgs" / "ssot-registry" / "src",
+                repo_root / "pkgs" / "ssot-core" / "src",
                 repo_root / "pkgs" / "ssot-contracts" / "src",
                 repo_root / "pkgs" / "ssot-codegen" / "src",
                 repo_root / "pkgs" / "ssot-views" / "src",

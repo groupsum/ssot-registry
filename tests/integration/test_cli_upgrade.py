@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 import json
+import sys
 import unittest
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+CORE_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-core" / "src"
+if str(CORE_SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(CORE_SRC_ROOT))
 
 from ssot_registry import __version__
 from tests.helpers import run_cli, temp_repo_from_fixture, workspace_tempdir
@@ -16,7 +22,7 @@ class CliUpgradeTests(unittest.TestCase):
 
         validate_before = run_cli("validate", str(repo))
         self.assertEqual(validate_before.returncode, 1)
-        self.assertIn("run `ssot-registry upgrade", validate_before.stdout)
+        self.assertIn("run `ssot upgrade", validate_before.stdout)
 
         upgrade = run_cli("upgrade", str(repo), "--target-version", __version__, "--sync-docs", "--write-report")
         self.assertEqual(upgrade.returncode, 0, upgrade.stderr)

@@ -6,7 +6,7 @@ from pathlib import Path
 
 __all__ = ["__version__"]
 
-_PACKAGE_NAME = "ssot-registry"
+_PACKAGE_NAME = "ssot-core"
 _PYPROJECT_PATH = Path(__file__).resolve().parents[2] / "pyproject.toml"
 _VERSION_PATTERN = re.compile(r'^version\s*=\s*"(?P<version>[^"]+)"\s*$')
 
