@@ -3034,6 +3034,121 @@
         "tst:cert.104"
       ],
       "requires": []
+    },
+    {
+      "id": "feat:schema.spec-adr-ids",
+      "title": "Schema SPEC adr_ids",
+      "description": "Track the schema-level addition of typed ADR ids on SPEC rows and authored SPEC payloads.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0615"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:api.spec-adr-linking",
+      "title": "API SPEC ADR linking",
+      "description": "Track document runtime validation, reference handling, and authored payload persistence for SPEC ADR links.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0615"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.adr-ids",
+      "title": "CLI flag --adr-ids",
+      "description": "Track the typed CLI flag surface for setting SPEC ADR ids on create, update, link, and unlink commands.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0615"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:migration.spec-adr-ids-rollout",
+      "title": "Migration SPEC adr_ids rollout",
+      "description": "Track upgrade behavior that adds adr_ids defaults and rewrites authored SPEC payloads for the new schema version.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0615"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:graph.spec-adr-visibility",
+      "title": "Graph SPEC ADR visibility",
+      "description": "Track graph and export visibility for explicit SPEC to ADR edges and derived feature to ADR edges.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0615"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
     }
   ],
   "profiles": [],
@@ -8892,6 +9007,22 @@
       "supersedes": [],
       "superseded_by": [],
       "status_notes": []
+    },
+    {
+      "id": "adr:0614",
+      "number": 614,
+      "slug": "specs-own-typed-adr-links",
+      "title": "SPECs own typed ADR links",
+      "path": ".ssot/adr/ADR-0614-specs-own-typed-adr-links.yaml",
+      "origin": "ssot-origin",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.10",
+      "content_sha256": "b6c211c2fef9931d10d3e34941db2f56c31cb25a32b88e1fbf45d189c4160300",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     }
   ],
   "specs": [
@@ -9470,6 +9601,26 @@
       "status_notes": [],
       "kind": "normative",
       "adr_ids": []
+    },
+    {
+      "id": "spc:0615",
+      "number": 615,
+      "slug": "typed-spec-to-adr-linking",
+      "title": "Typed SPEC-to-ADR linking",
+      "path": ".ssot/specs/SPEC-0615-typed-spec-to-adr-linking.yaml",
+      "origin": "ssot-origin",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.10",
+      "content_sha256": "b2ad94d1cdb3fb5c094238cde18415e800f69d771e0fcc45287a762ddb91b2ef",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": [],
+      "kind": "normative",
+      "adr_ids": [
+        "adr:0614"
+      ]
     }
   ]
 }
