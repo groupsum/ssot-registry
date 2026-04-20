@@ -935,6 +935,7 @@
         "package_version",
         "content_sha256",
         "kind",
+        "adr_ids",
         "status",
         "supersedes",
         "superseded_by",
@@ -988,6 +989,9 @@
             "governance",
             "local-policy"
           ]
+        },
+        "adr_ids": {
+          "$ref": "#/$defs/stringList"
         },
         "status": {
           "$ref": "#/$defs/documentStatus"

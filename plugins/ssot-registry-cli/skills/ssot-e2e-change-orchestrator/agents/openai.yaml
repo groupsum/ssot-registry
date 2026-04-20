@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSOT E2E Change Orchestrator"
+  short_description: "Route SSOT work across the full governed lifecycle."
+  default_prompt: "Use $ssot-e2e-change-orchestrator to drive this SSOT repo from decision and scope through freeze, implementation, certification, publication, and closure."

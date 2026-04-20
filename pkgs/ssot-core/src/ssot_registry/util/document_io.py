@@ -73,6 +73,8 @@ def normalize_document_payload(kind: str, payload: dict[str, Any]) -> dict[str, 
     normalized = dict(payload)
     normalized["body"] = document_body_from_payload(kind, normalized)
     normalized.pop("sections", None)
+    if kind == "spec":
+        normalized.setdefault("adr_ids", [])
     fallback_title = normalized.get("title")
     normalized["summary"] = build_document_summary(
         normalized["body"],
@@ -164,6 +166,7 @@ def build_document_payload(kind: str, row: dict[str, Any], body: str) -> dict[st
     }
     if kind == "spec":
         payload["spec_kind"] = row.get("kind", "local-policy")
+        payload["adr_ids"] = list(row.get("adr_ids", []))
     return payload
 
 
@@ -576,6 +579,9 @@ def validate_document_payload(kind: str, payload: dict[str, Any], *, expected_ro
         spec_kind = payload.get("spec_kind")
         if spec_kind not in SPEC_KINDS:
             raise ValidationError(f"SPEC documents must use spec_kind from {sorted(SPEC_KINDS)}")
+        adr_ids = payload.get("adr_ids", [])
+        if not isinstance(adr_ids, list) or not all(isinstance(item, str) for item in adr_ids):
+            raise ValidationError("SPEC documents must use adr_ids as a list of strings")
 
     for field_name in ("tags", "supersedes", "superseded_by", "references"):
         value = payload.get(field_name, [])
@@ -594,4 +600,8 @@ def validate_document_payload(kind: str, payload: dict[str, Any], *, expected_ro
         if kind == "spec" and payload.get("spec_kind") != expected_row.get("kind"):
             raise ValidationError(
                 f"Document field spec_kind does not match registry row: expected {expected_row.get('kind')!r}"
+            )
+        if kind == "spec" and payload.get("adr_ids", []) != expected_row.get("adr_ids", []):
+            raise ValidationError(
+                f"Document field adr_ids does not match registry row: expected {expected_row.get('adr_ids', [])!r}"
             )

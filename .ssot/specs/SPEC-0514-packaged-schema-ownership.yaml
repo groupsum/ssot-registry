@@ -31,3 +31,4 @@ body: |-
   - `pkgs/ssot-core` package data SHALL NOT include a duplicate schema JSON tree.
   - Runtime schema consumers in `ssot-core` SHALL resolve packaged schemas via `ssot_contracts.load_schema_text()`.
 spec_kind: "governance"
+adr_ids: []

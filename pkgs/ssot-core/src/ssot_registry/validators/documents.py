@@ -201,6 +201,9 @@ def validate_document_rows(
                 kind_value = row.get("kind")
                 if kind_value not in SPEC_KINDS:
                     failures.append(f"{prefix}.kind must be one of {sorted(SPEC_KINDS)}")
+                adr_ids = row.get("adr_ids")
+                if not isinstance(adr_ids, list) or not all(isinstance(value, str) for value in adr_ids):
+                    failures.append(f"{prefix}.adr_ids must be a list of strings")
             status = row.get("status")
             supersedes = row.get("supersedes")
             superseded_by = row.get("superseded_by")

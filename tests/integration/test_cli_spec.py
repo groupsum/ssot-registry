@@ -220,6 +220,57 @@ class CliSpecTests(unittest.TestCase):
             self.assertEqual(conflict.returncode, 1)
             self.assertIn("accepts only one of body or body_file", conflict.stdout)
 
+    def test_spec_tracks_typed_adr_links_via_create_update_link_and_unlink(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            init = run_cli("init", str(repo), "--repo-id", "repo:spec-adr-links", "--repo-name", "spec-adr-links", "--version", "1.0.0")
+            self.assertEqual(init.returncode, 0, init.stderr)
+
+            adr_body = repo / "adr-body.yaml"
+            adr_body.write_text('body: |-\n  ADR body.\n', encoding="utf-8")
+            spec_body = repo / "spec-body.yaml"
+            spec_body.write_text('body: |-\n  SPEC body.\n', encoding="utf-8")
+
+            adr_one = run_cli("adr", "create", str(repo), "--title", "ADR one", "--slug", "adr-one", "--body-file", str(adr_body))
+            self.assertEqual(adr_one.returncode, 0, adr_one.stderr)
+            adr_two = run_cli("adr", "create", str(repo), "--title", "ADR two", "--slug", "adr-two", "--body-file", str(adr_body))
+            self.assertEqual(adr_two.returncode, 0, adr_two.stderr)
+
+            create = run_cli(
+                "spec",
+                "create",
+                str(repo),
+                "--title",
+                "Linked spec",
+                "--slug",
+                "linked-spec",
+                "--body-file",
+                str(spec_body),
+                "--kind",
+                "operational",
+                "--adr-ids",
+                "adr:1000",
+            )
+            self.assertEqual(create.returncode, 0, create.stderr)
+            self.assertEqual(json.loads(create.stdout)["document"]["adr_ids"], ["adr:1000"])
+
+            update = run_cli("spec", "update", str(repo), "--id", "spc:1000", "--adr-ids", "adr:1000", "adr:1001")
+            self.assertEqual(update.returncode, 0, update.stderr)
+            self.assertEqual(json.loads(update.stdout)["document"]["adr_ids"], ["adr:1000", "adr:1001"])
+
+            unlink = run_cli("spec", "unlink", str(repo), "--id", "spc:1000", "--adr-ids", "adr:1000")
+            self.assertEqual(unlink.returncode, 0, unlink.stderr)
+            self.assertEqual(json.loads(unlink.stdout)["document"]["adr_ids"], ["adr:1001"])
+
+            link = run_cli("spec", "link", str(repo), "--id", "spc:1000", "--adr-ids", "adr:1000")
+            self.assertEqual(link.returncode, 0, link.stderr)
+            self.assertEqual(json.loads(link.stdout)["document"]["adr_ids"], ["adr:1001", "adr:1000"])
+
+            get_result = run_cli("spec", "get", str(repo), "--id", "spc:1000")
+            self.assertEqual(get_result.returncode, 0, get_result.stderr)
+            self.assertEqual(json.loads(get_result.stdout)["adr_ids"], ["adr:1001", "adr:1000"])
+
 
 if __name__ == "__main__":
     unittest.main()

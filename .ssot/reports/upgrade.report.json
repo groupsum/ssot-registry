@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "registry_path": ".ssot/registry.json",
+  "from_schema_version": "0.1.0",
+  "to_schema_version": "0.2.0",
+  "from_version": "0.2.7",
+  "to_version": "0.2.10",
+  "migrations": [
+    "0.2.10->0.2.10 (schema 0.1.0->0.2.0)"
+  ],
+  "schema_migrations": [
+    "migrate_v0_1_0_to_v0_2_0"
+  ],
+  "renamed_specs": [],
+  "document_migration": null,
+  "sync": null,
+  "changed": true
+}

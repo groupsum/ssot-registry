@@ -6,6 +6,7 @@ from typing import Any
 
 SEMVER_PATTERN = re.compile(r"^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)$")
 LEGACY_SCHEMA_VERSIONS = (3, 4, 5, 6, 7, 8, 9, 10)
+SUPPORTED_SEMVER_SCHEMA_VERSIONS = ("0.1.0", "0.2.0")
 
 
 def is_semver_schema_version(value: Any) -> bool:
@@ -28,7 +29,11 @@ def schema_version_sort_key(value: Any) -> tuple[int, ...]:
 
 
 def is_known_schema_version(value: Any, current_schema_version: str) -> bool:
-    return (isinstance(value, int) and value in LEGACY_SCHEMA_VERSIONS) or value == current_schema_version
+    return (
+        (isinstance(value, int) and value in LEGACY_SCHEMA_VERSIONS)
+        or value == current_schema_version
+        or value in SUPPORTED_SEMVER_SCHEMA_VERSIONS
+    )
 
 
 def schema_version_is_older(value: Any, current_schema_version: str) -> bool:

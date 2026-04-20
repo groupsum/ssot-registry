@@ -1,10 +1,10 @@
 {
-  "schema_version": "0.1.0",
+  "schema_version": "0.2.0",
   "repo": {
     "id": "repo:advanced-example",
     "name": "advanced-example",
     "version": "1.2.0",
-    "kind": "operator-repo"
+    "kind": "repo-local"
   },
   "paths": {
     "ssot_root": ".ssot",
@@ -159,9 +159,9 @@
     }
   ],
   "tooling": {
-    "ssot_registry_version": "0.2.2",
+    "ssot_registry_version": "0.2.10",
     "initialized_with_version": "0.2.0",
-    "last_upgraded_from_version": "0.2.0"
+    "last_upgraded_from_version": "0.2.2"
   },
   "document_id_reservations": {
     "adr": [
@@ -453,13 +453,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "d03d461a32d1cbc5798cd33fbda66589010b8d082b65bf989f18f761d273b587",
+      "package_version": "0.2.10",
+      "content_sha256": "9eaf89b0939a26c04a8f6c3d7db5eef55fd93f6fc0e052db29a9fe153159650f",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0601",
@@ -470,13 +471,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "bacd750fcaee57277115e2bd61c5fde308624798839a34bce0bc8f1320de3287",
+      "package_version": "0.2.10",
+      "content_sha256": "628193a17935e4b4bc22de721e2ce449bad1c1cf0a1e60f0604c53f2896f0acb",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "operational"
+      "kind": "operational",
+      "adr_ids": []
     },
     {
       "id": "spc:0602",
@@ -487,13 +489,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "c2f9addf6a50ccbfc020c40327de93027ec984bebd0dc12feb1f4febfa816293",
+      "package_version": "0.2.10",
+      "content_sha256": "098a7514eb3541651741143e3f87fa27a0831d89a868216bc477d525c89d9b8c",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0603",
@@ -504,13 +507,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "fe3ff8e895162ae90359401bac69bc8e8e5c98b2b31447fea3b6e1ae76516c79",
+      "package_version": "0.2.10",
+      "content_sha256": "cd47ebf1135f90083337d7300c021aa5602227039a96f02f2f831586a6f9da1d",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0604",
@@ -521,13 +525,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "d789748eb6dd262134c80baf77a8c44dd85f6ca0ce1ab53586d25dcb576e32a1",
+      "package_version": "0.2.10",
+      "content_sha256": "e715dd76712cba21b04a4cc922b883b881076478d01412ba49eeb482b756d4a1",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0605",
@@ -538,13 +543,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "7b350ed11cad9d9be5fce31e10f0f4350d6a071049a01c950af8694d5f0630d7",
+      "package_version": "0.2.10",
+      "content_sha256": "078b2ba5054c1c2cf5b7697920a63dcf7d3fb61084dc22f150ee84f26e630262",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0606",
@@ -555,13 +561,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "6952e1ae415375b4dbe46c92537f6c6cd3dce5709a2507d906197bf8043fd6d6",
+      "package_version": "0.2.10",
+      "content_sha256": "ca8a031339c7ab8f357a08c832b089fa84e6baa817ca974b59dd66847948da2e",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "operational"
+      "kind": "operational",
+      "adr_ids": []
     },
     {
       "id": "spc:0607",
@@ -572,13 +579,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "63b5056e142d551afb5a7c8e119b4e02913371771bb54c56c52464b1615893c2",
+      "package_version": "0.2.10",
+      "content_sha256": "23a4b5dfc31e866db529c27489d54a4d33bfc31389ed2287839b6ae53e587a04",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "operational"
+      "kind": "operational",
+      "adr_ids": []
     },
     {
       "id": "spc:0608",
@@ -589,13 +597,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "ab8ef1311b825d7474f24a8b2eeff2fee19183804746cbccd7234f9f5e2166a9",
+      "package_version": "0.2.10",
+      "content_sha256": "87beb7e4bef75acb0a6c3d7e7048b7f5f2ba43671971d0d5d61e4f079d086032",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0609",
@@ -606,13 +615,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "ce9b9a9cd22703419af6d37aaf3e7da815291deb6bf493a16689f41d9019233e",
+      "package_version": "0.2.10",
+      "content_sha256": "e299d28d416a6b2fe1c04e7a9f99e8b1a16077b9617f6d08880ad5d94195c2c5",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0610",
@@ -623,13 +633,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "e821e3c072a3973300b6c91eb2f6ce504cf4f34f4c6b49ed7c742a4315b7d5fc",
+      "package_version": "0.2.10",
+      "content_sha256": "adf2ec784cf5d3fbcf8235e2502e8a65d5b766bed72ea2d6e8e09b33bf54aa04",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0611",
@@ -640,13 +651,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "fa4fab0acc1175f202b36fe1770cbe076332bf33e7bccf5eb539c477c9215b7d",
+      "package_version": "0.2.10",
+      "content_sha256": "b27e39a79f780c5af29dc04e9472254c60bae2cd43fece5a9b88b08cf61ddf38",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0612",
@@ -657,13 +669,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "bbea37ab830073ee6309011ee7aa9b13aa490e660bdf01448cd50f1d42a32993",
+      "package_version": "0.2.10",
+      "content_sha256": "aacdf28868a8b0c1b70d687333d719844e2671c9c26a89faea8497943ec845b9",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "operational"
+      "kind": "operational",
+      "adr_ids": []
     },
     {
       "id": "spc:0613",
@@ -674,13 +687,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "9e7523c7f8fe3f5cad8bd05aa42796e96794c7427cb774639ef9c5dfc4082c8a",
+      "package_version": "0.2.10",
+      "content_sha256": "9b285d6955e0d0ad34c4daa1d3ba479b586c6dcc2eca5c540779d7e6492d206c",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0614",
@@ -691,13 +705,14 @@
       "origin": "ssot-origin",
       "managed": true,
       "immutable": true,
-      "package_version": "0.2.4",
-      "content_sha256": "38914181571d8d366258bc4cce8837a9857b2e480e03687db9d811555b807f77",
+      "package_version": "0.2.10",
+      "content_sha256": "aa4277df313bf604e6f3a4930a98f635082e0e7ca0d3ecdc7f1b10d5d29357e8",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
       "status_notes": [],
-      "kind": "normative"
+      "kind": "normative",
+      "adr_ids": []
     }
   ],
   "profiles": []

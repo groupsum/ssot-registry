@@ -31,10 +31,27 @@ def build_graph_json(registry: dict[str, object]) -> dict[str, object]:
             edges.append({"type": "INCLUDES", "from": release["id"], "to": evidence_id})
 
     for feature in registry.get("features", []):
+        for spec_id in feature.get("spec_ids", []):
+            edges.append({"type": "SPECIFIED_BY", "from": feature["id"], "to": spec_id})
         for required_feature_id in feature.get("requires", []):
             edges.append({"type": "REQUIRES", "from": feature["id"], "to": required_feature_id})
         for test_id in feature.get("test_ids", []):
             edges.append({"type": "COVERED_BY", "from": feature["id"], "to": test_id})
+
+    spec_lookup = {spec["id"]: spec for spec in registry.get("specs", [])}
+    for spec in registry.get("specs", []):
+        for adr_id in spec.get("adr_ids", []):
+            edges.append({"type": "DECIDED_BY", "from": spec["id"], "to": adr_id})
+
+    for feature in registry.get("features", []):
+        derived_adr_ids: set[str] = set()
+        for spec_id in feature.get("spec_ids", []):
+            spec = spec_lookup.get(spec_id)
+            if spec is None:
+                continue
+            derived_adr_ids.update(spec.get("adr_ids", []))
+        for adr_id in sorted(derived_adr_ids):
+            edges.append({"type": "DECIDED_BY", "from": feature["id"], "to": adr_id})
 
     for claim in registry.get("claims", []):
         for feature_id in claim.get("feature_ids", []):

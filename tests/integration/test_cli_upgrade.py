@@ -72,13 +72,15 @@ class CliUpgradeTests(unittest.TestCase):
         upgrade = run_cli("upgrade", str(repo), "--target-version", __version__)
         self.assertEqual(upgrade.returncode, 0, upgrade.stderr)
         payload = json.loads(upgrade.stdout)
-        self.assertIn("0.2.7->0.2.7 (schema 10->0.1.0)", payload["migrations"])
+        self.assertIn("0.2.7->0.2.10 (schema 10->0.2.0)", payload["migrations"])
         self.assertIn("migrate_v10_to_v0_1_0", payload["schema_migrations"])
 
         upgraded_registry = json.loads(registry_path.read_text(encoding="utf-8"))
-        self.assertEqual("0.1.0", upgraded_registry["schema_version"])
+        self.assertEqual("0.2.0", upgraded_registry["schema_version"])
         for feature in upgraded_registry["features"]:
             self.assertIn("spec_ids", feature)
+        for spec in upgraded_registry["specs"]:
+            self.assertIn("adr_ids", spec)
 
 
 if __name__ == "__main__":

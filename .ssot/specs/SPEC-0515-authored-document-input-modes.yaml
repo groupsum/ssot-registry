@@ -8,7 +8,7 @@ status: "draft"
 origin: "ssot-core"
 decision_date: null
 tags: []
-summary: "ADR and SPEC authoring APIs SHALL accept exactly one content source on create."
+summary: "`ssot-core` SHALL support two authored content source modes for ADR and SPEC document mutations:"
 supersedes: []
 superseded_by: []
 status_notes: []
@@ -37,3 +37,4 @@ body: |-
   - ADR creation and update
   - SPEC creation and update
 spec_kind: "normative"
+adr_ids: []

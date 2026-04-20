@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSOT Proof Chain And Certification"
+  short_description: "Close proof chains and carry a release through publication."
+  default_prompt: "Use $ssot-proof-chain-and-certification to link claims, tests, and evidence for a frozen boundary, then certify, promote, publish, and verify closure."

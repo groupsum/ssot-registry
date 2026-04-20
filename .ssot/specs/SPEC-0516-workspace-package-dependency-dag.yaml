@@ -8,7 +8,7 @@ status: "draft"
 origin: "ssot-core"
 decision_date: null
 tags: []
-summary: "This specification defines the canonical workspace package-dependency DAG for the repository."
+summary: "This specification defines the canonical workspace package-dependency DAG for this repository."
 supersedes: []
 superseded_by: []
 status_notes: []
@@ -56,3 +56,4 @@ body: |-
   - Per-package dependency declarations SHALL remain consistent with the canonical edge set.
   - Architectural changes to the DAG SHALL update the ADR, this SPEC, and the registry feature inventory together.
 spec_kind: "governance"
+adr_ids: []

@@ -19,10 +19,12 @@ class MigrateV10ToV010Tests(unittest.TestCase):
 
         migrated = migrate_v10_to_v0_1_0(registry, repo, previous_version="0.2.7", target_version="0.2.7")
 
-        self.assertEqual("0.1.0", migrated["schema_version"])
+        self.assertEqual("0.2.0", migrated["schema_version"])
         self.assertTrue(migrated["features"])
         for feature in migrated["features"]:
             self.assertIn("spec_ids", feature)
+        for spec in migrated["specs"]:
+            self.assertIn("adr_ids", spec)
 
 
 if __name__ == "__main__":

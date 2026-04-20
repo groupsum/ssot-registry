@@ -463,6 +463,7 @@
     ],
     "spec": [],
     "spec create": [
+      "--adr-ids",
       "--body",
       "--body-file",
       "--kind",
@@ -500,6 +501,7 @@
     ],
     "spec sync": [],
     "spec update": [
+      "--adr-ids",
       "--body",
       "--body-file",
       "--id",
@@ -552,6 +554,14 @@
     ],
     "validate": [
       "--write-report"
+    ],
+    "spec link": [
+      "--adr-ids",
+      "--id"
+    ],
+    "spec unlink": [
+      "--adr-ids",
+      "--id"
     ]
   },
   "global_flags": [
@@ -685,7 +695,9 @@
     "test unlink",
     "test update",
     "upgrade",
-    "validate"
+    "validate",
+    "spec link",
+    "spec unlink"
   ],
   "top_level_commands": [
     "adr",

@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSOT Implementation And Migration Delivery"
+  short_description: "Implement frozen SSOT scope in schema, code, migrations, and tests."
+  default_prompt: "Use $ssot-implementation-and-migration-delivery to implement a frozen SSOT change in this repo, including schema versioning, migrations, and tests."

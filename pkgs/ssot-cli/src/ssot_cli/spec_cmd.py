@@ -3,12 +3,14 @@
 import argparse
 
 from ssot_registry.api import (
+    add_spec_adr_links,
     create_document,
     create_document_reservation,
     delete_document,
     get_document,
     list_document_reservations,
     list_documents,
+    remove_spec_adr_links,
     set_document_status,
     sync_documents,
     supersede_documents,
@@ -41,6 +43,7 @@ def register_spec(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--status", choices=["draft", "in_review", "accepted", "rejected", "withdrawn", "superseded", "retired"], default="draft", help="Current lifecycle state of the SPEC.")
     create.add_argument("--note", default=None, help="Lifecycle note explaining the SPEC state or transition.")
     create.add_argument("--reserve-range", default=None, help="Named reservation range to allocate the SPEC number from.")
+    create.add_argument("--adr-ids", nargs="*", default=None, help="ADR ids that typedly govern or motivate the SPEC.")
     create.set_defaults(func=run_create)
 
     get = spec_sub.add_parser("get", help="Show one SPEC.", description="Fetch a single SPEC by id.")
@@ -52,6 +55,18 @@ def register_spec(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(list_cmd)
     list_cmd.set_defaults(func=run_list)
 
+    link = spec_sub.add_parser("link", help="Attach ADRs to a SPEC.", description="Add typed ADR references to a SPEC without changing other document fields.")
+    add_path_argument(link)
+    link.add_argument("--id", required=True, help="SPEC id that should receive ADR links.")
+    link.add_argument("--adr-ids", nargs="+", required=True, help="ADR ids to attach.")
+    link.set_defaults(func=run_link)
+
+    unlink = spec_sub.add_parser("unlink", help="Remove ADRs from a SPEC.", description="Remove typed ADR references from a SPEC without changing other document fields.")
+    add_path_argument(unlink)
+    unlink.add_argument("--id", required=True, help="SPEC id whose ADR links should be removed.")
+    unlink.add_argument("--adr-ids", nargs="+", required=True, help="ADR ids to detach.")
+    unlink.set_defaults(func=run_unlink)
+
     update = spec_sub.add_parser("update", help="Edit a SPEC.", description="Update mutable SPEC fields such as title, body source, kind, or lifecycle state.")
     add_path_argument(update)
     update.add_argument("--id", required=True, help="SPEC id to update.")
@@ -59,6 +74,7 @@ def register_spec(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--body", default=None, help="Replacement inline SPEC body text.")
     update.add_argument("--body-file", default=None, help="Replacement SPEC body file to ingest.")
     update.add_argument("--kind", choices=["normative", "operational", "governance", "local-policy"], default=None, help="Replacement contract kind.")
+    update.add_argument("--adr-ids", nargs="*", default=None, help="Replacement typed ADR ids for the SPEC.")
     update.add_argument("--status", choices=["draft", "in_review", "accepted", "rejected", "withdrawn", "superseded", "retired"], default=None, help="New lifecycle state.")
     update.add_argument("--note", default=None, help="Updated lifecycle note or rationale.")
     update.set_defaults(func=run_update)
@@ -114,6 +130,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         status=args.status,
         note=args.note,
         spec_kind=args.kind,
+        adr_ids=args.adr_ids,
     )
 
 
@@ -125,8 +142,26 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
     return list_documents(args.path, "spec")
 
 
+def run_link(args: argparse.Namespace) -> dict[str, object]:
+    return add_spec_adr_links(args.path, args.id, args.adr_ids)
+
+
+def run_unlink(args: argparse.Namespace) -> dict[str, object]:
+    return remove_spec_adr_links(args.path, args.id, args.adr_ids)
+
+
 def run_update(args: argparse.Namespace) -> dict[str, object]:
-    changes = compact_dict({"title": args.title, "body": args.body, "body_file": args.body_file, "spec_kind": args.kind, "status": args.status, "note": args.note})
+    changes = compact_dict(
+        {
+            "title": args.title,
+            "body": args.body,
+            "body_file": args.body_file,
+            "spec_kind": args.kind,
+            "adr_ids": args.adr_ids,
+            "status": args.status,
+            "note": args.note,
+        }
+    )
     if not changes:
         raise ValueError("At least one update field is required")
     return update_document(args.path, "spec", args.id, **changes)

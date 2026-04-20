@@ -8,12 +8,13 @@ status: "draft"
 origin: "ssot-origin"
 decision_date: null
 tags: []
-summary: "Stable imports and document mutation input selection."
+summary: "Stable imports:"
 supersedes: []
 superseded_by: []
 status_notes: []
 references: []
 spec_kind: "operational"
+adr_ids: []
 body: |-
   Stable imports:
   

@@ -27,7 +27,7 @@ Use this skill when the user is focused on coverage wiring between features and 
 - Prefer explicit `--test-path` and `--kind` when creating tests so downstream evidence and release reports remain interpretable.
 - When removing coverage, unlink before deleting the test row.
 - If one command already accepts related IDs at create time, use that to reduce follow-up mutations, then fill any missing reciprocal edges.
-- If the request expands from feature/test coverage into claim closure or release readiness, switch to the claim/evidence or E2E skill.
+- If the request expands from feature/test coverage into claim closure or release readiness, switch to `$ssot-proof-chain-and-certification` or `$ssot-e2e-change-orchestrator`.
 
 ## Example
 

@@ -28,6 +28,7 @@ Use this skill for document-level SSOT work around ADRs and SPECs. Prefer the CL
 - Prefer `create` and `update` over hand-authoring filenames; the CLI enforces `ADR-NNNN-slug.yaml` and `SPEC-NNNN-slug.yaml`.
 - Use `sync` after file edits done outside the CLI.
 - Delete only when the user explicitly wants removal; otherwise prefer updating status/body to preserve history.
+- If the user asks for ADRs or SPECs together with features, boundaries, freeze, implementation, migration, or release work, escalate to `$ssot-decision-to-scope` or `$ssot-e2e-change-orchestrator` instead of stretching this CRUD skill across phases.
 
 ## Examples
 

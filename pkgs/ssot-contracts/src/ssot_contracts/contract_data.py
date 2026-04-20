@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 CONTRACT_DATA = {
-    "schema_version": "0.1.0",
+    "schema_version": "0.2.0",
     "output_formats": ["json", "csv", "df", "yaml", "toml"],
     "entity_sections": [
         {"key": "features", "label": "Features"},
@@ -40,6 +40,8 @@ CONTRACT_DATA = {
         "risks": "risk",
         "boundaries": "boundary",
         "releases": "release",
+        "adrs": "adr",
+        "specs": "spec",
     },
     "choice_sets": {
         "feature_implementation_statuses": ["absent", "partial", "implemented"],

@@ -88,6 +88,13 @@ def _inline_body_payload(kind: str, *, title: str, body: str) -> dict[str, Any]:
     return normalize_document_payload(kind, payload)
 
 
+def _apply_spec_adr_ids(payload: dict[str, Any], adr_ids: list[str] | None) -> dict[str, Any]:
+    if adr_ids is None:
+        return payload
+    payload["adr_ids"] = list(adr_ids)
+    return payload
+
+
 def _resolve_authored_payload(
     kind: str,
     *,
@@ -135,6 +142,7 @@ def _build_authored_row(
     status: str | None = None,
     note: str | None = None,
     spec_kind: str | None = None,
+    adr_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     row = {
         "id": normalize_document_id(kind, number),
@@ -157,6 +165,7 @@ def _build_authored_row(
     if kind == "spec":
         default_kind = "local-policy" if origin == "repo-local" else "governance"
         row["kind"] = spec_kind or default_kind
+        row["adr_ids"] = list(adr_ids or [])
     return row
 
 
@@ -186,6 +195,7 @@ def _manifest_row_to_registry_row(registry: dict[str, Any], kind: str, manifest_
     row["status_notes"] = manifest_entry.get("status_notes", [])
     if kind == "spec":
         row["kind"] = manifest_entry.get("kind", "normative")
+        row["adr_ids"] = manifest_entry.get("adr_ids", [])
     return row
 
 
@@ -298,6 +308,7 @@ def create_document(
     status: str | None = None,
     note: str | None = None,
     spec_kind: str | None = None,
+    adr_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     if origin not in {"repo-local", "ssot-core", "ssot-origin"}:
         raise ValidationError(f"Unsupported origin '{origin}' for {_document_label(kind)} creation")
@@ -309,6 +320,8 @@ def create_document(
         validate_create_status(status)
     if kind == "spec" and spec_kind is not None and spec_kind not in SPEC_KINDS:
         raise ValidationError(f"Spec kind must be one of {sorted(SPEC_KINDS)}")
+    if kind != "spec" and adr_ids is not None:
+        raise ValidationError(f"{_document_label(kind)} does not support adr_ids")
 
     registry_path, repo_root, registry = load_registry(path)
     repo_kind = _repo_kind(registry)
@@ -334,6 +347,7 @@ def create_document(
         )
 
     authored_payload = _resolve_authored_payload(kind, title=title, body=body, body_file=body_file, require_one=True)
+    authored_payload = _apply_spec_adr_ids(authored_payload, adr_ids) if kind == "spec" else authored_payload
     provisional = _build_authored_row(
         registry,
         kind,
@@ -345,6 +359,7 @@ def create_document(
         status=status,
         note=note,
         spec_kind=spec_kind,
+        adr_ids=authored_payload.get("adr_ids") if kind == "spec" else None,
     )
     content_sha256 = _write_document(repo_root, provisional, authored_payload, kind)
     row = _build_authored_row(
@@ -358,6 +373,7 @@ def create_document(
         status=status,
         note=note,
         spec_kind=spec_kind,
+        adr_ids=authored_payload.get("adr_ids") if kind == "spec" else None,
     )
 
     section = section_for_document_kind(kind)
@@ -383,6 +399,7 @@ def update_document(
     status: str | None = None,
     note: str | None = None,
     spec_kind: str | None = None,
+    adr_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     registry_path, repo_root, registry = load_registry(path)
     lookup = _row_lookup(registry, kind)
@@ -398,6 +415,8 @@ def update_document(
         raise ValidationError(f"{_document_label(kind)} status must be one of {list(DOCUMENT_STATUSES)}")
     if kind == "spec" and spec_kind is not None and spec_kind not in SPEC_KINDS:
         raise ValidationError(f"Spec kind must be one of {sorted(SPEC_KINDS)}")
+    if kind != "spec" and adr_ids is not None:
+        raise ValidationError(f"{_document_label(kind)} does not support adr_ids")
 
     if title is not None:
         row["title"] = title
@@ -407,6 +426,8 @@ def update_document(
         append_status_note(row, status=row.get("status", "draft"), note=note)
     if kind == "spec" and spec_kind is not None:
         row["kind"] = spec_kind
+    if kind == "spec" and adr_ids is not None:
+        row["adr_ids"] = list(adr_ids)
 
     if body is not None and body_file is not None:
         raise ValidationError(f"{_document_label(kind)} accepts only one of body or body_file")
@@ -416,6 +437,8 @@ def update_document(
         authored_payload = _inline_body_payload(kind, title=row["title"], body=body)
     else:
         authored_payload = _load_authored_payload(kind, body_file)
+    if kind == "spec":
+        authored_payload = _apply_spec_adr_ids(authored_payload, row.get("adr_ids", []))
 
     row["content_sha256"] = _write_document(repo_root, row, authored_payload, kind)
     row["package_version"] = registry.get("tooling", {}).get("ssot_registry_version", __version__)
@@ -425,6 +448,56 @@ def update_document(
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section_for_document_kind(kind),
+        "document": deepcopy(row),
+    }
+
+
+def add_spec_adr_links(path: str | Path, spec_id: str, adr_ids: list[str]) -> dict[str, Any]:
+    registry_path, repo_root, registry = load_registry(path)
+    try:
+        row = _row_lookup(registry, "spec")[spec_id]
+    except KeyError as exc:
+        raise ValueError(f"Unknown spec id: {spec_id}") from exc
+
+    assert_mutable_document(row, label="spec", document_id=spec_id)
+    current = list(row.get("adr_ids", []))
+    for adr_id in adr_ids:
+        if adr_id not in current:
+            current.append(adr_id)
+    row["adr_ids"] = current
+    payload = normalize_document_payload("spec", load_document_yaml(repo_root / row["path"]))
+    payload = _apply_spec_adr_ids(payload, current)
+    row["content_sha256"] = _write_document(repo_root, row, payload, "spec")
+    row["package_version"] = registry.get("tooling", {}).get("ssot_registry_version", __version__)
+    _sort_document_rows(registry, "spec")
+    _validate_and_save(registry_path, repo_root, registry, f"linking spec {spec_id}")
+    return {
+        "passed": True,
+        "registry_path": registry_path.as_posix(),
+        "section": section_for_document_kind("spec"),
+        "document": deepcopy(row),
+    }
+
+
+def remove_spec_adr_links(path: str | Path, spec_id: str, adr_ids: list[str]) -> dict[str, Any]:
+    registry_path, repo_root, registry = load_registry(path)
+    try:
+        row = _row_lookup(registry, "spec")[spec_id]
+    except KeyError as exc:
+        raise ValueError(f"Unknown spec id: {spec_id}") from exc
+
+    assert_mutable_document(row, label="spec", document_id=spec_id)
+    row["adr_ids"] = [adr_id for adr_id in row.get("adr_ids", []) if adr_id not in set(adr_ids)]
+    payload = normalize_document_payload("spec", load_document_yaml(repo_root / row["path"]))
+    payload = _apply_spec_adr_ids(payload, row["adr_ids"])
+    row["content_sha256"] = _write_document(repo_root, row, payload, "spec")
+    row["package_version"] = registry.get("tooling", {}).get("ssot_registry_version", __version__)
+    _sort_document_rows(registry, "spec")
+    _validate_and_save(registry_path, repo_root, registry, f"unlinking spec {spec_id}")
+    return {
+        "passed": True,
+        "registry_path": registry_path.as_posix(),
+        "section": section_for_document_kind("spec"),
         "document": deepcopy(row),
     }
 
@@ -543,6 +616,7 @@ def _sync_manifest_document(
         or current.get("superseded_by") != expected_row["superseded_by"]
         or current.get("status_notes") != expected_row["status_notes"]
         or (kind == "spec" and current.get("kind") != expected_row["kind"])
+        or (kind == "spec" and current.get("adr_ids") != expected_row["adr_ids"])
     )
     if needs_write:
         target.write_bytes(payload)

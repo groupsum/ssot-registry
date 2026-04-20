@@ -1,0 +1,5 @@
+{
+  "feature_id": "feat:cli.flag.adr-ids",
+  "tier": "T1",
+  "test_path": "tests/integration/test_cli_spec.py"
+}

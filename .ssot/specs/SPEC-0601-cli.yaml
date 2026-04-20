@@ -8,12 +8,13 @@ status: "draft"
 origin: "ssot-origin"
 decision_date: null
 tags: []
-summary: "Primary distribution: `ssot-cli`, including CLI body source selection for ADR and SPEC authoring."
+summary: "Primary distribution: `ssot-cli`"
 supersedes: []
 superseded_by: []
 status_notes: []
 references: []
 spec_kind: "operational"
+adr_ids: []
 body: |-
   Primary distribution: `ssot-cli`
   

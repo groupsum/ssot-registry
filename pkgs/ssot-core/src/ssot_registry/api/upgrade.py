@@ -44,6 +44,8 @@ MIGRATION_RELEASE_WINDOWS = {
     (8, 9): "0.2.5->0.2.6",
     (9, 10): "0.2.6->0.2.7",
     (10, "0.1.0"): "0.2.7->0.2.7",
+    (10, "0.2.0"): "0.2.7->0.2.10",
+    ("0.1.0", "0.2.0"): "0.2.10->0.2.10",
 }
 
 
@@ -449,9 +451,40 @@ def migrate_v10_to_v0_1_0(
     previous_version: str,
     target_version: str,
 ) -> dict[str, Any]:
-    _ = repo_root, previous_version, target_version
     migrated = deepcopy(registry)
     migrated["schema_version"] = SCHEMA_VERSION
+    for spec in migrated.get("specs", []):
+        spec.setdefault("adr_ids", [])
+        full_path = repo_root / spec["path"]
+        if full_path.exists():
+            payload = normalize_document_payload("spec", load_document_yaml(full_path))
+            payload["adr_ids"] = list(spec["adr_ids"])
+            validate_document_payload("spec", payload, expected_row=spec)
+            full_path.write_text(dump_document_text(payload, full_path), encoding="utf-8", newline="\n")
+            spec["content_sha256"] = sha256_normalized_text_path(full_path)
+            spec["package_version"] = target_version
+    return migrated
+
+
+def migrate_v0_1_0_to_v0_2_0(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    migrated = deepcopy(registry)
+    migrated["schema_version"] = SCHEMA_VERSION
+    for spec in migrated.get("specs", []):
+        spec.setdefault("adr_ids", [])
+        full_path = repo_root / spec["path"]
+        if full_path.exists():
+            payload = normalize_document_payload("spec", load_document_yaml(full_path))
+            payload["adr_ids"] = list(spec["adr_ids"])
+            validate_document_payload("spec", payload, expected_row=spec)
+            full_path.write_text(dump_document_text(payload, full_path), encoding="utf-8", newline="\n")
+            spec["content_sha256"] = sha256_normalized_text_path(full_path)
+            spec["package_version"] = target_version
     return migrated
 
 
@@ -572,8 +605,19 @@ def upgrade_registry(
         )
         schema_migrations.append("migrate_v10_to_v0_1_0")
         migrations.append(_migration_window_label(10, SCHEMA_VERSION))
+    elif source_schema == "0.1.0":
+        working = migrate_v0_1_0_to_v0_2_0(
+            working,
+            repo_root,
+            previous_version=source_tooling_version,
+            target_version=target_version,
+        )
+        schema_migrations.append("migrate_v0_1_0_to_v0_2_0")
+        migrations.append(_migration_window_label("0.1.0", SCHEMA_VERSION))
     elif source_schema != SCHEMA_VERSION:
-        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10 or {SCHEMA_VERSION}")
+        raise RegistryError(
+            f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10, 0.1.0 or {SCHEMA_VERSION}"
+        )
 
     normalized_current = _normalize_current_registry(working)
 

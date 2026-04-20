@@ -27,7 +27,8 @@ Use this skill when the user is working on proof chains: what a feature claims, 
 - Evidence should describe an artifact path the repo can actually carry or regenerate.
 - When a claim gains or loses supporting evidence, review linked tests at the same time; broken proof chains usually show up as stale links.
 - Prefer unlink over delete when historical claim or evidence records should remain visible.
-- If the user is trying to certify or publish a target, switch from isolated claim work to the E2E release-closure flow.
+- If the user is trying to certify or publish a target, switch from isolated claim work to `$ssot-proof-chain-and-certification`.
+- If the same request also includes ADRs, specs, features, boundaries, freeze, or implementation work, escalate to `$ssot-e2e-change-orchestrator`.
 
 ## Example
 

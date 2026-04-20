@@ -26,7 +26,8 @@
     "origin",
     "summary",
     "body",
-    "spec_kind"
+    "spec_kind",
+    "adr_ids"
   ],
   "properties": {
     "schema_version": {
@@ -92,6 +93,9 @@
         "governance",
         "local-policy"
       ]
+    },
+    "adr_ids": {
+      "$ref": "#/$defs/normalizedIdList"
     },
     "supersedes": {
       "$ref": "#/$defs/normalizedIdList"

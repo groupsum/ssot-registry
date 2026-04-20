@@ -36,3 +36,4 @@ body: |-
   
   The limit tightens validation only. Existing registries remain compatible when their ids are already within the bound.
 spec_kind: "governance"
+adr_ids: []

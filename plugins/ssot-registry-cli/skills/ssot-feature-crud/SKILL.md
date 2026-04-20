@@ -26,7 +26,9 @@ Use this skill for feature-centered SSOT operations. Features are the targetable
 - Prefer `feature plan` for roadmap changes and `feature lifecycle set` for policy/support changes.
 - When retiring a feature, supply `--replacement-feature-id` if there is a successor and keep the old feature rather than deleting it.
 - Prefer delete only for mistaken rows that should not remain in history.
-- If the user asks whether a feature is release-ready, escalate into claim/test/evidence checks or the E2E release-closure skill.
+- If the user asks for ADR + SPEC + feature setup, escalate to `$ssot-decision-to-scope`.
+- If the user asks for features plus boundary freeze, escalate to `$ssot-scope-to-frozen-boundary`.
+- If the user asks whether a feature is release-ready or bundles proof or release work into the request, escalate to `$ssot-proof-chain-and-certification` or `$ssot-e2e-change-orchestrator`.
 
 ## Examples
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSOT Scope To Frozen Boundary"
+  short_description: "Turn planned scope into a frozen SSOT boundary."
+  default_prompt: "Use $ssot-scope-to-frozen-boundary to take planned features and freeze a delivery boundary in this SSOT repo."

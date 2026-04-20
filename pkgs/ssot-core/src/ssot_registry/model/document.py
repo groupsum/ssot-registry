@@ -46,6 +46,25 @@ class StatusNote(TypedDict, total=False):
     reason: str
 
 
+class SpecRow(TypedDict, total=False):
+    id: str
+    number: int
+    slug: str
+    title: str
+    path: str
+    origin: str
+    managed: bool
+    immutable: bool
+    package_version: str
+    content_sha256: str
+    kind: str
+    status: str
+    adr_ids: list[str]
+    supersedes: list[str]
+    superseded_by: list[str]
+    status_notes: list[StatusNote]
+
+
 def format_document_number(number: int) -> str:
     return f"{number:04d}"
 

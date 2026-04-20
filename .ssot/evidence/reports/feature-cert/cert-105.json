@@ -1,0 +1,5 @@
+{
+  "feature_id": "feat:schema.spec-adr-ids",
+  "tier": "T1",
+  "test_path": "tests/unit/test_spec_adr_ids_validation.py"
+}

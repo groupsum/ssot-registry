@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSOT Decision To Scope"
+  short_description: "Turn a proposed change into governed docs and features."
+  default_prompt: "Use $ssot-decision-to-scope to create or update ADRs, specs, and target features for this SSOT change before boundary freeze."
