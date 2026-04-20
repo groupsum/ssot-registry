@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:document.inline-body-normalization",
+  "claim_id": "clm:cert.091.t1",
+  "test_id": "tst:cert.091",
+  "test_path": "tests/unit/test_document_yaml.py"
+}

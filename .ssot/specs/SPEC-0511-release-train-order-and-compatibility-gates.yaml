@@ -20,13 +20,15 @@ body: |-
   1. `ssot-contracts`
   2. `ssot-views`
   3. `ssot-codegen`
-  4. `ssot-registry`
+  4. `ssot-core`
   5. `ssot-cli`
   6. `ssot-tui`
+  7. `ssot-registry`
   
   ## Compatibility Gates
   
-  - Core packages SHALL share one version.
-  - Core package dependencies SHALL pin the shared core version exactly.
-  - `ssot-cli` and `ssot-tui` SHALL depend on a compatible `ssot-registry` range.
+  - `ssot-contracts`, `ssot-views`, `ssot-codegen`, `ssot-core`, and `ssot-registry` SHALL share one version.
+  - Dependencies among those lockstep packages SHALL pin the shared core version exactly.
+  - `ssot-cli` and `ssot-tui` SHALL depend on compatible ranges for `ssot-core` and `ssot-contracts`.
+  - `ssot-registry` SHALL bundle the canonical runtime by depending on `ssot-core`, `ssot-cli`, and `ssot-contracts`.
   - Release automation SHALL validate train order and dependency constraints before tags are created.

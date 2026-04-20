@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:cli.validate-surface",
+  "claim_id": "clm:cert.090.t1",
+  "test_id": "tst:cert.090",
+  "test_path": "tests/integration/test_cli_validate.py"
+}

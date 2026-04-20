@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:schema.validation-report",
+  "claim_id": "clm:cert.103.t1",
+  "test_id": "tst:cert.103",
+  "test_path": "tests/unit/test_schema_inventory_certification.py"
+}

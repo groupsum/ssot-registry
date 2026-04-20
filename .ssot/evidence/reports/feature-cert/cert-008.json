@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:boundary.package-ownership.views",
+  "claim_id": "clm:cert.008.t1",
+  "test_id": "tst:cert.008",
+  "test_path": "tests/unit/test_workspace_package_dag.py"
+}

@@ -16,6 +16,7 @@ references: []
 body: |-
   Python package versioning SHALL follow a hybrid model.
   
-  - `ssot-contracts`, `ssot-views`, `ssot-codegen`, and `ssot-registry` SHALL remain in lockstep.
+  - `ssot-contracts`, `ssot-views`, `ssot-codegen`, `ssot-core`, and `ssot-registry` SHALL remain in lockstep.
   - `ssot-cli` and `ssot-tui` SHALL version independently.
-  - Surface packages SHALL depend on compatible released `ssot-registry` ranges rather than exact lockstep versions.
+  - Surface packages SHALL depend on compatible released `ssot-core` and `ssot-contracts` ranges rather than exact lockstep versions.
+  - The umbrella `ssot-registry` package SHALL remain the published bundle that composes the canonical runtime and primary CLI distributions.

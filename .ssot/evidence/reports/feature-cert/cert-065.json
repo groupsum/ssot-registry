@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:cli.flag.slug",
+  "claim_id": "clm:cert.065.t1",
+  "test_id": "tst:cert.065",
+  "test_path": "tests/integration/test_cli_flag_gap_coverage.py"
+}

@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:cli.release-surface",
+  "claim_id": "clm:cert.085.t1",
+  "test_id": "tst:cert.085",
+  "test_path": "tests/integration/test_cli_release.py"
+}

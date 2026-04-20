@@ -86,6 +86,84 @@ class DocumentYamlTests(unittest.TestCase):
                     body_file=body,
                 )
 
+    def test_inline_body_create_and_update_round_trip(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            initialize_repo(repo, repo_id="repo:inline-doc", repo_name="inline-doc", version="1.0.0")
+
+            create_result = create_document(
+                repo,
+                "adr",
+                title="Inline decision",
+                slug="inline-decision",
+                body="Inline ADR body.",
+            )
+            self.assertTrue(create_result["passed"])
+
+            _registry_path, repo_root, registry = load_registry(repo)
+            row = next(row for row in registry["adrs"] if row["id"] == "adr:1000")
+            payload = load_document_yaml(repo_root / row["path"])
+            self.assertEqual("Inline ADR body.", payload["body"])
+
+            update_result = update_document(repo, "adr", "adr:1000", body="Updated inline ADR body.")
+            self.assertTrue(update_result["passed"])
+            updated_payload = load_document_yaml(repo_root / row["path"])
+            self.assertEqual("Updated inline ADR body.", updated_payload["body"])
+
+    def test_create_document_requires_exactly_one_body_source(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            initialize_repo(repo, repo_id="repo:body-source", repo_name="body-source", version="1.0.0")
+
+            body_file = repo / "adr-body.yaml"
+            body_file.write_text('body: |-\n  Local ADR body.\n', encoding="utf-8")
+
+            with self.assertRaisesRegex(Exception, r"requires exactly one of body or body_file"):
+                create_document(repo, "adr", title="Missing body", slug="missing-body")
+
+            with self.assertRaisesRegex(Exception, r"accepts only one of body or body_file"):
+                create_document(
+                    repo,
+                    "adr",
+                    title="Conflicting body",
+                    slug="conflicting-body",
+                    body="Inline body",
+                    body_file=body_file,
+                )
+
+    def test_update_document_rejects_conflicting_body_sources_and_preserves_existing_body(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            initialize_repo(repo, repo_id="repo:update-body", repo_name="update-body", version="1.0.0")
+
+            create_result = create_document(
+                repo,
+                "spec",
+                title="Inline spec",
+                slug="inline-spec",
+                body="Initial spec body.",
+                spec_kind="operational",
+            )
+            self.assertTrue(create_result["passed"])
+
+            body_file = repo / "spec-body.yaml"
+            body_file.write_text('body: |-\n  Replacement SPEC body.\n', encoding="utf-8")
+
+            with self.assertRaisesRegex(Exception, r"accepts only one of body or body_file"):
+                update_document(repo, "spec", "spc:1000", body="Inline", body_file=body_file)
+
+            update_result = update_document(repo, "spec", "spc:1000", title="Inline spec updated")
+            self.assertTrue(update_result["passed"])
+
+            _registry_path, repo_root, registry = load_registry(repo)
+            row = next(row for row in registry["specs"] if row["id"] == "spc:1000")
+            payload = load_document_yaml(repo_root / row["path"])
+            self.assertEqual("Inline spec updated", payload["title"])
+            self.assertEqual("Initial spec body.", payload["body"])
+
 
 if __name__ == "__main__":
     unittest.main()

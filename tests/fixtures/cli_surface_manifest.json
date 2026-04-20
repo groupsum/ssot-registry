@@ -2,6 +2,7 @@
   "flags_by_path": {
     "adr": [],
     "adr create": [
+      "--body",
       "--body-file",
       "--note",
       "--number",
@@ -37,6 +38,7 @@
     ],
     "adr sync": [],
     "adr update": [
+      "--body",
       "--body-file",
       "--id",
       "--note",
@@ -185,8 +187,8 @@
       "--note",
       "--replacement-feature-id",
       "--requires",
-      "--spec-ids",
       "--slot",
+      "--spec-ids",
       "--target-lifecycle-stage",
       "--test-ids",
       "--title"
@@ -461,6 +463,7 @@
     ],
     "spec": [],
     "spec create": [
+      "--body",
       "--body-file",
       "--kind",
       "--note",
@@ -497,6 +500,7 @@
     ],
     "spec sync": [],
     "spec update": [
+      "--body",
       "--body-file",
       "--id",
       "--kind",

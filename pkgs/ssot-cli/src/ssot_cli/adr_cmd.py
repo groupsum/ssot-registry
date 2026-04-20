@@ -33,7 +33,8 @@ def register_adr(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(create)
     create.add_argument("--title", required=True, help="Human-readable ADR title shown to operators and reviewers.")
     create.add_argument("--slug", required=True, help="Stable slug used to derive the ADR document id and filename.")
-    create.add_argument("--body-file", required=True, help="Path to the ADR markdown body to import into the registry.")
+    create.add_argument("--body", default=None, help="Inline ADR body text to persist without a separate authored payload file.")
+    create.add_argument("--body-file", default=None, help="Path to the ADR YAML or JSON body payload to import into the registry.")
     create.add_argument("--number", type=int, default=None, help="Explicit ADR number to assign instead of auto-allocation.")
     create.add_argument("--status", choices=["draft", "in_review", "accepted", "rejected", "withdrawn", "superseded", "retired"], default="draft", help="Current decision lifecycle state for the ADR.")
     create.add_argument("--note", default=None, help="Lifecycle note that explains review, acceptance, or retirement context.")
@@ -58,6 +59,7 @@ def register_adr(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(update)
     update.add_argument("--id", required=True, help="ADR id to update.")
     update.add_argument("--title", default=None, help="Replacement ADR title.")
+    update.add_argument("--body", default=None, help="Replacement inline ADR body text.")
     update.add_argument("--body-file", default=None, help="Replacement ADR body file to ingest.")
     update.add_argument("--status", choices=["draft", "in_review", "accepted", "rejected", "withdrawn", "superseded", "retired"], default=None, help="New lifecycle state for the ADR.")
     update.add_argument("--note", default=None, help="Updated lifecycle note or rationale.")
@@ -114,6 +116,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "adr",
         title=args.title,
         slug=args.slug,
+        body=args.body,
         body_file=args.body_file,
         number=args.number,
         origin=args.origin,
@@ -132,7 +135,7 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
-    changes = compact_dict({"title": args.title, "body_file": args.body_file, "status": args.status, "note": args.note})
+    changes = compact_dict({"title": args.title, "body": args.body, "body_file": args.body_file, "status": args.status, "note": args.note})
     if not changes:
         raise ValueError("At least one update field is required")
     return update_document(args.path, "adr", args.id, **changes)

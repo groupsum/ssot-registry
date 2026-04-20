@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:cli.upgrade-surface",
+  "claim_id": "clm:cert.089.t1",
+  "test_id": "tst:cert.089",
+  "test_path": "tests/integration/test_cli_upgrade.py"
+}

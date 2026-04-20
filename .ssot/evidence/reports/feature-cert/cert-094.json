@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:schema.adr",
+  "claim_id": "clm:cert.094.t1",
+  "test_id": "tst:cert.094",
+  "test_path": "tests/unit/test_schema_inventory_certification.py"
+}

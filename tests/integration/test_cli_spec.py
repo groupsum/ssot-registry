@@ -165,6 +165,61 @@ class CliSpecTests(unittest.TestCase):
                 reservation_rows,
             )
 
+    def test_spec_create_and_update_support_inline_body(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            init = run_cli("init", str(repo), "--repo-id", "repo:spec-inline", "--repo-name", "spec-inline", "--version", "1.0.0")
+            self.assertEqual(init.returncode, 0, init.stderr)
+
+            create = run_cli(
+                "spec",
+                "create",
+                str(repo),
+                "--title",
+                "Inline spec",
+                "--slug",
+                "inline-spec",
+                "--body",
+                "Inline SPEC body.",
+                "--kind",
+                "operational",
+            )
+            self.assertEqual(create.returncode, 0, create.stderr)
+
+            update = run_cli("spec", "update", str(repo), "--id", "spc:1000", "--body", "Updated inline SPEC body.")
+            self.assertEqual(update.returncode, 0, update.stderr)
+
+            get_result = run_cli("spec", "get", str(repo), "--id", "spc:1000")
+            self.assertEqual(get_result.returncode, 0, get_result.stderr)
+            self.assertEqual(json.loads(get_result.stdout)["title"], "Inline spec")
+
+    def test_spec_cli_rejects_conflicting_body_sources(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            init = run_cli("init", str(repo), "--repo-id", "repo:spec-conflict", "--repo-name", "spec-conflict", "--version", "1.0.0")
+            self.assertEqual(init.returncode, 0, init.stderr)
+
+            body = repo / "spec-body.yaml"
+            body.write_text('body: |-\n  Local spec body.\n', encoding="utf-8")
+
+            conflict = run_cli(
+                "spec",
+                "create",
+                str(repo),
+                "--title",
+                "Conflicting spec",
+                "--slug",
+                "conflicting-spec",
+                "--body",
+                "Inline SPEC body.",
+                "--body-file",
+                str(body),
+            )
+            self.assertEqual(conflict.returncode, 1)
+            self.assertIn("accepts only one of body or body_file", conflict.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

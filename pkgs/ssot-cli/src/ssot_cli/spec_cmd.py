@@ -33,7 +33,8 @@ def register_spec(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(create)
     create.add_argument("--title", required=True, help="Human-readable SPEC title.")
     create.add_argument("--slug", required=True, help="Stable slug used to derive the SPEC id and filename.")
-    create.add_argument("--body-file", required=True, help="Path to the SPEC markdown body to import.")
+    create.add_argument("--body", default=None, help="Inline SPEC body text to persist without a separate authored payload file.")
+    create.add_argument("--body-file", default=None, help="Path to the SPEC YAML or JSON body payload to import.")
     create.add_argument("--number", type=int, default=None, help="Explicit SPEC number to assign instead of auto-allocation.")
     create.add_argument("--origin", choices=["repo-local", "ssot-origin", "ssot-core"], default="repo-local", help="Source authority that owns this SPEC.")
     create.add_argument("--kind", choices=["normative", "operational", "governance", "local-policy"], default="local-policy", help="Contract role the SPEC plays for operators and implementers.")
@@ -55,6 +56,7 @@ def register_spec(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(update)
     update.add_argument("--id", required=True, help="SPEC id to update.")
     update.add_argument("--title", default=None, help="Replacement SPEC title.")
+    update.add_argument("--body", default=None, help="Replacement inline SPEC body text.")
     update.add_argument("--body-file", default=None, help="Replacement SPEC body file to ingest.")
     update.add_argument("--kind", choices=["normative", "operational", "governance", "local-policy"], default=None, help="Replacement contract kind.")
     update.add_argument("--status", choices=["draft", "in_review", "accepted", "rejected", "withdrawn", "superseded", "retired"], default=None, help="New lifecycle state.")
@@ -104,6 +106,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "spec",
         title=args.title,
         slug=args.slug,
+        body=args.body,
         body_file=args.body_file,
         number=args.number,
         origin=args.origin,
@@ -123,7 +126,7 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
-    changes = compact_dict({"title": args.title, "body_file": args.body_file, "spec_kind": args.kind, "status": args.status, "note": args.note})
+    changes = compact_dict({"title": args.title, "body": args.body, "body_file": args.body_file, "spec_kind": args.kind, "status": args.status, "note": args.note})
     if not changes:
         raise ValueError("At least one update field is required")
     return update_document(args.path, "spec", args.id, **changes)

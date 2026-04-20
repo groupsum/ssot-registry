@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:schema.release-snapshot",
+  "claim_id": "clm:cert.101.t1",
+  "test_id": "tst:cert.101",
+  "test_path": "tests/unit/test_schema_inventory_certification.py"
+}

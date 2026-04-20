@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:cli.document-body-source-selection",
+  "claim_id": "clm:cert.016.t1",
+  "test_id": "tst:cert.016",
+  "test_path": "tests/integration/test_cli_adr.py"
+}

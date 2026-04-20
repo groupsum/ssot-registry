@@ -79,6 +79,34 @@ def _load_authored_payload(kind: str, body_file: str | Path) -> dict[str, Any]:
     return payload
 
 
+def _inline_body_payload(kind: str, *, title: str, body: str) -> dict[str, Any]:
+    if not isinstance(body, str) or not body.strip():
+        raise ValidationError(f"{_document_label(kind)} body must be a non-empty string")
+    payload: dict[str, Any] = {"kind": kind, "title": title, "body": body}
+    if kind == "spec":
+        payload["spec_kind"] = "local-policy"
+    return normalize_document_payload(kind, payload)
+
+
+def _resolve_authored_payload(
+    kind: str,
+    *,
+    title: str,
+    body: str | None = None,
+    body_file: str | Path | None = None,
+    require_one: bool,
+) -> dict[str, Any]:
+    if body is not None and body_file is not None:
+        raise ValidationError(f"{_document_label(kind)} accepts only one of body or body_file")
+    if body is not None:
+        return _inline_body_payload(kind, title=title, body=body)
+    if body_file is not None:
+        return _load_authored_payload(kind, body_file)
+    if require_one:
+        raise ValidationError(f"{_document_label(kind)} requires exactly one of body or body_file")
+    raise ValidationError(f"{_document_label(kind)} expected body content")
+
+
 def _write_document(repo_root: Path, row: dict[str, Any], payload: dict[str, Any], kind: str) -> str:
     document_payload = build_document_payload(kind, row, document_body_from_payload(kind, payload))
     validate_document_payload(kind, document_payload, expected_row=row)
@@ -262,7 +290,8 @@ def create_document(
     *,
     title: str,
     slug: str,
-    body_file: str | Path,
+    body: str | None = None,
+    body_file: str | Path | None = None,
     number: int | None = None,
     origin: str = "repo-local",
     reserve_range: str | None = None,
@@ -304,7 +333,7 @@ def create_document(
             f"{_document_label(kind)} number {number} must use reservation owned by {origin}; got {reservation.get('owner')}"
         )
 
-    authored_payload = _load_authored_payload(kind, body_file)
+    authored_payload = _resolve_authored_payload(kind, title=title, body=body, body_file=body_file, require_one=True)
     provisional = _build_authored_row(
         registry,
         kind,
@@ -349,6 +378,7 @@ def update_document(
     document_id: str,
     *,
     title: str | None = None,
+    body: str | None = None,
     body_file: str | Path | None = None,
     status: str | None = None,
     note: str | None = None,
@@ -378,8 +408,12 @@ def update_document(
     if kind == "spec" and spec_kind is not None:
         row["kind"] = spec_kind
 
-    if body_file is None:
+    if body is not None and body_file is not None:
+        raise ValidationError(f"{_document_label(kind)} accepts only one of body or body_file")
+    if body is None and body_file is None:
         authored_payload = normalize_document_payload(kind, load_document_yaml(repo_root / row["path"]))
+    elif body is not None:
+        authored_payload = _inline_body_payload(kind, title=row["title"], body=body)
     else:
         authored_payload = _load_authored_payload(kind, body_file)
 

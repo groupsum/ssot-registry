@@ -39,6 +39,7 @@ def _default_prog() -> str:
 def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=prog or _default_prog(),
+        allow_abbrev=False,
         description=(
             "Operate an SSOT registry that tracks architecture documents, scoped delivery boundaries, "
             "implementation features, verification artifacts, and publication-ready releases."

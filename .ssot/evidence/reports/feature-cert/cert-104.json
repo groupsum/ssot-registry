@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:workspace.package-dependency-dag",
+  "claim_id": "clm:cert.104.t1",
+  "test_id": "tst:cert.104",
+  "test_path": "tests/unit/test_workspace_package_dag.py"
+}

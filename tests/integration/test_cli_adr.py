@@ -146,6 +146,63 @@ class CliAdrTests(unittest.TestCase):
                 reservation_rows,
             )
 
+    def test_adr_create_and_update_support_inline_body(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            init = run_cli("init", str(repo), "--repo-id", "repo:adr-inline", "--repo-name", "adr-inline", "--version", "1.0.0")
+            self.assertEqual(init.returncode, 0, init.stderr)
+
+            create = run_cli(
+                "adr",
+                "create",
+                str(repo),
+                "--title",
+                "Inline ADR",
+                "--slug",
+                "inline-adr",
+                "--body",
+                "Inline ADR body.",
+            )
+            self.assertEqual(create.returncode, 0, create.stderr)
+
+            update = run_cli("adr", "update", str(repo), "--id", "adr:1000", "--body", "Updated inline ADR body.")
+            self.assertEqual(update.returncode, 0, update.stderr)
+
+            get_result = run_cli("adr", "get", str(repo), "--id", "adr:1000")
+            self.assertEqual(get_result.returncode, 0, get_result.stderr)
+            self.assertEqual(json.loads(get_result.stdout)["title"], "Inline ADR")
+
+    def test_adr_cli_rejects_missing_or_conflicting_body_sources(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            init = run_cli("init", str(repo), "--repo-id", "repo:adr-conflict", "--repo-name", "adr-conflict", "--version", "1.0.0")
+            self.assertEqual(init.returncode, 0, init.stderr)
+
+            body = repo / "adr-body.yaml"
+            body.write_text('body: |-\n  Local ADR body.\n', encoding="utf-8")
+
+            missing = run_cli("adr", "create", str(repo), "--title", "No body", "--slug", "no-body")
+            self.assertEqual(missing.returncode, 1)
+            self.assertIn("requires exactly one of body or body_file", missing.stdout)
+
+            conflict = run_cli(
+                "adr",
+                "create",
+                str(repo),
+                "--title",
+                "Conflicting body",
+                "--slug",
+                "conflicting-body",
+                "--body",
+                "Inline ADR body.",
+                "--body-file",
+                str(body),
+            )
+            self.assertEqual(conflict.returncode, 1)
+            self.assertIn("accepts only one of body or body_file", conflict.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

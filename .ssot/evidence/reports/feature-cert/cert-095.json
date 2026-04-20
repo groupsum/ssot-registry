@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "feature_id": "feat:schema.boundary-snapshot",
+  "claim_id": "clm:cert.095.t1",
+  "test_id": "tst:cert.095",
+  "test_path": "tests/unit/test_schema_inventory_certification.py"
+}
