@@ -112,10 +112,10 @@
   },
   "features": [
     {
-      "id": "feat:schema.entity-id-max-lengths",
-      "title": "Schema entity id max lengths",
-      "description": "Add a shared maximum normalized-id length across runtime validators and shipped schemas.",
-      "implementation_status": "partial",
+      "id": "feat:api.document-body-source-selection",
+      "title": "API document body source selection",
+      "description": "Expose mutually exclusive body and body_file inputs on create_document and update_document with create/update-specific validation rules.",
+      "implementation_status": "absent",
       "lifecycle": {
         "stage": "active",
         "replacement_feature_ids": [],
@@ -128,14 +128,2211 @@
         "target_lifecycle_stage": "active"
       },
       "spec_ids": [
+        "spc:0515",
+        "spc:0612"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": [
+        "feat:document.inline-body-normalization"
+      ]
+    },
+    {
+      "id": "feat:boundary.package-ownership.cli",
+      "title": "Package ownership boundary for ssot-cli",
+      "description": "Track the package ownership boundary for `ssot-cli`.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0506",
+        "spc:0601"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:boundary.package-ownership.codegen",
+      "title": "Package ownership boundary for ssot-codegen",
+      "description": "Track the package ownership boundary for `ssot-codegen`.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0503",
+        "spc:0504"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:boundary.package-ownership.contracts",
+      "title": "Package ownership boundary for ssot-contracts",
+      "description": "Track the package ownership boundary for `ssot-contracts`.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0501",
+        "spc:0514"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:boundary.package-ownership.core",
+      "title": "Package ownership boundary for ssot-core",
+      "description": "Track the package ownership boundary for `ssot-core` runtime behavior.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0507",
+        "spc:0612"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:boundary.package-ownership.registry",
+      "title": "Package ownership boundary for ssot-registry",
+      "description": "Track the package ownership boundary for the umbrella `ssot-registry` distribution.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0507",
+        "spc:0511"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:boundary.package-ownership.tui",
+      "title": "Package ownership boundary for ssot-tui",
+      "description": "Track the package ownership boundary for `ssot-tui`.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0506"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:boundary.package-ownership.views",
+      "title": "Package ownership boundary for ssot-views",
+      "description": "Track the package ownership boundary for `ssot-views`.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0502"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:boundary.package-set",
+      "title": "Package-set boundary",
+      "description": "Track the governed workspace package set boundary as its own feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0500"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:boundary.release-train",
+      "title": "Release-train boundary",
+      "description": "Track the release-train boundary across workspace packages as its own feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0500",
+        "spc:0511"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:boundary.runtime",
+      "title": "Runtime boundary",
+      "description": "Track the runtime behavior boundary as its own feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0507",
+        "spc:0612"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:boundary.surface-package",
+      "title": "Surface-package boundary",
+      "description": "Track the surface-package boundary for CLI and TUI distributions as its own feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0506",
+        "spc:0601"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.adr-surface",
+      "title": "CLI adr command surface",
+      "description": "Track the top-level `adr` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.boundary-surface",
+      "title": "CLI boundary command surface",
+      "description": "Track the top-level `boundary` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0606",
+        "spc:0614"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.claim-surface",
+      "title": "CLI claim command surface",
+      "description": "Track the top-level `claim` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0604",
+        "spc:0605"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.document-body-source-selection",
+      "title": "CLI document body source selection",
+      "description": "Expose --body and --body-file for ADR and SPEC create/update commands with mutual exclusivity and runtime-aligned validation.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0515",
+        "spc:0601"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": [
+        "feat:api.document-body-source-selection"
+      ]
+    },
+    {
+      "id": "feat:cli.evidence-surface",
+      "title": "CLI evidence command surface",
+      "description": "Track the top-level `evidence` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0606",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.feature-surface",
+      "title": "CLI feature command surface",
+      "description": "Track the top-level `feature` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0603",
+        "spc:0611"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.allow-feature-override-tier",
+      "title": "CLI flag --allow-feature-override-tier",
+      "description": "Track the individual `--allow-feature-override-tier` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0614"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.body-file",
+      "title": "CLI flag --body-file",
+      "description": "Track the individual `--body-file` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.boundary-id",
+      "title": "CLI flag --boundary-id",
+      "description": "Track the individual `--boundary-id` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.claim-id",
+      "title": "CLI flag --claim-id",
+      "description": "Track the individual `--claim-id` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0604"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.claim-ids",
+      "title": "CLI flag --claim-ids",
+      "description": "Track the individual `--claim-ids` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0604",
+        "spc:0605"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.claim-tier",
+      "title": "CLI flag --claim-tier",
+      "description": "Track the individual `--claim-tier` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0605"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.description",
+      "title": "CLI flag --description",
+      "description": "Track the individual `--description` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0600"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.effective-release-id",
+      "title": "CLI flag --effective-release-id",
+      "description": "Track the individual `--effective-release-id` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.end",
+      "title": "CLI flag --end",
+      "description": "Track the individual `--end` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.evidence-id",
+      "title": "CLI flag --evidence-id",
+      "description": "Track the individual `--evidence-id` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.evidence-ids",
+      "title": "CLI flag --evidence-ids",
+      "description": "Track the individual `--evidence-ids` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0606",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.evidence-path",
+      "title": "CLI flag --evidence-path",
+      "description": "Track the individual `--evidence-path` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.feature-ids",
+      "title": "CLI flag --feature-ids",
+      "description": "Track the individual `--feature-ids` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0614"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.force",
+      "title": "CLI flag --force",
+      "description": "Track the individual `--force` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0610"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.format",
+      "title": "CLI flag --format",
+      "description": "Track the individual `--format` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0501",
+        "spc:0502"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.frozen",
+      "title": "CLI flag --frozen",
+      "description": "Track the individual `--frozen` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.horizon",
+      "title": "CLI flag --horizon",
+      "description": "Track the individual `--horizon` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0611"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.id",
+      "title": "CLI flag --id",
+      "description": "Track the individual `--id` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0609",
         "spc:0513"
       ],
-      "claim_ids": [
-        "clm:schema.entity-id-max-lengths.t1"
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.ids",
+      "title": "CLI flag --ids",
+      "description": "Track the individual `--ids` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0609",
+        "spc:0513"
       ],
-      "test_ids": [
-        "tst:pytest.schema.entity-id-max-lengths"
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.implementation-status",
+      "title": "CLI flag --implementation-status",
+      "description": "Track the individual `--implementation-status` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0603"
       ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.issue-ids",
+      "title": "CLI flag --issue-ids",
+      "description": "Track the individual `--issue-ids` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.kind",
+      "title": "CLI flag --kind",
+      "description": "Track the individual `--kind` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0600"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.lifecycle-stage",
+      "title": "CLI flag --lifecycle-stage",
+      "description": "Track the individual `--lifecycle-stage` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0603"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.name",
+      "title": "CLI flag --name",
+      "description": "Track the individual `--name` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.no-allow-feature-override-tier",
+      "title": "CLI flag --no-allow-feature-override-tier",
+      "description": "Track the individual `--no-allow-feature-override-tier` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0614"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.no-frozen",
+      "title": "CLI flag --no-frozen",
+      "description": "Track the individual `--no-frozen` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.no-release-blocking",
+      "title": "CLI flag --no-release-blocking",
+      "description": "Track the individual `--no-release-blocking` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.note",
+      "title": "CLI flag --note",
+      "description": "Track the individual `--note` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0603"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.number",
+      "title": "CLI flag --number",
+      "description": "Track the individual `--number` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.origin",
+      "title": "CLI flag --origin",
+      "description": "Track the individual `--origin` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.output",
+      "title": "CLI flag --output",
+      "description": "Track the individual `--output` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0501",
+        "spc:0502",
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.output-file",
+      "title": "CLI flag --output-file",
+      "description": "Track the individual `--output-file` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0501",
+        "spc:0502"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.output-format",
+      "title": "CLI flag --output-format",
+      "description": "Track the individual `--output-format` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0501",
+        "spc:0502"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.profile-id",
+      "title": "CLI flag --profile-id",
+      "description": "Track the individual `--profile-id` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0614"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.profile-ids",
+      "title": "CLI flag --profile-ids",
+      "description": "Track the individual `--profile-ids` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0614"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.reason",
+      "title": "CLI flag --reason",
+      "description": "Track the individual `--reason` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.release-blocking",
+      "title": "CLI flag --release-blocking",
+      "description": "Track the individual `--release-blocking` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.release-id",
+      "title": "CLI flag --release-id",
+      "description": "Track the individual `--release-id` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.replacement-feature-id",
+      "title": "CLI flag --replacement-feature-id",
+      "description": "Track the individual `--replacement-feature-id` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0603"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.repo-id",
+      "title": "CLI flag --repo-id",
+      "description": "Track the individual `--repo-id` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0609",
+        "spc:0513"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.repo-name",
+      "title": "CLI flag --repo-name",
+      "description": "Track the individual `--repo-name` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0610"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.requires",
+      "title": "CLI flag --requires",
+      "description": "Track the individual `--requires` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0600"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.reserve-range",
+      "title": "CLI flag --reserve-range",
+      "description": "Track the individual `--reserve-range` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.risk-ids",
+      "title": "CLI flag --risk-ids",
+      "description": "Track the individual `--risk-ids` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.severity",
+      "title": "CLI flag --severity",
+      "description": "Track the individual `--severity` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.slot",
+      "title": "CLI flag --slot",
+      "description": "Track the individual `--slot` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0611"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.slug",
+      "title": "CLI flag --slug",
+      "description": "Track the individual `--slug` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.spec-ids",
+      "title": "CLI flag --spec-ids",
+      "description": "Track the individual `--spec-ids` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0600"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.stage",
+      "title": "CLI flag --stage",
+      "description": "Track the individual `--stage` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.start",
+      "title": "CLI flag --start",
+      "description": "Track the individual `--start` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.status",
+      "title": "CLI flag --status",
+      "description": "Track the individual `--status` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0604"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.supersedes",
+      "title": "CLI flag --supersedes",
+      "description": "Track the individual `--supersedes` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.sync-docs",
+      "title": "CLI flag --sync-docs",
+      "description": "Track the individual `--sync-docs` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.target-lifecycle-stage",
+      "title": "CLI flag --target-lifecycle-stage",
+      "description": "Track the individual `--target-lifecycle-stage` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0603"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.target-version",
+      "title": "CLI flag --target-version",
+      "description": "Track the individual `--target-version` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0511"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.test-ids",
+      "title": "CLI flag --test-ids",
+      "description": "Track the individual `--test-ids` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.test-path",
+      "title": "CLI flag --test-path",
+      "description": "Track the individual `--test-path` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.tier",
+      "title": "CLI flag --tier",
+      "description": "Track the individual `--tier` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0605"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.title",
+      "title": "CLI flag --title",
+      "description": "Track the individual `--title` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0600"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.version",
+      "title": "CLI flag --version",
+      "description": "Track the individual `--version` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0511"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.flag.write-report",
+      "title": "CLI flag --write-report",
+      "description": "Track the individual `--write-report` CLI flag as its own governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0505",
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.graph-surface",
+      "title": "CLI graph command surface",
+      "description": "Track the top-level `graph` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0602"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.init-surface",
+      "title": "CLI init command surface",
+      "description": "Track the top-level `init` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0610"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.issue-surface",
+      "title": "CLI issue command surface",
+      "description": "Track the top-level `issue` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0608",
+        "spc:0611"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.profile-surface",
+      "title": "CLI profile command surface",
+      "description": "Track the top-level `profile` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0614"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.registry-surface",
+      "title": "CLI registry command surface",
+      "description": "Track the top-level `registry` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0600"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.release-surface",
+      "title": "CLI release command surface",
+      "description": "Track the top-level `release` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0606",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.risk-surface",
+      "title": "CLI risk command surface",
+      "description": "Track the top-level `risk` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.spec-surface",
+      "title": "CLI spec command surface",
+      "description": "Track the top-level `spec` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0512"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.test-surface",
+      "title": "CLI test command surface",
+      "description": "Track the top-level `test` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.upgrade-surface",
+      "title": "CLI upgrade command surface",
+      "description": "Track the top-level `upgrade` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0610"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:cli.validate-surface",
+      "title": "CLI validate command surface",
+      "description": "Track the top-level `validate` command surface and its bundled subcommands as one governed feature surface.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0601",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:document.inline-body-normalization",
+      "title": "Document inline body normalization",
+      "description": "Support inline ADR and SPEC body text in ssot-core document mutations while preserving canonical persisted document shape.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0515"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:inventory.workspace-artifacts",
+      "title": "Workspace artifact inventory",
+      "description": "Track the workspace artifact inventory for CLI surfaces, schemas, and packaged document inventories as its own feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0501",
+        "spc:0505",
+        "spc:0512",
+        "spc:0514",
+        "spc:0610"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
       "requires": []
     },
     {
@@ -163,6 +2360,271 @@
       "test_ids": [
         "tst:pytest.migration.entity-id-max-length-rollout"
       ],
+      "requires": []
+    },
+    {
+      "id": "feat:schema.adr",
+      "title": "Schema adr.schema.json",
+      "description": "Track `adr.schema.json` as its own governed schema feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0512",
+        "spc:0513",
+        "spc:0514"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:schema.boundary-snapshot",
+      "title": "Schema boundary.snapshot.schema.json",
+      "description": "Track `boundary.snapshot.schema.json` as its own governed schema feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:schema.certification-report",
+      "title": "Schema certification.report.schema.json",
+      "description": "Track `certification.report.schema.json` as its own governed schema feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0606",
+        "spc:0608"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:schema.entity-id-max-lengths",
+      "title": "Schema entity id max lengths",
+      "description": "Add a shared maximum normalized-id length across runtime validators and shipped schemas.",
+      "implementation_status": "partial",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0513"
+      ],
+      "claim_ids": [
+        "clm:schema.entity-id-max-lengths.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.schema.entity-id-max-lengths"
+      ],
+      "requires": []
+    },
+    {
+      "id": "feat:schema.graph-export",
+      "title": "Schema graph.export.schema.json",
+      "description": "Track `graph.export.schema.json` as its own governed schema feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0602",
+        "spc:0502"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:schema.published-snapshot",
+      "title": "Schema published.snapshot.schema.json",
+      "description": "Track `published.snapshot.schema.json` as its own governed schema feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:schema.registry",
+      "title": "Schema registry.schema.json",
+      "description": "Track `registry.schema.json` as its own governed schema feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0600",
+        "spc:0513",
+        "spc:0514"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:schema.release-snapshot",
+      "title": "Schema release.snapshot.schema.json",
+      "description": "Track `release.snapshot.schema.json` as its own governed schema feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:schema.spec",
+      "title": "Schema spec.schema.json",
+      "description": "Track `spec.schema.json` as its own governed schema feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0512",
+        "spc:0513",
+        "spc:0514"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:schema.validation-report",
+      "title": "Schema validation.report.schema.json",
+      "description": "Track `validation.report.schema.json` as its own governed schema feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0606"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
+      "requires": []
+    },
+    {
+      "id": "feat:workspace.package-dependency-dag",
+      "title": "Workspace package-dependency DAG",
+      "description": "Track the governed workspace package-dependency DAG as its own feature.",
+      "implementation_status": "absent",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0516"
+      ],
+      "claim_ids": [],
+      "test_ids": [],
       "requires": []
     }
   ],
@@ -659,6 +3121,22 @@
       "status_notes": []
     },
     {
+      "id": "adr:0509",
+      "number": 509,
+      "slug": "workspace-package-dependency-dag",
+      "title": "Workspace package-dependency DAG",
+      "path": ".ssot/adr/ADR-0509-workspace-package-dependency-dag.yaml",
+      "origin": "ssot-core",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.7",
+      "content_sha256": "25b59b4ce9b911a6e50903dda375cb91a3746ad2c20451c7b7f7af81ce2185eb",
+      "status": "draft",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
+    },
+    {
       "id": "adr:0600",
       "number": 600,
       "slug": "canonical-json-registry",
@@ -1123,6 +3601,57 @@
       "kind": "governance"
     },
     {
+      "id": "spc:0514",
+      "number": 514,
+      "slug": "packaged-schema-ownership",
+      "title": "Packaged schema ownership",
+      "path": ".ssot/specs/SPEC-0514-packaged-schema-ownership.yaml",
+      "origin": "ssot-core",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.7",
+      "content_sha256": "66007f62ceddd877b63edb19b88f886aa70e24feebfbb201d3309fdfe1231def",
+      "status": "draft",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": [],
+      "kind": "governance"
+    },
+    {
+      "id": "spc:0515",
+      "number": 515,
+      "slug": "authored-document-input-modes",
+      "title": "Authored document input modes",
+      "path": ".ssot/specs/SPEC-0515-authored-document-input-modes.yaml",
+      "origin": "ssot-core",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.7",
+      "content_sha256": "382a280860bec8f2343fc1bfb38f908b757a7db3041f182819aea53c59a8e720",
+      "status": "draft",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": [],
+      "kind": "normative"
+    },
+    {
+      "id": "spc:0516",
+      "number": 516,
+      "slug": "workspace-package-dependency-dag",
+      "title": "Workspace package-dependency DAG",
+      "path": ".ssot/specs/SPEC-0516-workspace-package-dependency-dag.yaml",
+      "origin": "ssot-core",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.7",
+      "content_sha256": "9313b75107dd1f25ab5a840916ab86cddecb9e5d3a11778a29dd6091a81aba2c",
+      "kind": "governance",
+      "status": "draft",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
+    },
+    {
       "id": "spc:0600",
       "number": 600,
       "slug": "registry-core",
@@ -1149,7 +3678,7 @@
       "managed": false,
       "immutable": false,
       "package_version": "0.2.7",
-      "content_sha256": "bacd750fcaee57277115e2bd61c5fde308624798839a34bce0bc8f1320de3287",
+      "content_sha256": "77a92020f413d99e797ac394d1bded9df0cfcde95da06693c6af19a7d64e9084",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
@@ -1336,7 +3865,7 @@
       "managed": false,
       "immutable": false,
       "package_version": "0.2.7",
-      "content_sha256": "bbea37ab830073ee6309011ee7aa9b13aa490e660bdf01448cd50f1d42a32993",
+      "content_sha256": "a836e278017efcf00fdd97632c458c0a2cb142f690370e1f7c05291edbe6402f",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],

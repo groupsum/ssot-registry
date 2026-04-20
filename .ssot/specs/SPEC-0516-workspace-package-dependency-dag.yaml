@@ -1,0 +1,58 @@
+schema_version: "0.1.0"
+kind: "spec"
+id: "spc:0516"
+number: 516
+slug: "workspace-package-dependency-dag"
+title: "Workspace package-dependency DAG"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines the canonical workspace package-dependency DAG for the repository."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  This specification defines the canonical workspace package-dependency DAG for this repository.
+  
+  ## Workspace Nodes
+  
+  - `ssot-contracts`
+  - `ssot-views`
+  - `ssot-codegen`
+  - `ssot-core`
+  - `ssot-registry`
+  - `ssot-cli`
+  - `ssot-tui`
+  
+  ## Canonical Directed Edges
+  
+  - `ssot-views -> ssot-contracts`
+  - `ssot-codegen -> ssot-contracts`
+  - `ssot-codegen -> ssot-views`
+  - `ssot-core -> ssot-contracts`
+  - `ssot-core -> ssot-views`
+  - `ssot-cli -> ssot-contracts`
+  - `ssot-cli -> ssot-core`
+  - `ssot-tui -> ssot-contracts`
+  - `ssot-tui -> ssot-core`
+  - `ssot-registry -> ssot-contracts`
+  - `ssot-registry -> ssot-core`
+  - `ssot-registry -> ssot-cli`
+  
+  ## Rules
+  
+  1. The workspace package set SHALL match the canonical node set above.
+  2. Package manifests and workspace configuration SHALL realize only the governed edges above unless this specification is updated.
+  3. Release-train policy and package-boundary policy SHALL remain consistent with this DAG.
+  4. Any change to a package node or dependency edge SHALL update the governed DAG inventory feature in the registry.
+  
+  ## Enforcement
+  
+  - Root workspace membership in `pyproject.toml` SHALL match the canonical node set.
+  - Per-package dependency declarations SHALL remain consistent with the canonical edge set.
+  - Architectural changes to the DAG SHALL update the ADR, this SPEC, and the registry feature inventory together.
+spec_kind: "governance"
