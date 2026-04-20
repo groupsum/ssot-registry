@@ -54,6 +54,26 @@ Boundaries and releases are intentionally different:
 - Freezing a boundary locks that resolved scope and emits a boundary snapshot.
 - A release points at a frozen boundary and then bundles claims and evidence for certify, promote, publish, and revoke workflows.
 
+## Entity intent
+
+Operators should read the top-level entity commands this way:
+
+- `adr`: architectural decision records that capture why the system is designed the way it is.
+- `spec`: specification documents that define normative, operational, governance, or local-policy contract.
+- `feature`: implementation units that connect planning, delivery status, tests, claims, and SPEC coverage.
+- `profile`: reusable capability or deployment bundles composed from features and nested profiles.
+- `test`: verification rows that point at executable or procedural checks.
+- `claim`: tiered statements about system behavior that must be supported by tests and evidence.
+- `evidence`: concrete artifacts, reports, bundles, or logs that substantiate tests and claims.
+- `issue`: plannable defects or work items that may block a release.
+- `risk`: tracked exposure that must be mitigated, accepted, or retired.
+- `boundary`: scoped delivery definition used to decide what a release is evaluated against.
+- `release`: publication unit tied to a frozen boundary plus the claims and evidence needed for certification.
+- `graph`: relationship export view of the registry.
+- `registry`: full-document export view of the registry.
+
+Each command's `--help` now describes not just what it does mechanically, but why an operator would use it and what each flag is meant to control.
+
 ## CLI quick reference
 
 ```bash
