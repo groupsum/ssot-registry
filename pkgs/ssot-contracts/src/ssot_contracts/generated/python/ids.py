@@ -5,4 +5,5 @@ import re
 from ssot_contracts.contract_data import CONTRACT_DATA
 
 ENTITY_PREFIXES = CONTRACT_DATA["entity_prefixes"]
+MAX_NORMALIZED_ID_LENGTH = 128
 ID_PATTERN = re.compile(r"^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9._-]*$")

@@ -115,12 +115,13 @@
   "$defs": {
     "normalizedId": {
       "type": "string",
+      "maxLength": 128,
       "pattern": "^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9._-]*$"
     },
     "stringList": {
       "type": "array",
       "items": {
-        "type": "string"
+        "$ref": "#/$defs/normalizedId"
       }
     },
     "repo": {
@@ -1021,7 +1022,7 @@
       ],
       "properties": {
         "id": {
-          "type": "string"
+          "$ref": "#/$defs/normalizedId"
         },
         "title": {
           "type": "string"
@@ -1045,16 +1046,10 @@
           ]
         },
         "feature_ids": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "$ref": "#/$defs/stringList"
         },
         "profile_ids": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "$ref": "#/$defs/stringList"
         },
         "claim_tier": {
           "type": [

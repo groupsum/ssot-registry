@@ -110,11 +110,163 @@
       }
     ]
   },
-  "features": [],
+  "features": [
+    {
+      "id": "feat:schema.entity-id-max-lengths",
+      "title": "Schema entity id max lengths",
+      "description": "Add a shared maximum normalized-id length across runtime validators and shipped schemas.",
+      "implementation_status": "partial",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0513"
+      ],
+      "claim_ids": [
+        "clm:schema.entity-id-max-lengths.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.schema.entity-id-max-lengths"
+      ],
+      "requires": []
+    },
+    {
+      "id": "feat:migration.entity-id-max-length-rollout",
+      "title": "Migration entity id max-length rollout",
+      "description": "Keep migration coverage and checked-in schema mirrors aligned with the tightened entity-id length contract.",
+      "implementation_status": "partial",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0513"
+      ],
+      "claim_ids": [
+        "clm:migration.entity-id-max-length-rollout.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.migration.entity-id-max-length-rollout"
+      ],
+      "requires": []
+    }
+  ],
   "profiles": [],
-  "tests": [],
-  "claims": [],
-  "evidence": [],
+  "tests": [
+    {
+      "id": "tst:pytest.schema.entity-id-max-lengths",
+      "title": "Schema entity id max-length tests",
+      "status": "passing",
+      "kind": "pytest",
+      "path": "tests/unit/test_schema_id_max_length.py",
+      "feature_ids": [
+        "feat:schema.entity-id-max-lengths"
+      ],
+      "claim_ids": [
+        "clm:schema.entity-id-max-lengths.t1"
+      ],
+      "evidence_ids": [
+        "evd:t1.schema.entity-id-max-lengths.report"
+      ]
+    },
+    {
+      "id": "tst:pytest.migration.entity-id-max-length-rollout",
+      "title": "Migration entity id max-length rollout tests",
+      "status": "passing",
+      "kind": "pytest",
+      "path": "tests/unit/test_migrate_v10_to_v0_1_0.py",
+      "feature_ids": [
+        "feat:migration.entity-id-max-length-rollout"
+      ],
+      "claim_ids": [
+        "clm:migration.entity-id-max-length-rollout.t1"
+      ],
+      "evidence_ids": [
+        "evd:t1.migration.entity-id-max-length-rollout.report"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "clm:schema.entity-id-max-lengths.t1",
+      "title": "Schema entity id max-length claim",
+      "status": "proposed",
+      "tier": "T1",
+      "kind": "regression",
+      "description": "Normalized ids stay within the shared max-length contract.",
+      "feature_ids": [
+        "feat:schema.entity-id-max-lengths"
+      ],
+      "test_ids": [
+        "tst:pytest.schema.entity-id-max-lengths"
+      ],
+      "evidence_ids": [
+        "evd:t1.schema.entity-id-max-lengths.report"
+      ]
+    },
+    {
+      "id": "clm:migration.entity-id-max-length-rollout.t1",
+      "title": "Migration entity id max-length rollout claim",
+      "status": "proposed",
+      "tier": "T1",
+      "kind": "regression",
+      "description": "Migration coverage stays aligned with the entity-id max-length contract.",
+      "feature_ids": [
+        "feat:migration.entity-id-max-length-rollout"
+      ],
+      "test_ids": [
+        "tst:pytest.migration.entity-id-max-length-rollout"
+      ],
+      "evidence_ids": [
+        "evd:t1.migration.entity-id-max-length-rollout.report"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "evd:t1.schema.entity-id-max-lengths.report",
+      "title": "Schema entity id max-length report",
+      "status": "planned",
+      "kind": "report",
+      "tier": "T1",
+      "path": ".ssot/evidence/reports/schema-entity-id-max-lengths.json",
+      "claim_ids": [
+        "clm:schema.entity-id-max-lengths.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.schema.entity-id-max-lengths"
+      ]
+    },
+    {
+      "id": "evd:t1.migration.entity-id-max-length-rollout.report",
+      "title": "Migration entity id max-length rollout report",
+      "status": "planned",
+      "kind": "report",
+      "tier": "T1",
+      "path": ".ssot/evidence/reports/migration-entity-id-max-length-rollout.json",
+      "claim_ids": [
+        "clm:migration.entity-id-max-length-rollout.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.migration.entity-id-max-length-rollout"
+      ]
+    }
+  ],
   "issues": [],
   "risks": [],
   "boundaries": [
@@ -469,6 +621,38 @@
       "immutable": false,
       "package_version": "0.2.7",
       "content_sha256": "df686a1ec7af0015a697fcfa815741e78403cadcc7c04eb99324a70ab24a4ec7",
+      "status": "draft",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
+    },
+    {
+      "id": "adr:0507",
+      "number": 507,
+      "slug": "schema-owned-max-length-for-normalized-ids",
+      "title": "Schema-owned max length for normalized ids",
+      "path": ".ssot/adr/ADR-0507-schema-owned-max-length-for-normalized-ids.yaml",
+      "origin": "ssot-core",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.7",
+      "content_sha256": "4e9b1383bf1ec4acdc60477f7189b6a3b6207b46be72ecfba5af957e0b3236ff",
+      "status": "draft",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
+    },
+    {
+      "id": "adr:0508",
+      "number": 508,
+      "slug": "ssot-contracts-is-the-sole-packaged-schema-authority",
+      "title": "ssot-contracts is the sole packaged schema authority",
+      "path": ".ssot/adr/ADR-0508-ssot-contracts-is-the-sole-packaged-schema-authority.yaml",
+      "origin": "ssot-core",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.7",
+      "content_sha256": "8211c9f91da37bdd167acc6e8e8727a209db6d8a083e7fdc884faba8b412fa42",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],
@@ -915,6 +1099,23 @@
       "immutable": false,
       "package_version": "0.2.7",
       "content_sha256": "95048f03f551d0036c0e11fc0b76e80009df5017885239bdd532ccaefaba6c69",
+      "status": "draft",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": [],
+      "kind": "governance"
+    },
+    {
+      "id": "spc:0513",
+      "number": 513,
+      "slug": "entity-id-max-length-contract",
+      "title": "Entity id max-length contract",
+      "path": ".ssot/specs/SPEC-0513-entity-id-max-length-contract.yaml",
+      "origin": "ssot-core",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.7",
+      "content_sha256": "d405b63ff015d0146f9b05ce592eb60039b31d5e4bbb12aaaa36b04c7651c89f",
       "status": "draft",
       "supersedes": [],
       "superseded_by": [],

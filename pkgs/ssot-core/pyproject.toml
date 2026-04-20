@@ -55,5 +55,4 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-"ssot_registry.schema" = ["*.json"]
 "ssot_registry.templates" = ["*.json"]

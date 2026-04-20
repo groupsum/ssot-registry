@@ -1,6 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/ssot-registry/adr.schema.json",
+  "$defs": {
+    "normalizedId": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9._-]*$"
+    },
+    "normalizedIdList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/normalizedId"
+      }
+    }
+  },
   "type": "object",
   "required": [
     "schema_version",
@@ -23,8 +36,7 @@
       "const": "adr"
     },
     "id": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "#/$defs/normalizedId"
     },
     "number": {
       "type": "integer",
@@ -73,16 +85,10 @@
       "minLength": 1
     },
     "supersedes": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "$ref": "#/$defs/normalizedIdList"
     },
     "superseded_by": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "$ref": "#/$defs/normalizedIdList"
     },
     "status_notes": {
       "type": "array",

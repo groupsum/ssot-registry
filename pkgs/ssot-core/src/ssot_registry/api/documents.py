@@ -32,7 +32,6 @@ from ssot_registry.util.document_io import (
     dump_document_text,
     load_document_yaml,
     normalize_document_payload,
-    parse_markdown_document,
     validate_document_payload,
 )
 from ssot_registry.util.errors import ValidationError
@@ -68,29 +67,32 @@ def _sort_document_rows(registry: dict[str, Any], kind: str) -> None:
     )
 
 
-def _read_body(body_file: str | Path) -> str:
-    return Path(body_file).read_text(encoding="utf-8").strip()
+def _load_authored_payload(kind: str, body_file: str | Path) -> dict[str, Any]:
+    path = Path(body_file)
+    suffix = path.suffix.lower()
+    if suffix not in {".yaml", ".json"}:
+        raise ValidationError(f"{_document_label(kind)} body-file must be .yaml or .json, got {path.name}")
+    payload = normalize_document_payload(kind, load_document_yaml(path))
+    payload_kind = payload.get("kind")
+    if payload_kind is not None and payload_kind != kind:
+        raise ValidationError(f"{_document_label(kind)} body-file kind must be {kind}, got {payload_kind}")
+    return payload
 
 
-def _write_document(repo_root: Path, row: dict[str, Any], body: str, kind: str) -> str:
-    body_title, body_status, normalized_body = parse_markdown_document(kind, body, fallback_title=row["title"])
-    if body_title and body_title != row["title"]:
-        row["title"] = body_title
-    if body_status is not None:
-        row["status"] = body_status
-    payload = build_document_payload(kind, row, normalized_body)
-    validate_document_payload(kind, payload, expected_row=row)
+def _write_document(repo_root: Path, row: dict[str, Any], payload: dict[str, Any], kind: str) -> str:
+    document_payload = build_document_payload(kind, row, document_body_from_payload(kind, payload))
+    validate_document_payload(kind, document_payload, expected_row=row)
     target = repo_root / row["path"]
     target.parent.mkdir(parents=True, exist_ok=True)
     with target.open("w", encoding="utf-8", newline="\n") as handle:
-        handle.write(dump_document_text(payload, target))
+        handle.write(dump_document_text(document_payload, target))
     return sha256_normalized_text_path(target)
 
 
 def _rewrite_document_from_existing_payload(repo_root: Path, row: dict[str, Any], kind: str) -> str:
     payload = normalize_document_payload(kind, load_document_yaml(repo_root / row["path"]))
     validate_document_payload(kind, payload)
-    return _write_document(repo_root, row, payload["body"], kind)
+    return _write_document(repo_root, row, payload, kind)
 
 
 def _build_authored_row(
@@ -302,7 +304,7 @@ def create_document(
             f"{_document_label(kind)} number {number} must use reservation owned by {origin}; got {reservation.get('owner')}"
         )
 
-    body = _read_body(body_file)
+    authored_payload = _load_authored_payload(kind, body_file)
     provisional = _build_authored_row(
         registry,
         kind,
@@ -315,7 +317,7 @@ def create_document(
         note=note,
         spec_kind=spec_kind,
     )
-    content_sha256 = _write_document(repo_root, provisional, body, kind)
+    content_sha256 = _write_document(repo_root, provisional, authored_payload, kind)
     row = _build_authored_row(
         registry,
         kind,
@@ -377,12 +379,11 @@ def update_document(
         row["kind"] = spec_kind
 
     if body_file is None:
-        payload = load_document_yaml(repo_root / row["path"])
-        body = document_body_from_payload(kind, payload)
+        authored_payload = normalize_document_payload(kind, load_document_yaml(repo_root / row["path"]))
     else:
-        body = _read_body(body_file)
+        authored_payload = _load_authored_payload(kind, body_file)
 
-    row["content_sha256"] = _write_document(repo_root, row, body, kind)
+    row["content_sha256"] = _write_document(repo_root, row, authored_payload, kind)
     row["package_version"] = registry.get("tooling", {}).get("ssot_registry_version", __version__)
     _sort_document_rows(registry, kind)
     _validate_and_save(registry_path, repo_root, registry, f"updating {kind} {document_id}")

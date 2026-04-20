@@ -15,8 +15,8 @@ class CliAdrTests(unittest.TestCase):
             init = run_cli("init", str(repo), "--repo-id", "repo:adr-cli", "--repo-name", "adr-cli", "--version", "1.0.0")
             self.assertEqual(init.returncode, 0, init.stderr)
 
-            body = repo / "adr-body.md"
-            body.write_text("Local ADR body.\n", encoding="utf-8")
+            body = repo / "adr-body.yaml"
+            body.write_text('body: |-\n  Local ADR body.\n', encoding="utf-8")
             create = run_cli(
                 "adr",
                 "create",
@@ -41,7 +41,7 @@ class CliAdrTests(unittest.TestCase):
             self.assertEqual(get_payload["title"], "Local decision")
             self.assertNotIn("payload", get_payload)
 
-            body.write_text("Updated ADR body.\n", encoding="utf-8")
+            body.write_text('body: |-\n  Updated ADR body.\n', encoding="utf-8")
             update = run_cli("adr", "update", str(repo), "--id", "adr:1000", "--title", "Local decision updated", "--body-file", str(body))
             self.assertEqual(update.returncode, 0, update.stderr)
             self.assertEqual(json.loads(update.stdout)["document"]["title"], "Local decision updated")
@@ -49,8 +49,8 @@ class CliAdrTests(unittest.TestCase):
             self.assertEqual(set_status.returncode, 0, set_status.stderr)
             self.assertEqual(json.loads(set_status.stdout)["document"]["status"], "in_review")
 
-            body2 = repo / "adr-body-2.md"
-            body2.write_text("Another ADR.\n", encoding="utf-8")
+            body2 = repo / "adr-body-2.yaml"
+            body2.write_text('body: |-\n  Another ADR.\n', encoding="utf-8")
             create2 = run_cli(
                 "adr",
                 "create",
@@ -85,8 +85,8 @@ class CliAdrTests(unittest.TestCase):
             init = run_cli("init", str(repo), "--repo-id", "repo:adr-range", "--repo-name", "adr-range", "--version", "1.0.0")
             self.assertEqual(init.returncode, 0, init.stderr)
 
-            body = repo / "adr-body.md"
-            body.write_text("Local ADR body.\n", encoding="utf-8")
+            body = repo / "adr-body.yaml"
+            body.write_text('body: |-\n  Local ADR body.\n', encoding="utf-8")
             create = run_cli(
                 "adr",
                 "create",

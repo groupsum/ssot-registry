@@ -35,8 +35,8 @@ class DocumentOriginBoundaryTests(unittest.TestCase):
         with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "repo"
             initialize_repo(repo, repo_id="repo:operator-create", repo_name="operator-create", version="1.0.0")
-            body = repo / "body.md"
-            body.write_text("Operator body\n", encoding="utf-8")
+            body = repo / "body.yaml"
+            body.write_text('body: |-\n  Operator body\n', encoding="utf-8")
 
             with self.assertRaises(ValidationError):
                 create_document(
@@ -64,8 +64,8 @@ class DocumentOriginBoundaryTests(unittest.TestCase):
         with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "repo"
             registry_path = self._make_core_repo(repo)
-            body = repo / "body.md"
-            body.write_text("Upstream authored body\n", encoding="utf-8")
+            body = repo / "body.yaml"
+            body.write_text('body: |-\n  Upstream authored body\n', encoding="utf-8")
 
             result = create_document(
                 repo,

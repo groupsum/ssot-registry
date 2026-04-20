@@ -13,8 +13,8 @@ class DocumentReservationTests(unittest.TestCase):
         with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "repo"
             initialize_repo(repo, repo_id="repo:reservation-test", repo_name="reservation-test", version="1.0.0")
-            body = repo / "adr-body.md"
-            body.write_text("Reservation body.\n", encoding="utf-8")
+            body = repo / "adr-body.yaml"
+            body.write_text('body: |-\n  Reservation body.\n', encoding="utf-8")
 
             with self.assertRaises(ValidationError):
                 create_document(repo, "adr", title="Bad ADR", slug="bad-adr", body_file=body, number=1)

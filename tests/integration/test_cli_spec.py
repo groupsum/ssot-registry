@@ -15,8 +15,8 @@ class CliSpecTests(unittest.TestCase):
             init = run_cli("init", str(repo), "--repo-id", "repo:spec-cli", "--repo-name", "spec-cli", "--version", "1.0.0")
             self.assertEqual(init.returncode, 0, init.stderr)
 
-            body = repo / "spec-body.md"
-            body.write_text("Local spec body.\n", encoding="utf-8")
+            body = repo / "spec-body.yaml"
+            body.write_text('body: |-\n  Local spec body.\n', encoding="utf-8")
             create = run_cli(
                 "spec",
                 "create",
@@ -70,8 +70,8 @@ class CliSpecTests(unittest.TestCase):
             self.assertEqual(set_status.returncode, 0, set_status.stderr)
             self.assertEqual(json.loads(set_status.stdout)["document"]["status"], "in_review")
 
-            body2 = repo / "spec-body-2.md"
-            body2.write_text("Local replacement spec body.\n", encoding="utf-8")
+            body2 = repo / "spec-body-2.yaml"
+            body2.write_text('body: |-\n  Local replacement spec body.\n', encoding="utf-8")
             create2 = run_cli(
                 "spec",
                 "create",
@@ -104,8 +104,8 @@ class CliSpecTests(unittest.TestCase):
             init = run_cli("init", str(repo), "--repo-id", "repo:spec-range", "--repo-name", "spec-range", "--version", "1.0.0")
             self.assertEqual(init.returncode, 0, init.stderr)
 
-            body = repo / "spec-body.md"
-            body.write_text("Local spec body.\n", encoding="utf-8")
+            body = repo / "spec-body.yaml"
+            body.write_text('body: |-\n  Local spec body.\n', encoding="utf-8")
             create = run_cli(
                 "spec",
                 "create",

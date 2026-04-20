@@ -480,6 +480,9 @@ def _validate_schema(instance: Any, schema: dict[str, Any], *, root_schema: dict
         min_length = schema.get("minLength")
         if isinstance(min_length, int) and len(instance) < min_length:
             raise ValidationError(f"{pointer} must have length >= {min_length}")
+        max_length = schema.get("maxLength")
+        if isinstance(max_length, int) and len(instance) > max_length:
+            raise ValidationError(f"{pointer} must have length <= {max_length}")
         pattern = schema.get("pattern")
         if isinstance(pattern, str) and re.match(pattern, instance) is None:
             raise ValidationError(f"{pointer} must match pattern {pattern!r}")

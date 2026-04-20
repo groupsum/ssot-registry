@@ -37,8 +37,8 @@ class DocumentYamlTests(unittest.TestCase):
             repo.mkdir()
             initialize_repo(repo, repo_id="repo:json-doc", repo_name="json-doc", version="1.0.0")
 
-            body = repo / "adr-body.md"
-            body.write_text("Local ADR body.\n", encoding="utf-8")
+            body = repo / "adr-body.yaml"
+            body.write_text('body: |-\n  Local ADR body.\n', encoding="utf-8")
             create_result = create_document(
                 repo,
                 "adr",
@@ -67,6 +67,24 @@ class DocumentYamlTests(unittest.TestCase):
             self.assertTrue(json_path.exists())
             updated_payload = json.loads(json_path.read_text(encoding="utf-8"))
             self.assertEqual("Local decision updated", updated_payload["title"])
+
+    def test_markdown_body_file_is_rejected(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            initialize_repo(repo, repo_id="repo:md-doc", repo_name="md-doc", version="1.0.0")
+
+            body = repo / "adr-body.md"
+            body.write_text("Local ADR body.\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(Exception, r"body-file must be \.yaml or \.json"):
+                create_document(
+                    repo,
+                    "adr",
+                    title="Markdown body",
+                    slug="markdown-body",
+                    body_file=body,
+                )
 
 
 if __name__ == "__main__":
