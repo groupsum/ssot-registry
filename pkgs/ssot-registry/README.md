@@ -12,7 +12,7 @@
 
 `ssot-registry` is the umbrella distribution for SSOT.
 
-It installs `ssot-core` and `ssot-cli` together so users get the canonical `ssot_registry` Python package and the primary command surface in one install. The optional `tui` extra adds `ssot-tui`.
+It installs [ssot-core](https://pypi.org/project/ssot-core/) and [ssot-cli](https://pypi.org/project/ssot-cli/) together so users get the canonical `ssot_registry` Python package and the primary command surface in one install. The optional `tui` extra adds [ssot-tui](https://pypi.org/project/ssot-tui/).
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
@@ -65,7 +65,7 @@ For local development:
 python -m pip install -e pkgs/ssot-registry
 ```
 
-`ssot_registry` remains the canonical import package, but it is now distributed by `ssot-core`. The `ssot-registry` package is the convenience bundle, and the CLI entry points continue to ship from `ssot-cli`.
+`ssot_registry` remains the canonical import package, but it is now distributed by [ssot-core](https://pypi.org/project/ssot-core/). The `ssot-registry` package is the convenience bundle, and the CLI entry points continue to ship from [ssot-cli](https://pypi.org/project/ssot-cli/).
 
 ## What this package owns
 
@@ -139,21 +139,21 @@ ssot-registry registry --help
 
 ## Screenshots
 
-CLI screenshots from `ssot-cli`:
+CLI screenshots from [ssot-cli](https://pypi.org/project/ssot-cli/):
 
-![ssot top-level help](../ssot-cli/assets/ssot-cli-help.png)
+![ssot top-level help](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-cli/assets/ssot-cli-help.png)
 
-![ssot boundary help](../ssot-cli/assets/ssot-cli-boundary-help.png)
+![ssot boundary help](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-cli/assets/ssot-cli-boundary-help.png)
 
-TUI screenshots from `ssot-tui`:
+TUI screenshots from [ssot-tui](https://pypi.org/project/ssot-tui/):
 
-![SSOT TUI browser](../ssot-tui/assets/ssot-tui-browser.png)
+![SSOT TUI browser](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-browser.png)
 
-![SSOT TUI ADR browser](../ssot-tui/assets/ssot-tui-adrs.png)
+![SSOT TUI ADR browser](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-adrs.png)
 
-![SSOT TUI spec browser](../ssot-tui/assets/ssot-tui-specs.png)
+![SSOT TUI spec browser](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-specs.png)
 
-![SSOT TUI validation status](../ssot-tui/assets/ssot-tui-validated.png)
+![SSOT TUI validation status](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-validated.png)
 
 ## CLI conventions
 
@@ -887,8 +887,9 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 
 ## Package relationships
 
-- Package type: core runtime/library package
-- Depends on: `ssot-contracts`, `ssot-views`
-- Consumed by: `ssot-cli`, `ssot-tui`, direct Python integrations, and automation
+- Package type: umbrella distribution
+- Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-contracts](https://pypi.org/project/ssot-contracts/)
+- Optional extras: [ssot-tui](https://pypi.org/project/ssot-tui/)
+- Related packages: [ssot-views](https://pypi.org/project/ssot-views/), [ssot-codegen](https://pypi.org/project/ssot-codegen/)
 
-If you are embedding SSOT behavior inside Python code, this is the package to import. If you need the primary CLI distribution, install `ssot-cli` alongside it.
+If you want the bundled install experience, this is the package to install. If you only need the primary CLI distribution, install [ssot-cli](https://pypi.org/project/ssot-cli/). If you only need the Python runtime, install [ssot-core](https://pypi.org/project/ssot-core/).

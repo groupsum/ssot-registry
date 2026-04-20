@@ -38,8 +38,8 @@ classifiers = [
 ssot-codegen = "ssot_codegen.main:main"
 
 [project.urls]
-Homepage = "https://github.com/groupsum/ssot-registry"
-Repository = "https://github.com/groupsum/ssot-registry"
+Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-codegen"
+Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-codegen"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
 
 [tool.setuptools]

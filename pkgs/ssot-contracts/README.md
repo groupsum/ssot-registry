@@ -27,15 +27,15 @@ Use `ssot-contracts` when you want:
 
 - packaged schemas and templates without the full CLI
 - a stable place to load SSOT manifests and contract metadata from Python
-- the artifact layer consumed by `ssot-registry`, `ssot-cli`, `ssot-tui`, `ssot-views`, and `ssot-codegen`
+- the artifact layer consumed by [ssot-registry](https://pypi.org/project/ssot-registry/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-tui](https://pypi.org/project/ssot-tui/), [ssot-views](https://pypi.org/project/ssot-views/), and [ssot-codegen](https://pypi.org/project/ssot-codegen/)
 
 Use another package when you want:
 
-- `ssot-registry` for core runtime APIs and registry mutation/validation flows
-- `ssot-cli` for command-line workflows
-- `ssot-tui` for terminal UI browsing
-- `ssot-views` for reusable derived report and graph builders
-- `ssot-codegen` to regenerate contract-side metadata outputs
+- [ssot-registry](https://pypi.org/project/ssot-registry/) for core runtime APIs and registry mutation/validation flows
+- [ssot-cli](https://pypi.org/project/ssot-cli/) for command-line workflows
+- [ssot-tui](https://pypi.org/project/ssot-tui/) for terminal UI browsing
+- [ssot-views](https://pypi.org/project/ssot-views/) for reusable derived report and graph builders
+- [ssot-codegen](https://pypi.org/project/ssot-codegen/) to regenerate contract-side metadata outputs
 
 ## Install
 
@@ -124,6 +124,6 @@ These modules provide shared constants such as output formats, entity section la
 
 - Package type: artifact and contract package
 - Depends on: standard library only, plus `tomli` on Python earlier than 3.11
-- Consumed by: `ssot-registry`, `ssot-cli`, `ssot-tui`, `ssot-views`, `ssot-codegen`
+- Consumed by: [ssot-registry](https://pypi.org/project/ssot-registry/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-tui](https://pypi.org/project/ssot-tui/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-codegen](https://pypi.org/project/ssot-codegen/)
 
 If you need the canonical packaged schemas and manifests, install this package. It is the lowest-level reusable contract layer in the workspace.

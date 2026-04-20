@@ -30,11 +30,11 @@ Use `ssot-views` when you want:
 
 Use another package when you want:
 
-- `ssot-registry` for core runtime APIs and mutation/validation workflows
-- `ssot-cli` for command-line rendering and file output
-- `ssot-contracts` for packaged schemas and templates
-- `ssot-tui` for interactive terminal browsing
-- `ssot-codegen` for contract metadata regeneration
+- [ssot-registry](https://pypi.org/project/ssot-registry/) for core runtime APIs and mutation/validation workflows
+- [ssot-cli](https://pypi.org/project/ssot-cli/) for command-line rendering and file output
+- [ssot-contracts](https://pypi.org/project/ssot-contracts/) for packaged schemas and templates
+- [ssot-tui](https://pypi.org/project/ssot-tui/) for interactive terminal browsing
+- [ssot-codegen](https://pypi.org/project/ssot-codegen/) for contract metadata regeneration
 
 ## Install
 
@@ -107,7 +107,7 @@ This distinction matters for workflow design: views are meant to be regenerated 
 ## Package relationships
 
 - Package type: derived-view library
-- Depends on: `ssot-contracts`
-- Consumed by: `ssot-codegen`, library users, and any tooling that needs reusable reports or graph exports
+- Depends on: [ssot-contracts](https://pypi.org/project/ssot-contracts/)
+- Consumed by: [ssot-codegen](https://pypi.org/project/ssot-codegen/), library users, and any tooling that needs reusable reports or graph exports
 
 If you are building reporting, analysis, or export tooling around SSOT registries, this package is the appropriate reusable layer.

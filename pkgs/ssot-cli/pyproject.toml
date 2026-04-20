@@ -34,8 +34,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/groupsum/ssot-registry"
-Repository = "https://github.com/groupsum/ssot-registry"
+Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-cli"
+Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-cli"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
 
 [project.scripts]

@@ -10,7 +10,7 @@
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Hits" /></a>
 </div>
 
-`ssot-registry` is a portable, repository-agnostic single-source-of-truth system.
+`ssot-registry` is a portable, repository-agnostic single-source-of-truth system built from [ssot-core](https://pypi.org/project/ssot-core/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-tui](https://pypi.org/project/ssot-tui/), and [ssot-codegen](https://pypi.org/project/ssot-codegen/).
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
@@ -66,8 +66,8 @@ Packaged SSOT documents are manifest-driven, immutable, and synced into reserved
 ## Install
 
 ```bash
-python -m pip install ssot-registry         # ssot-core + ssot-cli
-python -m pip install "ssot-registry[tui]"  # add optional TUI
+python -m pip install ssot-registry         # [ssot-core](https://pypi.org/project/ssot-core/) + [ssot-cli](https://pypi.org/project/ssot-cli/)
+python -m pip install "ssot-registry[tui]"  # add optional [ssot-tui](https://pypi.org/project/ssot-tui/)
 python -m pip install ssot-core             # runtime only
 python -m pip install ssot-cli              # primary CLI distribution
 python -m pip install ssot-tui              # Textual TUI only
@@ -75,7 +75,7 @@ python -m pip install ssot-tui              # Textual TUI only
 python -m pip install -e pkgs/ssot-core
 ```
 
-`ssot_registry` remains the canonical import package. The runtime now ships from `ssot-core`, while CLI entry points ship from `ssot-cli`, including both `ssot` and the compatibility alias `ssot-registry`.
+`ssot_registry` remains the canonical import package. The runtime now ships from [ssot-core](https://pypi.org/project/ssot-core/), while CLI entry points ship from [ssot-cli](https://pypi.org/project/ssot-cli/), including both `ssot` and the compatibility alias `ssot-registry`.
 
 The repository root is workspace tooling only. Canonical release artifacts are built from package roots under `pkgs/`, and the canonical Python runtime release target is `pkgs/ssot-core`.
 
@@ -118,21 +118,21 @@ ssot-registry registry --help
 
 ## Screenshots
 
-CLI screenshots from `ssot-cli`:
+CLI screenshots from [ssot-cli](https://pypi.org/project/ssot-cli/):
 
-![ssot top-level help](pkgs/ssot-cli/assets/ssot-cli-help.png)
+![ssot top-level help](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-cli/assets/ssot-cli-help.png)
 
-![ssot boundary help](pkgs/ssot-cli/assets/ssot-cli-boundary-help.png)
+![ssot boundary help](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-cli/assets/ssot-cli-boundary-help.png)
 
-TUI screenshots from `ssot-tui`:
+TUI screenshots from [ssot-tui](https://pypi.org/project/ssot-tui/):
 
-![SSOT TUI browser](pkgs/ssot-tui/assets/ssot-tui-browser.png)
+![SSOT TUI browser](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-browser.png)
 
-![SSOT TUI ADR browser](pkgs/ssot-tui/assets/ssot-tui-adrs.png)
+![SSOT TUI ADR browser](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-adrs.png)
 
-![SSOT TUI spec browser](pkgs/ssot-tui/assets/ssot-tui-specs.png)
+![SSOT TUI spec browser](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-specs.png)
 
-![SSOT TUI validation status](pkgs/ssot-tui/assets/ssot-tui-validated.png)
+![SSOT TUI validation status](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-validated.png)
 
 ---
 

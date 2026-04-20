@@ -32,11 +32,11 @@ Use `ssot-tui` when you want:
 
 Use another package when you want:
 
-- `ssot-cli` for full command-line workflow coverage
-- `ssot-core` for direct Python API access
-- `ssot-contracts` for packaged schemas and templates
-- `ssot-views` for report and graph builders
-- `ssot-codegen` for regeneration of metadata artifacts
+- [ssot-cli](https://pypi.org/project/ssot-cli/) for full command-line workflow coverage
+- [ssot-core](https://pypi.org/project/ssot-core/) for direct Python API access
+- [ssot-contracts](https://pypi.org/project/ssot-contracts/) for packaged schemas and templates
+- [ssot-views](https://pypi.org/project/ssot-views/) for report and graph builders
+- [ssot-codegen](https://pypi.org/project/ssot-codegen/) for regeneration of metadata artifacts
 
 ## Install
 
@@ -50,7 +50,7 @@ For local development from this repository:
 python -m pip install -e pkgs/ssot-tui
 ```
 
-This package depends on `ssot-registry`, `ssot-contracts`, and `textual`.
+This package depends on [ssot-core](https://pypi.org/project/ssot-core/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), and `textual`.
 
 ## Start the TUI
 
@@ -82,13 +82,13 @@ Regenerate these assets with `python scripts/generate_tui_screenshots.py`.
 
 Captured against [`examples/minimal-repo`](../../examples/minimal-repo/README.md) in this workspace:
 
-![SSOT TUI browser](assets/ssot-tui-browser.png)
+![SSOT TUI browser](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-browser.png)
 
-![SSOT TUI ADR browser](assets/ssot-tui-adrs.png)
+![SSOT TUI ADR browser](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-adrs.png)
 
-![SSOT TUI spec browser](assets/ssot-tui-specs.png)
+![SSOT TUI spec browser](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-specs.png)
 
-![SSOT TUI validation status](assets/ssot-tui-validated.png)
+![SSOT TUI validation status](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-validated.png)
 
 ## Current scope
 
@@ -119,7 +119,7 @@ At the application level, `SsotTuiApp` provides a header, footer, and browser sc
 ## Package relationships
 
 - Package type: terminal UI package
-- Depends on: `ssot-registry`, `ssot-contracts`, `textual`
+- Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), `textual`
 - Consumed by: users who want interactive browsing on top of the core SSOT runtime
 
-If you need complete operational coverage today, use `ssot-cli`. If you want an interactive terminal browser for current registry content, this package is the right entry point.
+If you need complete operational coverage today, use [ssot-cli](https://pypi.org/project/ssot-cli/). If you want an interactive terminal browser for current registry content, this package is the right entry point.

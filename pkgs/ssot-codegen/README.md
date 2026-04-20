@@ -30,11 +30,11 @@ Use `ssot-codegen` when you want:
 
 Use another package when you want:
 
-- `ssot-cli` for the main user-facing CLI
-- `ssot-registry` for the core runtime and Python APIs
-- `ssot-contracts` for the packaged artifacts themselves
-- `ssot-tui` for terminal UI access
-- `ssot-views` for report and graph builders
+- [ssot-cli](https://pypi.org/project/ssot-cli/) for the main user-facing CLI
+- [ssot-registry](https://pypi.org/project/ssot-registry/) for the core runtime and Python APIs
+- [ssot-contracts](https://pypi.org/project/ssot-contracts/) for the packaged artifacts themselves
+- [ssot-tui](https://pypi.org/project/ssot-tui/) for terminal UI access
+- [ssot-views](https://pypi.org/project/ssot-views/) for report and graph builders
 
 ## Install
 
@@ -96,7 +96,7 @@ for path in written:
 ## Package relationships
 
 - Package type: development/code-generation package
-- Depends on: `ssot-contracts`, `ssot-views`
+- Depends on: [ssot-contracts](https://pypi.org/project/ssot-contracts/), [ssot-views](https://pypi.org/project/ssot-views/)
 - Consumed by: maintainers and release tooling that regenerate derived metadata artifacts
 
 If you are using SSOT as an application or library, you usually do not need this package directly. It is primarily for maintainers working on the SSOT workspace itself.

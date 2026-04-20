@@ -52,6 +52,6 @@ tui = ["ssot-tui>=0.1.2,<0.2.0"]
 all = ["ssot-tui>=0.1.2,<0.2.0"]
 
 [project.urls]
-Homepage = "https://github.com/groupsum/ssot-registry"
-Repository = "https://github.com/groupsum/ssot-registry"
+Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-registry"
+Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-registry"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
