@@ -7,6 +7,7 @@ members = [
     "ssot-cli",
     "ssot-codegen",
     "ssot-contracts",
+    "ssot-core",
     "ssot-registry",
     "ssot-tui",
     "ssot-views",
@@ -168,24 +169,24 @@ wheels = [
 
 [[package]]
 name = "ssot-cli"
-version = "0.1.2.dev2"
+version = "0.1.4"
 source = { editable = "pkgs/ssot-cli" }
 dependencies = [
     { name = "ssot-contracts" },
-    { name = "ssot-registry" },
+    { name = "ssot-core" },
     { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "ssot-contracts", editable = "pkgs/ssot-contracts" },
-    { name = "ssot-registry", editable = "pkgs/ssot-registry" },
+    { name = "ssot-core", editable = "pkgs/ssot-core" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.1" },
 ]
 
 [[package]]
 name = "ssot-codegen"
-version = "0.2.6.dev1"
+version = "0.2.8"
 source = { editable = "pkgs/ssot-codegen" }
 dependencies = [
     { name = "ssot-contracts" },
@@ -202,7 +203,7 @@ requires-dist = [
 
 [[package]]
 name = "ssot-contracts"
-version = "0.2.6.dev1"
+version = "0.2.8"
 source = { editable = "pkgs/ssot-contracts" }
 dependencies = [
     { name = "tomli", marker = "python_full_version < '3.11'" },
@@ -212,9 +213,9 @@ dependencies = [
 requires-dist = [{ name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.1" }]
 
 [[package]]
-name = "ssot-registry"
-version = "0.2.6.dev1"
-source = { editable = "pkgs/ssot-registry" }
+name = "ssot-core"
+version = "0.2.8"
+source = { editable = "pkgs/ssot-core" }
 dependencies = [
     { name = "ssot-contracts" },
     { name = "ssot-views" },
@@ -229,12 +230,42 @@ requires-dist = [
 ]
 
 [[package]]
+name = "ssot-registry"
+version = "0.2.8"
+source = { editable = "pkgs/ssot-registry" }
+dependencies = [
+    { name = "ssot-cli" },
+    { name = "ssot-contracts" },
+    { name = "ssot-core" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
+]
+
+[package.optional-dependencies]
+all = [
+    { name = "ssot-tui" },
+]
+tui = [
+    { name = "ssot-tui" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "ssot-cli", editable = "pkgs/ssot-cli" },
+    { name = "ssot-contracts", editable = "pkgs/ssot-contracts" },
+    { name = "ssot-core", editable = "pkgs/ssot-core" },
+    { name = "ssot-tui", marker = "extra == 'all'", editable = "pkgs/ssot-tui" },
+    { name = "ssot-tui", marker = "extra == 'tui'", editable = "pkgs/ssot-tui" },
+    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.1" },
+]
+provides-extras = ["tui", "all"]
+
+[[package]]
 name = "ssot-tui"
-version = "0.1.2.dev2"
+version = "0.1.4"
 source = { editable = "pkgs/ssot-tui" }
 dependencies = [
     { name = "ssot-contracts" },
-    { name = "ssot-registry" },
+    { name = "ssot-core" },
     { name = "textual" },
     { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
@@ -242,14 +273,14 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "ssot-contracts", editable = "pkgs/ssot-contracts" },
-    { name = "ssot-registry", editable = "pkgs/ssot-registry" },
+    { name = "ssot-core", editable = "pkgs/ssot-core" },
     { name = "textual", specifier = ">=8.2.3" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.1" },
 ]
 
 [[package]]
 name = "ssot-views"
-version = "0.2.6.dev1"
+version = "0.2.8"
 source = { editable = "pkgs/ssot-views" }
 dependencies = [
     { name = "ssot-contracts" },

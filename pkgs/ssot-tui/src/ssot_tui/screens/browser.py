@@ -251,7 +251,10 @@ class BrowserScreen(Screen[None]):
         raw_mode = self.state_store.state.session.pane_mode == "raw"
         self.query_one(EntityDetailPane).show_view_model(self._detail_view_model, raw_mode=raw_mode)
         if self.state_store.state.session.selected_entity_id != self._current_detail_entity_id:
-            self._persist_session(selected_entity_id=self._current_detail_entity_id)
+            # Row highlighting fires during keyboard navigation. Persisting the
+            # selected entity without emitting prevents the table from being
+            # re-rendered while the cursor is moving.
+            self._persist_session(selected_entity_id=self._current_detail_entity_id, emit=False)
 
     def _select_entity_id(self, entity_id: str) -> None:
         if self.workspace is None:
@@ -321,14 +324,14 @@ class BrowserScreen(Screen[None]):
             f"Loaded repo root: {self.workspace.root_path}\nLoaded registry: {self.workspace.registry_path}"
         )
 
-    def _persist_session(self, **changes: object) -> None:
+    def _persist_session(self, *, emit: bool = True, **changes: object) -> None:
         session = self.state_store.state.session
         next_recent = session.recent_repos
         if "last_repo_path" in changes and isinstance(changes["last_repo_path"], str):
             last_repo_path = changes["last_repo_path"]
             next_recent = [last_repo_path, *[repo for repo in session.recent_repos if repo != last_repo_path]][:8]
             changes["recent_repos"] = next_recent
-        self.state_store.update_session(**changes)
+        self.state_store.update_session(emit=emit, **changes)
         self.session_store.save(self.state_store.state.session)
 
     def _push_status(self, message: str, level: str = "info") -> None:

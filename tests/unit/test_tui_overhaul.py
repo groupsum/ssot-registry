@@ -325,6 +325,32 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
         finally:
             temp_dir.cleanup()
 
+    async def test_highlighting_new_entity_does_not_emit_session_rerender(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.screen
+                section, rows = next((name, items) for name, items in screen.workspace.collections.items() if len(items) > 1)
+                screen._select_section(section)
+                await pilot.pause()
+                entity = rows[1]
+                with patch.object(screen.state_store, "emit", wraps=screen.state_store.emit) as emit:
+                    screen._show_entity(entity)
+                    await pilot.pause()
+                emit.assert_not_called()
+                self.assertEqual(screen.state_store.state.session.selected_entity_id, entity["id"])
+        finally:
+            temp_dir.cleanup()
+
     async def test_browser_can_switch_to_document_sections_with_visible_rows(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"

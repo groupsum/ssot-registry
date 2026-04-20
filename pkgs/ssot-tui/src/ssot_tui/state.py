@@ -70,14 +70,15 @@ class AppStateStore:
         for callback in list(self._subscribers):
             callback(self._state)
 
-    def update_session(self, **changes: object) -> None:
+    def update_session(self, *, emit: bool = True, **changes: object) -> None:
         if not changes:
             return
         current = self._state.session
         if all(getattr(current, key) == value for key, value in changes.items()):
             return
         self._state.session = replace(self._state.session, **changes)
-        self.emit()
+        if emit:
+            self.emit()
 
     def set_workspace(self, workspace: RegistryWorkspace | None, validation: ValidationSummary) -> None:
         self._state.workspace = workspace
