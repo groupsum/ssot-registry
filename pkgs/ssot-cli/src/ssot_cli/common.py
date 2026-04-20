@@ -5,7 +5,12 @@ from typing import Any
 
 
 def add_path_argument(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("path", nargs="?", default=".", help="Registry file path or repository root.")
+    parser.add_argument(
+        "path",
+        nargs="?",
+        default=".",
+        help="Repository root or registry file to operate on. Defaults to the current directory.",
+    )
 
 
 def add_id_argument(parser: argparse.ArgumentParser, flag: str = "--id", *, dest: str | None = None, help_text: str = "Normalized id.") -> None:
@@ -34,4 +39,3 @@ def collect_list_fields(args: argparse.Namespace, mapping: dict[str, str]) -> di
         if value:
             links[field_name] = value
     return links
-

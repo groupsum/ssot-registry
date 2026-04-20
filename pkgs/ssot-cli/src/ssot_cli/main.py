@@ -39,10 +39,22 @@ def _default_prog() -> str:
 def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=prog or _default_prog(),
-        description="Portable single-source-of-truth registry for features, profiles, tests, claims, evidence, issues, risks, boundaries, releases, ADRs, and SPECs.",
+        description=(
+            "Operate an SSOT registry that tracks architecture documents, scoped delivery boundaries, "
+            "implementation features, verification artifacts, and publication-ready releases."
+        ),
     )
-    parser.add_argument("--output-format", default="json", choices=OUTPUT_FORMATS, help="CLI output format.")
-    parser.add_argument("--output-file", default=None, help="Optional file to write the rendered command output.")
+    parser.add_argument(
+        "--output-format",
+        default="json",
+        choices=OUTPUT_FORMATS,
+        help="Render command results as this format for operators or downstream tooling.",
+    )
+    parser.add_argument(
+        "--output-file",
+        default=None,
+        help="Write the rendered command output to this file instead of only printing to stdout.",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     register_init(subparsers)

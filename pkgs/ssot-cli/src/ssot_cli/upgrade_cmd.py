@@ -6,11 +6,15 @@ from ssot_registry.api import upgrade_registry
 
 
 def register_upgrade(subparsers: argparse._SubParsersAction) -> None:
-    parser = subparsers.add_parser("upgrade", help="Upgrade a repository registry to the installed schema and package version.")
-    parser.add_argument("path", nargs="?", default=".", help="Registry file path or repository root.")
-    parser.add_argument("--target-version", default=None, help="Package version to upgrade to. Defaults to the installed version.")
-    parser.add_argument("--sync-docs", action="store_true", help="Sync packaged ADRs and specs after schema migration.")
-    parser.add_argument("--write-report", action="store_true", help="Write upgrade report under .ssot/reports.")
+    parser = subparsers.add_parser(
+        "upgrade",
+        help="Migrate a repository to the installed SSOT schema.",
+        description="Upgrade registry structure and packaged metadata to match the installed SSOT toolchain version.",
+    )
+    parser.add_argument("path", nargs="?", default=".", help="Repository root or registry file to upgrade.")
+    parser.add_argument("--target-version", default=None, help="Explicit package version target. Defaults to the installed version.")
+    parser.add_argument("--sync-docs", action="store_true", help="Refresh packaged ADR and SPEC documents after the migration completes.")
+    parser.add_argument("--write-report", action="store_true", help="Write an upgrade report under `.ssot/reports`.")
     parser.set_defaults(func=run)
 
 

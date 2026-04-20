@@ -6,12 +6,16 @@ from ssot_registry.api import initialize_repo
 
 
 def register_init(subparsers: argparse._SubParsersAction) -> None:
-    parser = subparsers.add_parser("init", help="Initialize a normalized .ssot tree in a repository.")
-    parser.add_argument("path", nargs="?", default=".", help="Repository root.")
-    parser.add_argument("--repo-id", default="repo:example", help="Normalized repository id.")
-    parser.add_argument("--repo-name", default="example", help="Repository name.")
-    parser.add_argument("--version", default="0.1.0", help="Initial release version.")
-    parser.add_argument("--force", action="store_true", help="Overwrite an existing registry.")
+    parser = subparsers.add_parser(
+        "init",
+        help="Create a new SSOT workspace in a repository.",
+        description="Bootstrap the `.ssot` tree, starter registry, and baseline metadata for a repository.",
+    )
+    parser.add_argument("path", nargs="?", default=".", help="Repository root where the `.ssot` workspace should be created.")
+    parser.add_argument("--repo-id", default="repo:example", help="Normalized repository identifier recorded in the registry.")
+    parser.add_argument("--repo-name", default="example", help="Human-readable repository name recorded in the registry.")
+    parser.add_argument("--version", default="0.1.0", help="Initial release version to seed into the repository metadata.")
+    parser.add_argument("--force", action="store_true", help="Replace an existing registry at the target path.")
     parser.set_defaults(func=run)
 
 

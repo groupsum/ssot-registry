@@ -8,9 +8,13 @@ from ssot_registry.util.jsonio import save_json
 
 
 def register_validate(subparsers: argparse._SubParsersAction) -> None:
-    parser = subparsers.add_parser("validate", help="Validate a registry file or repository root.")
-    parser.add_argument("path", nargs="?", default=".", help="Registry file path or repository root.")
-    parser.add_argument("--write-report", action="store_true", help="Write validation report under .ssot/reports.")
+    parser = subparsers.add_parser(
+        "validate",
+        help="Check registry integrity and guard compliance.",
+        description="Validate an SSOT repository or registry file and report schema, linkage, and guard failures.",
+    )
+    parser.add_argument("path", nargs="?", default=".", help="Repository root or registry file to validate.")
+    parser.add_argument("--write-report", action="store_true", help="Write the validation report under `.ssot/reports` for later review.")
     parser.set_defaults(func=run)
 
 
