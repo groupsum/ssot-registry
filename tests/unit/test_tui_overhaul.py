@@ -163,6 +163,17 @@ class TuiOverhaulUnitTests(unittest.TestCase):
         self.assertNotIn("body", adr)
         self.assertNotIn("summary", adr)
 
+    def test_workspace_service_exposes_registry_and_schema_versions(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        try:
+            workspace = RegistryWorkspaceService().load_workspace(repo)
+        finally:
+            temp_dir.cleanup()
+
+        self.assertEqual(workspace.registry_version, "0.2.2")
+        self.assertEqual(workspace.registry_schema_version, "0.1.0")
+
     def test_bridge_preview_cli_get_for_document_returns_row_only(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"
@@ -400,6 +411,33 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
                 await pilot.pause()
                 self.assertEqual(screen := app.screen, app.screen)
                 self.assertEqual(len(screen.query("#recent_repos")), 0)
+        finally:
+            temp_dir.cleanup()
+
+    async def test_summary_row_shows_registry_and_schema_versions(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.screen
+                workspace_status = screen.query_one("#workspace_status")
+                rendered = str(workspace_status.render())
+                self.assertIn(
+                    f"ssot-registry: {screen.workspace.registry_version}",
+                    rendered,
+                )
+                self.assertIn(
+                    f"schema: {screen.workspace.registry_schema_version}",
+                    rendered,
+                )
         finally:
             temp_dir.cleanup()
 

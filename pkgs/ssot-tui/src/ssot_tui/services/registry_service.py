@@ -13,6 +13,8 @@ from ssot_registry.api.documents import list_documents, load_document_payload_fo
 class RegistryWorkspace:
     root_path: str
     registry_path: str
+    registry_version: str
+    registry_schema_version: str
     repo: dict[str, Any]
     validation: dict[str, Any]
     collections: dict[str, list[dict[str, Any]]]
@@ -34,6 +36,8 @@ class RegistryWorkspaceService:
         return RegistryWorkspace(
             root_path=repo_root.as_posix(),
             registry_path=registry_path.as_posix(),
+            registry_version=str(registry.get("tooling", {}).get("ssot_registry_version", "unknown")),
+            registry_schema_version=str(registry.get("schema_version", "unknown")),
             repo=registry.get("repo", {}),
             validation=validate_registry(repo_root),
             collections=collections,

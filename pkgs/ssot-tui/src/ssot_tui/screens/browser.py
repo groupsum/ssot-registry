@@ -313,7 +313,14 @@ class BrowserScreen(Screen[None]):
             f"{repo_id} | {self.active_section} | {filtered}/{total} rows | mode={self.state_store.state.session.table_mode}"
         )
         self.query_one("#workspace_status", Static).update(
-            f"Repo: {self.workspace.root_path} | Registry: {self.workspace.registry_path}"
+            " | ".join(
+                [
+                    f"Repo: {self.workspace.root_path}",
+                    f"Registry: {self.workspace.registry_path}",
+                    f"ssot-registry: {self.workspace.registry_version}",
+                    f"schema: {self.workspace.registry_schema_version}",
+                ]
+            )
         )
         validation = self.state_store.state.validation
         status = "passed" if validation.passed else f"{validation.failure_count} failures"
