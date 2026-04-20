@@ -3039,115 +3039,135 @@
       "id": "feat:schema.spec-adr-ids",
       "title": "Schema SPEC adr_ids",
       "description": "Track the schema-level addition of typed ADR ids on SPEC rows and authored SPEC payloads.",
-      "implementation_status": "absent",
+      "implementation_status": "implemented",
       "lifecycle": {
         "stage": "active",
         "replacement_feature_ids": [],
         "note": null
       },
       "plan": {
-        "horizon": "backlog",
+        "horizon": "current",
         "slot": null,
-        "target_claim_tier": null,
+        "target_claim_tier": "T1",
         "target_lifecycle_stage": "active"
       },
       "spec_ids": [
         "spc:0615"
       ],
-      "claim_ids": [],
-      "test_ids": [],
+      "claim_ids": [
+        "clm:schema.spec-adr-ids.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.spec-adr-ids.validation"
+      ],
       "requires": []
     },
     {
       "id": "feat:api.spec-adr-linking",
       "title": "API SPEC ADR linking",
       "description": "Track document runtime validation, reference handling, and authored payload persistence for SPEC ADR links.",
-      "implementation_status": "absent",
+      "implementation_status": "implemented",
       "lifecycle": {
         "stage": "active",
         "replacement_feature_ids": [],
         "note": null
       },
       "plan": {
-        "horizon": "backlog",
+        "horizon": "current",
         "slot": null,
-        "target_claim_tier": null,
+        "target_claim_tier": "T1",
         "target_lifecycle_stage": "active"
       },
       "spec_ids": [
         "spc:0615"
       ],
-      "claim_ids": [],
-      "test_ids": [],
+      "claim_ids": [
+        "clm:api.spec-adr-linking.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.api.spec-adr-linking"
+      ],
       "requires": []
     },
     {
       "id": "feat:cli.flag.adr-ids",
       "title": "CLI flag --adr-ids",
       "description": "Track the typed CLI flag surface for setting SPEC ADR ids on create, update, link, and unlink commands.",
-      "implementation_status": "absent",
+      "implementation_status": "implemented",
       "lifecycle": {
         "stage": "active",
         "replacement_feature_ids": [],
         "note": null
       },
       "plan": {
-        "horizon": "backlog",
+        "horizon": "current",
         "slot": null,
-        "target_claim_tier": null,
+        "target_claim_tier": "T1",
         "target_lifecycle_stage": "active"
       },
       "spec_ids": [
         "spc:0615"
       ],
-      "claim_ids": [],
-      "test_ids": [],
+      "claim_ids": [
+        "clm:cli.flag.adr-ids.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.cli.flag.adr-ids"
+      ],
       "requires": []
     },
     {
       "id": "feat:migration.spec-adr-ids-rollout",
       "title": "Migration SPEC adr_ids rollout",
       "description": "Track upgrade behavior that adds adr_ids defaults and rewrites authored SPEC payloads for the new schema version.",
-      "implementation_status": "absent",
+      "implementation_status": "implemented",
       "lifecycle": {
         "stage": "active",
         "replacement_feature_ids": [],
         "note": null
       },
       "plan": {
-        "horizon": "backlog",
+        "horizon": "current",
         "slot": null,
-        "target_claim_tier": null,
+        "target_claim_tier": "T1",
         "target_lifecycle_stage": "active"
       },
       "spec_ids": [
         "spc:0615"
       ],
-      "claim_ids": [],
-      "test_ids": [],
+      "claim_ids": [
+        "clm:migration.spec-adr-ids-rollout.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.migration.spec-adr-ids-rollout"
+      ],
       "requires": []
     },
     {
       "id": "feat:graph.spec-adr-visibility",
       "title": "Graph SPEC ADR visibility",
       "description": "Track graph and export visibility for explicit SPEC to ADR edges and derived feature to ADR edges.",
-      "implementation_status": "absent",
+      "implementation_status": "implemented",
       "lifecycle": {
         "stage": "active",
         "replacement_feature_ids": [],
         "note": null
       },
       "plan": {
-        "horizon": "backlog",
+        "horizon": "current",
         "slot": null,
-        "target_claim_tier": null,
+        "target_claim_tier": "T1",
         "target_lifecycle_stage": "active"
       },
       "spec_ids": [
         "spc:0615"
       ],
-      "claim_ids": [],
-      "test_ids": [],
+      "claim_ids": [
+        "clm:graph.spec-adr-visibility.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.graph.spec-adr-visibility"
+      ],
       "requires": []
     }
   ],
@@ -4815,6 +4835,86 @@
       ],
       "evidence_ids": [
         "evd:t1.schema.entity-id-max-lengths.report"
+      ]
+    },
+    {
+      "id": "tst:pytest.spec-adr-ids.validation",
+      "title": "Schema SPEC adr_ids validation tests",
+      "status": "passing",
+      "kind": "pytest",
+      "path": "tests/unit/test_spec_adr_ids_validation.py",
+      "feature_ids": [
+        "feat:schema.spec-adr-ids"
+      ],
+      "claim_ids": [
+        "clm:schema.spec-adr-ids.t1"
+      ],
+      "evidence_ids": [
+        "evd:t1.spec-adr-ids.validation"
+      ]
+    },
+    {
+      "id": "tst:pytest.api.spec-adr-linking",
+      "title": "API SPEC ADR linking tests",
+      "status": "passing",
+      "kind": "pytest",
+      "path": "tests/unit/test_spec_adr_ids_validation.py",
+      "feature_ids": [
+        "feat:api.spec-adr-linking"
+      ],
+      "claim_ids": [
+        "clm:api.spec-adr-linking.t1"
+      ],
+      "evidence_ids": [
+        "evd:t1.spec-adr-linking.api"
+      ]
+    },
+    {
+      "id": "tst:pytest.cli.flag.adr-ids",
+      "title": "CLI flag --adr-ids tests",
+      "status": "passing",
+      "kind": "pytest",
+      "path": "tests/integration/test_cli_spec.py",
+      "feature_ids": [
+        "feat:cli.flag.adr-ids"
+      ],
+      "claim_ids": [
+        "clm:cli.flag.adr-ids.t1"
+      ],
+      "evidence_ids": [
+        "evd:t1.cli.flag.adr-ids"
+      ]
+    },
+    {
+      "id": "tst:pytest.migration.spec-adr-ids-rollout",
+      "title": "Migration SPEC adr_ids rollout tests",
+      "status": "passing",
+      "kind": "pytest",
+      "path": "tests/unit/test_migrate_v0_1_0_to_v0_2_0.py",
+      "feature_ids": [
+        "feat:migration.spec-adr-ids-rollout"
+      ],
+      "claim_ids": [
+        "clm:migration.spec-adr-ids-rollout.t1"
+      ],
+      "evidence_ids": [
+        "evd:t1.migration.spec-adr-ids-rollout"
+      ]
+    },
+    {
+      "id": "tst:pytest.graph.spec-adr-visibility",
+      "title": "Graph SPEC ADR visibility tests",
+      "status": "passing",
+      "kind": "pytest",
+      "path": "tests/unit/test_graph_export.py",
+      "feature_ids": [
+        "feat:graph.spec-adr-visibility"
+      ],
+      "claim_ids": [
+        "clm:graph.spec-adr-visibility.t1"
+      ],
+      "evidence_ids": [
+        "evd:t1.graph.spec-adr-visibility"
       ]
     }
   ],
@@ -6586,6 +6686,91 @@
       "evidence_ids": [
         "evd:t1.schema.entity-id-max-lengths.report"
       ]
+    },
+    {
+      "id": "clm:schema.spec-adr-ids.t1",
+      "title": "Schema SPEC adr_ids claim",
+      "status": "certified",
+      "tier": "T1",
+      "kind": "regression",
+      "description": "SPEC rows and authored SPEC payloads support typed adr_ids with validated ADR targets.",
+      "feature_ids": [
+        "feat:schema.spec-adr-ids"
+      ],
+      "test_ids": [
+        "tst:pytest.spec-adr-ids.validation"
+      ],
+      "evidence_ids": [
+        "evd:t1.spec-adr-ids.validation"
+      ]
+    },
+    {
+      "id": "clm:api.spec-adr-linking.t1",
+      "title": "API SPEC ADR linking claim",
+      "status": "certified",
+      "tier": "T1",
+      "kind": "regression",
+      "description": "Document APIs persist, validate, and link typed SPEC to ADR relationships.",
+      "feature_ids": [
+        "feat:api.spec-adr-linking"
+      ],
+      "test_ids": [
+        "tst:pytest.api.spec-adr-linking"
+      ],
+      "evidence_ids": [
+        "evd:t1.spec-adr-linking.api"
+      ]
+    },
+    {
+      "id": "clm:cli.flag.adr-ids.t1",
+      "title": "CLI flag --adr-ids claim",
+      "status": "certified",
+      "tier": "T1",
+      "kind": "regression",
+      "description": "SPEC CLI flows expose typed --adr-ids flags for create, update, link, and unlink operations.",
+      "feature_ids": [
+        "feat:cli.flag.adr-ids"
+      ],
+      "test_ids": [
+        "tst:pytest.cli.flag.adr-ids"
+      ],
+      "evidence_ids": [
+        "evd:t1.cli.flag.adr-ids"
+      ]
+    },
+    {
+      "id": "clm:migration.spec-adr-ids-rollout.t1",
+      "title": "Migration SPEC adr_ids rollout claim",
+      "status": "certified",
+      "tier": "T1",
+      "kind": "regression",
+      "description": "Upgrade flow adds adr_ids defaults to registry SPEC rows and authored SPEC payloads.",
+      "feature_ids": [
+        "feat:migration.spec-adr-ids-rollout"
+      ],
+      "test_ids": [
+        "tst:pytest.migration.spec-adr-ids-rollout"
+      ],
+      "evidence_ids": [
+        "evd:t1.migration.spec-adr-ids-rollout"
+      ]
+    },
+    {
+      "id": "clm:graph.spec-adr-visibility.t1",
+      "title": "Graph SPEC ADR visibility claim",
+      "status": "certified",
+      "tier": "T1",
+      "kind": "regression",
+      "description": "Graph export emits explicit SPEC to ADR edges and derived feature to ADR visibility without storing feature adr_ids.",
+      "feature_ids": [
+        "feat:graph.spec-adr-visibility"
+      ],
+      "test_ids": [
+        "tst:pytest.graph.spec-adr-visibility"
+      ],
+      "evidence_ids": [
+        "evd:t1.graph.spec-adr-visibility"
+      ]
     }
   ],
   "evidence": [
@@ -8044,6 +8229,76 @@
       "test_ids": [
         "tst:pytest.schema.entity-id-max-lengths"
       ]
+    },
+    {
+      "id": "evd:t1.spec-adr-ids.validation",
+      "title": "Schema SPEC adr_ids evidence",
+      "status": "passed",
+      "kind": "report",
+      "tier": "T1",
+      "path": ".ssot/evidence/reports/feature-cert/cert-105.json",
+      "claim_ids": [
+        "clm:schema.spec-adr-ids.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.spec-adr-ids.validation"
+      ]
+    },
+    {
+      "id": "evd:t1.spec-adr-linking.api",
+      "title": "API SPEC ADR linking evidence",
+      "status": "passed",
+      "kind": "report",
+      "tier": "T1",
+      "path": ".ssot/evidence/reports/feature-cert/cert-106.json",
+      "claim_ids": [
+        "clm:api.spec-adr-linking.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.api.spec-adr-linking"
+      ]
+    },
+    {
+      "id": "evd:t1.cli.flag.adr-ids",
+      "title": "CLI flag --adr-ids evidence",
+      "status": "passed",
+      "kind": "report",
+      "tier": "T1",
+      "path": ".ssot/evidence/reports/feature-cert/cert-107.json",
+      "claim_ids": [
+        "clm:cli.flag.adr-ids.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.cli.flag.adr-ids"
+      ]
+    },
+    {
+      "id": "evd:t1.migration.spec-adr-ids-rollout",
+      "title": "Migration SPEC adr_ids rollout evidence",
+      "status": "passed",
+      "kind": "report",
+      "tier": "T1",
+      "path": ".ssot/evidence/reports/feature-cert/cert-108.json",
+      "claim_ids": [
+        "clm:migration.spec-adr-ids-rollout.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.migration.spec-adr-ids-rollout"
+      ]
+    },
+    {
+      "id": "evd:t1.graph.spec-adr-visibility",
+      "title": "Graph SPEC ADR visibility evidence",
+      "status": "passed",
+      "kind": "report",
+      "tier": "T1",
+      "path": ".ssot/evidence/reports/feature-cert/cert-109.json",
+      "claim_ids": [
+        "clm:graph.spec-adr-visibility.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.graph.spec-adr-visibility"
+      ]
     }
   ],
   "issues": [],
@@ -8167,6 +8422,20 @@
         "feat:schema.spec",
         "feat:schema.validation-report",
         "feat:workspace.package-dependency-dag"
+      ],
+      "profile_ids": []
+    },
+    {
+      "id": "bnd:spec-adr-linking",
+      "title": "SPEC ADR linking boundary",
+      "status": "frozen",
+      "frozen": true,
+      "feature_ids": [
+        "feat:schema.spec-adr-ids",
+        "feat:api.spec-adr-linking",
+        "feat:cli.flag.adr-ids",
+        "feat:migration.spec-adr-ids-rollout",
+        "feat:graph.spec-adr-visibility"
       ],
       "profile_ids": []
     }
@@ -8396,6 +8665,26 @@
         "evd:cert.104.report",
         "evd:t1.migration.entity-id-max-length-rollout.report",
         "evd:t1.schema.entity-id-max-lengths.report"
+      ]
+    },
+    {
+      "id": "rel:spec-adr-linking",
+      "version": "0.2.6.dev1",
+      "status": "certified",
+      "boundary_id": "bnd:spec-adr-linking",
+      "claim_ids": [
+        "clm:schema.spec-adr-ids.t1",
+        "clm:api.spec-adr-linking.t1",
+        "clm:cli.flag.adr-ids.t1",
+        "clm:migration.spec-adr-ids-rollout.t1",
+        "clm:graph.spec-adr-visibility.t1"
+      ],
+      "evidence_ids": [
+        "evd:t1.spec-adr-ids.validation",
+        "evd:t1.spec-adr-linking.api",
+        "evd:t1.cli.flag.adr-ids",
+        "evd:t1.migration.spec-adr-ids-rollout",
+        "evd:t1.graph.spec-adr-visibility"
       ]
     }
   ],

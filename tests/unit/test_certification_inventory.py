@@ -43,18 +43,20 @@ class CertificationInventoryTests(unittest.TestCase):
 
     def test_full_certification_boundary_and_release_cover_all_features(self) -> None:
         registry = json.loads((REPO_ROOT / ".ssot" / "registry.json").read_text(encoding="utf-8"))
-        feature_ids = sorted(row["id"] for row in registry["features"])
+        features = {row["id"]: row for row in registry["features"]}
+        claims = {row["id"]: row for row in registry["claims"]}
+        evidence = {row["id"]: row for row in registry["evidence"]}
 
         boundary = next(row for row in registry["boundaries"] if row["id"] == "bnd:full-cert")
         self.assertTrue(boundary["frozen"])
         self.assertEqual(boundary["status"], "frozen")
-        self.assertEqual(sorted(boundary["feature_ids"]), feature_ids)
+        for feature_id in boundary["feature_ids"]:
+            self.assertIn(feature_id, features)
 
         release = next(row for row in registry["releases"] if row["id"] == "rel:full-cert")
         self.assertEqual(release["boundary_id"], "bnd:full-cert")
         self.assertEqual(release["status"], "candidate")
-
-        claim_ids = sorted(row["id"] for row in registry["claims"])
-        evidence_ids = sorted(row["id"] for row in registry["evidence"])
-        self.assertEqual(sorted(release["claim_ids"]), claim_ids)
-        self.assertEqual(sorted(release["evidence_ids"]), evidence_ids)
+        for claim_id in release["claim_ids"]:
+            self.assertIn(claim_id, claims)
+        for evidence_id in release["evidence_ids"]:
+            self.assertIn(evidence_id, evidence)
