@@ -21,7 +21,11 @@ from ssot_cli.common import add_path_argument, compact_dict
 
 
 def register_release(subparsers: argparse._SubParsersAction) -> None:
-    release = subparsers.add_parser("release", help="Release operations.")
+    release = subparsers.add_parser(
+        "release",
+        help="Release operations.",
+        description="Releases are publication units tied to a boundary and the claims and evidence required for certification, promotion, and publication.",
+    )
     release_sub = release.add_subparsers(dest="release_command", required=True)
 
     create = release_sub.add_parser("create", help="Create a release.")

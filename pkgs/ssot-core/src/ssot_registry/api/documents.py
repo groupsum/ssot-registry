@@ -24,6 +24,7 @@ from ssot_registry.model.document import (
     reservation_kind_key,
     section_for_document_kind,
 )
+from ssot_registry.model.schema_version import schema_version_meets_minimum
 from ssot_registry.model.registry import normalize_repo_kind
 from ssot_registry.util.document_io import (
     build_document_payload,
@@ -526,7 +527,7 @@ def sync_documents_in_memory(registry: dict[str, Any], repo_root: Path, kind: st
     for manifest_entry in load_packaged_document_manifest(kind):
         if manifest_entry.get("origin") != "ssot-origin":
             raise ValidationError(f"Packaged {kind} manifest entry {manifest_entry.get('id')} must use origin 'ssot-origin'")
-        if manifest_entry.get("minimum_schema_version", 0) > registry.get("schema_version", 0):
+        if not schema_version_meets_minimum(registry.get("schema_version", 0), manifest_entry.get("minimum_schema_version", 0)):
             continue
         outcome, document_id = _sync_manifest_document(registry, repo_root, kind, manifest_entry, lookup)
         summary[outcome].append(document_id)

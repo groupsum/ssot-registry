@@ -11,7 +11,7 @@ from tests.helpers import workspace_tempdir
 
 def _adr_payload(number: int, slug: str) -> dict[str, object]:
     return {
-        "schema_version": 9,
+        "schema_version": "0.1.0",
         "kind": "adr",
         "id": f"adr:{number:04d}",
         "number": number,
@@ -32,7 +32,7 @@ def _adr_payload(number: int, slug: str) -> dict[str, object]:
 
 def _spec_payload(number: int, slug: str) -> dict[str, object]:
     return {
-        "schema_version": 9,
+        "schema_version": "0.1.0",
         "kind": "spec",
         "id": f"spc:{number:04d}",
         "number": number,
@@ -79,7 +79,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
         source_path = upstream / "adr" / "ADR-0600-example.yaml"
         source_path.write_text(dump_document_yaml(_adr_payload(600, "example")), encoding="utf-8")
         registry = {
-            "schema_version": 9,
+            "schema_version": "0.1.0",
             "tooling": {"ssot_registry_version": "0.2.6.dev1"},
             "adrs": [
                 {
@@ -117,7 +117,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
         stale = packaged / "adr" / "ADR-0601-stale.yaml"
         stale.write_text(dump_document_yaml(_adr_payload(601, "stale")), encoding="utf-8")
         registry = {
-            "schema_version": 9,
+            "schema_version": "0.1.0",
             "tooling": {"ssot_registry_version": "0.2.6.dev1"},
             "adrs": [
                 {
@@ -152,7 +152,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
         source_path = upstream / "specs" / "SPEC-0607-repo-policy.yaml"
         source_path.write_text(dump_document_yaml(_spec_payload(607, "repo-policy")), encoding="utf-8")
         registry = {
-            "schema_version": 9,
+            "schema_version": "0.1.0",
             "tooling": {"ssot_registry_version": "0.2.6.dev1"},
             "adrs": [],
             "specs": [
@@ -221,7 +221,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
             encoding="utf-8",
         )
         registry = {
-            "schema_version": 9,
+            "schema_version": "0.1.0",
             "tooling": {"ssot_registry_version": "0.2.6.dev1"},
             "adrs": [
                 {

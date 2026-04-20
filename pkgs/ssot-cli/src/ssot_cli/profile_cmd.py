@@ -21,7 +21,11 @@ _LINK_MAPPING = {
 
 
 def register_profile(subparsers: argparse._SubParsersAction) -> None:
-    profile = subparsers.add_parser("profile", help="Profile operations.")
+    profile = subparsers.add_parser(
+        "profile",
+        help="Profile operations.",
+        description="Profiles are reusable bundles of features and nested profiles used for capability, certification, deployment, or interoperability scopes.",
+    )
     profile_sub = profile.add_subparsers(dest="profile_command", required=True)
 
     create = profile_sub.add_parser("create", help="Create a profile.")

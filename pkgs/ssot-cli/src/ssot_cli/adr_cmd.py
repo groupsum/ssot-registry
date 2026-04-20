@@ -18,7 +18,11 @@ from ssot_cli.common import add_path_argument, compact_dict
 
 
 def register_adr(subparsers: argparse._SubParsersAction) -> None:
-    adr = subparsers.add_parser("adr", help="ADR operations.")
+    adr = subparsers.add_parser(
+        "adr",
+        help="ADR operations.",
+        description="Architectural decision records capture why the system is designed the way it is and preserve decision history.",
+    )
     adr_sub = adr.add_subparsers(dest="adr_command", required=True)
 
     create = adr_sub.add_parser("create", help="Create an ADR.")

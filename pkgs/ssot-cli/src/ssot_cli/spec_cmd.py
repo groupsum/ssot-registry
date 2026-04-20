@@ -18,7 +18,11 @@ from ssot_cli.common import add_path_argument, compact_dict
 
 
 def register_spec(subparsers: argparse._SubParsersAction) -> None:
-    spec = subparsers.add_parser("spec", help="Spec operations.")
+    spec = subparsers.add_parser(
+        "spec",
+        help="Spec operations.",
+        description="SPEC documents define normative or operational contract that repositories are expected to satisfy.",
+    )
     spec_sub = spec.add_subparsers(dest="spec_command", required=True)
 
     create = spec_sub.add_parser("create", help="Create a spec.")

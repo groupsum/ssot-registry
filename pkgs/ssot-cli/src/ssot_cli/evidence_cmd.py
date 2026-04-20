@@ -22,7 +22,11 @@ _LINK_MAPPING = {
 
 
 def register_evidence(subparsers: argparse._SubParsersAction) -> None:
-    evidence = subparsers.add_parser("evidence", help="Evidence operations.")
+    evidence = subparsers.add_parser(
+        "evidence",
+        help="Evidence operations.",
+        description="Evidence rows track artifacts that support claims and test outcomes, such as bundles, logs, or reports.",
+    )
     evidence_sub = evidence.add_subparsers(dest="evidence_command", required=True)
 
     create = evidence_sub.add_parser("create", help="Create an evidence row.")

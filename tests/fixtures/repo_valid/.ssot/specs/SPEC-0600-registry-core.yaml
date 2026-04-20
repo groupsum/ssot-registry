@@ -1,4 +1,4 @@
-schema_version: 9
+schema_version: "0.1.0"
 kind: "spec"
 id: "spc:0600"
 number: 600
@@ -19,8 +19,9 @@ body: |-
   
   `repo.kind` is required and MUST be one of:
   
-  - `ssot-upstream`
-  - `operator-repo`
+  - `ssot-core`
+  - `ssot-origin`
+  - `repo-local`
   
   ## Top Level Sections
   

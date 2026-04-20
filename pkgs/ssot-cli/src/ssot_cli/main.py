@@ -39,7 +39,7 @@ def _default_prog() -> str:
 def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=prog or _default_prog(),
-        description="Portable single-source-of-truth registry for features, tests, claims, evidence, issues, risks, boundaries, and releases.",
+        description="Portable single-source-of-truth registry for features, profiles, tests, claims, evidence, issues, risks, boundaries, releases, ADRs, and SPECs.",
     )
     parser.add_argument("--output-format", default="json", choices=OUTPUT_FORMATS, help="CLI output format.")
     parser.add_argument("--output-file", default=None, help="Optional file to write the rendered command output.")

@@ -14,7 +14,11 @@ _LINK_MAPPING = {
 
 
 def register_test(subparsers: argparse._SubParsersAction) -> None:
-    test = subparsers.add_parser("test", help="Test operations.")
+    test = subparsers.add_parser(
+        "test",
+        help="Test operations.",
+        description="Tests are executable or planned verification rows linked to features, claims, and evidence.",
+    )
     test_sub = test.add_subparsers(dest="test_command", required=True)
 
     create = test_sub.add_parser("create", help="Create a test.")

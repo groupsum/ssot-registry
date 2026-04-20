@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import shutil
+import re
 from pathlib import Path
 
 
@@ -17,6 +18,7 @@ EXPECTED_RANGES = {
     "ssot-core": {"adr": (1, 599), "specs": (1, 599)},
     "ssot-origin": {"adr": (600, 999), "specs": (600, 999)},
 }
+SEMVER_PATTERN = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 
 
 def _sha256_normalized_text(path: Path) -> str:
@@ -28,6 +30,14 @@ def _load_registry(path: Path) -> dict[str, object]:
     if not isinstance(payload, dict):
         raise ValueError(f"Registry payload must be an object: {path}")
     return payload
+
+
+def _normalize_schema_version(value: object, fallback: int | str = 4) -> int | str:
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str) and SEMVER_PATTERN.match(value):
+        return value
+    return fallback
 
 
 def _section_for_kind(kind: str) -> str:
@@ -170,7 +180,7 @@ def _build_manifest_entry(
 def sync_manifest(registry: dict[str, object], kind: str, destination: Path, *, check: bool) -> list[str]:
     manifest_path = destination / "manifest.json"
     existing_manifest = _load_existing_manifest(manifest_path)
-    fallback_schema_version = int(registry.get("schema_version", 4))
+    fallback_schema_version = _normalize_schema_version(registry.get("schema_version", 4))
     tooling = registry.get("tooling", {})
     fallback_version = str(tooling.get("ssot_registry_version", "0.2.1")) if isinstance(tooling, dict) else "0.2.1"
 

@@ -25,7 +25,11 @@ _LINK_MAPPING = {
 
 
 def register_risk(subparsers: argparse._SubParsersAction) -> None:
-    risk = subparsers.add_parser("risk", help="Risk operations.")
+    risk = subparsers.add_parser(
+        "risk",
+        help="Risk operations.",
+        description="Risks capture active or accepted exposure tied to related features, claims, tests, evidence, and issues.",
+    )
     risk_sub = risk.add_subparsers(dest="risk_command", required=True)
 
     create = risk_sub.add_parser("create", help="Create a risk.")

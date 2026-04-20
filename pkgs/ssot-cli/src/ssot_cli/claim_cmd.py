@@ -25,7 +25,11 @@ _LINK_MAPPING = {
 
 
 def register_claim(subparsers: argparse._SubParsersAction) -> None:
-    claim = subparsers.add_parser("claim", help="Claim operations.")
+    claim = subparsers.add_parser(
+        "claim",
+        help="Claim operations.",
+        description="Claims are tiered statements about feature behavior that are backed by tests and evidence over time.",
+    )
     claim_sub = claim.add_subparsers(dest="claim_command", required=True)
 
     create = claim_sub.add_parser("create", help="Create a claim.")

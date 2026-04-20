@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from ssot_contracts.generated.python.enums import SCHEMA_VERSION
+from ssot_registry.model.schema_version import is_known_schema_version, schema_version_is_older
 from ssot_registry.reports.validation_report import build_validation_report
 from ssot_registry.validators import (
     validate_identity,
@@ -45,10 +46,12 @@ def validate_registry(path: str | Path) -> dict[str, object]:
     registry_path, repo_root, registry = load_registry(path)
     schema_version = registry.get("schema_version")
     if schema_version != SCHEMA_VERSION:
-        if isinstance(schema_version, int) and schema_version < SCHEMA_VERSION:
+        if schema_version_is_older(schema_version, SCHEMA_VERSION):
             failures = [
                 f"Registry schema_version {schema_version} is older than supported schema_version {SCHEMA_VERSION}; run `ssot upgrade {repo_root.as_posix()}`"
             ]
+        elif not is_known_schema_version(schema_version, SCHEMA_VERSION):
+            failures = [f"Registry schema_version is unsupported: {schema_version!r}"]
         else:
             failures = [f"Registry schema_version must be {SCHEMA_VERSION}"]
         return build_validation_report(registry, registry_path.as_posix(), failures, [])

@@ -85,7 +85,7 @@ class MigrateV8ToV9Tests(unittest.TestCase):
             source.write_text(
                 json.dumps(
                     {
-                        "schema_version": 9,
+                        "schema_version": "0.1.0",
                         "kind": "adr",
                         "id": "adr:1000",
                         "number": 1000,

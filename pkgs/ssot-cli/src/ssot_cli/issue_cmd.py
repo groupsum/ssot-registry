@@ -26,7 +26,11 @@ _LINK_MAPPING = {
 
 
 def register_issue(subparsers: argparse._SubParsersAction) -> None:
-    issue = subparsers.add_parser("issue", help="Issue operations.")
+    issue = subparsers.add_parser(
+        "issue",
+        help="Issue operations.",
+        description="Issues are plannable problem records that can block releases and link to affected features, claims, tests, evidence, and risks.",
+    )
     issue_sub = issue.add_subparsers(dest="issue_command", required=True)
 
     create = issue_sub.add_parser("create", help="Create an issue.")

@@ -30,6 +30,15 @@ class CliPackageLayoutTests(unittest.TestCase):
         self.assertIn("--output-format", options)
         self.assertIn("--output-file", options)
 
+    def test_entity_parsers_expose_semantic_descriptions(self) -> None:
+        parser = build_parser(prog="ssot")
+        subparsers_action = next(action for action in parser._actions if action.dest == "command")
+
+        self.assertIn("decision history", subparsers_action.choices["adr"].description)
+        self.assertIn("normative or operational contract", subparsers_action.choices["spec"].description)
+        self.assertIn("targetable implementation units", subparsers_action.choices["feature"].description)
+        self.assertIn("scoped set of direct features and reusable profiles", subparsers_action.choices["boundary"].description)
+
     def test_compatibility_entrypoint_reexports_main(self) -> None:
         self.assertIsNotNone(compatibility_main)
 

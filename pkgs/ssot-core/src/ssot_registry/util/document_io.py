@@ -6,7 +6,9 @@ from pathlib import Path
 from typing import Any
 
 from ssot_contracts import load_schema_text
+from ssot_contracts.generated.python.enums import SCHEMA_VERSION
 from ssot_registry.model.document import DOCUMENT_ORIGINS, DOCUMENT_SLUG_PATTERN, DOCUMENT_STATUSES, SPEC_KINDS
+from ssot_registry.model.schema_version import is_semver_schema_version
 from ssot_registry.util.errors import ValidationError
 from ssot_registry.util.jsonio import stable_json_dumps
 
@@ -143,7 +145,7 @@ def parse_markdown_document(kind: str, text: str, *, fallback_title: str) -> tup
 def build_document_payload(kind: str, row: dict[str, Any], body: str) -> dict[str, Any]:
     normalized_body = body.strip()
     payload: dict[str, Any] = {
-        "schema_version": row.get("minimum_schema_version") or row.get("schema_version") or 9,
+        "schema_version": row.get("minimum_schema_version") or row.get("schema_version") or SCHEMA_VERSION,
         "kind": kind,
         "id": row["id"],
         "number": row["number"],
@@ -547,8 +549,8 @@ def validate_document_payload(kind: str, payload: dict[str, Any], *, expected_ro
         raise ValidationError(f"Document payload missing required fields: {', '.join(missing)}")
     if payload.get("kind") != kind:
         raise ValidationError(f"Document kind must be {kind}")
-    if not isinstance(payload.get("schema_version"), int) or payload["schema_version"] < 1:
-        raise ValidationError("Document schema_version must be an integer >= 1")
+    if not is_semver_schema_version(payload.get("schema_version")):
+        raise ValidationError("Document schema_version must be a semver string like 0.1.0")
     if not isinstance(payload.get("id"), str) or not payload["id"].strip():
         raise ValidationError("Document id must be a non-empty string")
     if not isinstance(payload.get("number"), int) or payload["number"] < 1:

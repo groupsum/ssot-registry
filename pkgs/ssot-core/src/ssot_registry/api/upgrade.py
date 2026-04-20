@@ -42,6 +42,8 @@ MIGRATION_RELEASE_WINDOWS = {
     (6, 7): "0.2.3->0.2.4",
     (7, 8): "0.2.4->0.2.5",
     (8, 9): "0.2.5->0.2.6",
+    (9, 10): "0.2.6->0.2.7",
+    (10, "0.1.0"): "0.2.7->0.2.7",
 }
 
 
@@ -425,6 +427,34 @@ def migrate_v8_to_v9(
     return migrated, summary
 
 
+def migrate_v9_to_v10(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    _ = repo_root, previous_version, target_version
+    migrated = deepcopy(registry)
+    migrated["schema_version"] = 10
+    for feature in migrated.get("features", []):
+        feature.setdefault("spec_ids", [])
+    return migrated
+
+
+def migrate_v10_to_v0_1_0(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    _ = repo_root, previous_version, target_version
+    migrated = deepcopy(registry)
+    migrated["schema_version"] = SCHEMA_VERSION
+    return migrated
+
+
 def target_version_from_registry(registry: dict[str, Any]) -> str:
     tooling = registry.get("tooling")
     if isinstance(tooling, dict):
@@ -434,7 +464,7 @@ def target_version_from_registry(registry: dict[str, Any]) -> str:
     return __version__
 
 
-def _migration_window_label(from_schema_version: int, to_schema_version: int) -> str:
+def _migration_window_label(from_schema_version: object, to_schema_version: object) -> str:
     release_window = MIGRATION_RELEASE_WINDOWS.get((from_schema_version, to_schema_version))
     if release_window is None:
         return f"schema {from_schema_version}->{to_schema_version}"
@@ -522,8 +552,28 @@ def upgrade_registry(
         )
         schema_migrations.append("migrate_v8_to_v9")
         migrations.append(_migration_window_label(8, 9))
+        source_schema = 9
+    if source_schema == 9:
+        working = migrate_v9_to_v10(
+            working,
+            repo_root,
+            previous_version=source_tooling_version,
+            target_version=target_version,
+        )
+        schema_migrations.append("migrate_v9_to_v10")
+        migrations.append(_migration_window_label(9, 10))
+        source_schema = 10
+    if source_schema == 10:
+        working = migrate_v10_to_v0_1_0(
+            working,
+            repo_root,
+            previous_version=source_tooling_version,
+            target_version=target_version,
+        )
+        schema_migrations.append("migrate_v10_to_v0_1_0")
+        migrations.append(_migration_window_label(10, SCHEMA_VERSION))
     elif source_schema != SCHEMA_VERSION:
-        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8 or {SCHEMA_VERSION}")
+        raise RegistryError(f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10 or {SCHEMA_VERSION}")
 
     normalized_current = _normalize_current_registry(working)
 

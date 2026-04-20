@@ -26,7 +26,11 @@ _LINK_MAPPING = {
 
 
 def register_feature(subparsers: argparse._SubParsersAction) -> None:
-    feature = subparsers.add_parser("feature", help="Feature operations.")
+    feature = subparsers.add_parser(
+        "feature",
+        help="Feature operations.",
+        description="Features are targetable implementation units that connect planning, claims, tests, and supporting specs.",
+    )
     feature_sub = feature.add_subparsers(dest="feature_command", required=True)
 
     create = feature_sub.add_parser("create", help="Create a feature.")

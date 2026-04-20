@@ -59,6 +59,27 @@ class CliUpgradeTests(unittest.TestCase):
             self.assertEqual(payload["schema_migrations"], [])
             self.assertFalse(payload["changed"])
 
+    def test_upgrade_migrates_v10_repo_to_current_schema(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+        registry_path = repo / ".ssot" / "registry.json"
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+        registry["schema_version"] = 10
+        registry["tooling"]["ssot_registry_version"] = "0.2.7"
+        registry_path.write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
+
+        upgrade = run_cli("upgrade", str(repo), "--target-version", __version__)
+        self.assertEqual(upgrade.returncode, 0, upgrade.stderr)
+        payload = json.loads(upgrade.stdout)
+        self.assertIn("0.2.7->0.2.7 (schema 10->0.1.0)", payload["migrations"])
+        self.assertIn("migrate_v10_to_v0_1_0", payload["schema_migrations"])
+
+        upgraded_registry = json.loads(registry_path.read_text(encoding="utf-8"))
+        self.assertEqual("0.1.0", upgraded_registry["schema_version"])
+        for feature in upgraded_registry["features"]:
+            self.assertIn("spec_ids", feature)
+
 
 if __name__ == "__main__":
     unittest.main()

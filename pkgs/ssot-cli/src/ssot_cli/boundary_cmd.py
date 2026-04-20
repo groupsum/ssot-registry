@@ -18,7 +18,11 @@ from ssot_cli.common import add_optional_bool_argument, add_path_argument, compa
 
 
 def register_boundary(subparsers: argparse._SubParsersAction) -> None:
-    boundary = subparsers.add_parser("boundary", help="Boundary operations.")
+    boundary = subparsers.add_parser(
+        "boundary",
+        help="Boundary operations.",
+        description="Boundaries define the scoped set of direct features and reusable profiles that a release is evaluated against.",
+    )
     boundary_sub = boundary.add_subparsers(dest="boundary_command", required=True)
 
     create = boundary_sub.add_parser("create", help="Create a boundary.")
