@@ -185,6 +185,7 @@
       "--note",
       "--replacement-feature-id",
       "--requires",
+      "--spec-ids",
       "--slot",
       "--target-lifecycle-stage",
       "--test-ids",
@@ -208,6 +209,7 @@
       "--claim-ids",
       "--id",
       "--requires",
+      "--spec-ids",
       "--test-ids"
     ],
     "feature list": [],
@@ -222,6 +224,7 @@
       "--claim-ids",
       "--id",
       "--requires",
+      "--spec-ids",
       "--test-ids"
     ],
     "feature update": [

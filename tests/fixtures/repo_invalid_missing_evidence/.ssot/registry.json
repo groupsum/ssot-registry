@@ -67,6 +67,7 @@
         "target_claim_tier": "T3",
         "target_lifecycle_stage": "active"
       },
+      "spec_ids": [],
       "claim_ids": [
         "clm:rfc.9000.connection-migration.t3"
       ],

@@ -65,7 +65,7 @@ CLAIM_STATUS_RANK = {
 REQUIRED_TOP_LEVEL_KEYS = set(TOP_LEVEL_SECTIONS)
 
 REQUIRED_ENTITY_FIELDS = {
-    "features": {"id", "title", "description", "implementation_status", "lifecycle", "plan", "claim_ids", "test_ids"},
+    "features": {"id", "title", "description", "implementation_status", "lifecycle", "plan", "spec_ids", "claim_ids", "test_ids"},
     "profiles": {"id", "title", "description", "status", "kind", "feature_ids", "profile_ids", "claim_tier", "evaluation"},
     "tests": {"id", "title", "status", "kind", "path", "feature_ids", "claim_ids", "evidence_ids"},
     "claims": {"id", "title", "status", "tier", "kind", "description", "feature_ids", "test_ids", "evidence_ids"},
@@ -80,6 +80,7 @@ REF_FIELD_TARGETS = {
     ("tests", "feature_ids"): "features",
     ("tests", "claim_ids"): "claims",
     ("tests", "evidence_ids"): "evidence",
+    ("features", "spec_ids"): "specs",
     ("features", "claim_ids"): "claims",
     ("features", "test_ids"): "tests",
     ("features", "requires"): "features",

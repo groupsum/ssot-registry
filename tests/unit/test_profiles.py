@@ -125,6 +125,7 @@ class ProfileEvaluationTests(unittest.TestCase):
                 "implementation_status": "implemented",
                 "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": None},
                 "plan": {"horizon": "current", "slot": None, "target_claim_tier": "T3", "target_lifecycle_stage": "active"},
+                "spec_ids": [],
                 "claim_ids": ["clm:rfc.9000.connection-migration.t3"],
                 "test_ids": ["tst:pytest.rfc.9000.connection-migration"],
                 "requires": [],

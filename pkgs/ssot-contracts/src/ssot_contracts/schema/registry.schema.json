@@ -425,6 +425,7 @@
         "implementation_status",
         "lifecycle",
         "plan",
+        "spec_ids",
         "claim_ids",
         "test_ids"
       ],
@@ -451,6 +452,9 @@
         },
         "plan": {
           "$ref": "#/$defs/featurePlan"
+        },
+        "spec_ids": {
+          "$ref": "#/$defs/stringList"
         },
         "claim_ids": {
           "$ref": "#/$defs/stringList"

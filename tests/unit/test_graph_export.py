@@ -33,7 +33,7 @@ class GraphExportTests(unittest.TestCase):
 
     def test_dot_export_escapes_newlines_in_ids(self) -> None:
         registry = {
-            "features": [{"id": "feat:line\nbreak", "title": "Feature", "description": "", "implementation_status": "absent", "plan": {"horizon": "backlog"}, "lifecycle": {"stage": "active"}, "claim_ids": [], "test_ids": [], "requires": []}],
+            "features": [{"id": "feat:line\nbreak", "title": "Feature", "description": "", "implementation_status": "absent", "plan": {"horizon": "backlog"}, "lifecycle": {"stage": "active"}, "spec_ids": [], "claim_ids": [], "test_ids": [], "requires": []}],
             "tests": [],
             "claims": [],
             "evidence": [],

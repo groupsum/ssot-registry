@@ -18,6 +18,7 @@ from ssot_cli.common import add_optional_bool_argument, add_path_argument, colle
 
 
 _LINK_MAPPING = {
+    "spec_ids": "spec_ids",
     "claim_ids": "claim_ids",
     "test_ids": "test_ids",
     "requires": "requires",
@@ -41,6 +42,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--claim-tier", choices=sorted(CLAIM_TIERS), default=None)
     create.add_argument("--target-lifecycle-stage", choices=sorted(FEATURE_LIFECYCLE_STAGES), default="active")
     create.add_argument("--slot", default=None)
+    create.add_argument("--spec-ids", nargs="*", default=[])
     create.add_argument("--claim-ids", nargs="*", default=[])
     create.add_argument("--test-ids", nargs="*", default=[])
     create.add_argument("--requires", nargs="*", default=[])
@@ -68,17 +70,19 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     delete.add_argument("--id", required=True)
     delete.set_defaults(func=run_delete)
 
-    link = feature_sub.add_parser("link", help="Link a feature to claims, tests, or required features.")
+    link = feature_sub.add_parser("link", help="Link a feature to specs, claims, tests, or required features.")
     add_path_argument(link)
     link.add_argument("--id", required=True)
+    link.add_argument("--spec-ids", nargs="*")
     link.add_argument("--claim-ids", nargs="*")
     link.add_argument("--test-ids", nargs="*")
     link.add_argument("--requires", nargs="*")
     link.set_defaults(func=run_link)
 
-    unlink = feature_sub.add_parser("unlink", help="Unlink a feature from claims, tests, or required features.")
+    unlink = feature_sub.add_parser("unlink", help="Unlink a feature from specs, claims, tests, or required features.")
     add_path_argument(unlink)
     unlink.add_argument("--id", required=True)
+    unlink.add_argument("--spec-ids", nargs="*")
     unlink.add_argument("--claim-ids", nargs="*")
     unlink.add_argument("--test-ids", nargs="*")
     unlink.add_argument("--requires", nargs="*")
@@ -139,6 +143,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
             "target_claim_tier": args.claim_tier,
             "target_lifecycle_stage": args.target_lifecycle_stage,
         },
+        "spec_ids": args.spec_ids,
         "claim_ids": args.claim_ids,
         "test_ids": args.test_ids,
         "requires": args.requires,

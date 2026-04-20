@@ -406,12 +406,19 @@ def delete_document(path: str | Path, kind: str, document_id: str) -> dict[str, 
     if row.get("immutable") or not reservation.get("deletable"):
         raise ValidationError(f"{_document_label(kind)} {document_id} is immutable and cannot be deleted")
 
+    candidate = deepcopy(registry)
+    candidate[section] = [entry for entry in candidate.get(section, []) if entry.get("id") != document_id]
+    report = validate_registry_document(candidate, registry_path, repo_root)
+    if not report["passed"]:
+        detail = "; ".join(report["failures"])
+        raise ValidationError(f"Registry validation failed after deleting {kind} {document_id}: {detail}")
+
     target = repo_root / row["path"]
     if target.exists():
         target.unlink()
 
-    registry[section] = [candidate for candidate in registry.get(section, []) if candidate.get("id") != document_id]
-    _validate_and_save(registry_path, repo_root, registry, f"deleting {kind} {document_id}")
+    registry[section] = candidate[section]
+    save_registry(registry_path, registry)
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),

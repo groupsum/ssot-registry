@@ -39,7 +39,7 @@ RECIPROCAL_FIELDS = {
 }
 
 LINKABLE_FIELDS = {
-    "features": {"claim_ids", "test_ids", "requires"},
+    "features": {"spec_ids", "claim_ids", "test_ids", "requires"},
     "profiles": {"feature_ids", "profile_ids"},
     "tests": {"feature_ids", "claim_ids", "evidence_ids"},
     "claims": {"feature_ids", "test_ids", "evidence_ids"},

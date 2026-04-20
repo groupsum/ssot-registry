@@ -74,6 +74,8 @@ def _validate_feature(feature: dict[str, Any], failures: list[str]) -> None:
                 f"features.{entity_id}.plan.target_lifecycle_stage must be one of {sorted(FEATURE_LIFECYCLE_STAGES)}"
             )
 
+    if not _list_of_strings(feature.get("spec_ids")):
+        failures.append(f"features.{entity_id}.spec_ids must be a list of strings")
     if not _list_of_strings(feature.get("claim_ids")):
         failures.append(f"features.{entity_id}.claim_ids must be a list of strings")
     if not _list_of_strings(feature.get("test_ids")):

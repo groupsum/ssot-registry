@@ -41,7 +41,27 @@ class CliSpecTests(unittest.TestCase):
             self.assertEqual(get_result.returncode, 0, get_result.stderr)
             get_payload = json.loads(get_result.stdout)
             self.assertEqual(get_payload["title"], "Local operating spec")
+            self.assertNotIn("feature_ids", get_payload)
             self.assertNotIn("payload", get_payload)
+
+            feature_create = run_cli(
+                "feature",
+                "create",
+                str(repo),
+                "--id",
+                "feat:spec-linked",
+                "--title",
+                "Spec linked feature",
+                "--spec-ids",
+                "spc:1000",
+            )
+            self.assertEqual(feature_create.returncode, 0, feature_create.stderr)
+            feature_payload = json.loads(feature_create.stdout)
+            self.assertEqual(feature_payload["entity"]["spec_ids"], ["spc:1000"])
+
+            delete_referenced = run_cli("spec", "delete", str(repo), "--id", "spc:1000")
+            self.assertEqual(delete_referenced.returncode, 1)
+            self.assertIn("features.feat:spec-linked.spec_ids", delete_referenced.stdout)
 
             update = run_cli("spec", "update", str(repo), "--id", "spc:1000", "--title", "Local operating spec updated")
             self.assertEqual(update.returncode, 0, update.stderr)

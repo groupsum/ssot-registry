@@ -15,6 +15,8 @@ SINGULAR = {
     "risks": "risk",
     "boundaries": "boundary",
     "releases": "release",
+    "adrs": "ADR",
+    "specs": "spec",
 }
 
 

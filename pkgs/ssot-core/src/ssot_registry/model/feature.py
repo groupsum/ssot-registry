@@ -10,6 +10,7 @@ class FeatureRow(TypedDict, total=False):
     implementation_status: str
     lifecycle: dict[str, object]
     plan: dict[str, object]
+    spec_ids: list[str]
     claim_ids: list[str]
     test_ids: list[str]
     requires: list[str]
