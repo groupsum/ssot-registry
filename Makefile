@@ -1,4 +1,4 @@
-.PHONY: test test-core test-package lint build-package build-all release-metadata
+.PHONY: test test-core test-package test-all-supported-pythons lint build-package build-all release-metadata
 
 PACKAGE ?= ssot-registry
 PROJECT_PATH = pkgs/$(PACKAGE)
@@ -11,6 +11,9 @@ test-core:
 test-package:
 	uv sync --python 3.12 --package $(PACKAGE)
 	uv run --python 3.12 --package $(PACKAGE) --no-sync python -m unittest discover -s tests -v
+
+test-all-supported-pythons:
+	bash scripts/test_all_supported_pythons.sh
 
 lint:
 	python -m compileall pkgs tests
