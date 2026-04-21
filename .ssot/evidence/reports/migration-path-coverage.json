@@ -1,0 +1,6 @@
+{
+  "feature_id": "feat:migration.path-coverage",
+  "tier": "T1",
+  "test_path": "tests/unit/test_migration_paths.py",
+  "coverage": "9/9"
+}

@@ -1,0 +1,20 @@
+schema_version: "0.2.0"
+kind: "spec"
+id: "spc:0518"
+number: 518
+slug: "readme-schema-version-badge-automation"
+title: "README schema_version badge automation"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "The README SHALL contain managed badge and schema_version reference blocks. The updater script SHALL derive schema_version from the runtime schema constant and migration coverage from the migration path inventory, then rewrite only those managed blocks."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  The README SHALL contain managed badge and schema_version reference blocks. The updater script SHALL derive schema_version from the runtime schema constant and migration coverage from the migration path inventory, then rewrite only those managed blocks.
+spec_kind: "operational"
+adr_ids:
+  - "adr:0511"
