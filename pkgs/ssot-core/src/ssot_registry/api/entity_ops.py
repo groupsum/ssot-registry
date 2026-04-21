@@ -129,6 +129,34 @@ def _validate_and_save(registry_path: Path, repo_root: Path, registry: dict[str,
     return report
 
 
+def _rewrite_references_for_renamed_id(
+    registry: dict[str, Any],
+    *,
+    target_section: str,
+    old_id: str,
+    new_id: str,
+) -> None:
+    for (source_section, field_name), ref_target_section in REF_FIELD_TARGETS.items():
+        if ref_target_section != target_section:
+            continue
+        for source_row in registry.get(source_section, []):
+            value = source_row.get(field_name)
+            if field_name.endswith("_ids"):
+                if not isinstance(value, list):
+                    continue
+                replaced = [new_id if item == old_id else item for item in value]
+                source_row[field_name] = _dedupe_preserve(replaced)
+                continue
+            if value == old_id:
+                source_row[field_name] = new_id
+
+    program = registry.get("program", {})
+    if target_section == "boundaries" and program.get("active_boundary_id") == old_id:
+        program["active_boundary_id"] = new_id
+    if target_section == "releases" and program.get("active_release_id") == old_id:
+        program["active_release_id"] = new_id
+
+
 def create_entity(path: str | Path, section: str, row: dict[str, Any]) -> dict[str, Any]:
     registry_path, repo_root, registry = load_registry(path)
     if section not in SECTIONS:
@@ -167,11 +195,19 @@ def list_entities(path: str | Path, section: str) -> list[dict[str, Any]]:
 def update_entity(path: str | Path, section: str, entity_id: str, changes: dict[str, Any]) -> dict[str, Any]:
     registry_path, repo_root, registry = load_registry(path)
     row = _entity_row(registry, section, entity_id)
+    next_id = changes.get("id")
+    if isinstance(next_id, str) and next_id != entity_id and next_id in _row_lookup(registry, section):
+        raise ValueError(f"{SECTION_LABELS[section].title()} already exists: {next_id}")
     for field_name, value in changes.items():
         if value is None:
             continue
         row[field_name] = deepcopy(value)
-    _validate_and_save(registry_path, repo_root, registry, f"updating {SECTION_LABELS[section]} {entity_id}")
+    if isinstance(next_id, str) and next_id != entity_id:
+        _rewrite_references_for_renamed_id(registry, target_section=section, old_id=entity_id, new_id=next_id)
+        action = f"renaming {SECTION_LABELS[section]} {entity_id} to {next_id}"
+    else:
+        action = f"updating {SECTION_LABELS[section]} {entity_id}"
+    _validate_and_save(registry_path, repo_root, registry, action)
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),

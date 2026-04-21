@@ -197,17 +197,29 @@ class BrowserScreen(Screen[None]):
         spec = self.section_specs[self.active_section]
         selected = self.state_store.state.session.selected_columns.get(self.active_section)
         if selected:
-            return selected
+            return self._with_path_column(selected, rows, max_columns=None)
         if self.state_store.state.session.table_mode == "wide":
             extras: list[str] = []
             for row in rows:
                 for key in row.keys():
                     if key not in spec.preferred_columns and key not in extras:
                         extras.append(key)
-            return list(spec.preferred_columns) + extras[:3]
+            columns = list(spec.preferred_columns) + extras[:3]
+            return self._with_path_column(columns, rows, max_columns=None)
         if self.state_store.state.session.table_mode == "wrap":
-            return list(spec.preferred_columns[: min(4, len(spec.preferred_columns))])
-        return list(spec.preferred_columns)
+            columns = list(spec.preferred_columns[: min(4, len(spec.preferred_columns))])
+            return self._with_path_column(columns, rows, max_columns=4)
+        return self._with_path_column(list(spec.preferred_columns), rows, max_columns=None)
+
+    def _with_path_column(self, columns: list[str], rows: list[dict[str, Any]], *, max_columns: int | None) -> list[str]:
+        has_path_values = any(isinstance(row.get("path"), str) and bool(row.get("path")) for row in rows)
+        if not has_path_values:
+            return columns
+        if "path" in columns:
+            return columns
+        if max_columns is not None and len(columns) >= max_columns:
+            return [*columns[: max_columns - 1], "path"]
+        return [*columns, "path"]
 
     def _refresh_table(self, *, selected_entity_id: str | None = None) -> None:
         table = self.query_one(EntityTable)

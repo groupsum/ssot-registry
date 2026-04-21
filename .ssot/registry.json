@@ -3223,6 +3223,33 @@
         "tst:pytest.docs.schema-version-readme-badges"
       ],
       "requires": []
+    },
+    {
+      "id": "feat:ssot.identity-preservation.entity-id-rename-links",
+      "title": "Preserve Links Across Entity ID Renames",
+      "description": "Ensure entity ID updates preserve all inbound and program-level references.",
+      "implementation_status": "partial",
+      "lifecycle": {
+        "stage": "active",
+        "replacement_feature_ids": [],
+        "note": null
+      },
+      "plan": {
+        "horizon": "backlog",
+        "slot": null,
+        "target_claim_tier": null,
+        "target_lifecycle_stage": "active"
+      },
+      "spec_ids": [
+        "spc:0519"
+      ],
+      "claim_ids": [
+        "clm:ssot.identity-preservation.entity-id-rename-links.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.ssot.identity-preservation.entity-id-rename-links"
+      ],
+      "requires": []
     }
   ],
   "profiles": [],
@@ -5001,6 +5028,22 @@
       ],
       "evidence_ids": [
         "evd:t1.docs.schema-version-readme-badges"
+      ]
+    },
+    {
+      "id": "tst:pytest.ssot.identity-preservation.entity-id-rename-links",
+      "title": "Entity ID rename preserves all links",
+      "status": "passing",
+      "kind": "pytest",
+      "path": "tests/unit/test_entity_id_rename.py",
+      "feature_ids": [
+        "feat:ssot.identity-preservation.entity-id-rename-links"
+      ],
+      "claim_ids": [
+        "clm:ssot.identity-preservation.entity-id-rename-links.t1"
+      ],
+      "evidence_ids": [
+        "evd:t1.ssot.identity-preservation.entity-id-rename-links"
       ]
     }
   ],
@@ -6891,6 +6934,23 @@
       "evidence_ids": [
         "evd:t1.docs.schema-version-readme-badges"
       ]
+    },
+    {
+      "id": "clm:ssot.identity-preservation.entity-id-rename-links.t1",
+      "title": "Entity ID rename preserves linked identity",
+      "status": "declared",
+      "tier": "T1",
+      "kind": "conformance",
+      "description": "Renaming an entity id preserves all inbound references and active program pointers.",
+      "feature_ids": [
+        "feat:ssot.identity-preservation.entity-id-rename-links"
+      ],
+      "test_ids": [
+        "tst:pytest.ssot.identity-preservation.entity-id-rename-links"
+      ],
+      "evidence_ids": [
+        "evd:t1.ssot.identity-preservation.entity-id-rename-links"
+      ]
     }
   ],
   "evidence": [
@@ -8447,6 +8507,20 @@
       "test_ids": [
         "tst:pytest.docs.schema-version-readme-badges"
       ]
+    },
+    {
+      "id": "evd:t1.ssot.identity-preservation.entity-id-rename-links",
+      "title": "Entity ID rename link preservation evidence",
+      "status": "passed",
+      "kind": "bundle",
+      "tier": "T1",
+      "path": ".ssot/evidence/bundles/evd__t1.ssot.identity-preservation.entity-id-rename-links.txt",
+      "claim_ids": [
+        "clm:ssot.identity-preservation.entity-id-rename-links.t1"
+      ],
+      "test_ids": [
+        "tst:pytest.ssot.identity-preservation.entity-id-rename-links"
+      ]
     }
   ],
   "issues": [],
@@ -9872,6 +9946,24 @@
       "adr_ids": [
         "adr:0511"
       ]
+    },
+    {
+      "id": "spc:0519",
+      "number": 519,
+      "slug": "identity-preservation-for-entity-id-renames",
+      "title": "Identity Preservation For Entity ID Renames",
+      "path": ".ssot/specs/SPEC-0519-identity-preservation-for-entity-id-renames.yaml",
+      "origin": "ssot-core",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.10",
+      "content_sha256": "b291375670652c3b489794e744c447cce6b43cfacd33ad38dbc465c941f24cc3",
+      "status": "draft",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": [],
+      "kind": "normative",
+      "adr_ids": []
     },
     {
       "id": "spc:0600",

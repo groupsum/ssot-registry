@@ -50,5 +50,6 @@ class EntityTable(DataTable):
         widths: dict[str, int] = {}
         for column in columns:
             max_cell_width = max((len(row.cells.get(column, "")) for row in rows), default=0)
-            widths[column] = min(max(len(column), max_cell_width, 8), 36)
+            max_width = 72 if column == "path" else 36
+            widths[column] = min(max(len(column), max_cell_width, 8), max_width)
         return widths
