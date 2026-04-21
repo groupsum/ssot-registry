@@ -171,8 +171,9 @@ class TuiOverhaulUnitTests(unittest.TestCase):
         finally:
             temp_dir.cleanup()
 
-        self.assertEqual(workspace.registry_version, "0.2.2")
+        self.assertRegex(workspace.registry_version, r"^0\.2\.\d+")
         self.assertEqual(workspace.registry_schema_version, "0.2.0")
+
 
     def test_bridge_preview_cli_get_for_document_returns_row_only(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")

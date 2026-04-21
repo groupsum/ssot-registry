@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 
@@ -23,7 +23,7 @@ def register_spec(subparsers: argparse._SubParsersAction) -> None:
     spec = subparsers.add_parser(
         "spec",
         help="Manage specification documents.",
-        description="SPEC documents define normative, operational, governance, or local-policy contracts that repositories are expected to satisfy.",
+        description="SPEC documents define the normative or operational contract, alongside governance and local-policy contracts that repositories are expected to satisfy.",
     )
     spec_sub = spec.add_subparsers(dest="spec_command", required=True)
 
