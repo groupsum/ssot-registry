@@ -9508,6 +9508,22 @@
       "supersedes": [],
       "superseded_by": [],
       "status_notes": []
+    },
+    {
+      "id": "adr:0615",
+      "number": 615,
+      "slug": "downstream-assurance-language-ceilings",
+      "title": "Downstream assurance-language ceilings for feature target claim tiers",
+      "path": ".ssot/adr/ADR-0615-downstream-assurance-language-ceilings.yaml",
+      "origin": "ssot-origin",
+      "managed": false,
+      "immutable": false,
+      "package_version": "0.2.10",
+      "content_sha256": "527adb28f869fe4831e78fd34a6488417d831154be6b779a22b955f686dfaa08",
+      "status": "accepted",
+      "supersedes": [],
+      "superseded_by": [],
+      "status_notes": []
     }
   ],
   "specs": [

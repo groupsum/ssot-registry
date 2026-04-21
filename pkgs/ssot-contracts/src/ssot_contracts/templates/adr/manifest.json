@@ -268,5 +268,23 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": []
+  },
+  {
+    "id": "adr:0615",
+    "number": 615,
+    "slug": "downstream-assurance-language-ceilings",
+    "title": "Downstream assurance-language ceilings for feature target claim tiers",
+    "filename": "ADR-0615-downstream-assurance-language-ceilings.yaml",
+    "target_path": ".ssot/adr/ADR-0615-downstream-assurance-language-ceilings.yaml",
+    "sha256": "527adb28f869fe4831e78fd34a6488417d831154be6b779a22b955f686dfaa08",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.2.0",
+    "introduced_in": "0.2.10",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   }
 ]
