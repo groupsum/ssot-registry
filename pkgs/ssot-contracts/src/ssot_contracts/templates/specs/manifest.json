@@ -298,5 +298,27 @@
     "status_notes": [],
     "kind": "normative",
     "adr_ids": []
+  },
+  {
+    "id": "spc:0615",
+    "number": 615,
+    "slug": "typed-spec-to-adr-linking",
+    "title": "Typed SPEC-to-ADR linking",
+    "filename": "SPEC-0615-typed-spec-to-adr-linking.yaml",
+    "target_path": ".ssot/specs/SPEC-0615-typed-spec-to-adr-linking.yaml",
+    "sha256": "b2ad94d1cdb3fb5c094238cde18415e800f69d771e0fcc45287a762ddb91b2ef",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": 4,
+    "introduced_in": "0.2.10",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [],
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0614"
+    ]
   }
 ]
