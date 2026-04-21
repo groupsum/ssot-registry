@@ -250,5 +250,23 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": []
+  },
+  {
+    "id": "adr:0614",
+    "number": 614,
+    "slug": "specs-own-typed-adr-links",
+    "title": "SPECs own typed ADR links",
+    "filename": "ADR-0614-specs-own-typed-adr-links.yaml",
+    "target_path": ".ssot/adr/ADR-0614-specs-own-typed-adr-links.yaml",
+    "sha256": "b6c211c2fef9931d10d3e34941db2f56c31cb25a32b88e1fbf45d189c4160300",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.2.0",
+    "introduced_in": "0.2.10",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   }
 ]

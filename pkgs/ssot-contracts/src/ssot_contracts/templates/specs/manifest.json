@@ -16,8 +16,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
   },
   {
     "id": "spc:0601",
@@ -26,7 +25,7 @@
     "title": "CLI",
     "filename": "SPEC-0601-cli.yaml",
     "target_path": ".ssot/specs/SPEC-0601-cli.yaml",
-    "sha256": "628193a17935e4b4bc22de721e2ce449bad1c1cf0a1e60f0604c53f2896f0acb",
+    "sha256": "4f9d02ca80fdb8a37c6176c7f1c682892ac9f643962e4e2b22674dbb02e5b267",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -36,8 +35,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "operational",
-    "adr_ids": []
+    "kind": "operational"
   },
   {
     "id": "spc:0602",
@@ -56,8 +54,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
   },
   {
     "id": "spc:0603",
@@ -76,8 +73,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
   },
   {
     "id": "spc:0604",
@@ -96,8 +92,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
   },
   {
     "id": "spc:0605",
@@ -116,8 +111,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
   },
   {
     "id": "spc:0606",
@@ -136,8 +130,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "operational",
-    "adr_ids": []
+    "kind": "operational"
   },
   {
     "id": "spc:0607",
@@ -156,8 +149,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "operational",
-    "adr_ids": []
+    "kind": "operational"
   },
   {
     "id": "spc:0608",
@@ -176,8 +168,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
   },
   {
     "id": "spc:0609",
@@ -196,8 +187,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
   },
   {
     "id": "spc:0610",
@@ -216,8 +206,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
   },
   {
     "id": "spc:0611",
@@ -236,8 +225,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
   },
   {
     "id": "spc:0612",
@@ -246,7 +234,7 @@
     "title": "Python API",
     "filename": "SPEC-0612-python-api.yaml",
     "target_path": ".ssot/specs/SPEC-0612-python-api.yaml",
-    "sha256": "aacdf28868a8b0c1b70d687333d719844e2671c9c26a89faea8497943ec845b9",
+    "sha256": "e467782c4f9ee4fc2a3fd183aeb2f4e1dcdceacca98d83e8fcc587a9a409184e",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -256,8 +244,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "operational",
-    "adr_ids": []
+    "kind": "operational"
   },
   {
     "id": "spc:0613",
@@ -276,8 +263,7 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
   },
   {
     "id": "spc:0614",
@@ -296,7 +282,25 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative",
-    "adr_ids": []
+    "kind": "normative"
+  },
+  {
+    "id": "spc:0615",
+    "number": 615,
+    "slug": "typed-spec-to-adr-linking",
+    "title": "Typed SPEC-to-ADR linking",
+    "filename": "SPEC-0615-typed-spec-to-adr-linking.yaml",
+    "target_path": ".ssot/specs/SPEC-0615-typed-spec-to-adr-linking.yaml",
+    "sha256": "b2ad94d1cdb3fb5c094238cde18415e800f69d771e0fcc45287a762ddb91b2ef",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.2.0",
+    "introduced_in": "0.2.10",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [],
+    "kind": "normative"
   }
 ]

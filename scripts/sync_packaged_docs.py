@@ -151,7 +151,7 @@ def _build_manifest_entry(
     kind: str,
     existing: dict[str, object],
     *,
-    fallback_schema_version: int,
+    fallback_schema_version: int | str,
     fallback_version: str,
 ) -> dict[str, object]:
     entry = {
@@ -165,7 +165,7 @@ def _build_manifest_entry(
         "origin": "ssot-origin",
         "reservation_owner": "ssot-origin",
         "immutable": True,
-        "minimum_schema_version": int(existing.get("minimum_schema_version", fallback_schema_version)),
+        "minimum_schema_version": _normalize_schema_version(existing.get("minimum_schema_version", fallback_schema_version), fallback_schema_version),
         "introduced_in": str(existing.get("introduced_in", fallback_version)),
         "status": row.get("status", "draft"),
         "supersedes": list(row.get("supersedes", [])),
