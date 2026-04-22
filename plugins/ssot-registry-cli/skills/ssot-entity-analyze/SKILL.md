@@ -26,6 +26,7 @@ Use this skill when the user asks for cross-entity analysis rather than single-r
 - Use graph exports for relationship claims; do not infer edges from naming conventions.
 - Keep analysis reproducible by citing exact CLI commands used.
 - If the request turns into lifecycle execution, hand off to `$ssot-e2e-change-orchestrator`.
+- If analysis output calls for mutations in only one entity family, route to the corresponding per-entity skill.
 
 ## Examples
 
@@ -35,4 +36,3 @@ ssot-registry registry export . --format json --output .tmp/registry.json
 ssot-registry feature list .
 ssot-registry validate . --write-report
 ```
-

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SSOT Orchestrator Run State",
+  "type": "object",
+  "required": [
+    "run_id",
+    "mode",
+    "status",
+    "current_phase",
+    "plan_dag",
+    "completed_steps",
+    "pending_steps",
+    "blocked_reasons",
+    "artifacts",
+    "retry_budget"
+  ],
+  "properties": {
+    "run_id": { "type": "string" },
+    "mode": {
+      "type": "string",
+      "enum": ["fail_closed_safe", "balanced_throughput", "max_parallel"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["running", "blocked", "completed", "failed"]
+    },
+    "current_phase": {
+      "type": "string",
+      "enum": [
+        "decision_scope",
+        "docs_sync",
+        "feature_targeting",
+        "boundary_freeze",
+        "implementation_verification",
+        "proof_closure",
+        "release_certification",
+        "release_promotion",
+        "release_publication",
+        "closure"
+      ]
+    },
+    "plan_dag": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step_id", "skill", "depends_on", "parallel_safety", "mutates_sections"],
+        "properties": {
+          "step_id": { "type": "string" },
+          "skill": { "type": "string" },
+          "depends_on": { "type": "array", "items": { "type": "string" } },
+          "parallel_safety": { "type": "string" },
+          "mutates_sections": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "completed_steps": { "type": "array", "items": { "type": "string" } },
+    "pending_steps": { "type": "array", "items": { "type": "string" } },
+    "blocked_reasons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gate", "reason"],
+        "properties": {
+          "gate": { "type": "string" },
+          "reason": { "type": "string" },
+          "suggested_fix": { "type": "string" }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "path"],
+        "properties": {
+          "kind": { "type": "string" },
+          "path": { "type": "string" },
+          "phase": { "type": "string" }
+        }
+      }
+    },
+    "retry_budget": {
+      "type": "object",
+      "required": ["max_retries", "used_retries"],
+      "properties": {
+        "max_retries": { "type": "integer", "minimum": 0 },
+        "used_retries": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "resume_from_step": { "type": ["string", "null"] }
+  }
+}
+

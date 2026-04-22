@@ -23,7 +23,8 @@ Use this skill for quality and readiness checks across entity types.
 ## Operating rules
 
 - Separate factual inspection from judgment: list/get first, evaluate/verify second.
-- If the user asks for broad lifecycle execution from decision to release, escalate to `$ssot-e2e-change-orchestrator`.
+- If the user asks for broad lifecycle execution from decision to release, escalate to `$ssot-e2e-change-orchestrator` (or `$ssot-e2e-portable-lifecycle` when test-framework-agnostic status convergence is required).
+- If review results require mutating a single entity family, route to that per-entity skill.
 - Keep review outputs actionable: state what fails, why, and what command can fix it.
 
 ## Examples
@@ -34,4 +35,3 @@ ssot-registry claim evaluate . --id clm:demo.login.t1
 ssot-registry evidence verify . --id evd:demo.login.pytest
 ssot-registry validate . --write-report
 ```
-

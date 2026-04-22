@@ -22,7 +22,18 @@ Use this skill when the user asks to fetch or inspect one specific entity. Prefe
 
 - Use CLI output as source of truth; do not infer entity details from stale docs.
 - Prefer `get` over broad `list` when the user already provided an ID.
-- If the user requests edits after inspection, hand off to the specific CRUD/linking skill for that surface.
+- If the user requests edits after inspection, hand off to the per-entity skill for that surface:
+  - ADR -> `$ssot-adr`
+  - SPEC -> `$ssot-spec`
+  - Feature -> `$ssot-feature`
+  - Profile -> `$ssot-profile`
+  - Test -> `$ssot-test`
+  - Issue -> `$ssot-issue`
+  - Claim -> `$ssot-claim`
+  - Evidence -> `$ssot-evidence`
+  - Risk -> `$ssot-risk`
+  - Boundary -> `$ssot-boundary`
+  - Release -> `$ssot-release`
 
 ## Examples
 
@@ -31,4 +42,3 @@ ssot-registry feature get . --id feat:demo.login
 ssot-registry claim get . --id clm:demo.login.t1
 ssot-registry release get . --id rel:demo.2026q2
 ```
-

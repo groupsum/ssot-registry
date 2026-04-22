@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Evidence"
+  short_description: "Operate evidence artifacts and verification."
+  default_prompt: "Use $ssot-evidence for evidence CRUD, status/path updates, claim/test links, and evidence verify."
+

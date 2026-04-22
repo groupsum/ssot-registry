@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Profile"
+  short_description: "Operate profile composition and evaluation."
+  default_prompt: "Use $ssot-profile for profile CRUD, composition links, and profile evaluate/verify flows."
+

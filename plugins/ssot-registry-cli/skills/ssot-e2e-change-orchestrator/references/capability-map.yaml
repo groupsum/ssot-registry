@@ -1,0 +1,125 @@
+version: 1
+default_execution_policy: fail_closed_safe
+gate_barriers:
+  - validate
+  - registry.sync_statuses
+  - release.certify
+  - release.promote
+  - release.publish
+
+skills:
+  ssot-adr:
+    inputs: [adr_ids, adr_body_or_status_change]
+    outputs: [adr_rows]
+    preconditions: []
+    mutates_sections: [adrs, document_id_reservations]
+    parallel_safety: write_serialized
+    required_gates: [validate]
+  ssot-spec:
+    inputs: [spec_ids, spec_body_or_status_change]
+    outputs: [spec_rows]
+    preconditions: []
+    mutates_sections: [specs, document_id_reservations]
+    parallel_safety: write_serialized
+    required_gates: [validate]
+  ssot-feature:
+    inputs: [feature_ids, feature_plan_or_lifecycle_change]
+    outputs: [feature_rows]
+    preconditions: []
+    mutates_sections: [features]
+    parallel_safety: write_serialized
+    required_gates: [validate]
+  ssot-profile:
+    inputs: [profile_ids]
+    outputs: [profile_rows, profile_evaluations]
+    preconditions: []
+    mutates_sections: [profiles]
+    parallel_safety: write_serialized
+    required_gates: [validate]
+  ssot-test:
+    inputs: [test_ids, test_paths]
+    outputs: [test_rows]
+    preconditions: []
+    mutates_sections: [tests]
+    parallel_safety: write_serialized
+    required_gates: [validate]
+  ssot-issue:
+    inputs: [issue_ids]
+    outputs: [issue_rows]
+    preconditions: []
+    mutates_sections: [issues]
+    parallel_safety: write_serialized
+    required_gates: [validate]
+  ssot-claim:
+    inputs: [claim_ids]
+    outputs: [claim_rows, claim_evaluations]
+    preconditions: []
+    mutates_sections: [claims]
+    parallel_safety: write_serialized
+    required_gates: [validate]
+  ssot-evidence:
+    inputs: [evidence_ids, artifact_paths]
+    outputs: [evidence_rows, evidence_verification]
+    preconditions: []
+    mutates_sections: [evidence]
+    parallel_safety: write_serialized
+    required_gates: [registry.sync_statuses, validate]
+  ssot-risk:
+    inputs: [risk_ids]
+    outputs: [risk_rows]
+    preconditions: []
+    mutates_sections: [risks]
+    parallel_safety: write_serialized
+    required_gates: [validate]
+  ssot-boundary:
+    inputs: [boundary_id, feature_ids, profile_ids]
+    outputs: [boundary_row, boundary_snapshot]
+    preconditions: [features_targeted]
+    mutates_sections: [boundaries]
+    parallel_safety: write_serialized
+    required_gates: [validate]
+  ssot-release:
+    inputs: [release_id, boundary_id, claim_ids, evidence_ids]
+    outputs: [release_row, release_reports, release_snapshots]
+    preconditions: [boundary_frozen]
+    mutates_sections: [releases, claims]
+    parallel_safety: write_serialized
+    required_gates: [release.certify, release.promote, release.publish, validate]
+
+  ssot-entity-get:
+    inputs: [entity_id]
+    outputs: [single_entity_view]
+    preconditions: []
+    mutates_sections: []
+    parallel_safety: read_parallel
+    required_gates: []
+  ssot-entity-list:
+    inputs: [entity_family_filters]
+    outputs: [entity_inventories]
+    preconditions: []
+    mutates_sections: []
+    parallel_safety: read_parallel
+    required_gates: []
+  ssot-entity-review:
+    inputs: [entity_scope]
+    outputs: [findings, remediation_commands]
+    preconditions: []
+    mutates_sections: []
+    parallel_safety: read_parallel
+    required_gates: [validate]
+  ssot-entity-analyze:
+    inputs: [analysis_scope]
+    outputs: [cross_entity_analysis]
+    preconditions: []
+    mutates_sections: []
+    parallel_safety: read_parallel
+    required_gates: [validate]
+
+  ssot-e2e-portable-lifecycle:
+    inputs: [target_scope]
+    outputs: [closure_state, reports, snapshots]
+    preconditions: []
+    mutates_sections: [features, tests, evidence, claims, boundaries, releases, profiles]
+    parallel_safety: orchestrated
+    required_gates: [validate, registry.sync_statuses, release.certify, release.promote, release.publish]
+

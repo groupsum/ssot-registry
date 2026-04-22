@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Boundary"
+  short_description: "Operate scoped boundaries and freeze gates."
+  default_prompt: "Use $ssot-boundary for boundary CRUD, scope membership changes, and freeze operations."
+

@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Test"
+  short_description: "Operate test rows and link coverage."
+  default_prompt: "Use $ssot-test for test CRUD, path updates, and feature/claim/evidence links."
+
