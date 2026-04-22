@@ -25,6 +25,7 @@ Use this skill when the request spans multiple SSOT phases. Keep the flow in can
 - Use `$ssot-scope-to-frozen-boundary` for target-setting through boundary freeze.
 - Use `$ssot-implementation-and-migration-delivery` for schema, code, migration, and test delivery after freeze.
 - Use `$ssot-proof-chain-and-certification` for proof wiring, release certify, promote, publish, and closure checks.
+- Use `$ssot-e2e-portable-lifecycle` when the request explicitly requires a repeatable, portable, test-framework-agnostic full lifecycle with automated status synchronization.
 - Use the narrower CRUD or linking skills only for local substeps inside a single phase.
 
 ## Operating rules
