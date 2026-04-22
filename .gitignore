@@ -10,3 +10,4 @@ build/
 .ssot/cache/
 .tmp_test_runs/
 /.ssot/tui-session
+/.tmp
