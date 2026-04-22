@@ -1,6 +1,3 @@
-kind: "adr"
-title: "CLI list ids filtering"
-summary: "Add --ids filtering support to list subcommands."
-body: |-
-  This ADR establishes explicit id filtering for list subcommands across entity and document surfaces.
-  When --ids is provided, list commands return only the requested ids and fail if any requested id is unknown.
+﻿body: |-
+  Add --ids filtering support to list subcommands so operators can target explicit entity/document ids.
+  This decision standardizes list filtering behavior across ADR/SPEC and entity surfaces.
