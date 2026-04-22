@@ -1,4 +1,13 @@
-﻿body: |-
-  The CLI shall support --ids on list subcommands for ADR, SPEC, feature, profile, test, claim,
-  evidence, issue, risk, boundary, and release surfaces.
-  When provided, list output shall include only the requested ids and fail on unknown ids.
+kind: "spec"
+title: "CLI list ids selection"
+summary: "Define --ids semantics for list subcommands."
+spec_kind: "normative"
+adr_ids:
+  - "adr:0521"
+body: |-
+  The CLI shall support --ids for list subcommands on ADR, SPEC, feature, profile, test, claim, evidence,
+  issue, risk, boundary, and release surfaces.
+
+  If --ids is provided:
+  1. The result shall include only the requested ids.
+  2. Unknown ids shall fail the command with an explicit error.
