@@ -1,5 +1,1 @@
-{
-  "feature_id": "feat:api.spec-adr-linking",
-  "tier": "T1",
-  "test_path": "tests/unit/test_spec_adr_ids_validation.py"
-}
+{"feature_id":"feat:api.spec-adr-linking","test_path":"tests/unit/test_spec_adr_ids_validation.py","tier":"T1"}

@@ -11,6 +11,7 @@ if str(CORE_SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(CORE_SRC_ROOT))
 
 from ssot_registry import __version__
+from ssot_registry.util.jsonio import stable_json_dumps
 from tests.helpers import run_cli, temp_repo_from_fixture, workspace_tempdir
 
 
@@ -67,7 +68,7 @@ class CliUpgradeTests(unittest.TestCase):
         registry = json.loads(registry_path.read_text(encoding="utf-8"))
         registry["schema_version"] = 10
         registry["tooling"]["ssot_registry_version"] = "0.2.7"
-        registry_path.write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
+        registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
 
         upgrade = run_cli("upgrade", str(repo), "--target-version", __version__)
         self.assertEqual(upgrade.returncode, 0, upgrade.stderr)

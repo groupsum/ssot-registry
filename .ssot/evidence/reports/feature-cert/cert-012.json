@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:boundary.surface-package",
-  "claim_id": "clm:cert.012.t1",
-  "test_id": "tst:cert.012",
-  "test_path": "tests/unit/test_workspace_package_dag.py"
-}
+{"claim_id":"clm:cert.012.t1","feature_id":"feat:boundary.surface-package","passed":true,"test_id":"tst:cert.012","test_path":"tests/unit/test_workspace_package_dag.py"}

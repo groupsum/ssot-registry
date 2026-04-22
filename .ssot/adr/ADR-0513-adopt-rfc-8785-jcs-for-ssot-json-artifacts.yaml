@@ -1,0 +1,39 @@
+schema_version: "0.2.0"
+kind: "adr"
+id: "adr:0513"
+number: 513
+slug: "adopt-rfc-8785-jcs-for-ssot-json-artifacts"
+title: "Adopt RFC 8785 JCS for .ssot JSON artifacts"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "`.ssot/registry.json` is the canonical machine-readable SSOT source. The repository also writes and stores additional JSON artifacts under `.ssot/` (schemas, reports, snapshots, exports, and evidence bundles)."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Context
+  
+  `.ssot/registry.json` is the canonical machine-readable SSOT source. The repository also writes and stores additional JSON artifacts under `.ssot/` (schemas, reports, snapshots, exports, and evidence bundles).
+  
+  Existing JSON output is stable but not guaranteed to follow RFC 8785 JSON Canonicalization Scheme (JCS), which leaves canonical byte representation and cross-runtime hashing behavior underspecified.
+  
+  ## Decision
+  
+  ssot-core adopts RFC 8785 JSON Canonicalization Scheme (JCS) as the canonical JSON format for SSOT JSON artifacts.
+  
+  - `.ssot/registry.json` SHALL be serialized as RFC 8785 JCS canonical JSON.
+  - JSON files under `.ssot/` SHALL be serialized as RFC 8785 JCS canonical JSON.
+  - Validation SHALL fail when any `.ssot/*.json` content is not canonical RFC 8785 JCS JSON.
+  
+  ADR and SPEC authored documents remain YAML/JSON document payloads governed by existing document rules; this decision applies to JSON artifact canonicalization under `.ssot/`.
+  
+  ## Consequences
+  
+  JSON writes in ssot-core must use a single canonical serializer.
+  
+  Validation gains deterministic checks for JCS canonical formatting and duplicate-key/non-finite-number rejection in `.ssot/*.json`.
+  
+  Hashes and diffs across platforms become deterministic for canonical JSON artifacts under `.ssot/`.

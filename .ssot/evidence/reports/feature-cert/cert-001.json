@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:api.document-body-source-selection",
-  "claim_id": "clm:cert.001.t1",
-  "test_id": "tst:cert.001",
-  "test_path": "tests/unit/test_document_yaml.py"
-}
+{"claim_id":"clm:cert.001.t1","feature_id":"feat:api.document-body-source-selection","passed":true,"test_id":"tst:cert.001","test_path":"tests/unit/test_document_yaml.py"}

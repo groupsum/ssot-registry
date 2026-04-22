@@ -1,6 +1,1 @@
-{
-  "feature_id": "feat:docs.schema-version-readme-badges",
-  "tier": "T1",
-  "test_path": "tests/unit/test_update_readme_schema_badges.py",
-  "schema_version": "0.2.0"
-}
+{"feature_id":"feat:docs.schema-version-readme-badges","schema_version":"0.2.0","test_path":"tests/unit/test_update_readme_schema_badges.py","tier":"T1"}

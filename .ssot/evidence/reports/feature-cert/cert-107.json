@@ -1,5 +1,1 @@
-{
-  "feature_id": "feat:cli.flag.adr-ids",
-  "tier": "T1",
-  "test_path": "tests/integration/test_cli_spec.py"
-}
+{"feature_id":"feat:cli.flag.adr-ids","test_path":"tests/integration/test_cli_spec.py","tier":"T1"}

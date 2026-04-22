@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:cli.evidence-surface",
-  "claim_id": "clm:cert.017.t1",
-  "test_id": "tst:cert.017",
-  "test_path": "tests/integration/test_cli_evidence.py"
-}
+{"claim_id":"clm:cert.017.t1","feature_id":"feat:cli.evidence-surface","passed":true,"test_id":"tst:cert.017","test_path":"tests/integration/test_cli_evidence.py"}

@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:cli.boundary-surface",
-  "claim_id": "clm:cert.014.t1",
-  "test_id": "tst:cert.014",
-  "test_path": "tests/integration/test_cli_boundary.py"
-}
+{"claim_id":"clm:cert.014.t1","feature_id":"feat:cli.boundary-surface","passed":true,"test_id":"tst:cert.014","test_path":"tests/integration/test_cli_boundary.py"}

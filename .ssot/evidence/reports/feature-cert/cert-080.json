@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:cli.graph-surface",
-  "claim_id": "clm:cert.080.t1",
-  "test_id": "tst:cert.080",
-  "test_path": "tests/integration/test_cli_graph.py"
-}
+{"claim_id":"clm:cert.080.t1","feature_id":"feat:cli.graph-surface","passed":true,"test_id":"tst:cert.080","test_path":"tests/integration/test_cli_graph.py"}

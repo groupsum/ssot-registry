@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from ssot_registry.api import validate_registry
+from ssot_registry.util.jsonio import stable_json_dumps
 from tests.helpers import temp_repo_from_fixture
 
 
@@ -22,7 +23,7 @@ class FilesystemLimitsTests(unittest.TestCase):
         target.write_text("ok", encoding="utf-8")
 
         registry["evidence"][0]["path"] = long_path
-        registry_path.write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
+        registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
 
         report = validate_registry(repo)
         self.assertFalse(report["passed"])
@@ -43,7 +44,7 @@ class FilesystemLimitsTests(unittest.TestCase):
         target.write_text("ok", encoding="utf-8")
 
         registry["evidence"][0]["path"] = long_filename_path
-        registry_path.write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
+        registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
 
         report = validate_registry(repo)
         self.assertFalse(report["passed"])

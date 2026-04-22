@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:boundary.release-train",
-  "claim_id": "clm:cert.010.t1",
-  "test_id": "tst:cert.010",
-  "test_path": "tests/unit/test_workspace_package_dag.py"
-}
+{"claim_id":"clm:cert.010.t1","feature_id":"feat:boundary.release-train","passed":true,"test_id":"tst:cert.010","test_path":"tests/unit/test_workspace_package_dag.py"}

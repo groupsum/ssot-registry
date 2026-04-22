@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
+from ssot_registry.util.jcs import dump_jcs_json, load_jcs_json
 
 def stable_json_dumps(data: Any) -> str:
-    return json.dumps(data, indent=2, sort_keys=False) + "\n"
+    return dump_jcs_json(data)
 
 
 def load_json(path: str | Path) -> Any:
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    target = Path(path)
+    return load_jcs_json(target.read_text(encoding="utf-8"), source=target.as_posix())
 
 
 def save_json(path: str | Path, data: Any) -> None:

@@ -1,5 +1,1 @@
-{
-  "feature_id": "feat:migration.spec-adr-ids-rollout",
-  "tier": "T1",
-  "test_path": "tests/unit/test_migrate_v0_1_0_to_v0_2_0.py"
-}
+{"feature_id":"feat:migration.spec-adr-ids-rollout","test_path":"tests/unit/test_migrate_v0_1_0_to_v0_2_0.py","tier":"T1"}

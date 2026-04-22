@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:cli.flag.output",
-  "claim_id": "clm:cert.049.t1",
-  "test_id": "tst:cert.049",
-  "test_path": "tests/integration/test_cli_flag_gap_coverage.py"
-}
+{"claim_id":"clm:cert.049.t1","feature_id":"feat:cli.flag.output","passed":true,"test_id":"tst:cert.049","test_path":"tests/integration/test_cli_flag_gap_coverage.py"}

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from ssot_registry.util.jcs import assert_jcs_canonical_text
+
 
 MAX_SSOT_PATH_LENGTH = 240
 MAX_SSOT_FILENAME_LENGTH = 120
@@ -87,6 +89,12 @@ def validate_filesystem_paths(
         for target in ssot_dir.rglob("*"):
             relative_path = target.relative_to(repo_root).as_posix()
             _validate_ssot_path_length(relative_path, failures, f"filesystem path")
+        for json_path in sorted(ssot_dir.rglob("*.json")):
+            relative_path = json_path.relative_to(repo_root).as_posix()
+            try:
+                assert_jcs_canonical_text(json_path.read_text(encoding="utf-8"), source=relative_path)
+            except ValueError as exc:
+                failures.append(f"JSON under .ssot must be RFC 8785 JCS canonical: {relative_path} ({exc})")
 
     for path_key in ("ssot_root", "schema_root", "adr_root", "spec_root", "graph_root", "evidence_root", "release_root", "report_root"):
         # Path existence is advisory for configured directories.
