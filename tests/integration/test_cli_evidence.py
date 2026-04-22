@@ -14,7 +14,7 @@ class CliEvidenceSurfaceTests(unittest.TestCase):
         repo = Path(temp_dir.name) / "repo"
         evidence_dir = repo / ".ssot" / "evidence" / "bundles" / "evd__cli.generated.bundle"
         evidence_dir.mkdir(parents=True, exist_ok=True)
-        (evidence_dir / "manifest.json").write_text("{}\n", encoding="utf-8")
+        (evidence_dir / "manifest.json").write_text("{}", encoding="utf-8")
 
         create = run_cli(
             "evidence",

@@ -1,0 +1,34 @@
+schema_version: "0.2.0"
+kind: "adr"
+id: "adr:0522"
+number: 522
+slug: "automated-registry-status-synchronization"
+title: "Automated registry status synchronization"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Profile, feature, test, claim, and evidence rows each carry status fields used by release guards and operator review."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "accepted"
+    note: "Accepted with automated status sync implementation"
+    at: "2026-04-22T06:13:04Z"
+references: []
+body: |-
+  ## Context
+  
+  Profile, feature, test, claim, and evidence rows each carry status fields used by release guards and operator review.
+  Before this change, these statuses were advanced by separate manual updates or by release-specific transitions, leaving routine registry health drift possible.
+  
+  ## Decision
+  
+  Add an explicit automated status synchronization operation that derives statuses for profiles, features, tests, claims, and evidence from the registry graph and local artifact paths.
+  The operation must be auditable, idempotent, and available as a dry run before persisting changes.
+  
+  ## Consequences
+  
+  Operators can run one command to align status fields before boundary freeze and release certification.
+  Release publication transitions remain distinct; automated sync does not replace release certification, promotion, or publication guards.

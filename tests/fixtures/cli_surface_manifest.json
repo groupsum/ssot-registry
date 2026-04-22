@@ -18,7 +18,9 @@
     "adr get": [
       "--id"
     ],
-    "adr list": ["--ids"],
+    "adr list": [
+      "--ids"
+    ],
     "adr reserve": [],
     "adr reserve create": [
       "--end",
@@ -72,7 +74,9 @@
     "boundary get": [
       "--id"
     ],
-    "boundary list": ["--ids"],
+    "boundary list": [
+      "--ids"
+    ],
     "boundary remove-feature": [
       "--feature-ids",
       "--id"
@@ -115,7 +119,9 @@
       "--id",
       "--test-ids"
     ],
-    "claim list": ["--ids"],
+    "claim list": [
+      "--ids"
+    ],
     "claim set-status": [
       "--id",
       "--status"
@@ -158,7 +164,9 @@
       "--id",
       "--test-ids"
     ],
-    "evidence list": ["--ids"],
+    "evidence list": [
+      "--ids"
+    ],
     "evidence unlink": [
       "--claim-ids",
       "--id",
@@ -214,7 +222,9 @@
       "--spec-ids",
       "--test-ids"
     ],
-    "feature list": ["--ids"],
+    "feature list": [
+      "--ids"
+    ],
     "feature plan": [
       "--claim-tier",
       "--horizon",
@@ -280,7 +290,9 @@
       "--risk-ids",
       "--test-ids"
     ],
-    "issue list": ["--ids"],
+    "issue list": [
+      "--ids"
+    ],
     "issue plan": [
       "--horizon",
       "--ids",
@@ -332,7 +344,9 @@
       "--id",
       "--profile-ids"
     ],
-    "profile list": ["--ids"],
+    "profile list": [
+      "--ids"
+    ],
     "profile unlink": [
       "--feature-ids",
       "--id",
@@ -353,6 +367,9 @@
     "registry export": [
       "--format",
       "--output"
+    ],
+    "registry sync-statuses": [
+      "--dry-run"
     ],
     "release": [],
     "release add-claim": [
@@ -381,7 +398,9 @@
     "release get": [
       "--id"
     ],
-    "release list": ["--ids"],
+    "release list": [
+      "--ids"
+    ],
     "release promote": [
       "--release-id"
     ],
@@ -438,7 +457,9 @@
       "--issue-ids",
       "--test-ids"
     ],
-    "risk list": ["--ids"],
+    "risk list": [
+      "--ids"
+    ],
     "risk mitigate": [
       "--id"
     ],
@@ -481,7 +502,13 @@
     "spec get": [
       "--id"
     ],
-    "spec list": ["--ids"],
+    "spec link": [
+      "--adr-ids",
+      "--id"
+    ],
+    "spec list": [
+      "--ids"
+    ],
     "spec reserve": [],
     "spec reserve create": [
       "--end",
@@ -500,6 +527,10 @@
       "--supersedes"
     ],
     "spec sync": [],
+    "spec unlink": [
+      "--adr-ids",
+      "--id"
+    ],
     "spec update": [
       "--adr-ids",
       "--body",
@@ -533,7 +564,9 @@
       "--feature-ids",
       "--id"
     ],
-    "test list": ["--ids"],
+    "test list": [
+      "--ids"
+    ],
     "test unlink": [
       "--claim-ids",
       "--evidence-ids",
@@ -554,14 +587,6 @@
     ],
     "validate": [
       "--write-report"
-    ],
-    "spec link": [
-      "--adr-ids",
-      "--id"
-    ],
-    "spec unlink": [
-      "--adr-ids",
-      "--id"
     ]
   },
   "global_flags": [
@@ -649,6 +674,7 @@
     "profile verify",
     "registry",
     "registry export",
+    "registry sync-statuses",
     "release",
     "release add-claim",
     "release add-evidence",
@@ -678,6 +704,7 @@
     "spec create",
     "spec delete",
     "spec get",
+    "spec link",
     "spec list",
     "spec reserve",
     "spec reserve create",
@@ -685,6 +712,7 @@
     "spec set-status",
     "spec supersede",
     "spec sync",
+    "spec unlink",
     "spec update",
     "test",
     "test create",
@@ -695,9 +723,7 @@
     "test unlink",
     "test update",
     "upgrade",
-    "validate",
-    "spec link",
-    "spec unlink"
+    "validate"
   ],
   "top_level_commands": [
     "adr",

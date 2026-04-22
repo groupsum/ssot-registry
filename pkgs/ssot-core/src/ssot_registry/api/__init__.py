@@ -46,6 +46,7 @@ from .plan import plan_features, plan_issues
 from .registry import export_registry
 from .release import certify_release, promote_release, publish_release, revoke_release
 from .save import save_registry
+from .status_sync import sync_automated_statuses
 from .upgrade import upgrade_registry
 from .validate import validate_registry
 
@@ -102,5 +103,6 @@ __all__ = [
     "revoke_release",
     "export_graph",
     "export_registry",
+    "sync_automated_statuses",
     "upgrade_registry",
 ]
