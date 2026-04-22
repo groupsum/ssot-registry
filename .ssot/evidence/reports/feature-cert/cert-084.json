@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:cli.registry-surface",
-  "claim_id": "clm:cert.084.t1",
-  "test_id": "tst:cert.084",
-  "test_path": "tests/integration/test_cli_output_formats.py"
-}
+{"claim_id":"clm:cert.084.t1","feature_id":"feat:cli.registry-surface","passed":true,"test_id":"tst:cert.084","test_path":"tests/integration/test_cli_output_formats.py"}

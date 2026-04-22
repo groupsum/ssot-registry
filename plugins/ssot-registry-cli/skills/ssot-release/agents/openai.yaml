@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Release"
+  short_description: "Operate release progression and publication."
+  default_prompt: "Use $ssot-release for release CRUD, claim/evidence membership updates, and certify/promote/publish/revoke gates."
+

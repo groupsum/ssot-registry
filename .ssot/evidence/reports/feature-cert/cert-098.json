@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:schema.graph-export",
-  "claim_id": "clm:cert.098.t1",
-  "test_id": "tst:cert.098",
-  "test_path": "tests/unit/test_schema_inventory_certification.py"
-}
+{"claim_id":"clm:cert.098.t1","feature_id":"feat:schema.graph-export","passed":true,"test_id":"tst:cert.098","test_path":"tests/unit/test_schema_inventory_certification.py"}

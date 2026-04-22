@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from ssot_registry.api import export_registry
+from ssot_registry.api import export_registry, sync_automated_statuses
 
 
 def register_registry(subparsers: argparse._SubParsersAction) -> None:
@@ -23,6 +23,19 @@ def register_registry(subparsers: argparse._SubParsersAction) -> None:
     export.add_argument("--output", default=None, help="Destination file path. Defaults under `.ssot/exports`.")
     export.set_defaults(func=run_export)
 
+    sync_statuses = registry_sub.add_parser(
+        "sync-statuses",
+        help="Derive and persist automated statuses.",
+        description="Recompute profile, feature, test, claim, and evidence statuses from registry links and local artifact paths.",
+    )
+    sync_statuses.add_argument("path", nargs="?", default=".", help="Repository root or registry file to update.")
+    sync_statuses.add_argument("--dry-run", action="store_true", help="Report proposed status changes without saving them.")
+    sync_statuses.set_defaults(func=run_sync_statuses)
+
 
 def run_export(args: argparse.Namespace) -> dict[str, object]:
     return export_registry(path=args.path, output_format=args.format, output=args.output)
+
+
+def run_sync_statuses(args: argparse.Namespace) -> dict[str, object]:
+    return sync_automated_statuses(path=args.path, dry_run=args.dry_run)

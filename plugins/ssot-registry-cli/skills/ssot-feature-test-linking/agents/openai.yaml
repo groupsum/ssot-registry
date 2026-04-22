@@ -1,4 +1,4 @@
 interface:
   display_name: "SSOT Feature/Test Linking"
-  short_description: "Link features, tests, and related verification edges."
-  default_prompt: "Use $ssot-feature-test-linking to connect features to tests and keep verification edges consistent."
+  short_description: "Create features/tests and link verification edges."
+  default_prompt: "Use $ssot-feature-test-linking to create features and tests, then link them bidirectionally with claims and evidence as needed."

@@ -3,7 +3,7 @@
 import argparse
 
 from ssot_registry.api import create_entity, delete_entity, get_entity, link_entities, list_entities, unlink_entities, update_entity
-from ssot_cli.common import add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict
 
 
 _LINK_MAPPING = {
@@ -40,6 +40,7 @@ def register_test(subparsers: argparse._SubParsersAction) -> None:
 
     list_cmd = test_sub.add_parser("list", help="List tests.", description="List test records currently known to the registry.")
     add_path_argument(list_cmd)
+    add_ids_argument(list_cmd, help_text="Test ids to include in the list output.")
     list_cmd.set_defaults(func=run_list)
 
     update = test_sub.add_parser("update", help="Edit test metadata.", description="Update mutable test fields without changing link relationships.")
@@ -99,7 +100,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "tests")
+    return list_entities(args.path, "tests", ids=args.ids)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:

@@ -1,0 +1,51 @@
+schema_version: "0.2.0"
+kind: "spec"
+id: "spc:0522"
+number: 522
+slug: "automated-registry-status-synchronization"
+title: "Automated registry status synchronization"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "The registry exposes an automated status synchronization operation for the core assurance entities:"
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "accepted"
+    note: "Accepted with automated status sync implementation"
+    at: "2026-04-22T06:13:11Z"
+references: []
+body: |-
+  ## Overview
+  
+  The registry exposes an automated status synchronization operation for the core assurance entities:
+  
+  - profiles,
+  - features,
+  - tests,
+  - claims,
+  - evidence.
+  
+  ## Command Contract
+  
+  The CLI MUST expose `registry sync-statuses`.
+  The command MUST support `--dry-run`.
+  Dry runs MUST report the same final transitions that a write would persist, without saving the registry.
+  
+  ## Derivation Rules
+  
+  Evidence status is derived from artifact path existence, reference completeness, and claim-tier sufficiency.
+  Test status is derived from test path existence and linked evidence readiness.
+  Claim status is derived from linked feature, test, and evidence support plus claim-closure guards.
+  Feature implementation status is derived from passing tests, satisfying claims, and required-feature readiness.
+  Profile status is derived from profile evaluation; retired profiles remain retired.
+  
+  ## Release Closure
+  
+  Automated status synchronization is a pre-closure normalization step.
+  Boundary freeze, release certification, promotion, and publication remain separate guard-checked operations.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0522"

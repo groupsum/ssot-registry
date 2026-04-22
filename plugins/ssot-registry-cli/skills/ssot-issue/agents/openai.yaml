@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Issue"
+  short_description: "Operate issue planning and closure."
+  default_prompt: "Use $ssot-issue for issue CRUD, release-blocking updates, planning, and close/reopen transitions."
+

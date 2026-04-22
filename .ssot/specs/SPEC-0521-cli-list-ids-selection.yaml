@@ -1,0 +1,25 @@
+schema_version: "0.2.0"
+kind: "spec"
+id: "spc:0521"
+number: 521
+slug: "cli-list-ids-selection"
+title: "CLI list ids selection"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "The CLI shall support --ids for list subcommands on ADR, SPEC, feature, profile, test, claim, evidence,"
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  The CLI shall support --ids for list subcommands on ADR, SPEC, feature, profile, test, claim, evidence,
+  issue, risk, boundary, and release surfaces.
+  
+  If --ids is provided:
+  1. The result shall include only the requested ids.
+  2. Unknown ids shall fail the command with an explicit error.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0521"

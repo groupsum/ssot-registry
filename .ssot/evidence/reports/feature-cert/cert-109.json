@@ -1,5 +1,1 @@
-{
-  "feature_id": "feat:graph.spec-adr-visibility",
-  "tier": "T1",
-  "test_path": "tests/unit/test_graph_export.py"
-}
+{"feature_id":"feat:graph.spec-adr-visibility","test_path":"tests/unit/test_graph_export.py","tier":"T1"}

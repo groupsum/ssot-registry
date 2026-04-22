@@ -1,4 +1,4 @@
 interface:
   display_name: "SSOT E2E Release Closure"
-  short_description: "Compatibility bridge for older end-to-end SSOT prompts."
-  default_prompt: "Use $ssot-e2e-release-closure to route an older end-to-end SSOT request into the newer orchestrated workflow stack."
+  short_description: "Run full boundary-to-boundary release closure."
+  default_prompt: "Use $ssot-e2e-release-closure to execute fail-closed release closure from boundary setup and freeze through certification, promotion, publication, and ending boundary verification."

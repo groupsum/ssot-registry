@@ -88,6 +88,11 @@ class CliSpecTests(unittest.TestCase):
                 "accepted",
             )
             self.assertEqual(create2.returncode, 0, create2.stderr)
+            list_by_ids = run_cli("spec", "list", str(repo), "--ids", "spc:1000", "spc:1001")
+            self.assertEqual(list_by_ids.returncode, 0, list_by_ids.stderr)
+            list_by_ids_payload = json.loads(list_by_ids.stdout)
+            self.assertEqual([row["id"] for row in list_by_ids_payload], ["spc:1000", "spc:1001"])
+
             supersede = run_cli("spec", "supersede", str(repo), "--id", "spc:1001", "--supersedes", "spc:1000", "--note", "newer")
             self.assertEqual(supersede.returncode, 0, supersede.stderr)
             superseded_doc = json.loads(run_cli("spec", "get", str(repo), "--id", "spc:1000").stdout)

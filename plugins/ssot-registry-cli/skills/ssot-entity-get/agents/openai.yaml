@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Entity Get"
+  short_description: "Inspect one SSOT entity by ID."
+  default_prompt: "Use $ssot-entity-get to fetch one SSOT entity by ID and summarize key fields."
+

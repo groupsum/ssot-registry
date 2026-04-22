@@ -14,7 +14,27 @@ This plugin is centered on the CLI exposed by the PyPI-published `ssot-registry`
 - Repository initialization with `init`
 - Schema and consistency checks with `validate` and `upgrade`
 - CRUD-style document and entity operations for `adr`, `spec`, `feature`, `profile`, `test`, `issue`, `claim`, `evidence`, `risk`, `boundary`, and `release`
+- Automated status convergence with `registry sync-statuses`
 - Export flows for `graph export` and `registry export`
+
+## Skill routing table
+
+Use these focused skills by default:
+
+- Entity-focused operations:
+  - ADR: `$ssot-adr`
+  - SPEC: `$ssot-spec`
+  - Feature: `$ssot-feature`
+  - Profile: `$ssot-profile`
+  - Test: `$ssot-test`
+  - Issue: `$ssot-issue`
+  - Claim: `$ssot-claim`
+  - Evidence: `$ssot-evidence`
+  - Risk: `$ssot-risk`
+  - Boundary: `$ssot-boundary`
+  - Release: `$ssot-release`
+- Cross-entity read wrappers: `$ssot-entity-get`, `$ssot-entity-list`, `$ssot-entity-review`, `$ssot-entity-analyze`
+- Multi-phase lifecycle orchestration: `$ssot-e2e-change-orchestrator` or `$ssot-e2e-portable-lifecycle`
 
 ## Command selection
 
@@ -101,6 +121,14 @@ uv run ssot profile get . --id prf:demo.core
 ```powershell
 uv run ssot graph export . --format json --output .ssot/graphs/registry.graph.json
 uv run ssot registry export . --format yaml --output .ssot/exports/registry.yaml
+```
+
+### Sync derived statuses
+
+```powershell
+uv run ssot registry sync-statuses . --dry-run
+uv run ssot registry sync-statuses .
+uv run ssot validate . --write-report
 ```
 
 ### Freeze and certify a release

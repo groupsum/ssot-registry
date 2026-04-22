@@ -12,7 +12,7 @@ from ssot_registry.api import (
     unlink_entities,
     update_entity,
 )
-from ssot_cli.common import add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict
 
 
 _LINK_MAPPING = {
@@ -54,6 +54,7 @@ def register_risk(subparsers: argparse._SubParsersAction) -> None:
 
     list_cmd = risk_sub.add_parser("list", help="List risks.", description="List risk records currently known to the registry.")
     add_path_argument(list_cmd)
+    add_ids_argument(list_cmd, help_text="Risk ids to include in the list output.")
     list_cmd.set_defaults(func=run_list)
 
     update = risk_sub.add_parser("update", help="Edit risk metadata.", description="Update mutable risk fields without changing linked entities.")
@@ -135,7 +136,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "risks")
+    return list_entities(args.path, "risks", ids=args.ids)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:

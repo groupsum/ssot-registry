@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import shutil
 import unittest
+from csv import DictReader
+from io import StringIO
 from pathlib import Path
 
 from tests.helpers import run_cli, temp_repo_from_fixture
@@ -21,7 +23,9 @@ class CliOutputFormatsTests(unittest.TestCase):
 
         csv_result = run_cli("--output-format", "csv", "feature", "list", str(repo))
         self.assertEqual(csv_result.returncode, 0, csv_result.stderr)
-        self.assertIn("id,title", csv_result.stdout)
+        rows = list(DictReader(StringIO(csv_result.stdout)))
+        self.assertEqual(rows[0]["id"], "feat:rfc.9000.connection-migration")
+        self.assertEqual(rows[0]["title"], "RFC 9000 connection migration")
 
     def test_registry_export_supports_toml(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")

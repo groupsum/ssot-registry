@@ -773,7 +773,7 @@ ssot-registry release revoke [path]
 
 Subcommands:
 
-- `export`
+- `export`, `sync-statuses`
 
 ```text
 ssot-registry graph export [path]
@@ -791,6 +791,9 @@ Subcommands:
 ssot-registry registry export [path]
   --format {json,csv,df,yaml,toml} (required)
   --output OUTPUT
+
+ssot-registry registry sync-statuses [path]
+  --dry-run
 ```
 
 ## Example workflows

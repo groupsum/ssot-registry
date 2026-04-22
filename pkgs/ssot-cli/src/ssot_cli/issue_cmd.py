@@ -13,7 +13,7 @@ from ssot_registry.api import (
     unlink_entities,
     update_entity,
 )
-from ssot_cli.common import add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict
 
 
 _LINK_MAPPING = {
@@ -57,6 +57,7 @@ def register_issue(subparsers: argparse._SubParsersAction) -> None:
 
     list_cmd = issue_sub.add_parser("list", help="List issues.", description="List issue records currently known to the registry.")
     add_path_argument(list_cmd)
+    add_ids_argument(list_cmd, help_text="Issue ids to include in the list output.")
     list_cmd.set_defaults(func=run_list)
 
     update = issue_sub.add_parser("update", help="Edit issue metadata.", description="Update mutable issue fields without changing links or plan assignments.")
@@ -146,7 +147,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "issues")
+    return list_entities(args.path, "issues", ids=args.ids)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:

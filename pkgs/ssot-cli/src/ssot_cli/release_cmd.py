@@ -17,7 +17,7 @@ from ssot_registry.api import (
     revoke_release,
     update_entity,
 )
-from ssot_cli.common import add_path_argument, compact_dict
+from ssot_cli.common import add_ids_argument, add_path_argument, compact_dict
 
 
 def register_release(subparsers: argparse._SubParsersAction) -> None:
@@ -45,6 +45,7 @@ def register_release(subparsers: argparse._SubParsersAction) -> None:
 
     list_cmd = release_sub.add_parser("list", help="List releases.", description="List release records currently known to the registry.")
     add_path_argument(list_cmd)
+    add_ids_argument(list_cmd, help_text="Release ids to include in the list output.")
     list_cmd.set_defaults(func=run_list)
 
     update = release_sub.add_parser("update", help="Edit release metadata.", description="Update mutable release fields without changing its claim or evidence membership lists.")
@@ -124,7 +125,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "releases")
+    return list_entities(args.path, "releases", ids=args.ids)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:

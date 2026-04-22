@@ -1,0 +1,1 @@
+{"feature_id":"feat:ssot.jcs-canonical-json-artifacts","kind":"pytest","status":"passing","summary":"JCS canonical JSON enforcement tests and validator coverage for .ssot JSON artifacts.","test_id":"tst:pytest.ssot.jcs-canonical-json-artifacts"}

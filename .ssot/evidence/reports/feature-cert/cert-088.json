@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:cli.test-surface",
-  "claim_id": "clm:cert.088.t1",
-  "test_id": "tst:cert.088",
-  "test_path": "tests/integration/test_cli_test.py"
-}
+{"claim_id":"clm:cert.088.t1","feature_id":"feat:cli.test-surface","passed":true,"test_id":"tst:cert.088","test_path":"tests/integration/test_cli_test.py"}

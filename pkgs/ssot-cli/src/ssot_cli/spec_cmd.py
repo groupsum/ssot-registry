@@ -16,7 +16,7 @@ from ssot_registry.api import (
     supersede_documents,
     update_document,
 )
-from ssot_cli.common import add_path_argument, compact_dict
+from ssot_cli.common import add_ids_argument, add_path_argument, compact_dict
 
 
 def register_spec(subparsers: argparse._SubParsersAction) -> None:
@@ -53,6 +53,7 @@ def register_spec(subparsers: argparse._SubParsersAction) -> None:
 
     list_cmd = spec_sub.add_parser("list", help="List SPECs.", description="List SPEC documents currently registered.")
     add_path_argument(list_cmd)
+    add_ids_argument(list_cmd, help_text="SPEC ids to include in the list output.")
     list_cmd.set_defaults(func=run_list)
 
     link = spec_sub.add_parser("link", help="Attach ADRs to a SPEC.", description="Add typed ADR references to a SPEC without changing other document fields.")
@@ -139,7 +140,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_documents(args.path, "spec")
+    return list_documents(args.path, "spec", ids=args.ids)
 
 
 def run_link(args: argparse.Namespace) -> dict[str, object]:

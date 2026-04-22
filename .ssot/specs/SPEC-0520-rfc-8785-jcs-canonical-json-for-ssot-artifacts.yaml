@@ -1,0 +1,29 @@
+schema_version: "0.2.0"
+kind: "spec"
+id: "spc:0520"
+number: 520
+slug: "rfc-8785-jcs-canonical-json-for-ssot-artifacts"
+title: "RFC 8785 JCS canonical JSON for .ssot artifacts"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines JSON canonicalization rules for SSOT artifacts under `.ssot/`."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  This specification defines JSON canonicalization rules for SSOT artifacts under `.ssot/`.
+  
+  1. `.ssot/registry.json` SHALL be RFC 8785 JCS canonical JSON.
+  2. Every `.json` file under `.ssot/` SHALL be RFC 8785 JCS canonical JSON.
+  3. Canonicalization SHALL reject duplicate object keys and non-finite numbers (`NaN`, `Infinity`, `-Infinity`).
+  4. Serialization SHALL produce deterministic key ordering and RFC 8785-compatible primitive rendering.
+  5. Validation SHALL fail when any `.ssot/*.json` file is not canonical RFC 8785 JCS JSON.
+  6. ssot-core save paths that emit `.ssot/*.json` artifacts SHALL use the canonical serializer.
+  
+  This spec governs canonical JSON artifacts only. ADR/SPEC document payload authoring rules remain governed by document schemas and file-type constraints.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0513"

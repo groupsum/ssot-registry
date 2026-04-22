@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT SPEC"
+  short_description: "Operate SPEC entities and ADR links."
+  default_prompt: "Use $ssot-spec for SPEC CRUD, ADR linking, status transitions, supersede flows, and sync."
+

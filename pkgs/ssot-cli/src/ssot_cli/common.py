@@ -17,6 +17,10 @@ def add_id_argument(parser: argparse.ArgumentParser, flag: str = "--id", *, dest
     parser.add_argument(flag, dest=dest, required=True, help=help_text)
 
 
+def add_ids_argument(parser: argparse.ArgumentParser, flag: str = "--ids", *, dest: str | None = None, help_text: str = "Normalized ids.") -> None:
+    parser.add_argument(flag, dest=dest, nargs="+", default=None, help=help_text)
+
+
 def add_optional_bool_argument(
     parser: argparse.ArgumentParser,
     name: str,

@@ -5,6 +5,8 @@ import io
 import json
 from typing import Any
 
+from ssot_registry.util.jcs import dump_jcs_json
+
 
 def _scalar_to_text(value: Any) -> str:
     if value is None:
@@ -143,7 +145,7 @@ def render_payload(payload: Any, output_format: str) -> str:
         payload = payload["__rows_only__"]
     normalized = output_format.lower()
     if normalized == "json":
-        return json.dumps(payload, indent=2, sort_keys=False) + "\n"
+        return dump_jcs_json(payload)
     if normalized == "csv":
         return _render_csv(payload)
     if normalized in {"df", "dataframe", "table"}:

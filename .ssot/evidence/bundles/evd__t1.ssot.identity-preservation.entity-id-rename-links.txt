@@ -1,0 +1,1 @@
+﻿Identity-preservation test evidence placeholder for entity-id rename link integrity.

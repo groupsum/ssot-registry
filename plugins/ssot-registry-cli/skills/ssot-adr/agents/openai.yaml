@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT ADR"
+  short_description: "Operate ADR entities end-to-end."
+  default_prompt: "Use $ssot-adr for ADR creation, updates, status transitions, supersede flows, and ADR sync."
+

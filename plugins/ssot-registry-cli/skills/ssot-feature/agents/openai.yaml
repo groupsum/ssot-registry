@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Feature"
+  short_description: "Operate feature planning and lifecycle."
+  default_prompt: "Use $ssot-feature for feature CRUD, planning horizons, lifecycle stage updates, and claim/test/dependency links."
+

@@ -48,6 +48,18 @@ MIGRATION_RELEASE_WINDOWS = {
     ("0.1.0", "0.2.0"): "0.2.10->0.2.10",
 }
 
+MIGRATION_PATHS = (
+    (3, 4, "migrate_v3_to_v4"),
+    (4, 5, "migrate_v4_to_v5"),
+    (5, 6, "migrate_v5_to_v6"),
+    (6, 7, "migrate_v6_to_v7"),
+    (7, 8, "migrate_v7_to_v8"),
+    (8, 9, "migrate_v8_to_v9"),
+    (9, 10, "migrate_v9_to_v10"),
+    (10, SCHEMA_VERSION, "migrate_v10_to_v0_1_0"),
+    ("0.1.0", SCHEMA_VERSION, "migrate_v0_1_0_to_v0_2_0"),
+)
+
 
 def _extract_title(kind: str, path: Path) -> str:
     title, _status, _body = parse_markdown_document(kind, path.read_text(encoding="utf-8"), fallback_title=path.stem)

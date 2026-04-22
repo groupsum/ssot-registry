@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Risk"
+  short_description: "Operate risk lifecycle and blockers."
+  default_prompt: "Use $ssot-risk for risk CRUD, release-blocking updates, link management, and mitigate/accept/retire transitions."
+

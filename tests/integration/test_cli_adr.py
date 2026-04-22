@@ -65,6 +65,10 @@ class CliAdrTests(unittest.TestCase):
                 "accepted",
             )
             self.assertEqual(create2.returncode, 0, create2.stderr)
+            list_by_ids = run_cli("adr", "list", str(repo), "--ids", "adr:1000", "adr:1001")
+            self.assertEqual(list_by_ids.returncode, 0, list_by_ids.stderr)
+            list_by_ids_payload = json.loads(list_by_ids.stdout)
+            self.assertEqual([row["id"] for row in list_by_ids_payload], ["adr:1000", "adr:1001"])
 
             supersede = run_cli("adr", "supersede", str(repo), "--id", "adr:1001", "--supersedes", "adr:1000", "--note", "replaced")
             self.assertEqual(supersede.returncode, 0, supersede.stderr)

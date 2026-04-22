@@ -1,4 +1,1 @@
-{
-  "status": "placeholder",
-  "scope": "migration entity id max-length rollout"
-}
+{"scope":"migration entity id max-length rollout","status":"placeholder"}

@@ -1,0 +1,17 @@
+schema_version: "0.2.0"
+kind: "adr"
+id: "adr:0510"
+number: 510
+slug: "migration-paths"
+title: "Govern migration paths as explicit schema edges"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Migration support SHALL be represented as explicit source-to-target schema edges. Each known non-current schema_version SHALL have a callable migration implementation, a release-window label, and a test that proves the path reaches the current schema_version."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  Migration support SHALL be represented as explicit source-to-target schema edges. Each known non-current schema_version SHALL have a callable migration implementation, a release-window label, and a test that proves the path reaches the current schema_version.

@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Claim"
+  short_description: "Operate claim assurance workflows."
+  default_prompt: "Use $ssot-claim for claim CRUD, link management, evaluation, and tier/status controls."
+

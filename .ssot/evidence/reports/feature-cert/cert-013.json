@@ -1,7 +1,1 @@
-{
-  "passed": true,
-  "feature_id": "feat:cli.adr-surface",
-  "claim_id": "clm:cert.013.t1",
-  "test_id": "tst:cert.013",
-  "test_path": "tests/integration/test_cli_adr.py"
-}
+{"claim_id":"clm:cert.013.t1","feature_id":"feat:cli.adr-surface","passed":true,"test_id":"tst:cert.013","test_path":"tests/integration/test_cli_adr.py"}
