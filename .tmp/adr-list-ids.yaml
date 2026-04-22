@@ -1,3 +1,0 @@
-﻿body: |-
-  Add --ids filtering support to list subcommands so operators can target explicit entity/document ids.
-  This decision standardizes list filtering behavior across ADR/SPEC and entity surfaces.
