@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Entity Review"
+  short_description: "Review entity quality and readiness."
+  default_prompt: "Use $ssot-entity-review to inspect SSOT entities, run review verbs, and report actionable findings."
+

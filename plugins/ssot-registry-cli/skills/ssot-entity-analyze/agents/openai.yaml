@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Entity Analyze"
+  short_description: "Analyze cross-entity relationships and gaps."
+  default_prompt: "Use $ssot-entity-analyze to run registry/graph-based analysis across SSOT entities."
+

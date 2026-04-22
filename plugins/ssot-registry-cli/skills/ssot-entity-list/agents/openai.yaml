@@ -1,0 +1,5 @@
+interface:
+  display_name: "SSOT Entity List"
+  short_description: "List SSOT entities by family."
+  default_prompt: "Use $ssot-entity-list to list entities by type and summarize totals and key slices."
+
