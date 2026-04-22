@@ -1,8 +1,0 @@
-﻿body: |-
-  SPEC documents own typed ADR references.
-
-  Features continue to reference SPECs only.
-
-  Feature-to-ADR visibility is derived transitively through feature.spec_ids -> spec.adr_ids.
-
-  This is a breaking schema-model change that requires a schema_version bump and migration support.
