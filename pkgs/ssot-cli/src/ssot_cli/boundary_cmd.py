@@ -14,7 +14,7 @@ from ssot_registry.api import (
     remove_boundary_profiles,
     update_entity,
 )
-from ssot_cli.common import add_optional_bool_argument, add_path_argument, compact_dict
+from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, compact_dict
 
 
 def register_boundary(subparsers: argparse._SubParsersAction) -> None:
@@ -42,6 +42,7 @@ def register_boundary(subparsers: argparse._SubParsersAction) -> None:
 
     list_cmd = boundary_sub.add_parser("list", help="List boundaries.", description="List boundary records currently known to the registry.")
     add_path_argument(list_cmd)
+    add_ids_argument(list_cmd, help_text="Boundary ids to include in the list output.")
     list_cmd.set_defaults(func=run_list)
 
     update = boundary_sub.add_parser("update", help="Edit boundary metadata.", description="Update mutable boundary fields without changing the feature or profile membership lists.")
@@ -104,7 +105,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "boundaries")
+    return list_entities(args.path, "boundaries", ids=args.ids)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:

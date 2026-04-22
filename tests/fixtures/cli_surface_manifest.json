@@ -18,7 +18,7 @@
     "adr get": [
       "--id"
     ],
-    "adr list": [],
+    "adr list": ["--ids"],
     "adr reserve": [],
     "adr reserve create": [
       "--end",
@@ -72,7 +72,7 @@
     "boundary get": [
       "--id"
     ],
-    "boundary list": [],
+    "boundary list": ["--ids"],
     "boundary remove-feature": [
       "--feature-ids",
       "--id"
@@ -115,7 +115,7 @@
       "--id",
       "--test-ids"
     ],
-    "claim list": [],
+    "claim list": ["--ids"],
     "claim set-status": [
       "--id",
       "--status"
@@ -158,7 +158,7 @@
       "--id",
       "--test-ids"
     ],
-    "evidence list": [],
+    "evidence list": ["--ids"],
     "evidence unlink": [
       "--claim-ids",
       "--id",
@@ -214,7 +214,7 @@
       "--spec-ids",
       "--test-ids"
     ],
-    "feature list": [],
+    "feature list": ["--ids"],
     "feature plan": [
       "--claim-tier",
       "--horizon",
@@ -280,7 +280,7 @@
       "--risk-ids",
       "--test-ids"
     ],
-    "issue list": [],
+    "issue list": ["--ids"],
     "issue plan": [
       "--horizon",
       "--ids",
@@ -332,7 +332,7 @@
       "--id",
       "--profile-ids"
     ],
-    "profile list": [],
+    "profile list": ["--ids"],
     "profile unlink": [
       "--feature-ids",
       "--id",
@@ -381,7 +381,7 @@
     "release get": [
       "--id"
     ],
-    "release list": [],
+    "release list": ["--ids"],
     "release promote": [
       "--release-id"
     ],
@@ -438,7 +438,7 @@
       "--issue-ids",
       "--test-ids"
     ],
-    "risk list": [],
+    "risk list": ["--ids"],
     "risk mitigate": [
       "--id"
     ],
@@ -481,7 +481,7 @@
     "spec get": [
       "--id"
     ],
-    "spec list": [],
+    "spec list": ["--ids"],
     "spec reserve": [],
     "spec reserve create": [
       "--end",
@@ -533,7 +533,7 @@
       "--feature-ids",
       "--id"
     ],
-    "test list": [],
+    "test list": ["--ids"],
     "test unlink": [
       "--claim-ids",
       "--evidence-ids",

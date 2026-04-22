@@ -42,6 +42,10 @@ class CliFeatureTests(unittest.TestCase):
         self.assertIsInstance(list_payload, list)
         ids = {row["id"] for row in list_payload}
         self.assertIn("feat:cli.generated", ids)
+        list_by_ids = run_cli("feature", "list", str(repo), "--ids", "feat:cli.generated")
+        self.assertEqual(list_by_ids.returncode, 0, list_by_ids.stderr)
+        list_by_ids_payload = json.loads(list_by_ids.stdout)
+        self.assertEqual([row["id"] for row in list_by_ids_payload], ["feat:cli.generated"])
 
         update = run_cli(
             "feature",

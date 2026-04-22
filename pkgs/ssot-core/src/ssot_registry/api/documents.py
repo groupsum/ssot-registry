@@ -280,10 +280,18 @@ def load_document_payload_for_row(repo_root: Path, row: dict[str, Any], kind: st
     return payload
 
 
-def list_documents(path: str | Path, kind: str) -> list[dict[str, Any]]:
+def list_documents(path: str | Path, kind: str, ids: list[str] | None = None) -> list[dict[str, Any]]:
     _registry_path, _repo_root, registry = load_registry(path)
-    section = section_for_document_kind(kind)
-    return sorted((deepcopy(row) for row in registry.get(section, [])), key=lambda row: (row["number"], row["id"]))
+    if ids is None:
+        section = section_for_document_kind(kind)
+        return sorted((deepcopy(row) for row in registry.get(section, [])), key=lambda row: (row["number"], row["id"]))
+
+    lookup = _row_lookup(registry, kind)
+    requested_ids = list(dict.fromkeys(ids))
+    missing = sorted(document_id for document_id in requested_ids if document_id not in lookup)
+    if missing:
+        raise ValueError(f"Unknown {_document_label(kind)} ids: {', '.join(missing)}")
+    return sorted((deepcopy(lookup[document_id]) for document_id in requested_ids), key=lambda row: (row["number"], row["id"]))
 
 
 def get_document(path: str | Path, kind: str, document_id: str) -> dict[str, Any]:

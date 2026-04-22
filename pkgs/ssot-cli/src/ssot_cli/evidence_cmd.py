@@ -12,7 +12,7 @@ from ssot_registry.api import (
     update_entity,
     verify_evidence_rows,
 )
-from ssot_cli.common import add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict
 
 
 _LINK_MAPPING = {
@@ -48,6 +48,7 @@ def register_evidence(subparsers: argparse._SubParsersAction) -> None:
 
     list_cmd = evidence_sub.add_parser("list", help="List evidence rows.", description="List evidence artifacts currently known to the registry.")
     add_path_argument(list_cmd)
+    add_ids_argument(list_cmd, help_text="Evidence ids to include in the list output.")
     list_cmd.set_defaults(func=run_list)
 
     update = evidence_sub.add_parser("update", help="Edit evidence metadata.", description="Update mutable evidence fields without changing its link graph.")
@@ -111,7 +112,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "evidence")
+    return list_entities(args.path, "evidence", ids=args.ids)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:

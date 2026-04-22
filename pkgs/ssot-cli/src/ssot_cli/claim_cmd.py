@@ -14,7 +14,7 @@ from ssot_registry.api import (
     unlink_entities,
     update_entity,
 )
-from ssot_cli.common import add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict
 
 
 _LINK_MAPPING = {
@@ -52,6 +52,7 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
 
     list_cmd = claim_sub.add_parser("list", help="List claims.", description="List claim records currently known to the registry.")
     add_path_argument(list_cmd)
+    add_ids_argument(list_cmd, help_text="Claim ids to include in the list output.")
     list_cmd.set_defaults(func=run_list)
 
     update = claim_sub.add_parser("update", help="Edit claim metadata.", description="Update mutable claim fields without changing its linked support graph.")
@@ -128,7 +129,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "claims")
+    return list_entities(args.path, "claims", ids=args.ids)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:

@@ -1,0 +1,4 @@
+﻿body: |-
+  The CLI shall support --ids on list subcommands for ADR, SPEC, feature, profile, test, claim,
+  evidence, issue, risk, boundary, and release surfaces.
+  When provided, list output shall include only the requested ids and fail on unknown ids.

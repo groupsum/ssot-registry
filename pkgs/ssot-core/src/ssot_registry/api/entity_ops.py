@@ -187,9 +187,18 @@ def get_entity(path: str | Path, section: str, entity_id: str) -> dict[str, Any]
     return deepcopy(_entity_row(registry, section, entity_id))
 
 
-def list_entities(path: str | Path, section: str) -> list[dict[str, Any]]:
+def list_entities(path: str | Path, section: str, ids: list[str] | None = None) -> list[dict[str, Any]]:
     _registry_path, _repo_root, registry = load_registry(path)
-    return sorted((deepcopy(row) for row in registry.get(section, [])), key=lambda row: row["id"])
+    if ids is None:
+        return sorted((deepcopy(row) for row in registry.get(section, [])), key=lambda row: row["id"])
+
+    lookup = _row_lookup(registry, section)
+    requested_ids = _dedupe_preserve(ids)
+    missing = sorted(entity_id for entity_id in requested_ids if entity_id not in lookup)
+    if missing:
+        label = SECTION_LABELS.get(section, section.rstrip("s"))
+        raise ValueError(f"Unknown {label} ids: {', '.join(missing)}")
+    return sorted((deepcopy(lookup[entity_id]) for entity_id in requested_ids), key=lambda row: row["id"])
 
 
 def update_entity(path: str | Path, section: str, entity_id: str, changes: dict[str, Any]) -> dict[str, Any]:
