@@ -4,7 +4,14 @@ import argparse
 import asyncio
 from pathlib import Path
 
-from _screenshot_common import DEFAULT_REPO, TUI_ASSET_ROOT, bootstrap_paths, display_path, save_textual_screenshot_png
+from _screenshot_common import (
+    DEFAULT_REPO,
+    SCREENSHOT_TEXTUAL_THEME,
+    TUI_ASSET_ROOT,
+    bootstrap_paths,
+    display_path,
+    save_textual_screenshot_png,
+)
 
 
 bootstrap_paths()
@@ -17,6 +24,7 @@ async def capture_tui_screenshots(repo_path: Path, asset_root: Path) -> list[Pat
     from ssot_tui.widgets import EntityTable
 
     app = SsotTuiApp()
+    app.theme = SCREENSHOT_TEXTUAL_THEME
     browser_output = asset_root / "ssot-tui-browser.png"
     adr_output = asset_root / "ssot-tui-adrs.png"
     spec_output = asset_root / "ssot-tui-specs.png"
