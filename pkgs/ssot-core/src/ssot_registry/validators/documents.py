@@ -134,10 +134,10 @@ def validate_document_rows(
                 expected_paths = document_path_variants(paths, kind, number, slug) if isinstance(paths, dict) and isinstance(slug, str) else None
                 if expected_paths is not None and relative_path not in expected_paths:
                     failures.append(
-                        f"{prefix}.path must match number and slug using .yaml or .json: expected one of {sorted(expected_paths)}"
+                        f"{prefix}.path must match number and slug using .json or .yaml: expected one of {sorted(expected_paths)}"
                     )
                 if not document_path_has_supported_suffix(relative_path):
-                    failures.append(f"{prefix}.path must end with .yaml or .json")
+                    failures.append(f"{prefix}.path must end with .json or .yaml")
                 full_path = repo_root / relative_path
                 if not full_path.exists():
                     failures.append(f"{prefix}.path does not exist: {relative_path}")

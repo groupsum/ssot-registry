@@ -93,8 +93,8 @@ def _validate_source_rows(registry: dict[str, object], kind: str) -> list[str]:
             continue
         if number < start or number > end:
             failures.append(f"ssot-origin {kind} id {number:04d} is outside reserved range {start:04d}..{end:04d}")
-        if source_path.suffix.lower() != ".yaml":
-            failures.append(f"{document_id} must use canonical .yaml source path in upstream registry")
+        if source_path.suffix.lower() != ".json":
+            failures.append(f"{document_id} must use canonical .json source path in upstream registry")
         if not source_path.exists():
             failures.append(f"{document_id} source file is missing: {source_path.relative_to(PROJECT_ROOT).as_posix()}")
     return failures

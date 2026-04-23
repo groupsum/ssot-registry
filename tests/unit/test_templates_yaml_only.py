@@ -14,7 +14,7 @@ for path in (CORE_SRC_ROOT, CONTRACTS_SRC_ROOT):
 from ssot_registry.util.document_io import load_document_yaml
 
 
-class TemplateDocumentsYamlOnlyTests(unittest.TestCase):
+class TemplateDocumentsJsonCanonicalTests(unittest.TestCase):
     def test_contract_packaged_document_tree_does_not_contain_markdown(self) -> None:
         root = ROOT
         template_root = root / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates"
@@ -29,12 +29,14 @@ class TemplateDocumentsYamlOnlyTests(unittest.TestCase):
 
         self.assertEqual([], markdown_documents)
 
-    def test_contract_packaged_documents_parse_as_yaml(self) -> None:
+    def test_contract_packaged_documents_parse_as_json(self) -> None:
         root = ROOT
         template_root = root / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates"
 
         for section in ("adr", "specs"):
-            for path in sorted((template_root / section).glob("*.yaml")):
+            for path in sorted((template_root / section).glob("*.json")):
+                if path.name == "manifest.json":
+                    continue
                 payload = load_document_yaml(path)
                 self.assertIsInstance(payload, dict, path.as_posix())
 

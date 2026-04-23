@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🔷 ssot-registry</h1>
+  <h1>ðŸ”· ssot-registry</h1>
   <p><strong>Single Source of Truth for features, claims, tests, releases, ADRs, and specs.</strong></p>
 </div>
 
@@ -859,9 +859,9 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
   - Upstream spec inventory: `.ssot/specs/`
 
 - Canonical upstream governance docs (`.ssot/`)
-  - Package topology and release order: `.ssot/specs/SPEC-0500-package-topology-and-release-order.yaml`
-  - Canonical release targets: `.ssot/specs/SPEC-0510-canonical-release-targets-and-tag-naming.yaml`
-  - Origin/core boundary rules: `.ssot/specs/SPEC-0512-document-origin-boundaries-and-id-ranges.yaml`
+  - Package topology and release order: `.ssot/specs/SPEC-0500-package-topology-and-release-order.json`
+  - Canonical release targets: `.ssot/specs/SPEC-0510-canonical-release-targets-and-tag-naming.json`
+  - Origin/core boundary rules: `.ssot/specs/SPEC-0512-document-origin-boundaries-and-id-ranges.json`
   - Architecture decisions for package layout and release flow: `.ssot/adr/`
 
 - Public operator `ssot-origin` templates (`pkgs/ssot-contracts/src/ssot_contracts/templates/`)
@@ -899,3 +899,4 @@ python -m pip install --upgrade pip
 python -m pip install -e pkgs/ssot-registry
 python -m unittest discover -s tests -v
 ```
+

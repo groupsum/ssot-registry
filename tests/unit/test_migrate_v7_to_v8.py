@@ -72,9 +72,10 @@ class MigrateV7ToV8Tests(unittest.TestCase):
             self.assertIn("spc:0600", spec_ids)
             self.assertFalse((repo / ".ssot" / "adr" / "ADR-0001-canonical-json-registry.md").exists())
             self.assertFalse((repo / ".ssot" / "specs" / "SPEC-0001-registry-core.md").exists())
-            self.assertTrue((repo / ".ssot" / "adr" / "ADR-0600-canonical-json-registry.yaml").exists())
-            self.assertTrue((repo / ".ssot" / "specs" / "SPEC-0600-registry-core.yaml").exists())
+            self.assertTrue((repo / ".ssot" / "adr" / "ADR-0600-canonical-json-registry.json").exists())
+            self.assertTrue((repo / ".ssot" / "specs" / "SPEC-0600-registry-core.json").exists())
 
 
 if __name__ == "__main__":
     unittest.main()
+

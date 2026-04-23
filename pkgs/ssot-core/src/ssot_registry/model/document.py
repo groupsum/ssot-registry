@@ -16,7 +16,7 @@ DOCUMENT_ID_PREFIXES = {"adr": "adr:", "spec": "spc:"}
 DOCUMENT_FILENAME_PREFIXES = CONTRACT_DATA["document_contract"]["filename_prefixes"]
 DOCUMENT_PATH_KEYS = CONTRACT_DATA["document_contract"]["path_keys"]
 DOCUMENT_RESERVATION_KEYS = CONTRACT_DATA["document_contract"]["reservation_keys"]
-DOCUMENT_FILE_SUFFIXES = (".yaml", ".json")
+DOCUMENT_FILE_SUFFIXES = (".json", ".yaml")
 DOCUMENT_ORIGINS = {"ssot-core", "ssot-origin", "repo-local"}
 DOCUMENT_STATUSES = tuple(CONTRACT_DATA["choice_sets"]["document_statuses"])
 CREATE_ALLOWED_STATUSES = ("draft", "in_review", "accepted", "rejected", "withdrawn")
@@ -33,8 +33,8 @@ TRANSITION_RULES = {
 SPEC_KINDS = set(CONTRACT_DATA["choice_sets"]["spec_kinds"])
 DOCUMENT_SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 DOCUMENT_FILENAME_PATTERNS = {
-    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.yaml$"),
-    "spec": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.yaml$"),
+    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.(?:json|yaml)$"),
+    "spec": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.(?:json|yaml)$"),
 }
 
 
@@ -74,7 +74,7 @@ def normalize_document_id(kind: str, number: int) -> str:
 
 
 def build_document_filename(kind: str, number: int, slug: str) -> str:
-    return f"{DOCUMENT_FILENAME_PREFIXES[kind]}-{format_document_number(number)}-{slug}.yaml"
+    return f"{DOCUMENT_FILENAME_PREFIXES[kind]}-{format_document_number(number)}-{slug}.json"
 
 
 def build_document_path(paths: dict[str, str], kind: str, number: int, slug: str) -> str:
@@ -84,7 +84,7 @@ def build_document_path(paths: dict[str, str], kind: str, number: int, slug: str
 
 def document_path_variants(paths: dict[str, str], kind: str, number: int, slug: str) -> set[str]:
     canonical = Path(build_document_path(paths, kind, number, slug))
-    return {canonical.as_posix(), canonical.with_suffix(".json").as_posix()}
+    return {canonical.as_posix(), canonical.with_suffix(".yaml").as_posix()}
 
 
 def document_path_has_supported_suffix(path: str) -> bool:

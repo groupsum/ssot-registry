@@ -5,24 +5,22 @@ import unittest
 from pathlib import Path
 
 from ssot_contracts.schema import list_schema_names
-from ssot_registry.api import create_document, initialize_repo, load_registry, save_registry, update_document, validate_registry
+from ssot_registry.api import create_document, initialize_repo, load_registry, update_document, validate_registry
 from ssot_registry.util.document_io import dump_document_yaml, load_document_yaml
-from ssot_registry.util.fs import sha256_normalized_text_path
-from ssot_registry.util.jsonio import stable_json_dumps
 from tests.helpers import workspace_tempdir
 
 
-class DocumentYamlTests(unittest.TestCase):
+class DocumentJsonCanonicalTests(unittest.TestCase):
     def test_document_schemas_are_packaged(self) -> None:
         names = set(list_schema_names())
         self.assertIn("adr.schema.json", names)
         self.assertIn("spec.schema.json", names)
 
-    def test_invalid_yaml_document_fails_validation(self) -> None:
+    def test_invalid_document_payload_fails_validation(self) -> None:
         with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "repo"
             initialize_repo(repo, repo_id="repo:yaml-doc", repo_name="yaml-doc", version="1.0.0")
-            target = repo / ".ssot" / "adr" / "ADR-0600-canonical-json-registry.yaml"
+            target = repo / ".ssot" / "adr" / "ADR-0600-canonical-json-registry.json"
             payload = load_document_yaml(target)
             del payload["body"]
             target.write_text(dump_document_yaml(payload), encoding="utf-8")
@@ -48,16 +46,12 @@ class DocumentYamlTests(unittest.TestCase):
             )
             self.assertTrue(create_result["passed"])
 
-            registry_path, repo_root, registry = load_registry(repo)
+            _registry_path, repo_root, registry = load_registry(repo)
             row = next(row for row in registry["adrs"] if row["id"] == "adr:1000")
-            yaml_path = repo_root / row["path"]
-            payload = load_document_yaml(yaml_path)
-            json_path = yaml_path.with_suffix(".json")
-            json_path.write_text(stable_json_dumps(payload), encoding="utf-8")
-            yaml_path.unlink()
-            row["path"] = json_path.relative_to(repo_root).as_posix()
-            row["content_sha256"] = sha256_normalized_text_path(json_path)
-            save_registry(registry_path, registry)
+            json_path = repo_root / row["path"]
+            payload = load_document_yaml(json_path)
+            self.assertTrue(json_path.exists())
+            self.assertTrue(json_path.read_text(encoding="utf-8").lstrip().startswith("{"))
 
             report = validate_registry(repo)
             self.assertTrue(report["passed"], report)
@@ -77,7 +71,7 @@ class DocumentYamlTests(unittest.TestCase):
             body = repo / "adr-body.md"
             body.write_text("Local ADR body.\n", encoding="utf-8")
 
-            with self.assertRaisesRegex(Exception, r"body-file must be \.yaml or \.json"):
+            with self.assertRaisesRegex(Exception, r"body-file must be \.json or \.yaml"):
                 create_document(
                     repo,
                     "adr",
@@ -167,3 +161,4 @@ class DocumentYamlTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

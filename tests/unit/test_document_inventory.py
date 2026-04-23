@@ -8,8 +8,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PATTERNS = {
-    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.yaml$"),
-    "specs": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.yaml$"),
+    "adr": re.compile(r"^ADR-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.json$"),
+    "specs": re.compile(r"^SPEC-(?P<number>\d{4})-(?P<slug>[a-z0-9-]+)\.json$"),
 }
 PACKAGED_ROOTS = {
     "adr": REPO_ROOT / "pkgs" / "ssot-contracts" / "src" / "ssot_contracts" / "templates" / "adr",
@@ -20,7 +20,9 @@ UPSTREAM_REGISTRY = json.loads((REPO_ROOT / ".ssot" / "registry.json").read_text
 
 def _packaged_numbers(root: Path, kind: str) -> set[int]:
     numbers: set[int] = set()
-    for path in sorted(root.glob("*.yaml")):
+    for path in sorted(root.glob("*.json")):
+        if path.name == "manifest.json":
+            continue
         match = PATTERNS[kind].match(path.name)
         if match is None:
             raise AssertionError(f"Unexpected {kind} filename: {path.relative_to(REPO_ROOT).as_posix()}")

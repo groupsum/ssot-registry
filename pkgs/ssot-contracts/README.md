@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🔷 ssot-contracts</h1>
+  <h1>ðŸ”· ssot-contracts</h1>
   <p><strong>Canonical schemas, templates, manifests, and generated contract metadata for SSOT.</strong></p>
 </div>
 
@@ -105,7 +105,7 @@ Read packaged document bodies:
 ```python
 from ssot_contracts import read_packaged_document_text
 
-text = read_packaged_document_text("adr", "ADR-0600-canonical-json-registry.yaml")
+text = read_packaged_document_text("adr", "ADR-0600-canonical-json-registry.json")
 print(text.splitlines()[0])
 ```
 
@@ -127,3 +127,4 @@ These modules provide shared constants such as output formats, entity section la
 - Consumed by: [ssot-registry](https://pypi.org/project/ssot-registry/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-tui](https://pypi.org/project/ssot-tui/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-codegen](https://pypi.org/project/ssot-codegen/)
 
 If you need the canonical packaged schemas and manifests, install this package. It is the lowest-level reusable contract layer in the workspace.
+

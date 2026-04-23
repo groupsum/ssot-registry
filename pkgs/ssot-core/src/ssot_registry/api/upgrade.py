@@ -337,7 +337,7 @@ def migrate_v7_to_v8(
     return migrated
 
 
-def _migrate_document_files_to_yaml(
+def _migrate_document_files_to_json(
     registry: dict[str, Any],
     repo_root: Path,
     kind: str,
@@ -385,13 +385,17 @@ def _migrate_document_files_to_yaml(
             summary["converted" if changed else "skipped"].append(row["id"])
             continue
 
-        if relative_path.endswith(".yaml") and not current_path.exists():
-            legacy_path = repo_root / Path(relative_path).with_suffix(".md")
-            if legacy_path.exists():
-                current_path = legacy_path
-            else:
-                summary["failed"].append(row["id"])
-                continue
+        if not current_path.exists():
+            legacy_candidates: list[Path] = []
+            if relative_path.endswith(".json"):
+                legacy_candidates.append(repo_root / Path(relative_path).with_suffix(".yaml"))
+            if relative_path.endswith(".yaml"):
+                legacy_candidates.append(repo_root / Path(relative_path).with_suffix(".json"))
+            legacy_candidates.append(repo_root / Path(relative_path).with_suffix(".md"))
+            for legacy_path in legacy_candidates:
+                if legacy_path.exists():
+                    current_path = legacy_path
+                    break
 
         if not current_path.exists():
             summary["failed"].append(row["id"])
@@ -435,8 +439,8 @@ def migrate_v8_to_v9(
     migrated = deepcopy(registry)
     migrated["schema_version"] = 9
     summary = {
-        "adr": _migrate_document_files_to_yaml(migrated, repo_root, "adr"),
-        "spec": _migrate_document_files_to_yaml(migrated, repo_root, "spec"),
+        "adr": _migrate_document_files_to_json(migrated, repo_root, "adr"),
+        "spec": _migrate_document_files_to_json(migrated, repo_root, "spec"),
     }
     return migrated, summary
 

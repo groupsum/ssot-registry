@@ -31,9 +31,9 @@ class CliAdrTests(unittest.TestCase):
             self.assertEqual(create.returncode, 0, create.stderr)
             payload = json.loads(create.stdout)
             self.assertEqual(payload["document"]["id"], "adr:1000")
-            created_path = repo / ".ssot" / "adr" / "ADR-1000-local-decision.yaml"
+            created_path = repo / ".ssot" / "adr" / "ADR-1000-local-decision.json"
             self.assertTrue(created_path.exists())
-            self.assertFalse(created_path.read_text(encoding="utf-8").lstrip().startswith("{"))
+            self.assertTrue(created_path.read_text(encoding="utf-8").lstrip().startswith("{"))
 
             get_result = run_cli("adr", "get", str(repo), "--id", "adr:1000")
             self.assertEqual(get_result.returncode, 0, get_result.stderr)
@@ -210,3 +210,4 @@ class CliAdrTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

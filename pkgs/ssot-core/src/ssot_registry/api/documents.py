@@ -71,7 +71,7 @@ def _load_authored_payload(kind: str, body_file: str | Path) -> dict[str, Any]:
     path = Path(body_file)
     suffix = path.suffix.lower()
     if suffix not in {".yaml", ".json"}:
-        raise ValidationError(f"{_document_label(kind)} body-file must be .yaml or .json, got {path.name}")
+        raise ValidationError(f"{_document_label(kind)} body-file must be .json or .yaml, got {path.name}")
     payload = normalize_document_payload(kind, load_document_yaml(path))
     payload_kind = payload.get("kind")
     if payload_kind is not None and payload_kind != kind:

@@ -22,7 +22,7 @@ class CliInitTests(unittest.TestCase):
             self.assertEqual({"ssot-origin"}, {row["origin"] for row in registry["adrs"]})
             self.assertEqual({"ssot-origin"}, {row["origin"] for row in registry["specs"]})
             first_adr = repo / registry["adrs"][0]["path"]
-            self.assertFalse(first_adr.read_text(encoding="utf-8").lstrip().startswith("{"))
+            self.assertTrue(first_adr.read_text(encoding="utf-8").lstrip().startswith("{"))
 
             validate = run_cli("validate", str(repo))
             self.assertEqual(validate.returncode, 0, validate.stderr)

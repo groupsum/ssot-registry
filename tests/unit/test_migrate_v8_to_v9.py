@@ -11,7 +11,7 @@ from tests.helpers import workspace_tempdir
 
 
 class MigrateV8ToV9Tests(unittest.TestCase):
-    def test_migration_converts_markdown_documents_to_yaml(self) -> None:
+    def test_migration_converts_markdown_documents_to_json(self) -> None:
         with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "repo"
             paths = default_paths()
@@ -47,7 +47,7 @@ class MigrateV8ToV9Tests(unittest.TestCase):
             self.assertEqual(9, migrated["schema_version"])
             self.assertEqual(["adr:1000"], summary["adr"]["converted"])
             self.assertFalse(source.exists())
-            target = repo / ".ssot" / "adr" / "ADR-1000-local-decision.yaml"
+            target = repo / ".ssot" / "adr" / "ADR-1000-local-decision.json"
             self.assertTrue(target.exists())
             payload = load_document_yaml(target)
             self.assertEqual("adr", payload["kind"])
@@ -120,3 +120,4 @@ class MigrateV8ToV9Tests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
