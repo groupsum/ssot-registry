@@ -1,0 +1,4 @@
+interface:
+  display_name: "SSOT Registry Upgrade"
+  short_description: "Upgrade PyPI ssot-registry and registry schema."
+  default_prompt: "Use $ssot-registry-upgrade to upgrade the local uv venv to the latest PyPI ssot-registry package, run ssot upgrade with sync-docs/report, and verify final schema_version with validate."

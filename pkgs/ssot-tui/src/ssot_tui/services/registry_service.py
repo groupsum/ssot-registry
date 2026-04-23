@@ -31,7 +31,7 @@ class RegistryWorkspaceService:
             if section == "specs":
                 collections[section] = list_documents(repo_root, "spec")
                 continue
-            collections[section] = list_entities(repo_root, section)
+            collections[section] = [self._project_display_fields(row) for row in list_entities(repo_root, section)]
 
         return RegistryWorkspace(
             root_path=repo_root.as_posix(),
@@ -42,6 +42,18 @@ class RegistryWorkspaceService:
             validation=validate_registry(repo_root),
             collections=collections,
         )
+
+    def _project_display_fields(self, row: dict[str, Any]) -> dict[str, Any]:
+        projected = dict(row)
+        plan = projected.get("plan")
+        if isinstance(plan, dict):
+            # Expose nested planning attributes as flat fields so table columns
+            # can display planning state (for example out_of_bounds horizon).
+            projected.setdefault("horizon", plan.get("horizon"))
+            projected.setdefault("slot", plan.get("slot"))
+            projected.setdefault("target_claim_tier", plan.get("target_claim_tier"))
+            projected.setdefault("target_lifecycle_stage", plan.get("target_lifecycle_stage"))
+        return projected
 
     def create(self, path: str | Path, section: str, payload: dict[str, Any]) -> dict[str, Any]:
         return create_entity(path, section, payload)

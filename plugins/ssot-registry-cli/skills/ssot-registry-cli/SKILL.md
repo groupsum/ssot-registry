@@ -21,6 +21,8 @@ This plugin is centered on the CLI exposed by the PyPI-published `ssot-registry`
 
 Use these focused skills by default:
 
+- Package/schema upgrade:
+  - Upgrade PyPI package + registry schema: `$ssot-registry-upgrade`
 - Entity-focused operations:
   - ADR: `$ssot-adr`
   - SPEC: `$ssot-spec`
