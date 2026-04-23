@@ -20,6 +20,13 @@ else:
     BrowserScreen = None
 
 
+async def _wait_for_workspace_load(screen, pilot) -> None:
+    worker = getattr(screen, "_active_load_worker", None)
+    if worker is not None:
+        await worker.wait()
+    await pilot.pause()
+
+
 class TuiRegistryResolutionTests(unittest.TestCase):
     def test_resolve_registry_path_accepts_ssot_directory(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
@@ -102,6 +109,7 @@ class TuiBrowserInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 table = screen.query_one(EntityTable)
                 self.assertIsNotNone(screen.workspace)
                 self.assertGreater(table.row_count, 0)
@@ -123,6 +131,7 @@ class TuiBrowserInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 screen._select_entity_id("feat:rfc.9000.connection-migration")
                 await pilot.pause()
 
@@ -152,6 +161,7 @@ class TuiBrowserInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 screen._select_entity_id("tst:pytest.rfc.9000.connection-migration")
                 await pilot.pause()
 

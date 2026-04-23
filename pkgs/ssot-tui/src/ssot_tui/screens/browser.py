@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from textual import work
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import Input, Static
+from textual.worker import Worker, WorkerState
 
 from ssot_tui.actions import ActionDefinition, ActionRegistry
 from ssot_tui.persistence import SessionStore
@@ -21,6 +24,14 @@ from ssot_tui.providers import BridgeActionProvider, WorkspaceProvider
 from ssot_tui.services import ENTITY_SECTIONS, RegistryWorkspace, RegistryWorkspaceService
 from ssot_tui.state import AppState, AppStateStore, ValidationSummary
 from ssot_tui.widgets import CommandPaletteScreen, EntityDetailPane, EntityTable, HelpScreen, SectionNavigation, StatusCenter
+
+
+@dataclass(slots=True)
+class WorkspaceLoadResult:
+    request_id: int
+    requested_path: str
+    workspace: RegistryWorkspace
+    validation: ValidationSummary
 
 
 class BrowserScreen(Screen[None]):
@@ -65,6 +76,9 @@ class BrowserScreen(Screen[None]):
         self._detail_view_model = None
         self._last_filtered_count = 0
         self._last_navigation_signature: tuple[tuple[tuple[str, int], ...], tuple[tuple[str, int], ...]] | None = None
+        self._load_request_id = 0
+        self._active_load_worker: Worker[WorkspaceLoadResult] | None = None
+        self._active_load_path: str | None = None
         self.section_specs: dict[str, SectionPresentationSpec] = build_section_specs(ENTITY_SECTIONS)
         self.action_registry = ActionRegistry()
 
@@ -381,16 +395,51 @@ class BrowserScreen(Screen[None]):
         if not path:
             self._push_status("Enter a repository path to load.", level="warning")
             return
-        try:
-            normalized_path = self.workspace_provider.resolve_preferred_repo(Path(path))
-            workspace = self.service.load_workspace(Path(normalized_path))
-            validation = self.workspace_provider.build_validation_summary(workspace.validation)
-        except Exception as exc:
-            self.workspace = None
-            self.state_store.set_workspace(None, ValidationSummary())
-            self._push_status(self._format_load_error(path, exc), level="error")
+        if self._active_load_worker is not None:
+            self._active_load_worker.cancel()
+        self._load_request_id += 1
+        self._active_load_path = path
+        self._set_startup_message(f"Loading registry from {path} in the background...")
+        self._push_status(f"Loading registry from {path} in the background.")
+        self._active_load_worker = self._load_workspace_background(self._load_request_id, path)
+
+    @work(name="workspace_load", group="workspace_load", exclusive=True, exit_on_error=False, thread=True)
+    def _load_workspace_background(self, request_id: int, path: str) -> WorkspaceLoadResult:
+        normalized_path = self.workspace_provider.resolve_preferred_repo(Path(path))
+        workspace = self.service.load_workspace(Path(normalized_path))
+        validation = self.workspace_provider.build_validation_summary(workspace.validation)
+        return WorkspaceLoadResult(
+            request_id=request_id,
+            requested_path=path,
+            workspace=workspace,
+            validation=validation,
+        )
+
+    def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
+        if event.worker is not self._active_load_worker:
             return
-        self.state_store.set_workspace(workspace, validation)
+        if event.state == WorkerState.CANCELLED:
+            self._active_load_worker = None
+            self._active_load_path = None
+            return
+        if event.state == WorkerState.ERROR:
+            path = self._active_load_path or "requested path"
+            self._active_load_worker = None
+            self._active_load_path = None
+            error = event.worker.error or RuntimeError("unknown worker failure")
+            self._push_status(self._format_load_error(path, error), level="error")
+            return
+        if event.state != WorkerState.SUCCESS:
+            return
+
+        result = event.worker.result
+        self._active_load_worker = None
+        self._active_load_path = None
+        if result is None or result.request_id != self._load_request_id:
+            return
+
+        workspace = result.workspace
+        self.state_store.set_workspace(workspace, result.validation)
         self.active_section = self.state_store.state.session.active_section or ENTITY_SECTIONS[0][0]
         self._persist_session(last_repo_path=workspace.root_path, active_section=self.active_section)
         self._push_status(

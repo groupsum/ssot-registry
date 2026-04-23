@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from ssot_tui.actions import ActionDefinition, ActionRegistry
@@ -15,10 +16,23 @@ from tests.helpers import temp_repo_from_fixture
 
 if importlib.util.find_spec("textual") is not None:
     from textual.app import App
+    from textual.worker import WorkerState
     from ssot_tui.screens.browser import BrowserScreen
     from ssot_tui.widgets import EntityTable
 else:
     BrowserScreen = None
+
+
+async def _wait_for_workspace_load(screen, pilot) -> None:
+    worker = getattr(screen, "_active_load_worker", None)
+    if worker is not None:
+        await worker.wait()
+    await pilot.pause()
+
+
+class NoStartupWorkspaceProvider(WorkspaceProvider):
+    def resolve_preferred_registry_path(self, path):
+        raise FileNotFoundError("startup auto-detect disabled for test")
 
 
 class TuiOverhaulUnitTests(unittest.TestCase):
@@ -226,6 +240,18 @@ class TuiOverhaulUnitTests(unittest.TestCase):
         self.assertEqual(screen._format_loaded_path_display(launch_root), ".")
         self.assertEqual(screen._format_loaded_path_display(launch_root.parent), ".")
 
+    @unittest.skipUnless(BrowserScreen is not None, "textual is not installed")
+    def test_stale_workspace_load_result_is_ignored(self) -> None:
+        screen = BrowserScreen()
+        stale_worker = SimpleNamespace(result=SimpleNamespace(request_id=1), error=None)
+        screen._load_request_id = 2
+        screen._active_load_worker = stale_worker
+
+        screen.on_worker_state_changed(SimpleNamespace(worker=stale_worker, state=WorkerState.SUCCESS))
+
+        self.assertIsNone(screen.workspace)
+        self.assertIsNone(screen._active_load_worker)
+
 
 @unittest.skipUnless(BrowserScreen is not None, "textual is not installed")
 class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
@@ -243,6 +269,7 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 table = screen.query_one(EntityTable)
                 self.assertIsNone(screen.state_store.state.session.filter_text)
                 self.assertEqual(screen.query_one("#filter_input").value, "")
@@ -264,6 +291,7 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 table = screen.query_one(EntityTable)
                 starting_rows = table.row_count
                 filter_input = screen.query_one("#filter_input")
@@ -288,6 +316,7 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 screen._select_entity_id("feat:rfc.9000.connection-migration")
                 await pilot.pause()
                 body = screen.query_one("#entity_detail_body")
@@ -314,6 +343,7 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 table = screen.query_one(EntityTable)
                 table.focus()
                 screen.action_activate_selection()
@@ -337,6 +367,7 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 entity = next(row for row in screen.workspace.collections["features"] if row["id"] == "feat:rfc.9000.connection-migration")
                 screen._show_entity(entity)
                 await pilot.pause()
@@ -361,6 +392,7 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 section, rows = next((name, items) for name, items in screen.workspace.collections.items() if len(items) > 1)
                 screen._select_section(section)
                 await pilot.pause()
@@ -387,6 +419,7 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 table = screen.query_one(EntityTable)
 
                 screen._select_section("adrs")
@@ -439,6 +472,7 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 workspace_status = screen.query_one("#workspace_status")
                 rendered = str(workspace_status.render())
                 self.assertIn(
@@ -469,6 +503,7 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
                 async with app.run_test() as pilot:
                     await pilot.pause()
                     screen = app.screen
+                    await _wait_for_workspace_load(screen, pilot)
 
                     startup_message = str(screen.query_one("#startup_message").render())
                     workspace_status = str(screen.query_one("#workspace_status").render())
@@ -500,6 +535,7 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
                 async with app.run_test() as pilot:
                     await pilot.pause()
                     screen = app.screen
+                    await _wait_for_workspace_load(screen, pilot)
 
                     startup_message = str(screen.query_one("#startup_message").render())
                     workspace_status = str(screen.query_one("#workspace_status").render())
@@ -516,27 +552,60 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
     async def test_reload_workspace_keeps_user_typed_repo_input(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"
+        (repo / ".git").mkdir()
         nested = repo / "nested"
         nested.mkdir(parents=True)
         session_root = Path(temp_dir.name) / "session"
 
         class TestApp(App[None]):
             def on_mount(self) -> None:
-                self.push_screen(BrowserScreen(session_store=SessionStore(session_root)))
+                session_store = SessionStore(session_root, workspace_provider=NoStartupWorkspaceProvider())
+                self.push_screen(BrowserScreen(session_store=session_store))
 
         try:
             app = TestApp()
             async with app.run_test() as pilot:
                 await pilot.pause()
                 screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
                 repo_input = screen.query_one("#repo_path")
                 repo_input.value = nested.as_posix()
                 screen.action_reload_workspace()
-                await pilot.pause()
+                await _wait_for_workspace_load(screen, pilot)
 
                 self.assertIsNotNone(screen.workspace)
                 self.assertEqual(repo_input.value, nested.as_posix())
                 self.assertEqual(screen.workspace.root_path, repo.as_posix())
+        finally:
+            temp_dir.cleanup()
+
+    async def test_reload_workspace_schedules_background_load_without_sync_service_call(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+
+        class ExplodingService(RegistryWorkspaceService):
+            def load_workspace(self, path):
+                raise AssertionError("load_workspace must not run inline in the UI event handler")
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                session_store = SessionStore(session_root, workspace_provider=NoStartupWorkspaceProvider())
+                self.push_screen(BrowserScreen(service=ExplodingService(), session_store=session_store))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
+                screen.query_one("#repo_path").value = repo.as_posix()
+                with patch.object(screen, "_load_workspace_background", return_value=object()) as load_worker:
+                    screen.action_reload_workspace()
+
+                load_worker.assert_called_once_with(1, repo.as_posix())
+                self.assertIsNone(screen.workspace)
+                self.assertIn("Loading registry", str(screen.query_one("#startup_message").render()))
         finally:
             temp_dir.cleanup()
 

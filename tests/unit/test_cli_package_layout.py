@@ -4,6 +4,7 @@ import importlib.util
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 for path in (
@@ -60,6 +61,23 @@ class CliPackageLayoutTests(unittest.TestCase):
 
         app = SsotTuiApp()
         self.assertEqual(app.TITLE, "SSOT TUI")
+
+    @unittest.skipUnless(importlib.util.find_spec("textual") is not None, "textual is not installed")
+    def test_textual_app_ctrl_c_hard_exits_with_interrupt_code(self) -> None:
+        from ssot_tui.app import SsotTuiApp
+
+        app = SsotTuiApp()
+        with patch.object(app, "exit") as exit_mock:
+            app.action_hard_exit()
+
+        exit_mock.assert_called_once_with(return_code=130)
+
+    def test_tui_main_converts_keyboard_interrupt_to_exit_code_130(self) -> None:
+        from ssot_tui.main import main
+
+        with patch("ssot_tui.main.SsotTuiApp") as app_cls:
+            app_cls.return_value.run.side_effect = KeyboardInterrupt
+            self.assertEqual(main(), 130)
 
 
 if __name__ == "__main__":

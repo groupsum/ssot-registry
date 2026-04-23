@@ -5,8 +5,11 @@ from .app import SsotTuiApp
 
 def main() -> int:
     app = SsotTuiApp()
-    app.run()
-    return 0
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        return 130
+    return app.return_code or 0
 
 
 if __name__ == "__main__":

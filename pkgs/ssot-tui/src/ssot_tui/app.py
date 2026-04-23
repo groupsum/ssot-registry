@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.widgets import Footer, Header
 
 from .screens import BrowserScreen
@@ -9,6 +10,16 @@ from .screens import BrowserScreen
 class SsotTuiApp(App[None]):
     TITLE = "SSOT TUI"
     SUB_TITLE = "Registry browser"
+    BINDINGS = [
+        Binding(
+            "ctrl+c",
+            "hard_exit",
+            "Hard exit",
+            show=False,
+            priority=True,
+            system=True,
+        ),
+    ]
     CSS = """
     Screen {
         layout: vertical;
@@ -79,3 +90,9 @@ class SsotTuiApp(App[None]):
 
     def on_mount(self) -> None:
         self.push_screen(BrowserScreen())
+
+    def action_hard_exit(self) -> None:
+        self.exit(return_code=130)
+
+    def action_help_quit(self) -> None:
+        self.action_hard_exit()
