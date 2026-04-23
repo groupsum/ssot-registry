@@ -60,6 +60,7 @@ class BrowserScreen(Screen[None]):
         self.workspace: RegistryWorkspace | None = None
         self.active_section = session.active_section or ENTITY_SECTIONS[0][0]
         self.initial_path = Path(initial_path) if initial_path is not None else None
+        self._launch_cwd = Path.cwd().resolve()
         self._current_detail_entity_id: str | None = None
         self._detail_view_model = None
         self._last_filtered_count = 0
@@ -102,7 +103,16 @@ class BrowserScreen(Screen[None]):
                 return self.workspace_provider.resolve_startup_repo(self.initial_path)
             except FileNotFoundError:
                 return None
-        return self.session_store.resolve_startup_path(Path.cwd(), self.state_store.state.session)
+        return self.session_store.resolve_startup_path(self._launch_cwd, self.state_store.state.session)
+
+    def _format_loaded_path_display(self, path: str | Path) -> str:
+        candidate = Path(path).expanduser().resolve()
+        try:
+            relative = candidate.relative_to(self._launch_cwd)
+        except ValueError:
+            return "."
+        relative_text = relative.as_posix()
+        return "." if relative_text in {"", "."} else relative_text
 
     def _register_actions(self) -> None:
         register = self.action_registry.register
@@ -327,8 +337,8 @@ class BrowserScreen(Screen[None]):
         self.query_one("#workspace_status", Static).update(
             " | ".join(
                 [
-                    f"Repo: {self.workspace.root_path}",
-                    f"Registry: {self.workspace.registry_path}",
+                    f"Repo: {self._format_loaded_path_display(self.workspace.root_path)}",
+                    f"Registry: {self._format_loaded_path_display(self.workspace.registry_path)}",
                     f"ssot-registry: {self.workspace.registry_version}",
                     f"schema: {self.workspace.registry_schema_version}",
                 ]
@@ -340,7 +350,10 @@ class BrowserScreen(Screen[None]):
             f"Validation: {status}; warnings={validation.warning_count}; checked={validation.last_checked_label}"
         )
         self._set_startup_message(
-            f"Loaded repo root: {self.workspace.root_path}\nLoaded registry: {self.workspace.registry_path}"
+            "Loaded repo root: "
+            f"{self._format_loaded_path_display(self.workspace.root_path)}\n"
+            "Loaded registry: "
+            f"{self._format_loaded_path_display(self.workspace.registry_path)}"
         )
 
     def _persist_session(self, *, emit: bool = True, **changes: object) -> None:
@@ -380,8 +393,11 @@ class BrowserScreen(Screen[None]):
         self.state_store.set_workspace(workspace, validation)
         self.active_section = self.state_store.state.session.active_section or ENTITY_SECTIONS[0][0]
         self._persist_session(last_repo_path=workspace.root_path, active_section=self.active_section)
-        self.query_one("#repo_path", Input).value = workspace.root_path
-        self._push_status(f"Loaded {workspace.repo.get('id', '<unknown repo>')} from {workspace.root_path}")
+        self._push_status(
+            "Loaded "
+            f"{workspace.repo.get('id', '<unknown repo>')} from "
+            f"{self._format_loaded_path_display(workspace.root_path)}"
+        )
 
     def action_validate_workspace(self) -> None:
         if self.workspace is None:

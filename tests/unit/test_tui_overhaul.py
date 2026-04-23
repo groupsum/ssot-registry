@@ -216,6 +216,16 @@ class TuiOverhaulUnitTests(unittest.TestCase):
         self.assertIn("Generated projections include", rendered)
         self.assertNotIn('"body"', view_model.raw_json)
 
+    @unittest.skipUnless(BrowserScreen is not None, "textual is not installed")
+    def test_browser_loaded_path_display_is_relative_with_root_and_outside_clamped(self) -> None:
+        launch_root = Path(__file__).resolve().parent
+        with patch("ssot_tui.screens.browser.Path.cwd", return_value=launch_root):
+            screen = BrowserScreen()
+        inside = launch_root / "repo" / ".ssot" / "registry.json"
+        self.assertEqual(screen._format_loaded_path_display(inside), "repo/.ssot/registry.json")
+        self.assertEqual(screen._format_loaded_path_display(launch_root), ".")
+        self.assertEqual(screen._format_loaded_path_display(launch_root.parent), ".")
+
 
 @unittest.skipUnless(BrowserScreen is not None, "textual is not installed")
 class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
@@ -439,6 +449,94 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
                     f"schema: {screen.workspace.registry_schema_version}",
                     rendered,
                 )
+        finally:
+            temp_dir.cleanup()
+
+    async def test_loaded_path_surfaces_render_relative_to_launch_cwd(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+        launch_cwd = Path(temp_dir.name)
+
+        with patch("ssot_tui.screens.browser.Path.cwd", return_value=launch_cwd):
+
+            class TestApp(App[None]):
+                def on_mount(self) -> None:
+                    self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+            try:
+                app = TestApp()
+                async with app.run_test() as pilot:
+                    await pilot.pause()
+                    screen = app.screen
+
+                    startup_message = str(screen.query_one("#startup_message").render())
+                    workspace_status = str(screen.query_one("#workspace_status").render())
+                    status_messages = [entry.message for entry in screen.state_store.state.status_history]
+
+                    self.assertIn("Loaded repo root: repo", startup_message)
+                    self.assertIn("Loaded registry: repo/.ssot/registry.json", startup_message)
+                    self.assertIn("Repo: repo", workspace_status)
+                    self.assertIn("Registry: repo/.ssot/registry.json", workspace_status)
+                    self.assertTrue(any(message.endswith("from repo") for message in status_messages))
+            finally:
+                temp_dir.cleanup()
+
+    async def test_loaded_path_surfaces_clamp_outside_launch_cwd_to_dot(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+        launch_cwd = repo / "nested" / "cwd"
+        launch_cwd.mkdir(parents=True)
+
+        with patch("ssot_tui.screens.browser.Path.cwd", return_value=launch_cwd):
+
+            class TestApp(App[None]):
+                def on_mount(self) -> None:
+                    self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+            try:
+                app = TestApp()
+                async with app.run_test() as pilot:
+                    await pilot.pause()
+                    screen = app.screen
+
+                    startup_message = str(screen.query_one("#startup_message").render())
+                    workspace_status = str(screen.query_one("#workspace_status").render())
+                    status_messages = [entry.message for entry in screen.state_store.state.status_history]
+
+                    self.assertIn("Loaded repo root: .", startup_message)
+                    self.assertIn("Loaded registry: .", startup_message)
+                    self.assertIn("Repo: .", workspace_status)
+                    self.assertIn("Registry: .", workspace_status)
+                    self.assertTrue(any(message.endswith("from .") for message in status_messages))
+            finally:
+                temp_dir.cleanup()
+
+    async def test_reload_workspace_keeps_user_typed_repo_input(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        nested = repo / "nested"
+        nested.mkdir(parents=True)
+        session_root = Path(temp_dir.name) / "session"
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(session_store=SessionStore(session_root)))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.screen
+                repo_input = screen.query_one("#repo_path")
+                repo_input.value = nested.as_posix()
+                screen.action_reload_workspace()
+                await pilot.pause()
+
+                self.assertIsNotNone(screen.workspace)
+                self.assertEqual(repo_input.value, nested.as_posix())
+                self.assertEqual(screen.workspace.root_path, repo.as_posix())
         finally:
             temp_dir.cleanup()
 

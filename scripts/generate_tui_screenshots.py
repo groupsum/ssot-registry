@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import os
 from pathlib import Path
 
 from _screenshot_common import (
@@ -39,17 +40,22 @@ async def capture_tui_screenshots(repo_path: Path, asset_root: Path) -> list[Pat
             raise RuntimeError(f"No rows visible in the {section} table for screenshot generation.")
         save_textual_screenshot_png(app, output_path)
 
-    async with app.run_test(size=(140, 40)) as pilot:
-        input_widget = app.screen.query_one("#repo_path", Input)
-        input_widget.value = str(repo_path)
-        app.screen.action_reload_workspace()
-        await pilot.pause()
-        save_textual_screenshot_png(app, browser_output)
-        await capture_section("adrs", adr_output)
-        await capture_section("specs", spec_output)
-        app.screen.action_validate_workspace()
-        await pilot.pause()
-        save_textual_screenshot_png(app, validated_output)
+    original_cwd = Path.cwd()
+    os.chdir(repo_path)
+    try:
+        async with app.run_test(size=(140, 40)) as pilot:
+            input_widget = app.screen.query_one("#repo_path", Input)
+            input_widget.value = "."
+            app.screen.action_reload_workspace()
+            await pilot.pause()
+            save_textual_screenshot_png(app, browser_output)
+            await capture_section("adrs", adr_output)
+            await capture_section("specs", spec_output)
+            app.screen.action_validate_workspace()
+            await pilot.pause()
+            save_textual_screenshot_png(app, validated_output)
+    finally:
+        os.chdir(original_cwd)
     return [browser_output, adr_output, spec_output, validated_output]
 
 
