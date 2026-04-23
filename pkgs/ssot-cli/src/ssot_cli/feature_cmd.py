@@ -2,7 +2,13 @@
 
 import argparse
 
-from ssot_contracts.generated.python.enums import CLAIM_TIERS, FEATURE_IMPLEMENTATION_STATUSES, FEATURE_LIFECYCLE_STAGES, PLANNING_HORIZONS
+from ssot_contracts.generated.python.enums import (
+    CLAIM_TIERS,
+    FEATURE_IMPLEMENTATION_STATUSES,
+    FEATURE_LIFECYCLE_STAGES,
+    OUT_OF_BOUNDS_DISPOSITIONS,
+    PLANNING_HORIZONS,
+)
 from ssot_registry.api import (
     create_entity,
     delete_entity,
@@ -47,6 +53,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--replacement-feature-id", nargs="*", default=[], help="Replacement feature ids if this feature is being deprecated or removed.")
     create.add_argument("--note", default=None, help="Lifecycle note explaining replacement or status context.")
     create.add_argument("--horizon", choices=sorted(PLANNING_HORIZONS), default="backlog", help="Planning horizon that determines when the feature is expected to land.")
+    create.add_argument("--out-of-bounds-disposition", choices=sorted(OUT_OF_BOUNDS_DISPOSITIONS), default=None, help="Required when a non-absent feature is out_of_bounds; tolerated means acceptable non-target support, prohibited means removal is required.")
     create.add_argument("--claim-tier", choices=sorted(CLAIM_TIERS), default=None, help="Target assurance tier expected for claims tied to this feature.")
     create.add_argument("--target-lifecycle-stage", choices=sorted(FEATURE_LIFECYCLE_STAGES), default="active", help="Planned future lifecycle target for this feature.")
     create.add_argument("--slot", default=None, help="Explicit planning slot label when the horizon is schedule-driven.")
@@ -108,6 +115,12 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     )
     plan.add_argument("--claim-tier", choices=sorted(CLAIM_TIERS), default=None, help="Target claim tier for the selected features.")
     plan.add_argument(
+        "--out-of-bounds-disposition",
+        choices=sorted(OUT_OF_BOUNDS_DISPOSITIONS),
+        default=None,
+        help="Disposition for non-absent out_of_bounds features.",
+    )
+    plan.add_argument(
         "--target-lifecycle-stage",
         choices=sorted(FEATURE_LIFECYCLE_STAGES),
         default=None,
@@ -136,6 +149,15 @@ def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    plan = {
+        "horizon": args.horizon,
+        "slot": args.slot,
+        "target_claim_tier": args.claim_tier,
+        "target_lifecycle_stage": args.target_lifecycle_stage,
+    }
+    if args.out_of_bounds_disposition is not None:
+        plan["out_of_bounds_disposition"] = args.out_of_bounds_disposition
+
     row = {
         "id": args.id,
         "title": args.title,
@@ -146,12 +168,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
             "replacement_feature_ids": args.replacement_feature_id,
             "note": args.note,
         },
-        "plan": {
-            "horizon": args.horizon,
-            "slot": args.slot,
-            "target_claim_tier": args.claim_tier,
-            "target_lifecycle_stage": args.target_lifecycle_stage,
-        },
+        "plan": plan,
         "spec_ids": args.spec_ids,
         "claim_ids": args.claim_ids,
         "test_ids": args.test_ids,
@@ -201,6 +218,7 @@ def run_plan(args: argparse.Namespace) -> dict[str, object]:
         claim_tier=args.claim_tier,
         slot=args.slot,
         target_lifecycle_stage=args.target_lifecycle_stage,
+        out_of_bounds_disposition=args.out_of_bounds_disposition,
     )
 
 

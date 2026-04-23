@@ -15,6 +15,7 @@ from ssot_registry.validators import (
     validate_document_reservations,
     validate_tiers,
     validate_lifecycle_semantics,
+    validate_out_of_bounds_disposition,
     validate_filesystem_paths,
 )
 from .load import load_registry
@@ -37,6 +38,7 @@ def validate_registry_document(
     validate_coverage(index, failures, warnings)
     validate_tiers(index, failures)
     validate_lifecycle_semantics(registry, index, failures, warnings)
+    validate_out_of_bounds_disposition(registry, index, failures, warnings)
     validate_filesystem_paths(registry, index, Path(repo_root), failures, warnings)
 
     return build_validation_report(registry, Path(registry_path).as_posix(), sorted(set(failures)), sorted(set(warnings)))

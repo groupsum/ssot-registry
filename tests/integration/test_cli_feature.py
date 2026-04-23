@@ -125,6 +125,32 @@ class CliFeatureTests(unittest.TestCase):
         )
         self.assertEqual(backlog.returncode, 0, backlog.stderr)
 
+        out_of_bounds = run_cli(
+            "feature",
+            "create",
+            str(repo),
+            "--id",
+            "feat:cli.out-of-bounds",
+            "--title",
+            "CLI out-of-bounds feature",
+            "--description",
+            "generated from cli out-of-bounds test",
+            "--implementation-status",
+            "partial",
+            "--horizon",
+            "out_of_bounds",
+            "--out-of-bounds-disposition",
+            "tolerated",
+            "--note",
+            "Partial incidental support is tracked but not release-targeted.",
+        )
+        self.assertEqual(out_of_bounds.returncode, 0, out_of_bounds.stderr)
+        out_of_bounds_payload = json.loads(out_of_bounds.stdout)
+        self.assertEqual(
+            out_of_bounds_payload["entity"]["plan"]["out_of_bounds_disposition"],
+            "tolerated",
+        )
+
         deimplement = run_cli(
             "feature",
             "update",

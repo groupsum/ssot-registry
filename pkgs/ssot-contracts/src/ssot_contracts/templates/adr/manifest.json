@@ -286,5 +286,23 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": []
+  },
+  {
+    "id": "adr:0616",
+    "number": 616,
+    "slug": "out-of-bounds-implementation-disposition",
+    "title": "Out-of-bounds implementation disposition is explicit",
+    "filename": "ADR-0616-out-of-bounds-implementation-disposition.json",
+    "target_path": ".ssot/adr/ADR-0616-out-of-bounds-implementation-disposition.json",
+    "sha256": "1f5b5e17c1c7e12c6d679c42f500894cd223243f91d68d6e845d579a740a634c",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.2.0",
+    "introduced_in": "0.2.10",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   }
 ]

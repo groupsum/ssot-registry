@@ -193,6 +193,7 @@
       "--implementation-status",
       "--lifecycle-stage",
       "--note",
+      "--out-of-bounds-disposition",
       "--replacement-feature-id",
       "--requires",
       "--slot",
@@ -229,6 +230,7 @@
       "--claim-tier",
       "--horizon",
       "--ids",
+      "--out-of-bounds-disposition",
       "--slot",
       "--target-lifecycle-stage"
     ],

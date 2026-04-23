@@ -11,6 +11,7 @@ from ssot_registry.model.enums import (
     FEATURE_IMPLEMENTATION_STATUSES,
     FEATURE_LIFECYCLE_STAGES,
     ISSUE_STATUSES,
+    OUT_OF_BOUNDS_DISPOSITIONS,
     PLANNING_HORIZONS,
     PROFILE_EVALUATION_MODES,
     PROFILE_KINDS,
@@ -72,6 +73,15 @@ def _validate_feature(feature: dict[str, Any], failures: list[str]) -> None:
         if plan.get("target_lifecycle_stage") not in FEATURE_LIFECYCLE_STAGES:
             failures.append(
                 f"features.{entity_id}.plan.target_lifecycle_stage must be one of {sorted(FEATURE_LIFECYCLE_STAGES)}"
+            )
+        out_of_bounds_disposition = plan.get("out_of_bounds_disposition")
+        if out_of_bounds_disposition is not None and out_of_bounds_disposition not in OUT_OF_BOUNDS_DISPOSITIONS:
+            failures.append(
+                f"features.{entity_id}.plan.out_of_bounds_disposition must be null or one of {sorted(OUT_OF_BOUNDS_DISPOSITIONS)}"
+            )
+        if horizon != "out_of_bounds" and out_of_bounds_disposition is not None:
+            failures.append(
+                f"features.{entity_id}.plan.out_of_bounds_disposition may only be set when plan.horizon is out_of_bounds"
             )
 
     if not _list_of_strings(feature.get("spec_ids")):

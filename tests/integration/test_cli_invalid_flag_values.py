@@ -70,6 +70,21 @@ class CliInvalidFlagValuesTests(unittest.TestCase):
         self.assertIn("invalid choice", invalid_claim_tier.stderr)
         self.assertIn("--claim-tier", invalid_claim_tier.stderr)
 
+        invalid_out_of_bounds_disposition = run_cli(
+            "feature",
+            "plan",
+            str(repo),
+            "--ids",
+            "feat:rfc.9000.connection-migration",
+            "--horizon",
+            "out_of_bounds",
+            "--out-of-bounds-disposition",
+            "maybe",
+        )
+        self.assertNotEqual(invalid_out_of_bounds_disposition.returncode, 0)
+        self.assertIn("invalid choice", invalid_out_of_bounds_disposition.stderr)
+        self.assertIn("--out-of-bounds-disposition", invalid_out_of_bounds_disposition.stderr)
+
     def test_invalid_horizon_slot_combinations_fail_validation_payload(self) -> None:
         repo = self._prepare_repo()
         plan = run_cli(

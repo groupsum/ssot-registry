@@ -6,6 +6,7 @@ from .coverage import validate_coverage
 from .documents import validate_document_rows
 from .tiers import validate_tiers
 from .lifecycle import validate_lifecycle_semantics
+from .bounds import validate_out_of_bounds_disposition
 from .filesystem import validate_filesystem_paths
 from .reservations import validate_document_reservations
 
@@ -20,5 +21,6 @@ __all__ = [
     "validate_document_reservations",
     "validate_tiers",
     "validate_lifecycle_semantics",
+    "validate_out_of_bounds_disposition",
     "validate_filesystem_paths",
 ]

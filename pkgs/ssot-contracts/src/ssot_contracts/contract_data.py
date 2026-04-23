@@ -47,6 +47,7 @@ CONTRACT_DATA = {
         "feature_implementation_statuses": ["absent", "partial", "implemented"],
         "feature_lifecycle_stages": ["active", "deprecated", "obsolete", "removed"],
         "planning_horizons": ["current", "next", "future", "explicit", "backlog", "out_of_bounds"],
+        "out_of_bounds_dispositions": ["prohibited", "tolerated"],
         "test_statuses": ["planned", "passing", "failing", "blocked", "skipped"],
         "profile_statuses": ["draft", "active", "retired"],
         "profile_kinds": ["capability", "certification", "deployment", "interoperability"],

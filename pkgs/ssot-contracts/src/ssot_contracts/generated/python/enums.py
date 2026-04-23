@@ -9,6 +9,7 @@ GRAPH_NODE_KIND = CONTRACT_DATA["graph_node_kind"]
 FEATURE_IMPLEMENTATION_STATUSES = set(CONTRACT_DATA["choice_sets"]["feature_implementation_statuses"])
 FEATURE_LIFECYCLE_STAGES = set(CONTRACT_DATA["choice_sets"]["feature_lifecycle_stages"])
 PLANNING_HORIZONS = set(CONTRACT_DATA["choice_sets"]["planning_horizons"])
+OUT_OF_BOUNDS_DISPOSITIONS = set(CONTRACT_DATA["choice_sets"]["out_of_bounds_dispositions"])
 TEST_STATUSES = set(CONTRACT_DATA["choice_sets"]["test_statuses"])
 PROFILE_STATUSES = set(CONTRACT_DATA["choice_sets"]["profile_statuses"])
 PROFILE_KINDS = set(CONTRACT_DATA["choice_sets"]["profile_kinds"])

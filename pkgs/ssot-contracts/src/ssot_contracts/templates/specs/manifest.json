@@ -302,5 +302,24 @@
     "superseded_by": [],
     "status_notes": [],
     "kind": "normative"
+  },
+  {
+    "id": "spc:0616",
+    "number": 616,
+    "slug": "out-of-bounds-implementation-disposition",
+    "title": "Out-of-bounds implementation disposition",
+    "filename": "SPEC-0616-out-of-bounds-implementation-disposition.json",
+    "target_path": ".ssot/specs/SPEC-0616-out-of-bounds-implementation-disposition.json",
+    "sha256": "8439f5c0df9d2d1844b5046cc58a2878a2cbe5babc90bbf920c8ed86739f684e",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.2.0",
+    "introduced_in": "0.2.10",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [],
+    "kind": "normative"
   }
 ]

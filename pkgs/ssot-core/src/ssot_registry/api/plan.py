@@ -22,6 +22,7 @@ def plan_features(
     claim_tier: str | None,
     slot: str | None = None,
     target_lifecycle_stage: str | None = None,
+    out_of_bounds_disposition: str | None = None,
 ) -> dict[str, object]:
     registry_path, repo_root, registry = load_registry(path)
     features = {row["id"]: row for row in registry["features"]}
@@ -38,6 +39,10 @@ def plan_features(
             plan["target_claim_tier"] = claim_tier
         if target_lifecycle_stage is not None:
             plan["target_lifecycle_stage"] = target_lifecycle_stage
+        if out_of_bounds_disposition is not None:
+            plan["out_of_bounds_disposition"] = out_of_bounds_disposition
+        elif horizon != "out_of_bounds":
+            plan.pop("out_of_bounds_disposition", None)
 
     report = _validate_candidate(registry, registry_path, repo_root)
     save_registry(registry_path, registry)

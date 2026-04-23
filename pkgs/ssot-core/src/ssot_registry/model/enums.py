@@ -11,6 +11,7 @@ from ssot_contracts.generated.python.enums import (
     FEATURE_LIFECYCLE_STAGES,
     GRAPH_NODE_KIND,
     ISSUE_STATUSES,
+    OUT_OF_BOUNDS_DISPOSITIONS,
     PLANNING_HORIZONS,
     PROFILE_KINDS,
     PROFILE_STATUSES,
