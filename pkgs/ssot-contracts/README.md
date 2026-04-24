@@ -55,8 +55,8 @@ This package currently includes:
 
 - schemas under `ssot_contracts.schema`
 - registry templates under `ssot_contracts.templates`
-- packaged ADR manifests and YAML files under `ssot_contracts.templates.adr`
-- packaged spec manifests and YAML files under `ssot_contracts.templates.specs`
+- packaged ADR manifests and JSON files under `ssot_contracts.templates.adr`
+- packaged spec manifests and JSON files under `ssot_contracts.templates.specs`
 - generated Python metadata under `ssot_contracts.generated.python`
 
 Representative schemas include:

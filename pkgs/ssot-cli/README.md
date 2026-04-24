@@ -283,6 +283,7 @@ ssot-registry feature create [path]
   --replacement-feature-id [REPLACEMENT_FEATURE_ID ...]
   --note NOTE
   --horizon {backlog,current,explicit,future,next,out_of_bounds}
+  --out-of-bounds-disposition {prohibited,tolerated}
   --claim-tier {T0,T1,T2,T3,T4}
   --target-lifecycle-stage {active,deprecated,obsolete,removed}
   --slot SLOT
@@ -319,6 +320,7 @@ ssot-registry feature unlink [path]
 ssot-registry feature plan [path]
   --ids IDS [IDS ...] (required)
   --horizon {backlog,current,explicit,future,next,out_of_bounds} (required)
+  --out-of-bounds-disposition {prohibited,tolerated}
   --claim-tier {T0,T1,T2,T3,T4}
   --target-lifecycle-stage {active,deprecated,obsolete,removed}
   --slot SLOT

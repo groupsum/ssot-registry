@@ -48,7 +48,7 @@ If you omit this distinction, releases look redundant. They are not: boundaries 
 
 `.ssot/registry.json` remains the canonical machine-readable registry.
 
-ADR and SPEC companion documents are canonically authored as YAML for readability, and may also be stored as JSON when a repository prefers machine-oriented document files. Markdown, CSV, DOT, SQLite, reports, and snapshots are derived projections.
+ADR and SPEC companion documents are canonically authored as JSON under `.ssot/adr/` and `.ssot/specs/`. Generated Markdown, CSV, DOT, SQLite, reports, and snapshots are derived projections for human readability and MUST NOT be treated as authoritative SSOT inputs.
 
 ## Install
 
@@ -336,6 +336,7 @@ ssot-registry feature create [path]
   --replacement-feature-id [REPLACEMENT_FEATURE_ID ...]
   --note NOTE
   --horizon {backlog,current,explicit,future,next,out_of_bounds}
+  --out-of-bounds-disposition {prohibited,tolerated}
   --claim-tier {T0,T1,T2,T3,T4}
   --target-lifecycle-stage {active,deprecated,obsolete,removed}
   --slot SLOT
@@ -372,6 +373,7 @@ ssot-registry feature unlink [path]
 ssot-registry feature plan [path]
   --ids IDS [IDS ...] (required)
   --horizon {backlog,current,explicit,future,next,out_of_bounds} (required)
+  --out-of-bounds-disposition {prohibited,tolerated}
   --claim-tier {T0,T1,T2,T3,T4}
   --target-lifecycle-stage {active,deprecated,obsolete,removed}
   --slot SLOT

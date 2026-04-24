@@ -58,7 +58,7 @@ Current registry `schema_version`: `0.2.0`.
 
 `.ssot/registry.json` remains the canonical machine-readable registry.
 
-ADR and SPEC companion documents are canonically authored as YAML for readability, and may also be stored as JSON when a repository prefers machine-oriented document files. Markdown, CSV, DOT, SQLite, and reports are derived projections.
+ADR and SPEC companion documents are canonically authored as JSON under `.ssot/adr/` and `.ssot/specs/`. Generated Markdown, CSV, DOT, SQLite, reports, and other rendered views are derived projections for human readability and MUST NOT be treated as authoritative SSOT inputs.
 
 ## Schema 4
 
@@ -309,6 +309,7 @@ ssot-registry feature create [path]
   --replacement-feature-id [REPLACEMENT_FEATURE_ID ...]
   --note NOTE
   --horizon {current,next,future,explicit,backlog,out_of_bounds}
+  --out-of-bounds-disposition {prohibited,tolerated}
   --claim-tier {T0,T1,T2,T3,T4}
   --target-lifecycle-stage {active,deprecated,obsolete,removed}
   --slot SLOT
@@ -345,6 +346,7 @@ ssot-registry feature unlink [path]
 ssot-registry feature plan [path]
   --ids IDS [IDS ...] (required)
   --horizon {current,next,future,explicit,backlog,out_of_bounds} (required)
+  --out-of-bounds-disposition {prohibited,tolerated}
   --claim-tier {T0,T1,T2,T3,T4}
   --target-lifecycle-stage {active,deprecated,obsolete,removed}
   --slot SLOT
@@ -782,17 +784,17 @@ ssot-registry spec list .
 
 ```bash
 # Create local ADR/spec bodies
-cat > adr-body.md <<'EOF'
-Adopt local numbering for repository-owned decisions.
+cat > adr-body.json <<'EOF'
+{"body":"Adopt local numbering for repository-owned decisions."}
 EOF
 
-cat > spec-body.md <<'EOF'
-Repository-local operational conventions for maintainers.
+cat > spec-body.json <<'EOF'
+{"body":"Repository-local operational conventions for maintainers."}
 EOF
 
 # Create repo-local documents from the local reservation range
-ssot-registry adr create . --title "Use repo-local ADR numbering" --slug use-repo-local-adr-numbering --body-file adr-body.yaml
-ssot-registry spec create . --title "Maintainer operating conventions" --slug maintainer-operating-conventions --body-file spec-body.md --kind operational
+ssot-registry adr create . --title "Use repo-local ADR numbering" --slug use-repo-local-adr-numbering --body-file adr-body.json
+ssot-registry spec create . --title "Maintainer operating conventions" --slug maintainer-operating-conventions --body-file spec-body.json --kind operational
 
 # Inspect or sync the document sets
 ssot-registry adr list .
