@@ -405,8 +405,8 @@ class BrowserScreen(Screen[None]):
 
     @work(name="workspace_load", group="workspace_load", exclusive=True, exit_on_error=False, thread=True)
     def _load_workspace_background(self, request_id: int, path: str) -> WorkspaceLoadResult:
-        normalized_path = self.workspace_provider.resolve_preferred_repo(Path(path))
-        workspace = self.service.load_workspace(Path(normalized_path))
+        registry_path = self.workspace_provider.resolve_preferred_registry_path(Path(path))
+        workspace = self.service.load_workspace(registry_path)
         validation = self.workspace_provider.build_validation_summary(workspace.validation)
         return WorkspaceLoadResult(
             request_id=request_id,
