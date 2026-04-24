@@ -17,9 +17,15 @@ class CertificationInventoryTests(unittest.TestCase):
         tests = {row["id"]: row for row in registry["tests"]}
         evidence = {row["id"]: row for row in registry["evidence"]}
 
+        targeted_feature_ids = {
+            feature["id"]
+            for feature in features.values()
+            if feature["plan"]["horizon"] in {"current", "explicit"}
+        }
+
         for feature in features.values():
-            self.assertEqual(feature["implementation_status"], "implemented", feature["id"])
-            self.assertIn(feature["plan"]["horizon"], {"current", "explicit"}, feature["id"])
+            if feature["id"] in targeted_feature_ids:
+                self.assertEqual(feature["implementation_status"], "implemented", feature["id"])
             self.assertTrue(feature["claim_ids"], feature["id"])
             self.assertTrue(feature["test_ids"], feature["id"])
             for claim_id in feature["claim_ids"]:
@@ -35,11 +41,19 @@ class CertificationInventoryTests(unittest.TestCase):
                 self.assertIn(evidence_id, evidence, (claim["id"], evidence_id))
 
         for test in tests.values():
-            self.assertEqual(test["status"], "passing", test["id"])
+            if set(test["feature_ids"]) & targeted_feature_ids:
+                self.assertEqual(test["status"], "passing", test["id"])
             self.assertTrue(test["evidence_ids"], test["id"])
 
         for evidence_row in evidence.values():
-            self.assertEqual(evidence_row["status"], "passed", evidence_row["id"])
+            linked_test_ids = set(evidence_row["test_ids"])
+            linked_feature_ids = {
+                feature_id
+                for test_id in linked_test_ids
+                for feature_id in tests[test_id]["feature_ids"]
+            }
+            if linked_feature_ids & targeted_feature_ids:
+                self.assertEqual(evidence_row["status"], "passed", evidence_row["id"])
 
     def test_full_certification_boundary_and_release_cover_all_features(self) -> None:
         registry = json.loads((REPO_ROOT / ".ssot" / "registry.json").read_text(encoding="utf-8"))

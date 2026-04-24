@@ -177,6 +177,9 @@ def _build_manifest_entry(
     }
     if kind == "specs":
         entry["kind"] = row.get("kind", "normative")
+        adr_ids = list(row.get("adr_ids", []))
+        if adr_ids:
+            entry["adr_ids"] = adr_ids
     return entry
 
 

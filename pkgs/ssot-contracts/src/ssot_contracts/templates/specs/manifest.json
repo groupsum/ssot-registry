@@ -301,7 +301,10 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative"
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0614"
+    ]
   },
   {
     "id": "spc:0616",
@@ -320,6 +323,9 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative"
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0616"
+    ]
   }
 ]

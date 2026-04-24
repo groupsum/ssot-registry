@@ -21,6 +21,7 @@ class FullRepoCertificationTests(unittest.TestCase):
             repo.mkdir()
             shutil.copytree(PROJECT_ROOT / ".ssot", repo / ".ssot")
             shutil.copytree(PROJECT_ROOT / "tests", repo / "tests")
+            shutil.copytree(PROJECT_ROOT / "pkgs" / "ssot-conformance", repo / "pkgs" / "ssot-conformance")
 
             validation = validate_registry(repo)
             self.assertTrue(validation["passed"], validation)
