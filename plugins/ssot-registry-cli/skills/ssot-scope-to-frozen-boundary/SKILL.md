@@ -18,6 +18,7 @@ Use this skill after ADRs, SPECs, and features already exist and the task is to 
 ## Operating rules
 
 - Treat freeze as the point where scope stops changing.
+- Treat freeze as a scope lock only; implementation, migration, and verification usually still need to happen after this skill finishes.
 - Require all in-scope features to be current or explicit before freeze.
 - Prefer a single authoritative boundary row over ad hoc feature lists in later commands.
 - If the request still needs ADR, SPEC, or feature creation, hand off to `$ssot-decision-to-scope`.

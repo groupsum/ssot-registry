@@ -5,7 +5,7 @@ description: Guide SSOT implementation work after scope freeze, including schema
 
 # SSOT Implementation And Migration Delivery
 
-Use this skill after the boundary is frozen and the task is to deliver the governed change in code, schemas, migrations, and tests.
+Use this skill after the boundary is frozen and the task is to deliver the governed change in code, schemas, migrations, and tests. In many real workflows this is the largest phase between freeze and any later proof/certification work.
 
 ## Repo checklist
 
@@ -23,11 +23,13 @@ Use this skill after the boundary is frozen and the task is to deliver the gover
 4. If the schema is broken compatibly or incompatibly, advance the schema version and add migration coverage.
 5. Add or update tests for behavior, CLI, and migrations.
 6. Keep feature implementation state aligned with code reality.
+7. Hand off to proof/certification only after the frozen implementation is real and verifiable.
 
 ## Operating rules
 
 - Breaking schema changes require schema-version advancement and migration logic.
 - Do not treat implementation as complete until tests and migration coverage exist.
+- Freeze locks scope. It does not eliminate the need for post-freeze implementation, migration, and verification work.
 - If the request also needs claims, evidence, or release work, escalate to `$ssot-e2e-change-orchestrator` or hand off to `$ssot-proof-chain-and-certification`.
 - Read `references/repo-touchpoints.md` before giving concrete edit guidance.
 

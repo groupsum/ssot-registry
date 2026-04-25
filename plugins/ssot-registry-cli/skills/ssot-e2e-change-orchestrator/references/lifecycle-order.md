@@ -14,3 +14,4 @@ Use this order unless the user explicitly asks for a partial flow:
 10. Closure verification
 
 Interpret freeze as freezing scope, not code state. Implementation may continue after freeze, but the frozen scope should not churn.
+Do not model `freeze -> certify` as a direct path unless the implementation and verification phases are already complete and evidenced.

@@ -1,25 +1,27 @@
 ---
 name: ssot-proof-chain-and-certification
-description: Drive the SSOT proof and release phase by creating and linking claims, tests, and evidence, then creating releases, certifying them, promoting them, publishing them, and verifying closure outputs. Use when Codex needs to close the proof chain for a frozen boundary and carry it through release completion.
+description: Drive the SSOT proof and release phase by creating and linking claims, tests, and evidence, then creating releases, certifying them, promoting them, publishing them, and verifying closure outputs. Use when Codex needs to close the proof chain for a frozen boundary after the frozen implementation work already exists and carry it through release completion.
 ---
 
 # SSOT Proof Chain And Certification
 
-Use this skill after scope is frozen and implementation exists. The job here is proof closure and release progression.
+Use this skill after scope is frozen and implementation exists. The job here is proof closure and release progression, not post-freeze implementation delivery.
 
 ## Workflow
 
 1. Confirm the frozen boundary and its resolved feature scope.
-2. Create or update claims, tests, and evidence for that scope.
-3. Add reciprocal links so the graph is complete.
-4. Run claim evaluation and evidence verification.
-5. Create the release against the frozen boundary.
-6. Run certification; only if it passes continue to promotion and publication.
-7. Verify closure outputs such as reports, snapshots, and final statuses.
+2. Confirm the repo already contains the code, schema, migration, and test changes required by that frozen scope.
+3. Create or update claims, tests, and evidence for that scope.
+4. Add reciprocal links so the graph is complete.
+5. Run claim evaluation and evidence verification.
+6. Create the release against the frozen boundary.
+7. Run certification; only if it passes continue to promotion and publication.
+8. Verify closure outputs such as reports, snapshots, and final statuses.
 
 ## Operating rules
 
 - Require release coverage for all frozen boundary features.
+- Reject any implied `freeze -> certify` shortcut when implementation or verification artifacts are still missing.
 - Treat certification as fail-closed; do not continue through failures.
 - Do not publish unless promotion has succeeded.
 - If the request also needs upstream scope or implementation work, escalate to `$ssot-e2e-change-orchestrator`.

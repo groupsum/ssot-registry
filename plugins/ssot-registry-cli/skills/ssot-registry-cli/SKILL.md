@@ -23,6 +23,11 @@ Use these focused skills by default:
 
 - Package/schema upgrade:
   - Upgrade PyPI package + registry schema: `$ssot-registry-upgrade`
+- Phase-focused lifecycle work:
+  - Decision through initial target rows: `$ssot-decision-to-scope`
+  - Target setting through frozen boundary: `$ssot-scope-to-frozen-boundary`
+  - Post-freeze implementation and migration delivery: `$ssot-implementation-and-migration-delivery`
+  - Proof closure and release gates after implementation exists: `$ssot-proof-chain-and-certification`
 - Entity-focused operations:
   - ADR: `$ssot-adr`
   - SPEC: `$ssot-spec`
@@ -87,6 +92,7 @@ If you only need the CLI parser behavior, this fallback is sufficient and matche
 - Keep outputs structured. The CLI defaults to JSON; use `--output-format` only when the user asks for another rendering.
 - When mutating entities, prefer the CLI over manual edits so IDs, links, lifecycle fields, and derived artifacts stay normalized.
 - For release and boundary flows, inspect the current boundary or release first before adding or removing linked records.
+- Treat `boundary freeze` as a scope checkpoint, not as an implementation-complete signal. In normal workflows, implementation/migration/test delivery still happens after freeze and before any certification attempt.
 
 ## Common flows
 
@@ -133,10 +139,11 @@ uv run ssot registry sync-statuses .
 uv run ssot validate . --write-report
 ```
 
-### Freeze and certify a release
+### Freeze, implement, and then certify a release
 
 ```powershell
 uv run ssot boundary freeze . --boundary-id bnd:demo.v0
+# use $ssot-implementation-and-migration-delivery or equivalent repo-native delivery work here
 uv run ssot release certify . --release-id rel:0.1.0 --write-report
 ```
 

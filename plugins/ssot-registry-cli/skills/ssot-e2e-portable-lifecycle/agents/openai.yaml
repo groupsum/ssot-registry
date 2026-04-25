@@ -1,5 +1,4 @@
 interface:
   display_name: "SSOT E2E Portable Lifecycle"
   short_description: "Run robust end-to-end SSOT delivery gates."
-  default_prompt: "Use $ssot-e2e-portable-lifecycle to execute a full, fail-closed SSOT lifecycle from scoped features through freeze, verification, certification, promotion, publication, and closure."
-
+  default_prompt: "Use $ssot-e2e-portable-lifecycle to execute a full, fail-closed SSOT lifecycle from scoped features through freeze, post-freeze implementation and verification, certification, promotion, publication, and closure."
