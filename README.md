@@ -803,6 +803,49 @@ ssot-registry adr sync .
 ssot-registry spec sync .
 ```
 
+### E2E example 1c: pre-freeze scope ADRs, SPECs, features, and tests
+
+```bash
+# 1) Inspect existing scoped identifiers if the target change is unclear
+ssot-registry adr list .
+ssot-registry spec list .
+ssot-registry feature list .
+ssot-registry test list .
+
+# 2) Create repo-local ADR and SPEC bodies for the proposed change
+cat > adr-body.yaml <<'EOF'
+body: |-
+  Scope the login rollout before boundary freeze.
+EOF
+
+cat > spec-body.yaml <<'EOF'
+body: |-
+  Define the pre-freeze login contract and coverage expectations.
+EOF
+
+# 3) Create governance documents and connect the SPEC back to the ADR
+ssot-registry adr create . --title "Scope login rollout" --slug scope-login-rollout --body-file adr-body.yaml
+ssot-registry spec create . --title "Login pre-freeze contract" --slug login-pre-freeze-contract --body-file spec-body.yaml --kind operational --adr-ids adr:1000
+
+# 4) Create and plan the scoped feature against that SPEC.
+# If the repo already has claim/evidence rows for this capability, attach them now so later test registration validates cleanly.
+ssot-registry feature create . --id feat:demo.login --title "User login" --spec-ids spc:1000 --claim-ids clm:demo.login.t1
+ssot-registry feature plan . --ids feat:demo.login --horizon current --claim-tier T1 --target-lifecycle-stage active
+
+# 5) Create the scoped test and wire the feature/test edge bidirectionally.
+# Reuse existing claim/evidence rows when the repo validates complete verification edges for every test row.
+mkdir -p tests
+cat > tests/test_login.py <<'EOF'
+def test_login():
+    assert True
+EOF
+ssot-registry test create . --id tst:demo.login.unit --title "Login unit" --status passing --kind unit --test-path tests/test_login.py --feature-ids feat:demo.login --claim-ids clm:demo.login.t1 --evidence-ids evd:demo.login.pytest
+ssot-registry feature link . --id feat:demo.login --test-ids tst:demo.login.unit
+
+# Stop here for the pre-freeze scoped flow.
+# Boundary freeze, implementation, migration, and release proof happen later.
+```
+
 ### E2E example 2: plan + implementation lifecycle + release flow
 
 ```bash
@@ -901,4 +944,3 @@ python -m pip install --upgrade pip
 python -m pip install -e pkgs/ssot-registry
 python -m unittest discover -s tests -v
 ```
-

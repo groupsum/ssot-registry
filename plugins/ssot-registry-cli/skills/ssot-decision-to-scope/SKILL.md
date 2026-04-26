@@ -21,10 +21,12 @@ Use this skill for the pre-freeze planning phase. The output is a governed scope
 4. Create the governed feature rows.
 5. Set planning fields with `feature plan`.
 6. Link documents and features so the scope definition is inspectable.
+7. If the request also includes test creation for the same scoped change, hand off to `$ssot-feature-test-linking` after the feature rows and planning metadata exist.
 
 ## Operating rules
 
 - Do not freeze a boundary from this skill; hand off to `$ssot-scope-to-frozen-boundary`.
+- Treat this skill as the first half of a pre-freeze scoped flow when the user asks for ADR + SPEC + feature + test setup.
 - Require an explicit document-to-feature mapping in the response or links.
 - Prefer `ssot adr|spec create|update|sync` over editing files by hand.
 - If the request already includes freeze, implementation, migration, or release work, escalate to `$ssot-e2e-change-orchestrator`.

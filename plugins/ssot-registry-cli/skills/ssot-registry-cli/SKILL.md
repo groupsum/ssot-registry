@@ -25,6 +25,7 @@ Use these focused skills by default:
   - Upgrade PyPI package + registry schema: `$ssot-registry-upgrade`
 - Phase-focused lifecycle work:
   - Decision through initial target rows: `$ssot-decision-to-scope`
+  - Scoped pre-freeze ADR/SPEC/feature/test flow: `$ssot-decision-to-scope` then `$ssot-feature-test-linking`
   - Target setting through frozen boundary: `$ssot-scope-to-frozen-boundary`
   - Post-freeze implementation and migration delivery: `$ssot-implementation-and-migration-delivery`
   - Proof closure and release gates after implementation exists: `$ssot-proof-chain-and-certification`
@@ -93,6 +94,7 @@ If you only need the CLI parser behavior, this fallback is sufficient and matche
 - When mutating entities, prefer the CLI over manual edits so IDs, links, lifecycle fields, and derived artifacts stay normalized.
 - For release and boundary flows, inspect the current boundary or release first before adding or removing linked records.
 - Treat `boundary freeze` as a scope checkpoint, not as an implementation-complete signal. In normal workflows, implementation/migration/test delivery still happens after freeze and before any certification attempt.
+- For pre-freeze scoping work that includes ADRs, SPECs, features, and tests, chain `$ssot-decision-to-scope` into `$ssot-feature-test-linking` and stop before `$ssot-scope-to-frozen-boundary`.
 
 ## Common flows
 

@@ -7,6 +7,8 @@ description: Create features, create tests, and link them bidirectionally with t
 
 Use this skill when the user asks to create features and tests and connect them. The main job is delivering an end-to-end coverage unit: feature row, test row, and reciprocal links.
 
+When ADRs, SPECs, and planning metadata are part of the same request, start with `$ssot-decision-to-scope` and then use this skill for the test-creation and reciprocal-linking half of the pre-freeze flow.
+
 ## Command surface
 
 - Features: `feature create|link|unlink|get|list`
@@ -29,6 +31,7 @@ Use this skill when the user asks to create features and tests and connect them.
 - Prefer explicit `--test-path` and `--kind` when creating tests so downstream evidence and release reports remain interpretable.
 - When removing coverage, unlink before deleting the test row.
 - If one command already accepts related IDs at create time, use that to reduce follow-up mutations, then fill any missing reciprocal edges.
+- Stop at scoped feature/test coverage; freeze, implementation, and release proof remain later phases.
 - If the request expands from feature/test coverage into claim closure or release readiness, switch to `$ssot-proof-chain-and-certification` or `$ssot-e2e-change-orchestrator`.
 
 ## Example
