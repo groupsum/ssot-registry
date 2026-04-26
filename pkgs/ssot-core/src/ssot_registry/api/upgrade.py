@@ -337,7 +337,7 @@ def migrate_v7_to_v8(
     return migrated
 
 
-def _migrate_document_files_to_json(
+def _migrate_document_files_to_yaml(
     registry: dict[str, Any],
     repo_root: Path,
     kind: str,
@@ -368,7 +368,7 @@ def _migrate_document_files_to_json(
 
             validate_document_payload(kind, payload, expected_row=row)
 
-            desired_relative = relative_path if current_path.suffix.lower() == ".json" else target_relative
+            desired_relative = target_relative
             desired_path = repo_root / desired_relative
             rendered = dump_document_text(payload, desired_path)
             current_text = current_path.read_text(encoding="utf-8")
@@ -439,8 +439,8 @@ def migrate_v8_to_v9(
     migrated = deepcopy(registry)
     migrated["schema_version"] = 9
     summary = {
-        "adr": _migrate_document_files_to_json(migrated, repo_root, "adr"),
-        "spec": _migrate_document_files_to_json(migrated, repo_root, "spec"),
+        "adr": _migrate_document_files_to_yaml(migrated, repo_root, "adr"),
+        "spec": _migrate_document_files_to_yaml(migrated, repo_root, "spec"),
     }
     return migrated, summary
 

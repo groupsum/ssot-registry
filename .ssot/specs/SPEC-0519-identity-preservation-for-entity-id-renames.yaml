@@ -1,0 +1,19 @@
+adr_ids: []
+body: |-
+  This SPEC defines identity preservation requirements when SSOT entity IDs change.\n\nRequirements:\n- Renaming an entity id must preserve graph integrity.\n- All inbound references to the old id must be rewritten to the new id.\n- Program-level active ids must be updated when applicable.\n- Validation must pass after rename operations.
+decision_date: null
+id: "spc:0519"
+kind: "spec"
+number: 519
+origin: "ssot-core"
+references: []
+schema_version: "0.2.0"
+slug: "identity-preservation-for-entity-id-renames"
+spec_kind: "normative"
+status: "draft"
+status_notes: []
+summary: "This SPEC defines identity preservation requirements when SSOT entity IDs change.\\n\\nRequirements:\\n- Renaming an entity id must preserve graph integrity.\\n- All inbound references to the old id must be rewritten to the new id.\\n- Program-level active ids must be updated when applicable.\\n- Validation must pass after rename operations."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Identity Preservation For Entity ID Renames"

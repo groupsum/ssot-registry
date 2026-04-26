@@ -1,0 +1,64 @@
+body: |-
+  ## Context
+  
+  The `ssot-registry` repository ships SSOT packages, generated package documentation, CLI/TUI surfaces, certification reports, release artifacts, and packaged templates. These package-owned outputs describe package features that declare a target claim tier through `plan.target_claim_tier`; linked claims and evidence then provide the proof chain that allows a package feature to pass evaluation.
+  
+  The repo already defines `T0` through `T4` as assurance-strength tiers. Package maintainers also need plain-language boundaries for what ssot package documentation, generated summaries, release notes, and certification outputs may say about package-owned features at each target tier.
+  
+  This ADR is intentionally scoped to ssot packages and package-owned artifacts in this repository. It does not impose a normative policy on downstream repositories that use SSOT. A policy intended to bind all downstream SSOT users must be authored as an `ssot-origin` ADR or spec and synchronized into downstream repositories through the origin document flow.
+  
+  ## Decision
+  
+  For ssot packages, feature target claim tiers define assurance-language ceilings. Package-owned outputs may use claim language at or below a feature's effective target tier only. They may not use stronger language unless at least one linked claim passes claim-closure checks at the stronger tier and the package feature evaluation requires or accepts that stronger tier.
+  
+  Acceptable language by tier for ssot package-owned outputs:
+  
+  | Tier | Assurance ceiling | Acceptable claims language |
+  |---|---|---|
+  | `T0` | Declared intent or inventory-level | declared, tracked, intended, planned, in scope, inventory-level support |
+  | `T1` | Maintainer-asserted with local evidence | maintainer-asserted, locally evidenced, supported by local evidence, observed in maintainer-run checks |
+  | `T2` | Reproducible project-controlled verification | reproducibly verified, project-verified, verified by project-controlled tests or CI, repeatably validated |
+  | `T3` | Release-grade certified claim | release-certified, release-grade verified, certified for a named release or frozen boundary |
+  | `T4` | Independently reviewed or externally attested claim | independently reviewed, externally attested, third-party validated, validated by a named external source or artifact |
+  
+  Disallowed escalations in ssot package-owned outputs:
+  
+  - `T0` package features must not be described as working, verified, tested, certified, or attested.
+  - `T1` package features must not be described as reproducibly verified, release-certified, or independently reviewed.
+  - `T2` package features must not be described as release-certified or independently reviewed.
+  - `T3` package features must not be described as independently reviewed or externally attested unless `T4` evidence exists.
+  
+  Canonical wording templates for ssot package-owned outputs:
+  
+  - `T0`: Package feature `<id>` is declared in scope for `<capability>`.
+  - `T1`: Maintainers assert that package feature `<id>` supports `<capability>`, backed by local evidence `<evidence-id>`.
+  - `T2`: Package feature `<id>` is reproducibly verified by project-controlled checks for `<capability>`.
+  - `T3`: Package feature `<id>` is release-certified for `<release-or-boundary>` with passing claim closure at tier `T3` or higher.
+  - `T4`: Package feature `<id>` is independently reviewed or externally attested for `<capability>` by `<source-or-artifact>`.
+  
+  Claim status remains orthogonal to claim tier. Status may describe lifecycle progress, but it does not authorize stronger assurance language. Evidence tier alignment and feature target tier evaluation remain the enforcement mechanisms for whether stronger language is valid.
+  
+  ## Consequences
+  
+  Generated package summaries, package READMEs, release notes, certification reports, review comments, and human-authored package documentation should choose language from the package feature's effective tier or a weaker tier.
+  
+  Claims, tests, and evidence can raise the allowable language only when the proof chain passes closure checks at the claimed tier.
+  
+  Reviewers should treat over-strong claim language in ssot package-owned outputs as a policy defect even when the underlying package feature is implemented.
+  
+  Downstream repositories may adopt the same language voluntarily, but downstream conformance is not required by this `ssot-core` ADR. If the project wants this rule to apply to all SSOT adopters, the decision must move to or be restated by an `ssot-origin` ADR or spec.
+decision_date: null
+id: "adr:0512"
+kind: "adr"
+number: 512
+origin: "ssot-core"
+references: []
+schema_version: "0.2.0"
+slug: "assurance-language-ceilings"
+status: "accepted"
+status_notes: []
+summary: "The `ssot-registry` repository ships SSOT packages, generated package documentation, CLI/TUI surfaces, certification reports, release artifacts, and packaged templates. These package-owned outputs describe package features that declare a target claim tier through `plan.target_claim_tier`; linked claims and evidence then provide the proof chain that allows a package feature to pass evaluation."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Assurance-language ceilings for feature target claim tiers"

@@ -1,0 +1,17 @@
+body: |-
+  Decision: ssot-registry shall provide a reusable SSOT conformance harness. The harness packages portable pytest-based conformance cases, profile discovery, scaffold planning, and evidence output so downstream repositories can validate conformance to ssot-core and ssot-origin obligations without embedding repo-specific implementation language assumptions. The harness must preserve SSOT ownership rules: SPECs own typed ADR links, features own spec_ids, tests own feature_ids, and status convergence remains a separate registry sync-statuses step.
+decision_date: null
+id: "adr:0524"
+kind: "adr"
+number: 524
+origin: "ssot-core"
+references: []
+schema_version: "0.2.0"
+slug: "reusable-ssot-conformance-harness"
+status: "draft"
+status_notes: []
+summary: "Decision: ssot-registry shall provide a reusable SSOT conformance harness. The harness packages portable pytest-based conformance cases, profile discovery, scaffold planning, and evidence output so downstream repositories can validate conformance to ssot-core and ssot-origin obligations without embedding repo-specific implementation language assumptions. The harness must preserve SSOT ownership rules: SPECs own typed ADR links, features own spec_ids, tests own feature_ids, and status convergence remains a separate registry sync-statuses step."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Reusable SSOT conformance harness"

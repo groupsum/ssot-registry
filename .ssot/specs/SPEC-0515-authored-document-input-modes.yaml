@@ -1,0 +1,40 @@
+adr_ids: []
+body: |-
+  `ssot-core` SHALL support two authored content source modes for ADR and SPEC document mutations:
+  
+  - inline body text via `body`
+  - authored payload file via `body_file`
+  
+  For `create_document()`:
+  - exactly one of `body` or `body_file` SHALL be provided
+  - providing neither SHALL fail validation
+  - providing both SHALL fail validation
+  
+  For `update_document()`:
+  - at most one of `body` or `body_file` MAY be provided
+  - providing both SHALL fail validation
+  - providing neither SHALL preserve the existing authored body while allowing other mutable fields to change
+  
+  When `body` is provided, `ssot-core` SHALL normalize it into the same canonical persisted ADR or SPEC document shape used by file-based authored payloads.
+  
+  `body_file` validation rules remain independent of inline body support. If a file-based payload is supplied, it SHALL still satisfy the authored document payload contract for that document kind.
+  
+  This contract applies to:
+  - ADR creation and update
+  - SPEC creation and update
+decision_date: null
+id: "spc:0515"
+kind: "spec"
+number: 515
+origin: "ssot-core"
+references: []
+schema_version: "0.1.0"
+slug: "authored-document-input-modes"
+spec_kind: "normative"
+status: "draft"
+status_notes: []
+summary: "`ssot-core` SHALL support two authored content source modes for ADR and SPEC document mutations:"
+superseded_by: []
+supersedes: []
+tags: []
+title: "Authored document input modes"

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import unittest
 from pathlib import Path
 
@@ -11,7 +10,7 @@ from tests.helpers import workspace_tempdir
 
 
 class MigrateV8ToV9Tests(unittest.TestCase):
-    def test_migration_converts_markdown_documents_to_json(self) -> None:
+    def test_migration_converts_markdown_documents_to_yaml(self) -> None:
         with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "repo"
             paths = default_paths()
@@ -47,13 +46,13 @@ class MigrateV8ToV9Tests(unittest.TestCase):
             self.assertEqual(9, migrated["schema_version"])
             self.assertEqual(["adr:1000"], summary["adr"]["converted"])
             self.assertFalse(source.exists())
-            target = repo / ".ssot" / "adr" / "ADR-1000-local-decision.json"
+            target = repo / ".ssot" / "adr" / "ADR-1000-local-decision.yaml"
             self.assertTrue(target.exists())
             payload = load_document_yaml(target)
             self.assertEqual("adr", payload["kind"])
             self.assertEqual("Use YAML.", payload["body"])
 
-    def test_migration_keeps_existing_json_documents_valid(self) -> None:
+    def test_migration_converts_existing_json_documents_to_yaml(self) -> None:
         with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "repo"
             paths = default_paths()
@@ -83,28 +82,25 @@ class MigrateV8ToV9Tests(unittest.TestCase):
             registry["specs"] = []
             source = repo / ".ssot" / "adr" / "ADR-1000-local-decision.json"
             source.write_text(
-                json.dumps(
-                    {
-                        "schema_version": "0.1.0",
-                        "kind": "adr",
-                        "id": "adr:1000",
-                        "number": 1000,
-                        "slug": "local-decision",
-                        "title": "Local decision",
-                        "status": "draft",
-                        "origin": "repo-local",
-                        "decision_date": None,
-                        "tags": [],
-                        "summary": "Local decision",
-                        "supersedes": [],
-                        "superseded_by": [],
-                        "status_notes": [],
-                        "references": [],
-                        "sections": {"decision": ["Use JSON."]},
-                    },
-                    indent=2,
-                )
-                + "\n",
+                """{
+  "schema_version": "0.1.0",
+  "kind": "adr",
+  "id": "adr:1000",
+  "number": 1000,
+  "slug": "local-decision",
+  "title": "Local decision",
+  "status": "draft",
+  "origin": "repo-local",
+  "decision_date": null,
+  "tags": [],
+  "summary": "Local decision",
+  "supersedes": [],
+  "superseded_by": [],
+  "status_notes": [],
+  "references": [],
+  "sections": {"decision": ["Use JSON."]}
+}
+""",
                 encoding="utf-8",
             )
 
@@ -112,12 +108,15 @@ class MigrateV8ToV9Tests(unittest.TestCase):
 
             self.assertEqual(9, migrated["schema_version"])
             self.assertEqual(["adr:1000"], summary["adr"]["converted"])
-            self.assertTrue(source.exists())
-            self.assertEqual(".ssot/adr/ADR-1000-local-decision.json", migrated["adrs"][0]["path"])
-            payload = json.loads(source.read_text(encoding="utf-8"))
+            self.assertFalse(source.exists())
+            target = repo / ".ssot" / "adr" / "ADR-1000-local-decision.yaml"
+            self.assertTrue(target.exists())
+            self.assertEqual(".ssot/adr/ADR-1000-local-decision.yaml", migrated["adrs"][0]["path"])
+            payload = load_document_yaml(target)
             self.assertEqual("Use JSON.", payload["body"])
 
 
 if __name__ == "__main__":
     unittest.main()
+
 

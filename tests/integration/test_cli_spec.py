@@ -33,9 +33,9 @@ class CliSpecTests(unittest.TestCase):
             self.assertEqual(create.returncode, 0, create.stderr)
             payload = json.loads(create.stdout)
             self.assertEqual(payload["document"]["id"], "spc:1000")
-            created_path = repo / ".ssot" / "specs" / "SPEC-1000-local-operating-spec.json"
+            created_path = repo / ".ssot" / "specs" / "SPEC-1000-local-operating-spec.yaml"
             self.assertTrue(created_path.exists())
-            self.assertTrue(created_path.read_text(encoding="utf-8").lstrip().startswith("{"))
+            self.assertIn("schema_version:", created_path.read_text(encoding="utf-8"))
 
             get_result = run_cli("spec", "get", str(repo), "--id", "spc:1000")
             self.assertEqual(get_result.returncode, 0, get_result.stderr)
@@ -279,4 +279,5 @@ class CliSpecTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 

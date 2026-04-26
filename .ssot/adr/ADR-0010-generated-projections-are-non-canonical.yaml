@@ -1,0 +1,23 @@
+body: |-
+  In the upstream `ssot-registry` repository, canonical governance documents are the `ssot-core` ADRs and specs authored under `.ssot/`.
+  
+  Generated projections include:
+  
+  - graph/report artifacts,
+  - packaged `ssot-origin` template docs and manifests under `pkgs/ssot-contracts/src/ssot_contracts/templates/**`,
+  - mirrored package copies under `pkgs/ssot-registry/src/ssot_registry/templates/**`.
+decision_date: null
+id: "adr:0010"
+kind: "adr"
+number: 10
+origin: "ssot-core"
+references: []
+schema_version: "0.1.0"
+slug: "generated-projections-are-non-canonical"
+status: "draft"
+status_notes: []
+summary: "In the upstream `ssot-registry` repository, canonical governance documents are the `ssot-core` ADRs and specs authored under `.ssot/`."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Generated projections are non-canonical"

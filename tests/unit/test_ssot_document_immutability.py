@@ -13,7 +13,7 @@ class SsotDocumentImmutabilityTests(unittest.TestCase):
         self.addCleanup(temp_dir.cleanup)
         repo = Path(temp_dir.name) / "repo"
 
-        target = repo / ".ssot" / "specs" / "SPEC-0600-registry-core.json"
+        target = repo / ".ssot" / "specs" / "SPEC-0600-registry-core.yaml"
         target.write_text(target.read_text(encoding="utf-8") + "\nmutated\n", encoding="utf-8")
 
         report = validate_registry(repo)
@@ -23,4 +23,5 @@ class SsotDocumentImmutabilityTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 

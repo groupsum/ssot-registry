@@ -1,0 +1,17 @@
+body: |-
+  The groupsum/ssot-registry repo's claim status expresses lifecycle progression. Claim tier expresses assurance strength.
+decision_date: null
+id: "adr:0006"
+kind: "adr"
+number: 6
+origin: "ssot-core"
+references: []
+schema_version: "0.2.0"
+slug: "claim-status-vs-tier"
+status: "draft"
+status_notes: []
+summary: "The groupsum/ssot-registry repo's claim status expresses lifecycle progression. Claim tier expresses assurance strength."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Claim status and claim tier are orthogonal"

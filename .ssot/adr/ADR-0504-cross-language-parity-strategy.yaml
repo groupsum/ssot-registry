@@ -1,0 +1,24 @@
+body: |-
+  Parity SHALL be established in this order:
+  
+  1. shared contracts
+  2. shared generated Python artifacts
+  3. metadata parity across CLI / TUI
+  4. future TypeScript / npm outputs
+  
+  Parity SHALL be enforced with committed golden artifacts and tests.
+decision_date: null
+id: "adr:0504"
+kind: "adr"
+number: 504
+origin: "ssot-core"
+references: []
+schema_version: "0.1.0"
+slug: "cross-language-parity-strategy"
+status: "draft"
+status_notes: []
+summary: "Parity SHALL be established in this order:"
+superseded_by: []
+supersedes: []
+tags: []
+title: "Cross-language parity strategy"

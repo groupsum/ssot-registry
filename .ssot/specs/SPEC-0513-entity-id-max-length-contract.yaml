@@ -1,0 +1,39 @@
+adr_ids: []
+body: |-
+  ## Scope
+  
+  This specification defines the maximum permitted length for normalized SSOT entity ids and the schema surfaces that enforce it.
+  
+  ## Rules
+  
+  1. Every canonical entity `id` value in the registry MUST be at most **128** characters.
+  2. Every registry field that stores entity references, including `*_ids`, `boundary_id`, `active_boundary_id`, and `active_release_id`, MUST use the same **128** character maximum.
+  3. Authored ADR and SPEC document payload `id`, `supersedes`, and `superseded_by` fields MUST use the same **128** character maximum.
+  4. Profile ids and profile-to-profile references MUST use the same normalized id contract and maximum length.
+  
+  ## Enforcement
+  
+  - Packaged `registry.schema.json` MUST declare the maximum length on the shared normalized-id definition.
+  - Packaged `adr.schema.json` and `spec.schema.json` MUST declare the same maximum length for document ids and document supersession links.
+  - Runtime registry validation MUST reject overlong ids for both entity rows and entity references.
+  - Runtime document validation MUST reject overlong authored ADR/SPEC ids.
+  
+  ## Migration
+  
+  The limit tightens validation only. Existing registries remain compatible when their ids are already within the bound.
+decision_date: null
+id: "spc:0513"
+kind: "spec"
+number: 513
+origin: "ssot-core"
+references: []
+schema_version: "0.1.0"
+slug: "entity-id-max-length-contract"
+spec_kind: "governance"
+status: "draft"
+status_notes: []
+summary: "This specification defines the maximum permitted length for normalized SSOT entity ids and the schema surfaces that enforce it."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Entity id max-length contract"

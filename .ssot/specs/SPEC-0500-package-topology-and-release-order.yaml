@@ -1,0 +1,37 @@
+adr_ids: []
+body: |-
+  Packages:
+  
+  - `ssot-contracts`
+  - `ssot-views`
+  - `ssot-codegen`
+  - `ssot-core`
+  - `ssot-cli`
+  - `ssot-tui`
+  - `ssot-registry`
+  
+  Release order:
+  
+  1. `ssot-contracts`
+  2. `ssot-views`
+  3. `ssot-codegen`
+  4. `ssot-core`
+  5. `ssot-cli`
+  6. `ssot-tui`
+  7. `ssot-registry`
+decision_date: null
+id: "spc:0500"
+kind: "spec"
+number: 500
+origin: "ssot-core"
+references: []
+schema_version: "0.1.0"
+slug: "package-topology-and-release-order"
+spec_kind: "governance"
+status: "draft"
+status_notes: []
+summary: "Packages:"
+superseded_by: []
+supersedes: []
+tags: []
+title: "Package topology and release order"

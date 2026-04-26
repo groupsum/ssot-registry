@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from scripts import sync_packaged_docs
-from ssot_registry.util.jsonio import stable_json_dumps
+from ssot_registry.util.document_io import dump_document_yaml
 from tests.helpers import workspace_tempdir
 
 
@@ -77,8 +77,8 @@ class SyncPackagedDocsTests(unittest.TestCase):
         upstream, packaged = self._with_project_root(root)
         self._patch_project_root(root)
 
-        source_path = upstream / "adr" / "ADR-0600-example.json"
-        source_path.write_text(stable_json_dumps(_adr_payload(600, "example")), encoding="utf-8")
+        source_path = upstream / "adr" / "ADR-0600-example.yaml"
+        source_path.write_text(dump_document_yaml(_adr_payload(600, "example")), encoding="utf-8")
         registry = {
             "schema_version": "0.1.0",
             "tooling": {"ssot_registry_version": "0.2.6.dev1"},
@@ -88,7 +88,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
                     "number": 600,
                     "slug": "example",
                     "title": "Example",
-                    "path": ".ssot/adr/ADR-0600-example.json",
+                    "path": ".ssot/adr/ADR-0600-example.yaml",
                     "origin": "ssot-origin",
                     "status": "draft",
                     "supersedes": [],
@@ -102,7 +102,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
         failures = sync_packaged_docs.sync_packaged_files(registry, "adr", packaged / "adr", check=True)
 
         self.assertEqual(
-            [f"Missing packaged doc: {(packaged / 'adr' / 'ADR-0600-example.json').relative_to(root).as_posix()}"],
+            [f"Missing packaged doc: {(packaged / 'adr' / 'ADR-0600-example.yaml').relative_to(root).as_posix()}"],
             failures,
         )
 
@@ -113,10 +113,10 @@ class SyncPackagedDocsTests(unittest.TestCase):
         upstream, packaged = self._with_project_root(root)
         self._patch_project_root(root)
 
-        source_path = upstream / "adr" / "ADR-0600-example.json"
-        source_path.write_text(stable_json_dumps(_adr_payload(600, "example")), encoding="utf-8")
-        stale = packaged / "adr" / "ADR-0601-stale.json"
-        stale.write_text(stable_json_dumps(_adr_payload(601, "stale")), encoding="utf-8")
+        source_path = upstream / "adr" / "ADR-0600-example.yaml"
+        source_path.write_text(dump_document_yaml(_adr_payload(600, "example")), encoding="utf-8")
+        stale = packaged / "adr" / "ADR-0601-stale.yaml"
+        stale.write_text(dump_document_yaml(_adr_payload(601, "stale")), encoding="utf-8")
         registry = {
             "schema_version": "0.1.0",
             "tooling": {"ssot_registry_version": "0.2.6.dev1"},
@@ -126,7 +126,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
                     "number": 600,
                     "slug": "example",
                     "title": "Example",
-                    "path": ".ssot/adr/ADR-0600-example.json",
+                    "path": ".ssot/adr/ADR-0600-example.yaml",
                     "origin": "ssot-origin",
                     "status": "draft",
                     "supersedes": [],
@@ -140,7 +140,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
         failures = sync_packaged_docs.sync_packaged_files(registry, "adr", packaged / "adr", check=False, prune=True)
 
         self.assertEqual([], failures)
-        self.assertTrue((packaged / "adr" / "ADR-0600-example.json").exists())
+        self.assertTrue((packaged / "adr" / "ADR-0600-example.yaml").exists())
         self.assertFalse(stale.exists())
 
     def test_sync_manifest_rewrites_stale_hashes_from_upstream_registry(self) -> None:
@@ -150,8 +150,8 @@ class SyncPackagedDocsTests(unittest.TestCase):
         upstream, packaged = self._with_project_root(root)
         self._patch_project_root(root)
 
-        source_path = upstream / "specs" / "SPEC-0607-repo-policy.json"
-        source_path.write_text(stable_json_dumps(_spec_payload(607, "repo-policy")), encoding="utf-8")
+        source_path = upstream / "specs" / "SPEC-0607-repo-policy.yaml"
+        source_path.write_text(dump_document_yaml(_spec_payload(607, "repo-policy")), encoding="utf-8")
         registry = {
             "schema_version": "0.1.0",
             "tooling": {"ssot_registry_version": "0.2.6.dev1"},
@@ -162,7 +162,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
                     "number": 607,
                     "slug": "repo-policy",
                     "title": "Repository policy",
-                    "path": ".ssot/specs/SPEC-0607-repo-policy.json",
+                    "path": ".ssot/specs/SPEC-0607-repo-policy.yaml",
                     "origin": "ssot-origin",
                     "status": "draft",
                     "kind": "normative",
@@ -181,8 +181,8 @@ class SyncPackagedDocsTests(unittest.TestCase):
                         "number": 607,
                         "slug": "repo-policy",
                         "title": "Repository policy",
-                        "filename": "SPEC-0607-repo-policy.json",
-                        "target_path": ".ssot/specs/SPEC-0607-repo-policy.json",
+                        "filename": "SPEC-0607-repo-policy.yaml",
+                        "target_path": ".ssot/specs/SPEC-0607-repo-policy.yaml",
                         "sha256": "0" * 64,
                         "origin": "ssot-origin",
                         "reservation_owner": "ssot-origin",
@@ -208,7 +208,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
         self.assertEqual([], failures)
         manifest = json.loads((packaged / "specs" / "manifest.json").read_text(encoding="utf-8"))
         self.assertNotEqual(manifest[0]["sha256"], "0" * 64)
-        self.assertEqual(manifest[0]["filename"], "SPEC-0607-repo-policy.json")
+        self.assertEqual(manifest[0]["filename"], "SPEC-0607-repo-policy.yaml")
         self.assertEqual(manifest[0]["kind"], "normative")
 
     def test_range_validation_detects_cross_origin_collision(self) -> None:
@@ -218,9 +218,9 @@ class SyncPackagedDocsTests(unittest.TestCase):
         upstream, _packaged = self._with_project_root(root)
         self._patch_project_root(root)
 
-        (upstream / "adr" / "ADR-0010-origin.json").write_text(stable_json_dumps(_adr_payload(10, "origin")), encoding="utf-8")
-        (upstream / "specs" / "SPEC-0008-origin.json").write_text(
-            stable_json_dumps(_spec_payload(8, "origin")),
+        (upstream / "adr" / "ADR-0010-origin.yaml").write_text(dump_document_yaml(_adr_payload(10, "origin")), encoding="utf-8")
+        (upstream / "specs" / "SPEC-0008-origin.yaml").write_text(
+            dump_document_yaml(_spec_payload(8, "origin")),
             encoding="utf-8",
         )
         registry = {
@@ -232,7 +232,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
                     "number": 10,
                     "slug": "origin",
                     "title": "Origin",
-                    "path": ".ssot/adr/ADR-0010-origin.json",
+                    "path": ".ssot/adr/ADR-0010-origin.yaml",
                     "origin": "ssot-origin",
                     "status": "draft",
                     "supersedes": [],
@@ -244,7 +244,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
                     "number": 10,
                     "slug": "core-collision",
                     "title": "Core collision",
-                    "path": ".ssot/adr/ADR-0010-core-collision.json",
+                    "path": ".ssot/adr/ADR-0010-core-collision.yaml",
                     "origin": "ssot-core",
                     "status": "draft",
                     "supersedes": [],
@@ -258,7 +258,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
                     "number": 8,
                     "slug": "origin",
                     "title": "Origin",
-                    "path": ".ssot/specs/SPEC-0008-origin.json",
+                    "path": ".ssot/specs/SPEC-0008-origin.yaml",
                     "origin": "ssot-origin",
                     "status": "draft",
                     "kind": "normative",

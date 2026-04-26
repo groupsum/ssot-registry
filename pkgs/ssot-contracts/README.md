@@ -105,7 +105,7 @@ Read packaged document bodies:
 ```python
 from ssot_contracts import read_packaged_document_text
 
-text = read_packaged_document_text("adr", "ADR-0600-canonical-json-registry.json")
+text = read_packaged_document_text("adr", "ADR-0600-canonical-json-registry.yaml")
 print(text.splitlines()[0])
 ```
 

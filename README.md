@@ -861,9 +861,9 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
   - Upstream spec inventory: `.ssot/specs/`
 
 - Canonical upstream governance docs (`.ssot/`)
-  - Package topology and release order: `.ssot/specs/SPEC-0500-package-topology-and-release-order.json`
-  - Canonical release targets: `.ssot/specs/SPEC-0510-canonical-release-targets-and-tag-naming.json`
-  - Origin/core boundary rules: `.ssot/specs/SPEC-0512-document-origin-boundaries-and-id-ranges.json`
+  - Package topology and release order: `.ssot/specs/SPEC-0500-package-topology-and-release-order.yaml`
+  - Canonical release targets: `.ssot/specs/SPEC-0510-canonical-release-targets-and-tag-naming.yaml`
+  - Origin/core boundary rules: `.ssot/specs/SPEC-0512-document-origin-boundaries-and-id-ranges.yaml`
   - Architecture decisions for package layout and release flow: `.ssot/adr/`
 
 - Public operator `ssot-origin` templates (`pkgs/ssot-contracts/src/ssot_contracts/templates/`)

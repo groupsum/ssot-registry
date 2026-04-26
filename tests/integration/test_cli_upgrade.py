@@ -31,7 +31,7 @@ class CliUpgradeTests(unittest.TestCase):
         self.assertIn("0.1.x->0.2.1 (schema 3->4)", payload["migrations"])
         self.assertIn("migrate_v3_to_v4", payload["schema_migrations"])
         self.assertEqual(payload["to_version"], __version__)
-        self.assertTrue((repo / ".ssot" / "specs" / "SPEC-0600-registry-core.json").exists())
+        self.assertTrue((repo / ".ssot" / "specs" / "SPEC-0600-registry-core.yaml").exists())
         self.assertFalse((repo / ".ssot" / "specs" / "registry-core.md").exists())
         self.assertTrue((repo / ".ssot" / "reports" / "upgrade.report.json").exists())
 
@@ -86,4 +86,5 @@ class CliUpgradeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 

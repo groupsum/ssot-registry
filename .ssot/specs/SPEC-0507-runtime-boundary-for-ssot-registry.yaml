@@ -1,0 +1,28 @@
+adr_ids: []
+body: |-
+  `ssot-registry` SHALL keep:
+  
+  - load / save
+  - validators
+  - guards
+  - migrations
+  - entity and document mutation behavior
+  - release and lifecycle behavior
+  
+  `ssot-registry` SHALL import contracts and views rather than owning those artifacts.
+decision_date: null
+id: "spc:0507"
+kind: "spec"
+number: 507
+origin: "ssot-core"
+references: []
+schema_version: "0.1.0"
+slug: "runtime-boundary-for-ssot-registry"
+spec_kind: "governance"
+status: "draft"
+status_notes: []
+summary: "`ssot-registry` SHALL keep:"
+superseded_by: []
+supersedes: []
+tags: []
+title: "Runtime boundary for `ssot-registry`"

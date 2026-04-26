@@ -13,7 +13,7 @@ class DocumentSyncTests(unittest.TestCase):
         self.addCleanup(temp_dir.cleanup)
         repo = Path(temp_dir.name) / "repo"
 
-        target = repo / ".ssot" / "adr" / "ADR-0600-canonical-json-registry.json"
+        target = repo / ".ssot" / "adr" / "ADR-0600-canonical-json-registry.yaml"
         target.write_text(target.read_text(encoding="utf-8") + "\nlocal edit\n", encoding="utf-8")
 
         report = validate_registry(repo)
@@ -29,4 +29,5 @@ class DocumentSyncTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 

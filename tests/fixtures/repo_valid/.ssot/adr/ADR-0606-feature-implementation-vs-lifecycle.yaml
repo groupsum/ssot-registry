@@ -1,0 +1,17 @@
+body: |-
+  `implementation_status` and `lifecycle.stage` are distinct fields.
+decision_date: null
+id: "adr:0606"
+kind: "adr"
+number: 606
+origin: "ssot-origin"
+references: []
+schema_version: "0.1.0"
+slug: "feature-implementation-vs-lifecycle"
+status: "draft"
+status_notes: []
+summary: "`implementation_status` and `lifecycle.stage` are distinct fields."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Feature implementation state is separate from lifecycle state"

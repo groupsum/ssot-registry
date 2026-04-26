@@ -1,0 +1,21 @@
+body: |-
+  Decision: ssot-tui registry loads must run in background worker execution rather than directly in UI event handlers. Rationale: resolving, reading, indexing, and validating a registry can block the event loop and create intermittent freezes in the operator view. Consequences: the previous workspace remains visible while a new load is pending; status surfaces report the pending load; newer load requests supersede older results; load failures report errors without clearing an existing workspace.
+decision_date: null
+id: "adr:0523"
+kind: "adr"
+number: 523
+origin: "ssot-core"
+references: []
+schema_version: "0.2.0"
+slug: "tui-background-registry-loads"
+status: "accepted"
+status_notes:
+  -
+    at: "2026-04-23T10:45:20Z"
+    note: "Accepted with Textual worker implementation for current TUI behavior"
+    status: "accepted"
+summary: "Decision: ssot-tui registry loads must run in background worker execution rather than directly in UI event handlers. Rationale: resolving, reading, indexing, and validating a registry can block the event loop and create intermittent freezes in the operator view. Consequences: the previous workspace remains visible while a new load is pending; status surfaces report the pending load; newer load requests supersede older results; load failures report errors without clearing an existing workspace."
+superseded_by: []
+supersedes: []
+tags: []
+title: "TUI registry loads run in background workers"

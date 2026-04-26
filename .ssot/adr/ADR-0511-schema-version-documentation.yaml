@@ -1,0 +1,17 @@
+body: |-
+  README schema_version documentation SHALL be machine-updated from the runtime schema constant. Custom badges SHALL expose the current schema_version and migration path coverage, and managed README blocks SHALL be the only updater-owned surface.
+decision_date: null
+id: "adr:0511"
+kind: "adr"
+number: 511
+origin: "ssot-core"
+references: []
+schema_version: "0.2.0"
+slug: "schema-version-documentation"
+status: "accepted"
+status_notes: []
+summary: "README schema_version documentation SHALL be machine-updated from the runtime schema constant. Custom badges SHALL expose the current schema_version and migration path coverage, and managed README blocks SHALL be the only updater-owned surface."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Document schema_version in README managed badges"

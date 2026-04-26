@@ -74,7 +74,7 @@ def normalize_document_id(kind: str, number: int) -> str:
 
 
 def build_document_filename(kind: str, number: int, slug: str) -> str:
-    return f"{DOCUMENT_FILENAME_PREFIXES[kind]}-{format_document_number(number)}-{slug}.json"
+    return f"{DOCUMENT_FILENAME_PREFIXES[kind]}-{format_document_number(number)}-{slug}.yaml"
 
 
 def build_document_path(paths: dict[str, str], kind: str, number: int, slug: str) -> str:
@@ -84,7 +84,7 @@ def build_document_path(paths: dict[str, str], kind: str, number: int, slug: str
 
 def document_path_variants(paths: dict[str, str], kind: str, number: int, slug: str) -> set[str]:
     canonical = Path(build_document_path(paths, kind, number, slug))
-    return {canonical.as_posix(), canonical.with_suffix(".yaml").as_posix()}
+    return {canonical.as_posix(), canonical.with_suffix(".json").as_posix()}
 
 
 def document_path_has_supported_suffix(path: str) -> bool:

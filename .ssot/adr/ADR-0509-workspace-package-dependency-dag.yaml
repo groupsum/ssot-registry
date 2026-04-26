@@ -1,0 +1,44 @@
+body: |-
+  The workspace package-dependency graph is a governed architectural artifact.
+  
+  Canonical package nodes in this repository are:
+  
+  - `ssot-contracts`
+  - `ssot-views`
+  - `ssot-codegen`
+  - `ssot-core`
+  - `ssot-registry`
+  - `ssot-cli`
+  - `ssot-tui`
+  
+  The currently governed dependency edges are:
+  
+  - `ssot-views -> ssot-contracts`
+  - `ssot-codegen -> ssot-contracts`
+  - `ssot-codegen -> ssot-views`
+  - `ssot-core -> ssot-contracts`
+  - `ssot-core -> ssot-views`
+  - `ssot-cli -> ssot-contracts`
+  - `ssot-cli -> ssot-core`
+  - `ssot-tui -> ssot-contracts`
+  - `ssot-tui -> ssot-core`
+  - `ssot-registry -> ssot-contracts`
+  - `ssot-registry -> ssot-core`
+  - `ssot-registry -> ssot-cli`
+  
+  Changes to workspace package nodes or dependency edges SHALL be treated as architectural changes and SHALL be reflected in SSOT documents and package manifests together.
+decision_date: null
+id: "adr:0509"
+kind: "adr"
+number: 509
+origin: "ssot-core"
+references: []
+schema_version: "0.1.0"
+slug: "workspace-package-dependency-dag"
+status: "draft"
+status_notes: []
+summary: "The workspace package-dependency graph is a governed architectural artifact with explicit nodes and directed edges."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Workspace package-dependency DAG"

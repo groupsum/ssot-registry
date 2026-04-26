@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import unittest
 from pathlib import Path
 
@@ -10,7 +9,7 @@ from ssot_registry.util.document_io import dump_document_yaml, load_document_yam
 from tests.helpers import workspace_tempdir
 
 
-class DocumentJsonCanonicalTests(unittest.TestCase):
+class DocumentYamlCanonicalTests(unittest.TestCase):
     def test_document_schemas_are_packaged(self) -> None:
         names = set(list_schema_names())
         self.assertIn("adr.schema.json", names)
@@ -20,7 +19,7 @@ class DocumentJsonCanonicalTests(unittest.TestCase):
         with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "repo"
             initialize_repo(repo, repo_id="repo:yaml-doc", repo_name="yaml-doc", version="1.0.0")
-            target = repo / ".ssot" / "adr" / "ADR-0600-canonical-json-registry.json"
+            target = repo / ".ssot" / "adr" / "ADR-0600-canonical-json-registry.yaml"
             payload = load_document_yaml(target)
             del payload["body"]
             target.write_text(dump_document_yaml(payload), encoding="utf-8")
@@ -29,11 +28,11 @@ class DocumentJsonCanonicalTests(unittest.TestCase):
             self.assertFalse(report["passed"])
             self.assertIn("document content is invalid", "\n".join(report["failures"]))
 
-    def test_repo_local_json_document_validates_and_updates(self) -> None:
+    def test_repo_local_yaml_document_validates_and_updates(self) -> None:
         with workspace_tempdir() as temp_dir:
             repo = Path(temp_dir) / "repo"
             repo.mkdir()
-            initialize_repo(repo, repo_id="repo:json-doc", repo_name="json-doc", version="1.0.0")
+            initialize_repo(repo, repo_id="repo:yaml-doc", repo_name="yaml-doc", version="1.0.0")
 
             body = repo / "adr-body.yaml"
             body.write_text('body: |-\n  Local ADR body.\n', encoding="utf-8")
@@ -48,18 +47,18 @@ class DocumentJsonCanonicalTests(unittest.TestCase):
 
             _registry_path, repo_root, registry = load_registry(repo)
             row = next(row for row in registry["adrs"] if row["id"] == "adr:1000")
-            json_path = repo_root / row["path"]
-            payload = load_document_yaml(json_path)
-            self.assertTrue(json_path.exists())
-            self.assertTrue(json_path.read_text(encoding="utf-8").lstrip().startswith("{"))
+            yaml_path = repo_root / row["path"]
+            payload = load_document_yaml(yaml_path)
+            self.assertTrue(yaml_path.exists())
+            self.assertIn("schema_version:", yaml_path.read_text(encoding="utf-8"))
 
             report = validate_registry(repo)
             self.assertTrue(report["passed"], report)
 
             update_result = update_document(repo, "adr", "adr:1000", title="Local decision updated")
             self.assertTrue(update_result["passed"])
-            self.assertTrue(json_path.exists())
-            updated_payload = json.loads(json_path.read_text(encoding="utf-8"))
+            self.assertTrue(yaml_path.exists())
+            updated_payload = load_document_yaml(yaml_path)
             self.assertEqual("Local decision updated", updated_payload["title"])
 
     def test_markdown_body_file_is_rejected(self) -> None:
@@ -161,4 +160,3 @@ class DocumentJsonCanonicalTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

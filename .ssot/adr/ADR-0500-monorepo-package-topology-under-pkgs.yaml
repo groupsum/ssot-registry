@@ -1,0 +1,30 @@
+body: |-
+  All publishable packages SHALL live under `pkgs/`.
+  
+  Initial package set:
+  
+  - `ssot-registry`
+  - `ssot-contracts`
+  - `ssot-views`
+  - `ssot-codegen`
+  - `ssot-cli`
+  - `ssot-tui`
+  
+  Deferred package:
+  
+  - `ssot-registry-npm`
+decision_date: null
+id: "adr:0500"
+kind: "adr"
+number: 500
+origin: "ssot-core"
+references: []
+schema_version: "0.1.0"
+slug: "monorepo-package-topology-under-pkgs"
+status: "draft"
+status_notes: []
+summary: "All publishable packages SHALL live under `pkgs/`."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Monorepo package topology under `pkgs/`"
