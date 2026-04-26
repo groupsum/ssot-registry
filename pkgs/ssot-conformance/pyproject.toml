@@ -3,23 +3,23 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ssot-cli"
-version = "0.1.9.dev1"
-description = "Primary CLI distribution for ssot-registry."
+name = "ssot-conformance"
+version = "0.2.14.dev1"
+description = "Reusable SSOT conformance harness, pytest plugin, and scaffold helpers."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = [
-  "ssot-contracts>=0.2.14.dev1,<0.3.0",
-  "ssot-core>=0.2.14.dev1,<0.3.0",
-  "ssot-conformance>=0.2.14.dev1,<0.3.0",
+  "ssot-core==0.2.14.dev1",
+  "ssot-contracts==0.2.14.dev1",
   "tomli>=2.0.1; python_version < '3.11'",
 ]
-keywords = ["ssot", "cli", "registry", "governance", "release-management", "validation", "developer-tools"]
+keywords = ["ssot", "conformance", "pytest", "governance", "validation", "scaffold"]
 classifiers = [
   "Development Status :: 3 - Alpha",
-  "Environment :: Console",
+  "Environment :: Plugins",
+  "Framework :: Pytest",
   "Intended Audience :: Developers",
   "Intended Audience :: Information Technology",
   "Operating System :: OS Independent",
@@ -29,20 +29,18 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
-  "Topic :: Software Development :: Documentation",
   "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Testing",
   "Topic :: Utilities",
 ]
 
 [project.urls]
-Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-cli"
-Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-cli"
+Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-conformance"
+Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-conformance"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
 
-[project.scripts]
-ssot = "ssot_cli.main:main"
-ssot-cli = "ssot_cli.main:main"
-ssot-registry = "ssot_cli.main:main"
+[project.entry-points.pytest11]
+ssot-conformance = "ssot_conformance.plugin"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

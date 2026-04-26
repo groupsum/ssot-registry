@@ -1,0 +1,1 @@
+{"cases":[{"family":"registry","nodeid":"pkgs/ssot-conformance/src/ssot_conformance/cases/test_registry_contract.py::test_registry_contract","outcome":"passed"}],"families":["registry"],"kind":"ssot-conformance-evidence","profiles":["registry"],"repo_root":"E:\\swarmauri_github\\ssot-registry","summary":{"failed":0,"passed":1,"skipped":0,"total":1}}

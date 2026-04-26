@@ -4,6 +4,7 @@ members = [
   "pkgs/ssot-views",
   "pkgs/ssot-codegen",
   "pkgs/ssot-core",
+  "pkgs/ssot-conformance",
   "pkgs/ssot-registry",
   "pkgs/ssot-cli",
   "pkgs/ssot-tui",
@@ -14,6 +15,7 @@ ssot-contracts = { workspace = true }
 ssot-views = { workspace = true }
 ssot-codegen = { workspace = true }
 ssot-core = { workspace = true }
+ssot-conformance = { workspace = true }
 ssot-registry = { workspace = true }
 ssot-cli = { workspace = true }
 ssot-tui = { workspace = true }
@@ -29,5 +31,5 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "pkgs/ssot-cli/tests", "pkgs/ssot-tui/tests", "pkgs/ssot-core/tests", "pkgs/ssot-registry/tests", "pkgs/ssot-contracts/tests", "pkgs/ssot-views/tests", "pkgs/ssot-codegen/tests"]
+testpaths = ["tests", "pkgs/ssot-cli/tests", "pkgs/ssot-tui/tests", "pkgs/ssot-core/tests", "pkgs/ssot-registry/tests", "pkgs/ssot-contracts/tests", "pkgs/ssot-views/tests", "pkgs/ssot-codegen/tests", "pkgs/ssot-conformance/src"]
 norecursedirs = ["tests/fixtures"]

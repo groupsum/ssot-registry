@@ -12,6 +12,7 @@ from ssot_registry.util.formatting import render_payload
 from .adr_cmd import register_adr
 from .boundary_cmd import register_boundary
 from .claim_cmd import register_claim
+from .conformance_cmd import register_conformance
 from .evidence_cmd import register_evidence
 from .feature_cmd import register_feature
 from .graph_cmd import register_graph
@@ -68,6 +69,7 @@ def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
     register_test(subparsers)
     register_issue(subparsers)
     register_claim(subparsers)
+    register_conformance(subparsers)
     register_evidence(subparsers)
     register_risk(subparsers)
     register_boundary(subparsers)

@@ -1,8 +1,16 @@
 from __future__ import annotations
 
-import pytest
+from pathlib import Path
+
+CONFORMANCE_FAMILY = "document"
 
 
-@pytest.mark.skip(reason="planned SSOT conformance document contract cases")
-def test_document_contract_planned() -> None:
-    pass
+def test_document_contract(ssot_repo_root, ssot_registry) -> None:
+    for section in ("adrs", "specs"):
+        for row in ssot_registry[section]:
+            path = Path(ssot_repo_root) / row["path"]
+            assert path.exists(), row["id"]
+            if row["origin"] == "repo-local":
+                assert row["number"] >= 1000, row["id"]
+            else:
+                assert row["number"] < 1000, row["id"]
