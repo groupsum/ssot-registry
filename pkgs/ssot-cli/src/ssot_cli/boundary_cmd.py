@@ -12,6 +12,7 @@ from ssot_registry.api import (
     list_entities,
     remove_boundary_features,
     remove_boundary_profiles,
+    run_boundary_tests,
     update_entity,
 )
 from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, compact_dict
@@ -87,6 +88,17 @@ def register_boundary(subparsers: argparse._SubParsersAction) -> None:
     freeze.add_argument("--boundary-id", default=None, help="Boundary id to freeze. Omit to freeze the active boundary.")
     freeze.set_defaults(func=run_freeze)
 
+    run_tests = boundary_sub.add_parser(
+        "run-tests",
+        help="Resolve and execute tests for a boundary.",
+        description="Resolve the boundary's direct and profile-expanded features, then execute their linked test rows from registry metadata.",
+    )
+    add_path_argument(run_tests)
+    run_tests.add_argument("--id", default=None, help="Boundary id to execute. Omit to use program.active_boundary_id.")
+    run_tests.add_argument("--dry-run", action="store_true", help="Resolve linked tests without executing them.")
+    run_tests.add_argument("--evidence-output", default=None, help="Optional JSON output path for machine-readable execution evidence.")
+    run_tests.set_defaults(func=run_execute_tests)
+
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
     row = {
@@ -137,4 +149,13 @@ def run_remove_profile(args: argparse.Namespace) -> dict[str, object]:
 
 def run_freeze(args: argparse.Namespace) -> dict[str, object]:
     return freeze_boundary(path=args.path, boundary_id=args.boundary_id)
+
+
+def run_execute_tests(args: argparse.Namespace) -> dict[str, object]:
+    return run_boundary_tests(
+        args.path,
+        boundary_id=args.id,
+        evidence_output=args.evidence_output,
+        dry_run=args.dry_run,
+    )
 

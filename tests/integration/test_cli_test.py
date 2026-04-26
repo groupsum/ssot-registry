@@ -35,12 +35,25 @@ class CliTestSurfaceTests(unittest.TestCase):
             "clm:rfc.9000.connection-migration.t3",
             "--evidence-ids",
             "evd:t3.rfc.9000.connection-migration.bundle",
+            "--execution-json",
+            json.dumps(
+                {
+                    "mode": "command",
+                    "argv": ["python", "-m", "pytest", "tests/test_cli_generated_surface.py", "-q"],
+                    "cwd": ".",
+                    "env": {},
+                    "timeout_seconds": 600,
+                    "success": {"type": "exit_code", "expected": 0},
+                }
+            ),
         )
         self.assertEqual(create.returncode, 0, create.stderr)
 
         get_result = run_cli("test", "get", str(repo), "--id", "tst:pytest.cli.generated-surface")
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
-        self.assertEqual(json.loads(get_result.stdout)["kind"], "pytest")
+        get_payload = json.loads(get_result.stdout)
+        self.assertEqual(get_payload["kind"], "pytest")
+        self.assertEqual(get_payload["execution"]["mode"], "command")
 
         list_result = run_cli("test", "list", str(repo))
         self.assertEqual(list_result.returncode, 0, list_result.stderr)

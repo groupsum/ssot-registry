@@ -31,6 +31,10 @@ def _list_of_strings(value: Any) -> bool:
     return isinstance(value, list) and all(isinstance(item, str) for item in value)
 
 
+def _dict_of_strings(value: Any) -> bool:
+    return isinstance(value, dict) and all(isinstance(key, str) and isinstance(item, str) for key, item in value.items())
+
+
 def _validate_feature(feature: dict[str, Any], failures: list[str]) -> None:
     entity_id = feature.get("id", "<missing>")
     if feature.get("implementation_status") not in FEATURE_IMPLEMENTATION_STATUSES:
@@ -106,6 +110,35 @@ def _validate_test(test: dict[str, Any], failures: list[str]) -> None:
     for field_name in ("feature_ids", "claim_ids", "evidence_ids"):
         if not _list_of_strings(test.get(field_name)):
             failures.append(f"tests.{entity_id}.{field_name} must be a list of strings")
+    execution = test.get("execution")
+    if execution is None:
+        return
+    if not isinstance(execution, dict):
+        failures.append(f"tests.{entity_id}.execution must be an object when present")
+        return
+    if execution.get("mode") != "command":
+        failures.append(f"tests.{entity_id}.execution.mode must be 'command'")
+    argv = execution.get("argv")
+    if not _list_of_strings(argv) or not argv:
+        failures.append(f"tests.{entity_id}.execution.argv must be a non-empty list of strings")
+    cwd = execution.get("cwd")
+    if not isinstance(cwd, str) or not cwd.strip():
+        failures.append(f"tests.{entity_id}.execution.cwd must be a non-empty string")
+    env = execution.get("env")
+    if not _dict_of_strings(env):
+        failures.append(f"tests.{entity_id}.execution.env must be an object of string values")
+    timeout_seconds = execution.get("timeout_seconds")
+    if not isinstance(timeout_seconds, int) or timeout_seconds <= 0:
+        failures.append(f"tests.{entity_id}.execution.timeout_seconds must be a positive integer")
+    success = execution.get("success")
+    if not isinstance(success, dict):
+        failures.append(f"tests.{entity_id}.execution.success must be an object")
+    else:
+        if success.get("type") != "exit_code":
+            failures.append(f"tests.{entity_id}.execution.success.type must be 'exit_code'")
+        expected = success.get("expected")
+        if not isinstance(expected, int):
+            failures.append(f"tests.{entity_id}.execution.success.expected must be an integer")
 
 
 def _validate_profile(profile: dict[str, Any], failures: list[str]) -> None:

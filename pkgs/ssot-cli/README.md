@@ -111,6 +111,21 @@ Boundary command help:
 
 - Non-zero exit code indicates an operation failure or failed checks.
 
+## Registry-driven test execution
+
+Tests are the executable SSOT entities. Specs and boundaries resolve to tests through registry links, and runnable tests carry an `execution` object that stores the command, cwd, environment, timeout, and success rule.
+
+Examples:
+
+```bash
+ssot test run . --id tst:pytest.conformance.registry-contract
+ssot spec run-tests . --id spc:0525
+ssot boundary run-tests . --id bnd:full-cert
+ssot conformance run . --profiles registry
+```
+
+`ssot conformance run` remains a compatibility wrapper for packaged conformance families. The primary operator story is now registry-driven execution through `test`, `spec`, and `boundary`.
+
 ## Command surface
 
 ### Top-level commands

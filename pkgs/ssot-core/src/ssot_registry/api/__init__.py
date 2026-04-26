@@ -47,6 +47,7 @@ from .registry import export_registry
 from .release import certify_release, promote_release, publish_release, revoke_release
 from .save import save_registry
 from .status_sync import sync_automated_statuses
+from .test_execution import run_boundary_tests, run_resolved_test_rows, run_spec_tests, run_tests
 from .upgrade import upgrade_registry
 from .validate import validate_registry
 
@@ -104,5 +105,9 @@ __all__ = [
     "export_graph",
     "export_registry",
     "sync_automated_statuses",
+    "run_tests",
+    "run_spec_tests",
+    "run_boundary_tests",
+    "run_resolved_test_rows",
     "upgrade_registry",
 ]

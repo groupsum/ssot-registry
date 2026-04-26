@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import importlib.util
 import json
-import sys
 import unittest
 from pathlib import Path
 
@@ -26,6 +24,11 @@ class CliConformanceSurfaceTests(unittest.TestCase):
         self.assertEqual(discover_payload["families"], ["registry"])
         self.assertEqual(discover_payload["cases"][0]["kind"], "pytest")
 
+        discover_all = run_cli("conformance", "discover", str(repo))
+        self.assertEqual(discover_all.returncode, 0, discover_all.stderr)
+        kinds = {row["kind"] for row in json.loads(discover_all.stdout)["cases"]}
+        self.assertEqual(kinds, {"pytest", "command"})
+
         plan = run_cli("conformance", "scaffold", str(repo), "--profiles", "registry", "--include-claims", "--include-evidence")
         self.assertEqual(plan.returncode, 0, plan.stderr)
         plan_payload = json.loads(plan.stdout)
@@ -45,7 +48,6 @@ class CliConformanceSurfaceTests(unittest.TestCase):
         apply_payload = json.loads(apply.stdout)
         self.assertTrue(apply_payload["passed"], apply_payload)
 
-    @unittest.skipUnless(importlib.util.find_spec("pytest") is not None, "pytest is not installed")
     def test_cli_conformance_run_emits_evidence(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)
@@ -64,40 +66,27 @@ class CliConformanceSurfaceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         payload = json.loads(result.stdout)
         self.assertTrue(payload["passed"], payload)
-        self.assertEqual(payload["profiles"], ["registry"])
+        self.assertEqual(payload["target"]["kind"], "conformance")
         evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
-        self.assertEqual(evidence["profiles"], ["registry"])
+        self.assertEqual(evidence["resolved_test_ids"], ["tst:pytest.conformance.registry-contract"])
         self.assertEqual(evidence["summary"]["passed"], 1)
 
-    def test_cli_conformance_run_command_emits_evidence(self) -> None:
+    def test_cli_conformance_run_dry_run_resolves_registry_tests(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)
         repo = Path(temp_dir.name) / "repo"
-        evidence_path = repo / ".ssot" / "evidence" / "conformance" / "cli-command-evidence.json"
 
         result = run_cli(
             "conformance",
             "run",
             str(repo),
-            "--profiles",
-            "registry",
-            "--runner",
-            "command",
-            "--evidence-output",
-            str(evidence_path),
-            "--command",
-            sys.executable,
-            "-c",
-            "print('command runner ok')",
+            "--dry-run",
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         payload = json.loads(result.stdout)
-        self.assertTrue(payload["passed"], payload)
-        self.assertEqual(payload["runner"], "command")
-        self.assertEqual(payload["command_exit_code"], 0)
-        evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
-        self.assertEqual(evidence["summary"]["passed"], 1)
-        self.assertEqual(evidence["cases"][0]["runner"], "command")
+        self.assertTrue(payload["dry_run"], payload)
+        kinds = {row["kind"] for row in payload["resolved_tests"]}
+        self.assertEqual(kinds, {"pytest", "command"})
 
 
 if __name__ == "__main__":

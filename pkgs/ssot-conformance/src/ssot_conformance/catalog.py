@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from pathlib import Path
 
 
 CATALOG_VERSION = "0.2.14.dev1"
@@ -18,6 +19,7 @@ FAMILIES = (
     "scaffold",
     "evidence-output",
     "cli",
+    "command-runner",
 )
 
 PROFILE_DEFINITIONS = {
@@ -66,6 +68,9 @@ _FEATURES = {
     "cli": [
         ("feat:cli.conformance-surface", "CLI conformance command surface", "Expose ssot conformance commands for profile listing, discovery, scaffolding, execution, and evidence handling.", ["spc:0524", "spc:0526"], ["clm:cli.conformance-surface.t2"], ["tst:pytest.cli.conformance-surface"]),
     ],
+    "command-runner": [
+        ("feat:conformance.command-runner", "Registry-driven conformance command runner", "Execute governed conformance rows through registry-owned command metadata instead of ad hoc runner flags.", ["spc:0524", "spc:0526"], ["clm:conformance.command-runner.t2"], ["tst:command.conformance.command-runner"]),
+    ],
 }
 
 _CLAIMS = {
@@ -108,6 +113,9 @@ _CLAIMS = {
     "cli": [
         ("clm:cli.conformance-surface.t2", "CLI conformance surface is planned", "The ssot conformance CLI surface is tracked as a T2 target.", ["feat:cli.conformance-surface"], ["tst:pytest.cli.conformance-surface"], ["evd:t2.cli.conformance-surface.pytest"]),
     ],
+    "command-runner": [
+        ("clm:conformance.command-runner.t2", "Registry-driven conformance command runner is planned", "The suite-agnostic command execution lane is tracked as a T2 conformance target.", ["feat:conformance.command-runner"], ["tst:command.conformance.command-runner"], ["evd:t2.conformance.command-runner.command"]),
+    ],
 }
 
 _TESTS = {
@@ -146,6 +154,9 @@ _TESTS = {
     ],
     "cli": [
         ("tst:pytest.cli.conformance-surface", "CLI conformance surface tests", "tests/integration/test_cli_conformance.py", ["feat:cli.conformance-surface"], ["clm:cli.conformance-surface.t2"], ["evd:t2.cli.conformance-surface.pytest"]),
+    ],
+    "command-runner": [
+        ("tst:command.conformance.command-runner", "Registry-driven conformance command runner tests", "tests/integration/test_cli_registry_execution.py", ["feat:conformance.command-runner"], ["clm:conformance.command-runner.t2"], ["evd:t2.conformance.command-runner.command"]),
     ],
 }
 
@@ -186,7 +197,45 @@ _EVIDENCE = {
     "cli": [
         ("evd:t2.cli.conformance-surface.pytest", "CLI conformance surface pytest evidence", ".ssot/evidence/conformance/cli-conformance-surface-pytest.json", ["clm:cli.conformance-surface.t2"], ["tst:pytest.cli.conformance-surface"]),
     ],
+    "command-runner": [
+        ("evd:t2.conformance.command-runner.command", "Registry-driven conformance command evidence", ".ssot/evidence/conformance/conformance-command-runner-command.json", ["clm:conformance.command-runner.t2"], ["tst:command.conformance.command-runner"]),
+    ],
 }
+
+_TEST_KIND_OVERRIDES = {
+    "tst:command.conformance.command-runner": "command",
+}
+
+_EVIDENCE_KIND_OVERRIDES = {
+    "evd:t2.conformance.command-runner.command": "command",
+}
+
+
+def _build_execution_row(test_id: str, path: str, kind: str) -> dict[str, object]:
+    packaged_case_root = "pkgs/ssot-conformance/src/ssot_conformance/cases/"
+    if path.startswith(packaged_case_root) and path.endswith(".py"):
+        module_name = f"ssot_conformance.cases.{Path(path).stem}"
+        argv = [
+            "python",
+            "-m",
+            "pytest",
+            "--pyargs",
+            module_name,
+            "-q",
+            "-p",
+            "ssot_conformance.plugin",
+            "--ssot-repo-root=.",
+        ]
+    else:
+        argv = ["python", "-m", "pytest", path, "-q"]
+    return {
+        "mode": "command",
+        "argv": argv,
+        "cwd": ".",
+        "env": {},
+        "timeout_seconds": 600,
+        "success": {"type": "exit_code", "expected": 0},
+    }
 
 
 def list_profiles() -> list[dict[str, object]]:
@@ -248,15 +297,17 @@ def _claim_row(values: tuple[str, str, str, list[str], list[str], list[str]]) ->
 
 def _test_row(values: tuple[str, str, str, list[str], list[str], list[str]]) -> dict[str, object]:
     test_id, title, path, feature_ids, claim_ids, evidence_ids = values
+    kind = _TEST_KIND_OVERRIDES.get(test_id, "pytest")
     return {
         "id": test_id,
         "title": title,
         "status": "planned",
-        "kind": "pytest",
+        "kind": kind,
         "path": path,
         "feature_ids": list(feature_ids),
         "claim_ids": list(claim_ids),
         "evidence_ids": list(evidence_ids),
+        "execution": _build_execution_row(test_id, path, kind),
     }
 
 
@@ -266,7 +317,7 @@ def _evidence_row(values: tuple[str, str, str, list[str], list[str]]) -> dict[st
         "id": evidence_id,
         "title": title,
         "status": "planned",
-        "kind": "pytest",
+        "kind": _EVIDENCE_KIND_OVERRIDES.get(evidence_id, "pytest"),
         "tier": "T2",
         "path": path,
         "claim_ids": list(claim_ids),

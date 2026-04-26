@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from ssot_conformance import apply_scaffold, discover_cases, list_profiles, plan_scaffold, run_command_suite, run_pytest_cases
+from ssot_registry.api import run_resolved_test_rows
 from ssot_cli.common import add_path_argument
 
 
@@ -35,27 +35,31 @@ def register_conformance(subparsers: argparse._SubParsersAction) -> None:
 
     run = conformance_sub.add_parser(
         "run",
-        help="Run conformance cases via a selected runner.",
-        description="Execute selected SSOT conformance case families through the packaged pytest runner or an arbitrary command runner with shared evidence output.",
+        help="Run conformance cases from registry metadata.",
+        description="Resolve selected SSOT conformance case families into governed test rows and execute the stored registry commands.",
     )
     add_path_argument(run)
     run.add_argument("--profiles", nargs="*", default=None, help="Conformance profiles or family names to execute.")
-    run.add_argument("--runner", choices=("pytest", "command"), default="pytest", help="Execution runner. Use `pytest` for packaged ssot-core conformance cases or `command` for an arbitrary downstream suite.")
+    run.add_argument("--dry-run", action="store_true", help="Resolve governed conformance tests without executing them.")
     run.add_argument("--evidence-output", default=None, help="Optional JSON output path for machine-readable evidence.")
-    run.add_argument("--pytest-args", nargs="*", default=[], help="Extra pytest arguments appended after the packaged case path.")
-    run.add_argument("--command", nargs=argparse.REMAINDER, default=None, help="Command to execute when `--runner command` is selected. This must be the final option.")
     run.set_defaults(func=run_run)
 
 
 def run_profile_list(args: argparse.Namespace) -> dict[str, object]:
+    from ssot_conformance import list_profiles
+
     return {"passed": True, "profiles": list_profiles()}
 
 
 def run_discover(args: argparse.Namespace) -> dict[str, object]:
+    from ssot_conformance import discover_cases
+
     return discover_cases(args.profiles)
 
 
 def run_scaffold(args: argparse.Namespace) -> dict[str, object]:
+    from ssot_conformance import apply_scaffold, plan_scaffold
+
     if args.apply:
         return apply_scaffold(
             args.path,
@@ -72,19 +76,13 @@ def run_scaffold(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_run(args: argparse.Namespace) -> dict[str, object]:
-    if args.runner == "command":
-        command = list(args.command or [])
-        if command[:1] == ["--"]:
-            command = command[1:]
-        return run_command_suite(
-            repo_root=args.path,
-            profiles=args.profiles,
-            evidence_output=args.evidence_output,
-            command=command,
-        )
-    return run_pytest_cases(
-        repo_root=args.path,
-        profiles=args.profiles,
+    from ssot_conformance import build_catalog_slice
+
+    catalog = build_catalog_slice(args.profiles)
+    return run_resolved_test_rows(
+        args.path,
+        target={"kind": "conformance", "profiles": catalog["profiles"], "families": catalog["families"]},
+        tests=list(catalog["tests"]),
         evidence_output=args.evidence_output,
-        pytest_args=args.pytest_args,
+        dry_run=args.dry_run,
     )

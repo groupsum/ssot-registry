@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+from pathlib import Path
 from typing import Any
 
 
@@ -43,3 +45,26 @@ def collect_list_fields(args: argparse.Namespace, mapping: dict[str, str]) -> di
         if value:
             links[field_name] = value
     return links
+
+
+def load_json_object_argument(
+    *,
+    inline_value: str | None,
+    file_value: str | None,
+    label: str,
+) -> dict[str, Any] | None:
+    if inline_value is None and file_value is None:
+        return None
+    if inline_value is not None and file_value is not None:
+        raise ValueError(f"{label} accepts only one of inline JSON or JSON file")
+    if file_value is not None:
+        raw_text = Path(file_value).read_text(encoding="utf-8")
+    else:
+        raw_text = inline_value or ""
+    try:
+        payload = json.loads(raw_text)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{label} must be valid JSON: {exc.msg}") from exc
+    if not isinstance(payload, dict):
+        raise ValueError(f"{label} must decode to a JSON object")
+    return payload

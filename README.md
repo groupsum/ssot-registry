@@ -153,6 +153,21 @@ TUI screenshots from [ssot-tui](https://pypi.org/project/ssot-tui/):
 - Use `--output-file PATH` to save rendered command output to disk.
 - Non-zero exit code indicates an operation failure or failed checks.
 
+## Registry-driven test execution
+
+Executable details now live on test rows themselves through `tests[].execution`. Tests are the executable SSOT entities; specs and boundaries resolve to tests through `feature.spec_ids`, `feature.test_ids`, and boundary/profile scope expansion.
+
+Examples:
+
+```bash
+ssot test run . --id tst:pytest.conformance.registry-contract
+ssot spec run-tests . --id spc:0525
+ssot boundary run-tests . --id bnd:full-cert
+ssot conformance run . --profiles registry
+```
+
+`ssot conformance run` remains available for packaged conformance families, but the primary operator flow is registry-driven execution through `test`, `spec`, and `boundary`.
+
 ---
 
 ## Command surface (all commands, subcommands, and flags)

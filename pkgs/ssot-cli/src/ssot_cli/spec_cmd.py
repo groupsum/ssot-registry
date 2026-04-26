@@ -15,6 +15,7 @@ from ssot_registry.api import (
     sync_documents,
     supersede_documents,
     update_document,
+    run_spec_tests,
 )
 from ssot_cli.common import add_ids_argument, add_path_argument, compact_dict
 
@@ -116,6 +117,17 @@ def register_spec(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(reserve_list)
     reserve_list.set_defaults(func=run_reserve_list)
 
+    run_tests = spec_sub.add_parser(
+        "run-tests",
+        help="Resolve and execute tests for a SPEC.",
+        description="Resolve features that declare the selected SPEC in feature.spec_ids, then execute their linked test rows from registry metadata.",
+    )
+    add_path_argument(run_tests)
+    run_tests.add_argument("--id", required=True, help="SPEC id whose linked tests should be resolved and run.")
+    run_tests.add_argument("--dry-run", action="store_true", help="Resolve linked tests without executing them.")
+    run_tests.add_argument("--evidence-output", default=None, help="Optional JSON output path for machine-readable execution evidence.")
+    run_tests.set_defaults(func=run_spec_tests_command)
+
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
     return create_document(
@@ -190,4 +202,13 @@ def run_reserve_create(args: argparse.Namespace) -> dict[str, object]:
 
 def run_reserve_list(args: argparse.Namespace) -> dict[str, object]:
     return list_document_reservations(args.path, "spec")
+
+
+def run_spec_tests_command(args: argparse.Namespace) -> dict[str, object]:
+    return run_spec_tests(
+        args.path,
+        spec_id=args.id,
+        evidence_output=args.evidence_output,
+        dry_run=args.dry_run,
+    )
 

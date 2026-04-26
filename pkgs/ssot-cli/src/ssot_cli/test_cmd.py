@@ -2,8 +2,8 @@
 
 import argparse
 
-from ssot_registry.api import create_entity, delete_entity, get_entity, link_entities, list_entities, unlink_entities, update_entity
-from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict
+from ssot_registry.api import create_entity, delete_entity, get_entity, link_entities, list_entities, run_tests, unlink_entities, update_entity
+from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict, load_json_object_argument
 
 
 _LINK_MAPPING = {
@@ -31,6 +31,8 @@ def register_test(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--feature-ids", nargs="*", default=[], help="Feature ids this test verifies.")
     create.add_argument("--claim-ids", nargs="*", default=[], help="Claim ids this test supports.")
     create.add_argument("--evidence-ids", nargs="*", default=[], help="Evidence ids produced by or associated with the test.")
+    create.add_argument("--execution-json", default=None, help="Inline JSON object describing registry-owned execution metadata for this test.")
+    create.add_argument("--execution-file", default=None, help="Path to a JSON file containing registry-owned execution metadata for this test.")
     create.set_defaults(func=run_create)
 
     get = test_sub.add_parser("get", help="Show one test.", description="Fetch a single test record by id.")
@@ -50,6 +52,8 @@ def register_test(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--status", choices=["planned", "passing", "failing", "blocked", "skipped"], default=None, help="Updated execution or readiness state.")
     update.add_argument("--kind", default=None, help="Updated test category.")
     update.add_argument("--test-path", dest="test_path", default=None, help="Updated repository-relative path to the test or procedure.")
+    update.add_argument("--execution-json", default=None, help="Replacement inline JSON object for test execution metadata.")
+    update.add_argument("--execution-file", default=None, help="Replacement JSON file for test execution metadata.")
     update.set_defaults(func=run_update)
 
     delete = test_sub.add_parser("delete", help="Delete a test.", description="Remove a test record from the registry.")
@@ -73,6 +77,19 @@ def register_test(subparsers: argparse._SubParsersAction) -> None:
     unlink.add_argument("--evidence-ids", nargs="*", help="Evidence ids to detach.")
     unlink.set_defaults(func=run_unlink)
 
+    run = test_sub.add_parser(
+        "run",
+        help="Execute runnable tests from registry metadata.",
+        description="Resolve one or more test rows by id, require execution metadata, and run the stored commands from registry truth.",
+    )
+    add_path_argument(run)
+    selector = run.add_mutually_exclusive_group(required=True)
+    selector.add_argument("--id", default=None, help="Single test id to execute.")
+    selector.add_argument("--ids", nargs="+", default=None, help="One or more test ids to execute.")
+    run.add_argument("--dry-run", action="store_true", help="Resolve tests without executing their commands.")
+    run.add_argument("--evidence-output", default=None, help="Optional JSON output path for machine-readable execution evidence.")
+    run.set_defaults(func=run_execute)
+
 
 def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
     links = collect_list_fields(args, _LINK_MAPPING)
@@ -82,6 +99,11 @@ def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    execution = load_json_object_argument(
+        inline_value=args.execution_json,
+        file_value=args.execution_file,
+        label="test execution metadata",
+    )
     row = {
         "id": args.id,
         "title": args.title,
@@ -91,6 +113,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "feature_ids": args.feature_ids,
         "claim_ids": args.claim_ids,
         "evidence_ids": args.evidence_ids,
+        "execution": execution,
     }
     return create_entity(args.path, "tests", row)
 
@@ -104,12 +127,18 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
+    execution = load_json_object_argument(
+        inline_value=args.execution_json,
+        file_value=args.execution_file,
+        label="test execution metadata",
+    )
     changes = compact_dict(
         {
             "title": args.title,
             "status": args.status,
             "kind": args.kind,
             "path": args.test_path,
+            "execution": execution,
         }
     )
     if not changes:
@@ -127,4 +156,14 @@ def run_link(args: argparse.Namespace) -> dict[str, object]:
 
 def run_unlink(args: argparse.Namespace) -> dict[str, object]:
     return unlink_entities(args.path, "tests", args.id, _build_links(args))
+
+
+def run_execute(args: argparse.Namespace) -> dict[str, object]:
+    test_ids = [args.id] if args.id is not None else list(args.ids or [])
+    return run_tests(
+        args.path,
+        test_ids=test_ids,
+        evidence_output=args.evidence_output,
+        dry_run=args.dry_run,
+    )
 
