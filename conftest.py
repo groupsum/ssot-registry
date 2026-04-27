@@ -9,6 +9,7 @@ for path in (
     REPO_ROOT / "pkgs" / "ssot-codegen" / "src",
     REPO_ROOT / "pkgs" / "ssot-views" / "src",
     REPO_ROOT / "pkgs" / "ssot-contracts" / "src",
+    REPO_ROOT / "pkgs" / "ssot-conformance" / "src",
     REPO_ROOT / "pkgs" / "ssot-tui" / "src",
     REPO_ROOT / "pkgs" / "ssot-cli" / "src",
 ):
@@ -16,3 +17,4 @@ for path in (
         sys.path.insert(0, str(path))
 
 collect_ignore_glob = ["tests/fixtures/*/tests/*.py"]
+pytest_plugins = ["ssot_conformance.plugin"]

@@ -44,7 +44,7 @@ class ReleaseMetadataTests(unittest.TestCase):
         payload = json.loads(_run_release_metadata("targets", "--train", "all").stdout)
         self.assertEqual(
             payload,
-            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-cli", "ssot-tui", "ssot-registry"],
+            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-conformance", "ssot-cli", "ssot-tui", "ssot-registry"],
         )
 
     def test_selected_targets_follow_release_order(self) -> None:
@@ -59,6 +59,7 @@ class ReleaseMetadataTests(unittest.TestCase):
             "ssot-views",
             "ssot-codegen",
             "ssot-core",
+            "ssot-conformance",
             "ssot-registry",
             "ssot-cli",
             "ssot-tui",

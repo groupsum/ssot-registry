@@ -21,6 +21,7 @@ RELEASE_ORDER = (
     "ssot-views",
     "ssot-codegen",
     "ssot-core",
+    "ssot-conformance",
     "ssot-cli",
     "ssot-tui",
     "ssot-registry",
@@ -64,6 +65,12 @@ PACKAGE_INFOS: dict[str, PackageInfo] = {
         project_path="pkgs/ssot-core",
         workflow="publish-ssot-core.yml",
         pypi_url="https://pypi.org/p/ssot-core",
+    ),
+    "ssot-conformance": PackageInfo(
+        name="ssot-conformance",
+        project_path="pkgs/ssot-conformance",
+        workflow="publish-ssot-conformance.yml",
+        pypi_url="https://pypi.org/p/ssot-conformance",
     ),
     "ssot-registry": PackageInfo(
         name="ssot-registry",
@@ -128,6 +135,10 @@ def expected_dependency_specs(core_version: str, cli_version: str | None = None)
             "ssot-contracts": f"ssot-contracts=={core_version}",
             "ssot-views": f"ssot-views=={core_version}",
         },
+        "ssot-conformance": {
+            "ssot-contracts": f"ssot-contracts=={core_version}",
+            "ssot-core": f"ssot-core=={core_version}",
+        },
         "ssot-registry": {
             "ssot-contracts": f"ssot-contracts=={core_version}",
             "ssot-core": f"ssot-core=={core_version}",
@@ -136,6 +147,7 @@ def expected_dependency_specs(core_version: str, cli_version: str | None = None)
         "ssot-cli": {
             "ssot-contracts": f"ssot-contracts{compatible_core_range}",
             "ssot-core": f"ssot-core{compatible_core_range}",
+            "ssot-conformance": f"ssot-conformance{compatible_core_range}",
         },
         "ssot-tui": {
             "ssot-contracts": f"ssot-contracts{compatible_core_range}",
@@ -225,7 +237,8 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
     for package_name in ("ssot-cli", "ssot-tui"):
         actual_dependencies = packages[package_name]["dependencies"]  # type: ignore[index]
         assert isinstance(actual_dependencies, dict)
-        for dependency_name in ("ssot-contracts", "ssot-core"):
+        dependency_names = ("ssot-contracts", "ssot-core", "ssot-conformance") if package_name == "ssot-cli" else ("ssot-contracts", "ssot-core")
+        for dependency_name in dependency_names:
             actual_value = actual_dependencies.get(dependency_name, "")
             expected_value = dependency_specs[package_name][dependency_name]
             if actual_value != expected_value:

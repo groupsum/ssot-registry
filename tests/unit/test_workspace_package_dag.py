@@ -29,6 +29,7 @@ class WorkspacePackageDagTests(unittest.TestCase):
                 "pkgs/ssot-views",
                 "pkgs/ssot-codegen",
                 "pkgs/ssot-core",
+                "pkgs/ssot-conformance",
                 "pkgs/ssot-registry",
                 "pkgs/ssot-cli",
                 "pkgs/ssot-tui",
@@ -41,6 +42,7 @@ class WorkspacePackageDagTests(unittest.TestCase):
             "ssot-views": "pkgs/ssot-views/pyproject.toml",
             "ssot-codegen": "pkgs/ssot-codegen/pyproject.toml",
             "ssot-core": "pkgs/ssot-core/pyproject.toml",
+            "ssot-conformance": "pkgs/ssot-conformance/pyproject.toml",
             "ssot-registry": "pkgs/ssot-registry/pyproject.toml",
             "ssot-cli": "pkgs/ssot-cli/pyproject.toml",
             "ssot-tui": "pkgs/ssot-tui/pyproject.toml",
@@ -61,7 +63,10 @@ class WorkspacePackageDagTests(unittest.TestCase):
                 ("ssot-codegen", "ssot-views"),
                 ("ssot-core", "ssot-contracts"),
                 ("ssot-core", "ssot-views"),
+                ("ssot-conformance", "ssot-contracts"),
+                ("ssot-conformance", "ssot-core"),
                 ("ssot-cli", "ssot-contracts"),
+                ("ssot-cli", "ssot-conformance"),
                 ("ssot-cli", "ssot-core"),
                 ("ssot-tui", "ssot-contracts"),
                 ("ssot-tui", "ssot-core"),
@@ -81,5 +86,5 @@ class WorkspacePackageDagTests(unittest.TestCase):
         )
         self.assertEqual(
             json.loads(payload.stdout),
-            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-cli", "ssot-tui", "ssot-registry"],
+            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-conformance", "ssot-cli", "ssot-tui", "ssot-registry"],
         )

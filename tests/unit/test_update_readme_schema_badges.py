@@ -39,7 +39,7 @@ class UpdateReadmeSchemaBadgesTests(unittest.TestCase):
             updated = readme_path.read_text(encoding="utf-8")
             self.assertTrue(changed)
             self.assertIn("schema_version-9.9.9-blue", updated)
-            self.assertIn("migration%20coverage-9%2F9-brightgreen", updated)
+            self.assertIn("migration%20coverage-10%2F10-brightgreen", updated)
             self.assertIn("Current registry `schema_version`: `9.9.9`.", updated)
 
     def test_update_readme_reports_no_change_when_current(self) -> None:

@@ -97,7 +97,19 @@ def main() -> int:
     parser.add_argument(
         "--train",
         required=True,
-        choices=["core", "all", "ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-registry", "ssot-cli", "ssot-tui", "selected"],
+        choices=[
+            "core",
+            "all",
+            "ssot-contracts",
+            "ssot-views",
+            "ssot-codegen",
+            "ssot-core",
+            "ssot-conformance",
+            "ssot-registry",
+            "ssot-cli",
+            "ssot-tui",
+            "selected",
+        ],
     )
     parser.add_argument("--bump", required=True, choices=["major", "minor", "patch", "finalize"])
     parser.add_argument("--packages", help="Comma-separated package list when --train=selected")
