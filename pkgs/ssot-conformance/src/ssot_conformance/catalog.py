@@ -4,7 +4,7 @@ from copy import deepcopy
 from pathlib import Path
 
 
-CATALOG_VERSION = "0.2.14.dev1"
+CATALOG_VERSION = "0.2.14"
 
 FAMILIES = (
     "package-layout",

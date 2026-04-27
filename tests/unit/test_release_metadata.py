@@ -40,6 +40,13 @@ class ReleaseMetadataTests(unittest.TestCase):
         show_payload = json.loads(_run_release_metadata("show").stdout)
         self.assertEqual(payload["core_version"], show_payload["packages"]["ssot-contracts"]["version"])
 
+    def test_validate_all_train_confirms_local_dependency_versions_are_satisfiable(self) -> None:
+        payload = json.loads(_run_release_metadata("validate-train", "--train", "all").stdout)
+        self.assertEqual(
+            payload["targets"],
+            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-conformance", "ssot-cli", "ssot-tui", "ssot-registry"],
+        )
+
     def test_all_train_resolves_to_canonical_release_order(self) -> None:
         payload = json.loads(_run_release_metadata("targets", "--train", "all").stdout)
         self.assertEqual(

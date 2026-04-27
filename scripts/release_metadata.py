@@ -9,6 +9,17 @@ from dataclasses import dataclass
 from pathlib import Path
 
 try:
+    from packaging.specifiers import SpecifierSet
+    from packaging.version import Version
+except ModuleNotFoundError:  # pragma: no cover
+    try:
+        from setuptools._vendor.packaging.specifiers import SpecifierSet
+        from setuptools._vendor.packaging.version import Version
+    except ModuleNotFoundError:  # pragma: no cover
+        from pip._vendor.packaging.specifiers import SpecifierSet
+        from pip._vendor.packaging.version import Version
+
+try:
     import tomllib
 except ModuleNotFoundError:  # pragma: no cover - Python 3.10 fallback
     import tomli as tomllib
@@ -110,6 +121,12 @@ def _package_dependencies(pyproject: dict) -> dict[str, str]:
             if dependency.startswith(f"{package_name}==") or dependency.startswith(f"{package_name}>="):
                 result[package_name] = dependency
     return result
+
+
+def _extract_specifier(dependency: str, package_name: str) -> str:
+    if not dependency.startswith(package_name):
+        raise ValueError(f"Dependency {dependency!r} does not start with {package_name!r}")
+    return dependency[len(package_name) :]
 
 
 def _next_minor_upper_bound(version: str) -> str:
@@ -253,6 +270,21 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
             raise ValueError(
                 f"{package_name} requires-python mismatch: expected {supported_python!r}, got {package['requires_python']!r}"
             )
+
+    for package_name, package in packages.items():
+        dependencies = package["dependencies"]
+        assert isinstance(dependencies, dict)
+        for dependency_name, dependency_spec in dependencies.items():
+            if dependency_name not in packages:
+                continue
+            local_version = packages[dependency_name]["version"]
+            assert isinstance(local_version, str)
+            specifier = SpecifierSet(_extract_specifier(dependency_spec, dependency_name))
+            if Version(local_version) not in specifier:
+                raise ValueError(
+                    f"{package_name} dependency on {dependency_name} is unsatisfied by local version: "
+                    f"specifier {str(specifier)!r}, local version {local_version!r}"
+                )
 
     for package_name in targets:
         dependencies = packages[package_name]["dependencies"]  # type: ignore[index]

@@ -18,6 +18,7 @@ for path in (
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
+from ssot_conformance.catalog import build_catalog_slice, resolve_selected_families
 from ssot_conformance.scaffold import apply_scaffold, plan_scaffold
 from tests.helpers import temp_repo_from_fixture
 
@@ -52,6 +53,34 @@ class ConformanceScaffoldTests(unittest.TestCase):
         self.assertTrue(rerun["passed"], rerun)
         self.assertEqual(rerun["created"]["features"], [])
         self.assertEqual(rerun["created"]["tests"], [])
+
+    def test_apply_all_profile_scaffold_covers_entire_catalog(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+
+        catalog = build_catalog_slice(["all"])
+        expected_families = resolve_selected_families(["all"])
+        expected_feature_ids = {row["id"] for row in catalog["features"]}
+        expected_test_ids = {row["id"] for row in catalog["tests"]}
+
+        plan = plan_scaffold(repo, profiles=["all"])
+        self.assertTrue(plan["passed"], plan)
+        self.assertEqual(plan["families"], expected_families)
+        self.assertTrue(expected_feature_ids.issubset(set(plan["missing"]["features"])))
+
+        result = apply_scaffold(repo, profiles=["all"], include_claims=True, include_evidence=True)
+        self.assertTrue(result["passed"], result)
+
+        registry = json.loads((repo / ".ssot" / "registry.json").read_text(encoding="utf-8"))
+        registry_tests = {row["id"]: row for row in registry["tests"]}
+        created_features = {row["id"] for row in registry["features"] if row["id"] in expected_feature_ids}
+        self.assertEqual(created_features, expected_feature_ids)
+
+        for test_id in expected_test_ids:
+            with self.subTest(test_id=test_id):
+                self.assertIn(test_id, registry_tests)
+                self.assertIn("execution", registry_tests[test_id])
 
 
 if __name__ == "__main__":
