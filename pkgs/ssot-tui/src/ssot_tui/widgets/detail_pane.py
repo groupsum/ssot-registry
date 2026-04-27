@@ -8,10 +8,10 @@ from typing import Any
 from textual.app import ComposeResult
 from textual.containers import Vertical
 from textual.message import Message
-from textual.widgets import OptionList, Static
+from textual.widgets import Markdown, OptionList
 from textual.widgets.option_list import Option
 
-from ssot_tui.presentations import EntityDetailViewModel, RelatedResourceViewModel, render_structured_detail
+from ssot_tui.presentations import EntityDetailViewModel, render_entity_markdown, render_raw_entity_markdown
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,9 +36,10 @@ class EntityDetailPane(Vertical):
         self._placeholder = placeholder
         self._targets: dict[str, TraversalTarget] = {}
         self._raw_json = ""
+        self._current_markdown = placeholder
 
     def compose(self) -> ComposeResult:
-        yield Static(self._placeholder, id="entity_detail_body")
+        yield Markdown(self._placeholder, id="entity_detail_body", open_links=False)
         yield OptionList(id="entity_detail_resources")
 
     def show_entity(
@@ -48,24 +49,22 @@ class EntityDetailPane(Vertical):
         workspace_root: str | Path | None = None,
         entity_index: dict[str, tuple[str, dict[str, Any]]] | None = None,
     ) -> None:
-        body = self.query_one("#entity_detail_body", Static)
         if entity is None:
-            body.update(self._placeholder)
+            self._update_body(self._placeholder)
             self._raw_json = ""
             self._set_targets([])
             return
-        body.update(json.dumps(entity, indent=2, sort_keys=True))
         self._raw_json = json.dumps(entity, indent=2, sort_keys=True)
+        self._update_body(render_raw_entity_markdown(self._raw_json))
         self._set_targets(self._build_targets(entity, workspace_root=workspace_root, entity_index=entity_index or {}))
 
     def show_resource_text(self, title: str, text: str) -> None:
-        self.query_one("#entity_detail_body", Static).update(f"{title}\n\n{text}")
+        self._update_body(f"# {title}\n\n{text}")
         self._set_targets([])
 
     def show_view_model(self, view_model: EntityDetailViewModel, *, raw_mode: bool) -> None:
-        body = self.query_one("#entity_detail_body", Static)
         self._raw_json = view_model.raw_json
-        body.update(view_model.raw_json if raw_mode else render_structured_detail(view_model))
+        self._update_body(render_raw_entity_markdown(view_model.raw_json) if raw_mode else render_entity_markdown(view_model))
         self._set_targets(
             [
                 TraversalTarget(
@@ -84,6 +83,10 @@ class EntityDetailPane(Vertical):
         if view_model is None:
             return
         self.show_view_model(view_model, raw_mode=raw_mode)
+
+    def _update_body(self, markdown: str) -> None:
+        self._current_markdown = markdown
+        self.query_one("#entity_detail_body", Markdown).update(markdown)
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         option = event.option
@@ -136,6 +139,8 @@ class EntityDetailPane(Vertical):
                     walk(nested, nested_path)
                 return
             if not isinstance(value, str):
+                return
+            if field_path == "id" and value == entity.get("id"):
                 return
 
             if value in entity_index:

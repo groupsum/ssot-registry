@@ -226,7 +226,7 @@ class TuiOverhaulUnitTests(unittest.TestCase):
             temp_dir.cleanup()
 
         rendered = render_structured_detail(view_model)
-        self.assertIn("- Body:", rendered)
+        self.assertIn("- **Body**:", rendered)
         self.assertIn("Generated projections include", rendered)
         self.assertNotIn('"body"', view_model.raw_json)
 
@@ -319,12 +319,14 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
                 await _wait_for_workspace_load(screen, pilot)
                 screen._select_entity_id("feat:rfc.9000.connection-migration")
                 await pilot.pause()
-                body = screen.query_one("#entity_detail_body")
-                structured = str(body.content)
+                detail = screen.query_one("#detail_pane")
+                structured = detail._current_markdown
                 screen.action_toggle_detail_mode()
                 await pilot.pause()
-                raw = str(body.content)
-                self.assertIn("Badges", structured)
+                raw = detail._current_markdown
+                self.assertIn("# RFC 9000 connection migration", structured)
+                self.assertIn("## Primary", structured)
+                self.assertNotIn("Badges", structured)
                 self.assertIn('"id": "feat:rfc.9000.connection-migration"', raw)
         finally:
             temp_dir.cleanup()
@@ -348,8 +350,9 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
                 table.focus()
                 screen.action_activate_selection()
                 await pilot.pause()
-                body = screen.query_one("#entity_detail_body")
-                self.assertIn("Badges", str(body.content))
+                detail = screen.query_one("#detail_pane")
+                self.assertIn("## Primary", detail._current_markdown)
+                self.assertNotIn("Badges", detail._current_markdown)
         finally:
             temp_dir.cleanup()
 

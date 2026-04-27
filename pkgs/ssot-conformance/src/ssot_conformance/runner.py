@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import os
 import subprocess
 from pathlib import Path
 
@@ -43,8 +44,16 @@ def run_pytest_cases(
 
     stdout_buffer = io.StringIO()
     stderr_buffer = io.StringIO()
+    previous_plugin_autoload = os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD")
+    os.environ["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
     with contextlib.redirect_stdout(stdout_buffer), contextlib.redirect_stderr(stderr_buffer):
-        exit_code = pytest.main(args)
+        try:
+            exit_code = pytest.main(args)
+        finally:
+            if previous_plugin_autoload is None:
+                os.environ.pop("PYTEST_DISABLE_PLUGIN_AUTOLOAD", None)
+            else:
+                os.environ["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = previous_plugin_autoload
     payload: dict[str, object] = {
         "runner": "pytest",
         "passed": exit_code == 0,

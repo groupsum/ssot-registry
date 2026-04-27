@@ -33,6 +33,7 @@ class ConformancePytestPluginTests(unittest.TestCase):
                 str(REPO_ROOT / "pkgs" / "ssot-conformance" / "src"),
             ]
         )
+        env["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
         result = subprocess.run(
             [
                 sys.executable,

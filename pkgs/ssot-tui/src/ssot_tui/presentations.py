@@ -61,7 +61,6 @@ class RelatedResourceViewModel:
 class EntityDetailViewModel:
     title: str
     subtitle: str
-    badges: list[str] = field(default_factory=list)
     primary_fields: list[DetailFieldViewModel] = field(default_factory=list)
     secondary_fields: list[DetailFieldViewModel] = field(default_factory=list)
     resources: list[RelatedResourceViewModel] = field(default_factory=list)
@@ -103,22 +102,21 @@ def build_detail_view_model(
 ) -> EntityDetailViewModel:
     title = str(entity.get("title") or entity.get("version") or entity.get("id") or "<unnamed>")
     subtitle = str(entity.get("id") or spec.label)
-    badges = [f"{field}: {_stringify_value(entity[field])}" for field in spec.detail_badge_fields if field in entity]
+    primary_field_names = [field for field in spec.detail_primary_fields if field in entity]
     primary_fields = [
         DetailFieldViewModel(label=field.replace("_", " ").title(), value=_stringify_value(entity.get(field, "")))
-        for field in spec.detail_primary_fields
-        if field in entity
+        for field in primary_field_names
     ]
+    rendered_field_names = set(primary_field_names)
     secondary_fields = [
         DetailFieldViewModel(label=key.replace("_", " ").title(), value=_stringify_value(value))
         for key, value in entity.items()
-        if key not in set(spec.detail_primary_fields) | set(spec.detail_badge_fields)
+        if key not in rendered_field_names
     ]
     resources = _build_resources(entity, workspace_root=workspace_root, entity_index=entity_index)
     return EntityDetailViewModel(
         title=title,
         subtitle=subtitle,
-        badges=badges,
         primary_fields=primary_fields,
         secondary_fields=secondary_fields,
         resources=resources,
@@ -127,32 +125,58 @@ def build_detail_view_model(
 
 
 def render_structured_detail(view_model: EntityDetailViewModel) -> str:
-    lines = [view_model.title, view_model.subtitle]
-    if view_model.badges:
-        lines.extend(["", "Badges", *[f"- {badge}" for badge in view_model.badges]])
+    return render_entity_markdown(view_model)
+
+
+def render_entity_markdown(view_model: EntityDetailViewModel) -> str:
+    lines = [f"# {_escape_inline_markdown(view_model.title)}", "", f"`{_escape_backticks(view_model.subtitle)}`"]
     if view_model.primary_fields:
-        lines.extend(["", "Primary"])
+        lines.extend(["", "## Primary"])
         for field in view_model.primary_fields:
             _append_field(lines, field)
     if view_model.secondary_fields:
-        lines.extend(["", "Details"])
-        for field in view_model.secondary_fields[:12]:
+        lines.extend(["", "## Details"])
+        for field in view_model.secondary_fields:
             _append_field(lines, field)
-        if len(view_model.secondary_fields) > 12:
-            lines.append(f"- ... {len(view_model.secondary_fields) - 12} more fields")
     if view_model.resources:
-        lines.extend(["", "Related"])
-        lines.extend(f"- {resource.kind}: {resource.field_path} -> {resource.label}" for resource in view_model.resources)
+        lines.extend(["", "## Related"])
+        lines.extend(
+            f"- **{_escape_inline_markdown(resource.kind)}** `{_escape_backticks(resource.field_path)}` -> {_escape_inline_markdown(resource.label)}"
+            for resource in view_model.resources
+        )
     return "\n".join(lines)
+
+
+def render_raw_entity_markdown(raw_json: str) -> str:
+    return "\n".join(["# Raw Entity", "", "```json", raw_json, "```"])
 
 
 def _append_field(lines: list[str], field: DetailFieldViewModel) -> None:
     if "\n" not in field.value:
-        lines.append(f"- {field.label}: {field.value}")
+        lines.append(f"- **{_escape_inline_markdown(field.label)}**: {_format_scalar_markdown(field.value)}")
         return
-    lines.append(f"- {field.label}:")
+    lines.append(f"- **{_escape_inline_markdown(field.label)}**:")
+    lines.append("")
+    lines.append("```text")
     for line in field.value.splitlines():
-        lines.append(f"  {line}" if line else "  ")
+        lines.append(line)
+    lines.append("```")
+
+
+def _format_scalar_markdown(value: str) -> str:
+    if not value:
+        return "`<empty>`"
+    if value.startswith("{") or value.startswith("["):
+        return f"`{_escape_backticks(value)}`"
+    return _escape_inline_markdown(value)
+
+
+def _escape_inline_markdown(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("*", "\\*").replace("_", "\\_").replace("[", "\\[").replace("]", "\\]")
+
+
+def _escape_backticks(value: str) -> str:
+    return value.replace("`", "\\`")
 
 
 def _preferred_primary_fields(section: str) -> tuple[str, ...]:
@@ -210,6 +234,8 @@ def _build_resources(
                 walk(nested, f"{field_path}[{index}]")
             return
         if not isinstance(value, str):
+            return
+        if field_path == "id" and value == entity.get("id"):
             return
         if value in entity_index:
             section, row = entity_index[value]

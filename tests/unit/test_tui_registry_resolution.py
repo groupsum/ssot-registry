@@ -170,8 +170,7 @@ class TuiBrowserInteractionTests(unittest.IsolatedAsyncioTestCase):
                 screen.on_entity_detail_pane_resource_selected(EntityDetailPane.ResourceSelected(detail, target))
                 await pilot.pause()
 
-                body = detail.query_one("#entity_detail_body")
-                self.assertIn("test_connection_migration.py", str(body.content))
+                self.assertIn("test_connection_migration.py", detail._current_markdown)
         finally:
             temp_dir.cleanup()
 

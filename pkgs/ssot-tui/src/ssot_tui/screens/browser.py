@@ -49,7 +49,7 @@ class BrowserScreen(Screen[None]):
         ("l", "focus_table", "Table"),
         ("enter", "activate_selection", "Open"),
         ("escape", "escape_mode", "Escape"),
-        ("t", "toggle_detail_mode", "Raw/Structured"),
+        ("t", "toggle_detail_mode", "Raw/Markdown"),
         ("m", "cycle_table_mode", "Table Mode"),
     ]
 
@@ -133,7 +133,7 @@ class BrowserScreen(Screen[None]):
         register(self._action("reload", "Reload workspace", "Reload the current repo from disk.", "r", "workspace", self.action_reload_workspace, self._has_path))
         register(self._action("validate", "Validate workspace", "Re-run validation and refresh counts.", "v", "workspace", self.action_validate_workspace, self._has_workspace))
         register(self._action("focus_filter", "Focus filter", "Jump to the inline section filter.", "/", "navigation", self.action_focus_filter, self._has_workspace))
-        register(self._action("toggle_detail", "Toggle raw detail", "Switch the detail pane between structured and raw JSON.", "t", "view", self.action_toggle_detail_mode, self._has_selected_entity))
+        register(self._action("toggle_detail", "Toggle raw detail", "Switch the detail pane between generated Markdown and raw JSON.", "t", "view", self.action_toggle_detail_mode, self._has_selected_entity))
         register(self._action("table_mode", "Cycle table mode", "Switch between fit, wrap, and wide table presets.", "m", "view", self.action_cycle_table_mode, self._has_workspace))
         register(self._action("copy_id", "Copy entity id", "Copy the selected entity id to the clipboard.", None, "entity", self._copy_selected_entity_id, self._has_selected_entity))
         register(self._action("copy_path", "Copy source path", "Copy the selected entity path when present.", None, "entity", self._copy_selected_entity_path, self._selected_entity_has_path))
