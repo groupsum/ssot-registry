@@ -12,7 +12,7 @@
 
 `ssot-core` is the core Python runtime package for SSOT.
 
-It owns the canonical registry model, core APIs for loading and mutating registries, validation and guard logic, planning and release workflows, and the domain operations that [ssot-cli](https://pypi.org/project/ssot-cli/) and [ssot-tui](https://pypi.org/project/ssot-tui/) build on top of.
+It owns the canonical registry model, core APIs for loading and mutating registries, validation and guard logic, planning and release workflows, and the domain operations that [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), and [ssot-tui](https://pypi.org/project/ssot-tui/) build on top of.
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
@@ -54,8 +54,8 @@ ADR and SPEC companion documents are canonically authored as JSON under `.ssot/a
 
 ```bash
 python -m pip install ssot-core       # core library/runtime only
-python -m pip install ssot-cli        # primary CLI distribution + ssot-core
-python -m pip install ssot-registry   # umbrella bundle: ssot-core + ssot-cli
+python -m pip install ssot-cli        # primary CLI distribution + ssot-core + ssot-conformance
+python -m pip install ssot-registry   # umbrella bundle: ssot-core + ssot-cli + ssot-conformance
 python -m pip install "ssot-registry[tui]"  # optional TUI bundle
 ```
 
@@ -141,6 +141,8 @@ ssot-registry registry --help
 ## Screenshots
 
 CLI screenshots from [ssot-cli](https://pypi.org/project/ssot-cli/):
+
+Regenerate all terminal assets with `python scripts/generate_terminal_screenshots.py`.
 
 ![ssot top-level help](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-cli/assets/ssot-cli-help.png)
 
@@ -892,6 +894,6 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 
 - Package type: core runtime/library package
 - Depends on: [ssot-contracts](https://pypi.org/project/ssot-contracts/), [ssot-views](https://pypi.org/project/ssot-views/)
-- Consumed by: [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-tui](https://pypi.org/project/ssot-tui/), direct Python integrations, and automation
+- Consumed by: [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-tui](https://pypi.org/project/ssot-tui/), direct Python integrations, and automation
 
 If you are embedding SSOT behavior inside Python code, this is the package to import. If you need the primary CLI distribution, install [ssot-cli](https://pypi.org/project/ssot-cli/) alongside it.

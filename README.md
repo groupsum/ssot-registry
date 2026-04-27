@@ -14,7 +14,7 @@
 <!-- ssot-schema-badges:end -->
 </div>
 
-`ssot-registry` is a portable, repository-agnostic single-source-of-truth system built from [ssot-core](https://pypi.org/project/ssot-core/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-tui](https://pypi.org/project/ssot-tui/), and [ssot-codegen](https://pypi.org/project/ssot-codegen/).
+`ssot-registry` is a portable, repository-agnostic single-source-of-truth system built from [ssot-core](https://pypi.org/project/ssot-core/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-tui](https://pypi.org/project/ssot-tui/), and [ssot-codegen](https://pypi.org/project/ssot-codegen/).
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
@@ -127,6 +127,8 @@ ssot-registry registry --help
 ## Screenshots
 
 CLI screenshots from [ssot-cli](https://pypi.org/project/ssot-cli/):
+
+Regenerate all terminal assets with `python scripts/generate_terminal_screenshots.py`.
 
 ![ssot top-level help](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-cli/assets/ssot-cli-help.png)
 

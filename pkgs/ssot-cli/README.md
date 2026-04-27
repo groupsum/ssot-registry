@@ -12,7 +12,7 @@
 
 `ssot-cli` is the primary command-line distribution for SSOT.
 
-It installs `ssot`, `ssot-cli`, and `ssot-registry` as equivalent executables over the same parser and runtime. The command surface is implemented here, while domain logic lives in [ssot-core](https://pypi.org/project/ssot-core/) and shared contract metadata comes from [ssot-contracts](https://pypi.org/project/ssot-contracts/).
+It installs `ssot`, `ssot-cli`, and `ssot-registry` as equivalent executables over the same parser and runtime. The command surface is implemented here, while domain logic lives in [ssot-core](https://pypi.org/project/ssot-core/), reusable conformance checks come from [ssot-conformance](https://pypi.org/project/ssot-conformance/), and shared contract metadata comes from [ssot-contracts](https://pypi.org/project/ssot-contracts/).
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
@@ -34,7 +34,7 @@ For local development:
 python -m pip install -e pkgs/ssot-cli
 ```
 
-This package depends on [ssot-core](https://pypi.org/project/ssot-core/) and [ssot-contracts](https://pypi.org/project/ssot-contracts/), so installing it gives you the full CLI runtime stack.
+This package depends on [ssot-core](https://pypi.org/project/ssot-core/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), and [ssot-contracts](https://pypi.org/project/ssot-contracts/), so installing it gives you the full CLI runtime stack.
 
 ## Executable names
 
@@ -833,7 +833,7 @@ ssot release certify . --release-id rel:0.1.0 --write-report
 ## Package relationships
 
 - Package type: CLI distribution
-- Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-contracts](https://pypi.org/project/ssot-contracts/)
+- Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/)
 - Related packages: [ssot-registry](https://pypi.org/project/ssot-registry/), [ssot-tui](https://pypi.org/project/ssot-tui/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-codegen](https://pypi.org/project/ssot-codegen/)
 
 If you need the command-line interface, this is the package to install.

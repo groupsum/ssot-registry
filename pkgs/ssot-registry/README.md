@@ -12,7 +12,7 @@
 
 `ssot-registry` is the umbrella distribution for SSOT.
 
-It installs [ssot-core](https://pypi.org/project/ssot-core/) and [ssot-cli](https://pypi.org/project/ssot-cli/) together so users get the canonical `ssot_registry` Python package and the primary command surface in one install. The optional `tui` extra adds [ssot-tui](https://pypi.org/project/ssot-tui/).
+It installs [ssot-core](https://pypi.org/project/ssot-core/) and [ssot-cli](https://pypi.org/project/ssot-cli/) together so users get the canonical `ssot_registry` Python package, reusable [ssot-conformance](https://pypi.org/project/ssot-conformance/) checks through the CLI, and the primary command surface in one install. The optional `tui` extra adds [ssot-tui](https://pypi.org/project/ssot-tui/).
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
@@ -53,10 +53,10 @@ ADR and SPEC companion documents are canonically authored as JSON under `.ssot/a
 ## Install
 
 ```bash
-python -m pip install ssot-registry         # ssot-core + ssot-cli
-python -m pip install "ssot-registry[tui]"  # ssot-core + ssot-cli + ssot-tui
+python -m pip install ssot-registry         # ssot-core + ssot-cli + ssot-conformance
+python -m pip install "ssot-registry[tui]"  # ssot-core + ssot-cli + ssot-conformance + ssot-tui
 python -m pip install ssot-core             # runtime only
-python -m pip install ssot-cli              # CLI + runtime
+python -m pip install ssot-cli              # CLI + runtime + conformance harness
 ```
 
 For local development:
@@ -140,6 +140,8 @@ ssot-registry registry --help
 ## Screenshots
 
 CLI screenshots from [ssot-cli](https://pypi.org/project/ssot-cli/):
+
+Regenerate all terminal assets with `python scripts/generate_terminal_screenshots.py`.
 
 ![ssot top-level help](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-cli/assets/ssot-cli-help.png)
 
@@ -890,7 +892,7 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 ## Package relationships
 
 - Package type: umbrella distribution
-- Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-contracts](https://pypi.org/project/ssot-contracts/)
+- Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/)
 - Optional extras: [ssot-tui](https://pypi.org/project/ssot-tui/)
 - Related packages: [ssot-views](https://pypi.org/project/ssot-views/), [ssot-codegen](https://pypi.org/project/ssot-codegen/)
 
