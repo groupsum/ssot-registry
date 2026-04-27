@@ -4,16 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssot-cli"
-version = "0.1.9.dev2"
+version = "0.1.9.dev3"
 description = "Primary CLI distribution for ssot-registry."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = [
-  "ssot-contracts>=0.2.14,<0.3.0",
-  "ssot-core>=0.2.14,<0.3.0",
-  "ssot-conformance>=0.2.14,<0.3.0",
+  "ssot-contracts>=0.2.15.dev1,<0.3.0",
+  "ssot-core>=0.2.15.dev1,<0.3.0",
+  "ssot-conformance>=0.2.15.dev1,<0.3.0",
   "tomli>=2.0.1; python_version < '3.11'",
 ]
 keywords = ["ssot", "cli", "registry", "governance", "release-management", "validation", "developer-tools"]
