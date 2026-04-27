@@ -40,11 +40,13 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("- ssot-views", workflow)
         self.assertIn("- ssot-codegen", workflow)
         self.assertIn("- ssot-core", workflow)
+        self.assertIn("- ssot-conformance", workflow)
         self.assertIn("- ssot-registry", workflow)
         self.assertIn("publish-ssot-contracts.yml", workflow)
         self.assertIn("publish-ssot-views.yml", workflow)
         self.assertIn("publish-ssot-codegen.yml", workflow)
         self.assertIn("publish-ssot-core.yml", workflow)
+        self.assertIn("publish-ssot-conformance.yml", workflow)
         self.assertIn("publish-ssot-registry.yml", workflow)
         self.assertIn("publish-ssot-cli.yml", workflow)
         self.assertIn("publish-ssot-tui.yml", workflow)
@@ -57,6 +59,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
             "ssot-views",
             "ssot-codegen",
             "ssot-core",
+            "ssot-conformance",
             "ssot-registry",
             "ssot-cli",
             "ssot-tui",
@@ -70,6 +73,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
             ".github/workflows/publish-ssot-views.yml",
             ".github/workflows/publish-ssot-codegen.yml",
             ".github/workflows/publish-ssot-core.yml",
+            ".github/workflows/publish-ssot-conformance.yml",
             ".github/workflows/publish-ssot-registry.yml",
             ".github/workflows/publish-ssot-cli.yml",
             ".github/workflows/publish-ssot-tui.yml",
@@ -84,6 +88,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
     def test_prepare_release_uses_package_aware_bump_script(self) -> None:
         workflow = _read(".github/workflows/prepare-release.yml")
         self.assertIn("- all", workflow)
+        self.assertIn("- ssot-conformance", workflow)
         self.assertIn("scripts/bump_release_train.py", workflow)
         self.assertNotIn("python scripts/bump_pyproject_version.py --bump \"$BUMP_TYPE\" pyproject.toml", workflow)
 
