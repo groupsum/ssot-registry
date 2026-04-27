@@ -37,6 +37,8 @@ class EntityDetailPane(Vertical):
         self._targets: dict[str, TraversalTarget] = {}
         self._raw_json = ""
         self._current_markdown = placeholder
+        self._pending_markdown: str | None = None
+        self._markdown_update_running = False
 
     def compose(self) -> ComposeResult:
         yield Markdown(self._placeholder, id="entity_detail_body", open_links=False)
@@ -86,7 +88,27 @@ class EntityDetailPane(Vertical):
 
     def _update_body(self, markdown: str) -> None:
         self._current_markdown = markdown
-        self.query_one("#entity_detail_body", Markdown).update(markdown)
+        self._pending_markdown = markdown
+        if not self._markdown_update_running:
+            self._markdown_update_running = True
+            self.run_worker(
+                self._flush_markdown_updates(),
+                group="entity_detail_markdown",
+                exclusive=True,
+                exit_on_error=False,
+            )
+
+    async def _flush_markdown_updates(self) -> None:
+        try:
+            body = self.query_one("#entity_detail_body", Markdown)
+            while self._pending_markdown is not None:
+                markdown = self._pending_markdown
+                self._pending_markdown = None
+                await body.update(markdown)
+        finally:
+            self._markdown_update_running = False
+            if self._pending_markdown is not None and self.is_mounted:
+                self._update_body(self._pending_markdown)
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         option = event.option

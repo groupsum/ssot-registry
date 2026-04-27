@@ -381,6 +381,34 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
         finally:
             temp_dir.cleanup()
 
+    async def test_rapid_entity_switches_do_not_overlap_markdown_updates(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
+                rows = screen.workspace.collections["features"]
+
+                for entity in rows[:5]:
+                    screen._show_entity(entity)
+
+                await pilot.pause()
+                detail = screen.query_one("#detail_pane")
+                self.assertFalse(detail._markdown_update_running)
+                self.assertIsNone(detail._pending_markdown)
+                self.assertIn(str(rows[min(4, len(rows) - 1)]["id"]), detail._current_markdown)
+        finally:
+            temp_dir.cleanup()
+
     async def test_highlighting_new_entity_does_not_emit_session_rerender(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"
