@@ -81,6 +81,24 @@ class GraphExportTests(unittest.TestCase):
         self.assertIn({"type": "DECIDED_BY", "from": "spc:demo.spec-adr", "to": "adr:demo.decision"}, graph["edges"])
         self.assertIn({"type": "DECIDED_BY", "from": "feat:demo.spec-adr", "to": "adr:demo.decision"}, graph["edges"])
 
+    def test_graph_export_includes_all_release_boundaries(self) -> None:
+        registry = {
+            "features": [],
+            "specs": [],
+            "adrs": [],
+            "tests": [],
+            "claims": [],
+            "evidence": [],
+            "issues": [],
+            "risks": [],
+            "boundaries": [{"id": "bnd:a"}, {"id": "bnd:b"}],
+            "releases": [{"id": "rel:demo", "boundary_id": "bnd:a", "boundary_ids": ["bnd:a", "bnd:b"]}],
+            "profiles": [],
+        }
+        graph = build_graph_json(registry)
+        self.assertIn({"type": "USES_BOUNDARY", "from": "rel:demo", "to": "bnd:a"}, graph["edges"])
+        self.assertIn({"type": "USES_BOUNDARY", "from": "rel:demo", "to": "bnd:b"}, graph["edges"])
+
 
 if __name__ == "__main__":
     unittest.main()

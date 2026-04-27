@@ -165,7 +165,7 @@ def _preferred_primary_fields(section: str) -> tuple[str, ...]:
         "issues": ("id", "title", "status", "horizon"),
         "risks": ("id", "title", "status", "severity"),
         "boundaries": ("id", "title", "status"),
-        "releases": ("id", "version", "status", "boundary_id"),
+        "releases": ("id", "version", "status", "boundary_id", "boundary_ids"),
         "adrs": ("id", "summary", "path"),
         "specs": ("id", "summary", "path"),
     }
@@ -182,7 +182,7 @@ def _preferred_relation_fields(section: str) -> tuple[str, ...]:
         "issues": ("feature_ids", "claim_ids", "test_ids", "evidence_ids", "risk_ids"),
         "risks": ("feature_ids", "claim_ids", "test_ids", "evidence_ids", "issue_ids"),
         "boundaries": ("feature_ids", "profile_ids"),
-        "releases": ("claim_ids", "evidence_ids", "boundary_id"),
+        "releases": ("claim_ids", "evidence_ids", "boundary_id", "boundary_ids"),
         "adrs": ("path", "supersedes", "superseded_by"),
         "specs": ("path", "supersedes", "superseded_by"),
     }

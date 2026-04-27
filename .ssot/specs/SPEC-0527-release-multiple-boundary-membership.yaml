@@ -1,0 +1,20 @@
+adr_ids:
+  - "adr:0527"
+body: |-
+  Contract: release entities shall continue to expose `boundary_id` for primary-boundary compatibility and shall expose `boundary_ids` for complete release scope membership in schema `0.3.0` and later. When `boundary_ids` is present and non-empty, release guards, graph exports, release snapshots, publication snapshots, and conformance checks shall use that ordered set. When `boundary_ids` is absent in older registries, consumers shall fall back to `[boundary_id]`. CLI create/update flows shall preserve the primary `boundary_id` as the first member of `boundary_ids`; add/remove boundary operations shall not allow removal of the primary boundary without an explicit release update. The `0.2.0 -> 0.3.0` migration shall seed `boundary_ids` from `boundary_id` and preserve existing extra boundary membership with the primary boundary first.
+decision_date: null
+id: "spc:0527"
+kind: "spec"
+number: 527
+origin: "ssot-core"
+references: []
+schema_version: "0.2.0"
+slug: "release-multiple-boundary-membership"
+spec_kind: "normative"
+status: "draft"
+status_notes: []
+summary: "Contract: release entities shall support plural boundary membership while retaining `boundary_id` compatibility, with migration from schema 0.2.0 to 0.3.0."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Release multiple boundary membership"

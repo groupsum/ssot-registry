@@ -24,7 +24,9 @@ def build_graph_json(registry: dict[str, object]) -> dict[str, object]:
             edges.append({"type": "COMPOSES", "from": profile["id"], "to": nested_profile_id})
 
     for release in registry.get("releases", []):
-        edges.append({"type": "USES_BOUNDARY", "from": release["id"], "to": release["boundary_id"]})
+        boundary_ids = release.get("boundary_ids") or [release["boundary_id"]]
+        for boundary_id in dict.fromkeys(boundary_ids):
+            edges.append({"type": "USES_BOUNDARY", "from": release["id"], "to": boundary_id})
         for claim_id in release.get("claim_ids", []):
             edges.append({"type": "PUBLISHES", "from": release["id"], "to": claim_id})
         for evidence_id in release.get("evidence_ids", []):

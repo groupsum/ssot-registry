@@ -141,6 +141,7 @@ def build_minimal_registry(
             "version": version,
             "status": "draft",
             "boundary_id": "bnd:default",
+            "boundary_ids": ["bnd:default"],
             "claim_ids": [],
             "evidence_ids": [],
         }

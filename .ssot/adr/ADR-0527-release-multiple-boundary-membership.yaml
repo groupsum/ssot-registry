@@ -1,0 +1,17 @@
+body: |-
+  Decision: release records shall support multiple frozen boundaries in one release while retaining `boundary_id` as the primary compatibility field. New release rows may also carry `boundary_ids`, and release certification, promotion, publication, graph export, snapshots, CLI operations, and conformance checks shall evaluate the union of all listed release boundaries. Every listed boundary remains independently governed and must satisfy the frozen-boundary release guard.
+decision_date: null
+id: "adr:0527"
+kind: "adr"
+number: 527
+origin: "ssot-core"
+references: []
+schema_version: "0.2.0"
+slug: "release-multiple-boundary-membership"
+status: "draft"
+status_notes: []
+summary: "Decision: release records shall support multiple frozen boundaries in one release while retaining `boundary_id` as the primary compatibility field."
+superseded_by: []
+supersedes: []
+tags: []
+title: "Releases may aggregate multiple boundaries"

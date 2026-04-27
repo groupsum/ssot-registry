@@ -5,6 +5,14 @@ from ssot_registry.guards.claim_closure import evaluate_claim_guard
 from ssot_registry.model.enums import CLAIM_TIER_RANK
 
 
+def release_boundary_ids(release: dict[str, object]) -> list[str]:
+    boundary_ids = release.get("boundary_ids")
+    if isinstance(boundary_ids, list) and boundary_ids:
+        return list(dict.fromkeys(str(boundary_id) for boundary_id in boundary_ids))
+    boundary_id = release.get("boundary_id")
+    return [str(boundary_id)] if isinstance(boundary_id, str) else []
+
+
 def evaluate_release_certification_guard(
     registry: dict[str, object],
     index: dict[str, dict[str, dict[str, object]]],
@@ -24,9 +32,11 @@ def evaluate_release_certification_guard(
             "evidence": [],
         }
 
-    boundary = index["boundaries"].get(release["boundary_id"])
-    if boundary is None:
-        failures.append(f"Release {release_id} references missing boundary {release['boundary_id']}")
+    boundary_ids = release_boundary_ids(release)
+    boundaries = [index["boundaries"].get(boundary_id) for boundary_id in boundary_ids]
+    missing_boundary_ids = [boundary_id for boundary_id, boundary in zip(boundary_ids, boundaries) if boundary is None]
+    if missing_boundary_ids:
+        failures.extend(f"Release {release_id} references missing boundary {boundary_id}" for boundary_id in missing_boundary_ids)
         return {
             "release_id": release_id,
             "passed": False,
@@ -36,6 +46,7 @@ def evaluate_release_certification_guard(
             "evidence": [],
         }
 
+    resolved_boundaries = [boundary for boundary in boundaries if boundary is not None]
     certification_policy = registry.get("guard_policies", {}).get("certification", {})
     if certification_policy.get("require_release_status_draft_or_candidate", True):
         if release.get("status") not in {"draft", "candidate"}:
@@ -44,10 +55,17 @@ def evaluate_release_certification_guard(
             )
 
     require_frozen_boundary = bool(certification_policy.get("require_frozen_boundary", True))
-    if require_frozen_boundary and not boundary.get("frozen", False):
-        failures.append(f"Boundary {boundary['id']} is not frozen")
+    for boundary in resolved_boundaries:
+        if require_frozen_boundary and not boundary.get("frozen", False):
+            failures.append(f"Boundary {boundary['id']} is not frozen")
 
-    boundary_feature_ids = resolve_boundary_feature_ids(boundary, index)
+    boundary_feature_ids = sorted(
+        {
+            feature_id
+            for boundary in resolved_boundaries
+            for feature_id in resolve_boundary_feature_ids(boundary, index)
+        }
+    )
     if certification_policy.get("require_boundary_features_current_or_explicit", True):
         for feature_id in boundary_feature_ids:
             feature = index["features"].get(feature_id)
@@ -55,11 +73,16 @@ def evaluate_release_certification_guard(
                 continue
             if feature.get("plan", {}).get("horizon") not in {"current", "explicit"}:
                 failures.append(
-                    f"Boundary {boundary['id']} contains feature {feature_id} that is not current or explicit"
+                    f"Release {release_id} contains boundary feature {feature_id} that is not current or explicit"
                 )
 
     release_claims = [index["claims"][claim_id] for claim_id in release.get("claim_ids", []) if claim_id in index["claims"]]
-    boundary_profiles = [index["profiles"][profile_id] for profile_id in boundary.get("profile_ids", []) if profile_id in index["profiles"]]
+    boundary_profiles = [
+        index["profiles"][profile_id]
+        for boundary in resolved_boundaries
+        for profile_id in boundary.get("profile_ids", [])
+        if profile_id in index["profiles"]
+    ]
     from ssot_registry.api.profile_eval import evaluate_profile
 
     profile_reports = [evaluate_profile(profile, index, registry.get("guard_policies", {})) for profile in boundary_profiles]
@@ -138,14 +161,16 @@ def evaluate_release_certification_guard(
         "evidence": evidence_reports,
         "profiles": profile_reports,
         "boundary": {
-            "id": boundary["id"],
-            "profile_ids": boundary.get("profile_ids", []),
+            "id": boundary_ids[0] if boundary_ids else None,
+            "ids": boundary_ids,
+            "profile_ids": sorted({profile_id for boundary in resolved_boundaries for profile_id in boundary.get("profile_ids", [])}),
             "resolved_feature_ids": boundary_feature_ids,
         },
         "summary": {
-            "boundary_id": boundary["id"],
+            "boundary_id": boundary_ids[0] if boundary_ids else None,
+            "boundary_ids": boundary_ids,
             "boundary_feature_count": len(boundary_feature_ids),
-            "boundary_profile_count": len(boundary.get("profile_ids", [])),
+            "boundary_profile_count": len({profile_id for boundary in resolved_boundaries for profile_id in boundary.get("profile_ids", [])}),
             "release_claim_count": len(release_claims),
             "release_evidence_count": len(evidence_reports),
         },

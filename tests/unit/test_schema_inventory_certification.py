@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -20,3 +21,14 @@ class SchemaInventoryCertificationTests(unittest.TestCase):
         self.assertIn("validation.report.schema.json", repo_schemas)
         self.assertIn("certification.report.schema.json", repo_schemas)
         self.assertIn("graph.export.schema.json", repo_schemas)
+
+    def test_release_snapshot_schema_declares_plural_boundary_fields(self) -> None:
+        schema_path = REPO_ROOT / ".ssot" / "schemas" / "release.snapshot.schema.json"
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+
+        self.assertIn("boundaries", schema["required"])
+        self.assertIn("profiles", schema["required"])
+        self.assertIn("profile_evaluations", schema["required"])
+        self.assertEqual(schema["properties"]["release"]["properties"]["boundary_ids"]["type"], "array")
+        self.assertEqual(schema["properties"]["summary"]["properties"]["boundary_ids"]["type"], "array")
+        self.assertEqual(schema["properties"]["summary"]["properties"]["boundary_count"]["type"], "integer")

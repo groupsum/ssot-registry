@@ -47,7 +47,7 @@ LINKABLE_FIELDS = {
     "issues": {"feature_ids", "claim_ids", "test_ids", "evidence_ids", "risk_ids"},
     "risks": {"feature_ids", "claim_ids", "test_ids", "evidence_ids", "issue_ids"},
     "boundaries": {"feature_ids", "profile_ids"},
-    "releases": {"claim_ids", "evidence_ids"},
+    "releases": {"boundary_ids", "claim_ids", "evidence_ids"},
 }
 
 SECTIONS = tuple(SECTION_LABELS)
@@ -366,3 +366,20 @@ def add_release_evidence(path: str | Path, release_id: str, evidence_ids: list[s
 
 def remove_release_evidence(path: str | Path, release_id: str, evidence_ids: list[str]) -> dict[str, Any]:
     return unlink_entities(path, "releases", release_id, {"evidence_ids": evidence_ids})
+
+
+def add_release_boundaries(path: str | Path, release_id: str, boundary_ids: list[str]) -> dict[str, Any]:
+    _registry_path, _repo_root, registry = load_registry(path)
+    release = _entity_row(registry, "releases", release_id)
+    primary_boundary_id = release.get("boundary_id")
+    if isinstance(primary_boundary_id, str):
+        boundary_ids = [primary_boundary_id, *boundary_ids]
+    return link_entities(path, "releases", release_id, {"boundary_ids": boundary_ids})
+
+
+def remove_release_boundaries(path: str | Path, release_id: str, boundary_ids: list[str]) -> dict[str, Any]:
+    _registry_path, _repo_root, registry = load_registry(path)
+    release = _entity_row(registry, "releases", release_id)
+    if release.get("boundary_id") in set(boundary_ids):
+        raise ValueError("Cannot remove the primary boundary_id from release boundary_ids; update the release boundary_id first")
+    return unlink_entities(path, "releases", release_id, {"boundary_ids": boundary_ids})

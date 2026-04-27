@@ -8,5 +8,6 @@ class ReleaseRow(TypedDict, total=False):
     version: str
     status: str
     boundary_id: str
+    boundary_ids: list[str]
     claim_ids: list[str]
     evidence_ids: list[str]

@@ -23,6 +23,16 @@ class CliReleaseSurfaceTests(unittest.TestCase):
             "CLI release boundary",
         )
         self.assertEqual(create_boundary.returncode, 0, create_boundary.stderr)
+        create_extra_boundary = run_cli(
+            "boundary",
+            "create",
+            str(repo),
+            "--id",
+            "bnd:cli.release.extra",
+            "--title",
+            "CLI release extra boundary",
+        )
+        self.assertEqual(create_extra_boundary.returncode, 0, create_extra_boundary.stderr)
 
         create_release = run_cli(
             "release",
@@ -34,12 +44,17 @@ class CliReleaseSurfaceTests(unittest.TestCase):
             "9.9.9",
             "--boundary-id",
             "bnd:cli.release",
+            "--boundary-ids",
+            "bnd:cli.release.extra",
         )
         self.assertEqual(create_release.returncode, 0, create_release.stderr)
 
         get_result = run_cli("release", "get", str(repo), "--id", "rel:9.9.9")
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
-        self.assertEqual(json.loads(get_result.stdout)["version"], "9.9.9")
+        release_payload = json.loads(get_result.stdout)
+        self.assertEqual(release_payload["version"], "9.9.9")
+        self.assertEqual(release_payload["boundary_id"], "bnd:cli.release")
+        self.assertEqual(release_payload["boundary_ids"], ["bnd:cli.release", "bnd:cli.release.extra"])
 
         list_result = run_cli("release", "list", str(repo))
         self.assertEqual(list_result.returncode, 0, list_result.stderr)
@@ -81,6 +96,28 @@ class CliReleaseSurfaceTests(unittest.TestCase):
         )
         self.assertEqual(add_evidence.returncode, 0, add_evidence.stderr)
 
+        add_boundary = run_cli(
+            "release",
+            "add-boundary",
+            str(repo),
+            "--id",
+            "rel:9.9.9",
+            "--boundary-ids",
+            "bnd:2026q2.core",
+        )
+        self.assertEqual(add_boundary.returncode, 0, add_boundary.stderr)
+
+        remove_boundary = run_cli(
+            "release",
+            "remove-boundary",
+            str(repo),
+            "--id",
+            "rel:9.9.9",
+            "--boundary-ids",
+            "bnd:2026q2.core",
+        )
+        self.assertEqual(remove_boundary.returncode, 0, remove_boundary.stderr)
+
         remove_claim = run_cli(
             "release",
             "remove-claim",
@@ -121,6 +158,8 @@ class CliReleaseSurfaceTests(unittest.TestCase):
 
         delete_boundary = run_cli("boundary", "delete", str(repo), "--id", "bnd:cli.release")
         self.assertEqual(delete_boundary.returncode, 0, delete_boundary.stderr)
+        delete_extra_boundary = run_cli("boundary", "delete", str(repo), "--id", "bnd:cli.release.extra")
+        self.assertEqual(delete_extra_boundary.returncode, 0, delete_extra_boundary.stderr)
 
 
 if __name__ == "__main__":

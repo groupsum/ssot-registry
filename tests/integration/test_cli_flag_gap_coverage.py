@@ -18,6 +18,10 @@ class CliFlagGapCoverageTests(unittest.TestCase):
         self.assertIn("--adr-ids", manifest["flags_by_path"]["spec update"])
         self.assertIn("--adr-ids", manifest["flags_by_path"]["spec link"])
         self.assertIn("--adr-ids", manifest["flags_by_path"]["spec unlink"])
+        self.assertIn("--boundary-ids", manifest["flags_by_path"]["release create"])
+        self.assertIn("--boundary-ids", manifest["flags_by_path"]["release update"])
+        self.assertIn("--boundary-ids", manifest["flags_by_path"]["release add-boundary"])
+        self.assertIn("--boundary-ids", manifest["flags_by_path"]["release remove-boundary"])
 
     def test_graph_and_registry_output_flags_write_requested_paths(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")

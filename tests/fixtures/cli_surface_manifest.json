@@ -85,6 +85,11 @@
       "--id",
       "--profile-ids"
     ],
+    "boundary run-tests": [
+      "--dry-run",
+      "--evidence-output",
+      "--id"
+    ],
     "boundary update": [
       "--frozen",
       "--id",
@@ -141,6 +146,23 @@
       "--id",
       "--kind",
       "--title"
+    ],
+    "conformance": [],
+    "conformance discover": [
+      "--profiles"
+    ],
+    "conformance profile": [],
+    "conformance profile list": [],
+    "conformance run": [
+      "--dry-run",
+      "--evidence-output",
+      "--profiles"
+    ],
+    "conformance scaffold": [
+      "--apply",
+      "--include-claims",
+      "--include-evidence",
+      "--profiles"
     ],
     "evidence": [],
     "evidence create": [
@@ -374,6 +396,10 @@
       "--dry-run"
     ],
     "release": [],
+    "release add-boundary": [
+      "--boundary-ids",
+      "--id"
+    ],
     "release add-claim": [
       "--claim-ids",
       "--id"
@@ -388,6 +414,7 @@
     ],
     "release create": [
       "--boundary-id",
+      "--boundary-ids",
       "--claim-ids",
       "--evidence-ids",
       "--id",
@@ -409,6 +436,10 @@
     "release publish": [
       "--release-id"
     ],
+    "release remove-boundary": [
+      "--boundary-ids",
+      "--id"
+    ],
     "release remove-claim": [
       "--claim-ids",
       "--id"
@@ -423,6 +454,7 @@
     ],
     "release update": [
       "--boundary-id",
+      "--boundary-ids",
       "--id",
       "--status",
       "--version"
@@ -518,6 +550,11 @@
       "--start"
     ],
     "spec reserve list": [],
+    "spec run-tests": [
+      "--dry-run",
+      "--evidence-output",
+      "--id"
+    ],
     "spec set-status": [
       "--id",
       "--note",
@@ -547,6 +584,8 @@
     "test create": [
       "--claim-ids",
       "--evidence-ids",
+      "--execution-file",
+      "--execution-json",
       "--feature-ids",
       "--id",
       "--kind",
@@ -569,6 +608,12 @@
     "test list": [
       "--ids"
     ],
+    "test run": [
+      "--dry-run",
+      "--evidence-output",
+      "--id",
+      "--ids"
+    ],
     "test unlink": [
       "--claim-ids",
       "--evidence-ids",
@@ -576,6 +621,8 @@
       "--id"
     ],
     "test update": [
+      "--execution-file",
+      "--execution-json",
       "--id",
       "--kind",
       "--status",
@@ -618,6 +665,7 @@
     "boundary list",
     "boundary remove-feature",
     "boundary remove-profile",
+    "boundary run-tests",
     "boundary update",
     "claim",
     "claim create",
@@ -630,6 +678,12 @@
     "claim set-tier",
     "claim unlink",
     "claim update",
+    "conformance",
+    "conformance discover",
+    "conformance profile",
+    "conformance profile list",
+    "conformance run",
+    "conformance scaffold",
     "evidence",
     "evidence create",
     "evidence delete",
@@ -678,6 +732,7 @@
     "registry export",
     "registry sync-statuses",
     "release",
+    "release add-boundary",
     "release add-claim",
     "release add-evidence",
     "release certify",
@@ -687,6 +742,7 @@
     "release list",
     "release promote",
     "release publish",
+    "release remove-boundary",
     "release remove-claim",
     "release remove-evidence",
     "release revoke",
@@ -711,6 +767,7 @@
     "spec reserve",
     "spec reserve create",
     "spec reserve list",
+    "spec run-tests",
     "spec set-status",
     "spec supersede",
     "spec sync",
@@ -722,6 +779,7 @@
     "test get",
     "test link",
     "test list",
+    "test run",
     "test unlink",
     "test update",
     "upgrade",
@@ -731,6 +789,7 @@
     "adr",
     "boundary",
     "claim",
+    "conformance",
     "evidence",
     "feature",
     "graph",

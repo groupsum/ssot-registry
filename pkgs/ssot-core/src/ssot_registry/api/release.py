@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ssot_registry.guards.certification import evaluate_release_certification_guard
+from ssot_registry.guards.certification import evaluate_release_certification_guard, release_boundary_ids
 from ssot_registry.guards.promotion import evaluate_release_promotion_guard
 from ssot_registry.guards.publication import evaluate_release_publication_guard
 from ssot_registry.model.enums import CLAIM_STATUS_RANK
@@ -25,6 +25,10 @@ def _selected_release_id(registry: dict[str, object], release_id: str | None) ->
 
 def _entity_lookup(registry: dict[str, object], section: str) -> dict[str, dict[str, object]]:
     return {row["id"]: row for row in registry[section]}
+
+
+def _release_boundaries(release: dict[str, object], boundary_lookup: dict[str, dict[str, object]]) -> list[dict[str, object]]:
+    return [boundary_lookup[boundary_id] for boundary_id in release_boundary_ids(release)]
 
 
 def certify_release(path: str | Path, release_id: str | None = None, write_report: bool = False) -> dict[str, object]:
@@ -85,7 +89,7 @@ def promote_release(path: str | Path, release_id: str | None = None) -> dict[str
     boundary_lookup = _entity_lookup(registry, "boundaries")
 
     release = release_lookup[selected_release_id]
-    boundary = boundary_lookup[release["boundary_id"]]
+    boundaries = _release_boundaries(release, boundary_lookup)
     release["status"] = "promoted"
     for claim_id in release.get("claim_ids", []):
         if claim_id in claim_lookup and CLAIM_STATUS_RANK[claim_lookup[claim_id]["status"]] < CLAIM_STATUS_RANK["promoted"]:
@@ -98,9 +102,14 @@ def promote_release(path: str | Path, release_id: str | None = None) -> dict[str
     save_registry(registry_path, registry)
 
     release_claims = [claim_lookup[claim_id] for claim_id in release.get("claim_ids", []) if claim_id in claim_lookup]
-    boundary_feature_ids = resolve_boundary_feature_ids(boundary, index)
+    boundary_feature_ids = sorted({feature_id for boundary in boundaries for feature_id in resolve_boundary_feature_ids(boundary, index)})
     boundary_features = [feature_lookup[feature_id] for feature_id in boundary_feature_ids if feature_id in feature_lookup]
-    boundary_profiles = [index["profiles"][profile_id] for profile_id in boundary.get("profile_ids", []) if profile_id in index["profiles"]]
+    boundary_profiles = [
+        index["profiles"][profile_id]
+        for boundary in boundaries
+        for profile_id in boundary.get("profile_ids", [])
+        if profile_id in index["profiles"]
+    ]
     profile_evaluations = [evaluate_profile(profile, index, registry.get("guard_policies", {})) for profile in boundary_profiles]
     release_test_ids = sorted({test_id for claim in release_claims for test_id in claim.get("test_ids", []) if test_id in test_lookup})
     release_evidence_ids = sorted(
@@ -113,7 +122,7 @@ def promote_release(path: str | Path, release_id: str | None = None) -> dict[str
         repo_root,
         registry_path,
         release,
-        boundary,
+        boundaries,
         boundary_features,
         boundary_profiles,
         profile_evaluations,
@@ -155,7 +164,7 @@ def publish_release(path: str | Path, release_id: str | None = None) -> dict[str
     boundary_lookup = _entity_lookup(registry, "boundaries")
 
     release = release_lookup[selected_release_id]
-    boundary = boundary_lookup[release["boundary_id"]]
+    boundaries = _release_boundaries(release, boundary_lookup)
     release["status"] = "published"
     for claim_id in release.get("claim_ids", []):
         if claim_id in claim_lookup and CLAIM_STATUS_RANK[claim_lookup[claim_id]["status"]] < CLAIM_STATUS_RANK["published"]:
@@ -174,7 +183,7 @@ def publish_release(path: str | Path, release_id: str | None = None) -> dict[str
         repo_root,
         registry_path,
         release,
-        boundary,
+        boundaries,
         claims,
         evidence,
     )

@@ -13,6 +13,8 @@ def test_boundary_release_contract(ssot_registry) -> None:
             assert feature_id in features, (boundary["id"], feature_id)
     for release in ssot_registry["releases"]:
         assert release["boundary_id"] in boundaries, release["id"]
+        for boundary_id in release.get("boundary_ids", [release["boundary_id"]]):
+            assert boundary_id in boundaries, (release["id"], boundary_id)
         for claim_id in release.get("claim_ids", []):
             assert claim_id in claims, (release["id"], claim_id)
         for evidence_id in release.get("evidence_ids", []):

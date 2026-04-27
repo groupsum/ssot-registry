@@ -74,7 +74,7 @@ REQUIRED_ENTITY_FIELDS = {
     "issues": {"id", "title", "status", "severity", "description", "plan", "feature_ids", "claim_ids", "test_ids", "evidence_ids", "risk_ids", "release_blocking"},
     "risks": {"id", "title", "status", "severity", "description", "feature_ids", "claim_ids", "test_ids", "evidence_ids", "issue_ids", "release_blocking"},
     "boundaries": {"id", "title", "status", "frozen", "feature_ids", "profile_ids"},
-    "releases": {"id", "version", "status", "boundary_id", "claim_ids", "evidence_ids"},
+    "releases": {"id", "version", "status", "boundary_id", "boundary_ids", "claim_ids", "evidence_ids"},
 }
 
 REF_FIELD_TARGETS = {
@@ -106,6 +106,7 @@ REF_FIELD_TARGETS = {
     ("boundaries", "feature_ids"): "features",
     ("boundaries", "profile_ids"): "profiles",
     ("releases", "boundary_id"): "boundaries",
+    ("releases", "boundary_ids"): "boundaries",
     ("releases", "claim_ids"): "claims",
     ("releases", "evidence_ids"): "evidence",
 }

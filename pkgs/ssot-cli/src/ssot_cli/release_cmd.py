@@ -4,6 +4,7 @@ import argparse
 
 from ssot_registry.api import (
     add_release_claims,
+    add_release_boundaries,
     add_release_evidence,
     certify_release,
     create_entity,
@@ -13,6 +14,7 @@ from ssot_registry.api import (
     promote_release,
     publish_release,
     remove_release_claims,
+    remove_release_boundaries,
     remove_release_evidence,
     revoke_release,
     update_entity,
@@ -33,7 +35,8 @@ def register_release(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--id", required=True, help="Normalized release id to create.")
     create.add_argument("--version", required=True, help="Semantic or operator-defined version string for the release.")
     create.add_argument("--status", choices=["draft", "candidate", "certified", "promoted", "published", "revoked"], default="draft", help="Current publication stage of the release.")
-    create.add_argument("--boundary-id", required=True, help="Frozen boundary id that defines the release scope.")
+    create.add_argument("--boundary-id", required=True, help="Primary frozen boundary id that defines the release scope.")
+    create.add_argument("--boundary-ids", nargs="*", default=None, help="Additional frozen boundary ids to include in the release scope. The primary --boundary-id is always included.")
     create.add_argument("--claim-ids", nargs="*", default=[], help="Claim ids bundled into the release.")
     create.add_argument("--evidence-ids", nargs="*", default=[], help="Evidence ids bundled into the release.")
     create.set_defaults(func=run_create)
@@ -53,7 +56,8 @@ def register_release(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--id", required=True, help="Release id to update.")
     update.add_argument("--version", default=None, help="Replacement release version string.")
     update.add_argument("--status", choices=["draft", "candidate", "certified", "promoted", "published", "revoked"], default=None, help="Updated publication stage.")
-    update.add_argument("--boundary-id", default=None, help="Replacement boundary id that defines the release scope.")
+    update.add_argument("--boundary-id", default=None, help="Replacement primary boundary id that defines the release scope.")
+    update.add_argument("--boundary-ids", nargs="*", default=None, help="Replacement full boundary-id list for the release scope.")
     update.set_defaults(func=run_update)
 
     delete = release_sub.add_parser("delete", help="Delete a release.", description="Remove a release record from the registry.")
@@ -85,6 +89,18 @@ def register_release(subparsers: argparse._SubParsersAction) -> None:
     remove_evidence.add_argument("--evidence-ids", nargs="+", required=True, help="Evidence ids to remove from the release.")
     remove_evidence.set_defaults(func=run_remove_evidence)
 
+    add_boundary = release_sub.add_parser("add-boundary", help="Attach boundaries to a release.", description="Add one or more boundary ids to the release scope.")
+    add_path_argument(add_boundary)
+    add_boundary.add_argument("--id", required=True, help="Release id that should receive the boundaries.")
+    add_boundary.add_argument("--boundary-ids", nargs="+", required=True, help="Boundary ids to attach to the release.")
+    add_boundary.set_defaults(func=run_add_boundary)
+
+    remove_boundary = release_sub.add_parser("remove-boundary", help="Remove boundaries from a release.", description="Remove one or more boundary ids from the release scope.")
+    add_path_argument(remove_boundary)
+    remove_boundary.add_argument("--id", required=True, help="Release id whose boundaries should be removed.")
+    remove_boundary.add_argument("--boundary-ids", nargs="+", required=True, help="Boundary ids to remove from the release.")
+    remove_boundary.set_defaults(func=run_remove_boundary)
+
     certify = release_sub.add_parser("certify", help="Run release certification.", description="Evaluate release guards and certify the release when all required checks pass.")
     add_path_argument(certify)
     certify.add_argument("--release-id", default=None, help="Release id to certify. Omit to use the active release.")
@@ -109,11 +125,14 @@ def register_release(subparsers: argparse._SubParsersAction) -> None:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    boundary_ids = [args.boundary_id, *(args.boundary_ids or [])]
+    boundary_ids = list(dict.fromkeys(boundary_ids))
     row = {
         "id": args.id,
         "version": args.version,
         "status": args.status,
         "boundary_id": args.boundary_id,
+        "boundary_ids": boundary_ids,
         "claim_ids": args.claim_ids,
         "evidence_ids": args.evidence_ids,
     }
@@ -129,7 +148,19 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
-    changes = compact_dict({"version": args.version, "status": args.status, "boundary_id": args.boundary_id})
+    boundary_ids = args.boundary_ids
+    if boundary_ids is not None:
+        boundary_ids = list(dict.fromkeys(([args.boundary_id] if args.boundary_id else []) + boundary_ids))
+        if not boundary_ids:
+            raise ValueError("At least one boundary id is required when updating boundary membership")
+    elif args.boundary_id is not None:
+        boundary_ids = [args.boundary_id]
+    changes = compact_dict({
+        "version": args.version,
+        "status": args.status,
+        "boundary_id": args.boundary_id or (boundary_ids[0] if boundary_ids else None),
+        "boundary_ids": boundary_ids,
+    })
     if not changes:
         raise ValueError("At least one update field is required")
     return update_entity(args.path, "releases", args.id, changes)
@@ -153,6 +184,14 @@ def run_add_evidence(args: argparse.Namespace) -> dict[str, object]:
 
 def run_remove_evidence(args: argparse.Namespace) -> dict[str, object]:
     return remove_release_evidence(args.path, args.id, args.evidence_ids)
+
+
+def run_add_boundary(args: argparse.Namespace) -> dict[str, object]:
+    return add_release_boundaries(args.path, args.id, args.boundary_ids)
+
+
+def run_remove_boundary(args: argparse.Namespace) -> dict[str, object]:
+    return remove_release_boundaries(args.path, args.id, args.boundary_ids)
 
 
 def run_certify(args: argparse.Namespace) -> dict[str, object]:

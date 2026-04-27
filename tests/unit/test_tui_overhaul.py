@@ -186,7 +186,7 @@ class TuiOverhaulUnitTests(unittest.TestCase):
             temp_dir.cleanup()
 
         self.assertRegex(workspace.registry_version, r"^0\.2\.\d+")
-        self.assertEqual(workspace.registry_schema_version, "0.2.0")
+        self.assertEqual(workspace.registry_schema_version, "0.3.0")
 
 
     def test_bridge_preview_cli_get_for_document_returns_row_only(self) -> None:
