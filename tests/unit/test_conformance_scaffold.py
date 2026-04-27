@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import unittest
+import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -43,6 +44,9 @@ class ConformanceScaffoldTests(unittest.TestCase):
         self.assertIn("clm:conformance.registry-contract.t2", result["created"]["claims"])
         self.assertIn("evd:t2.conformance.registry-contract.pytest", result["created"]["evidence"])
         self.assertIn("tst:pytest.conformance.registry-contract", result["created"]["tests"])
+        registry = json.loads((repo / ".ssot" / "registry.json").read_text(encoding="utf-8"))
+        created_test = next(row for row in registry["tests"] if row["id"] == "tst:pytest.conformance.registry-contract")
+        self.assertEqual(created_test["execution"]["env"], {"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"})
 
         rerun = apply_scaffold(repo, profiles=["registry"], include_claims=True, include_evidence=True)
         self.assertTrue(rerun["passed"], rerun)

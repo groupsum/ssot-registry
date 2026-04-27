@@ -213,6 +213,7 @@ _EVIDENCE_KIND_OVERRIDES = {
 
 def _build_execution_row(test_id: str, path: str, kind: str) -> dict[str, object]:
     packaged_case_root = "pkgs/ssot-conformance/src/ssot_conformance/cases/"
+    env: dict[str, str] = {}
     if path.startswith(packaged_case_root) and path.endswith(".py"):
         module_name = f"ssot_conformance.cases.{Path(path).stem}"
         argv = [
@@ -226,13 +227,14 @@ def _build_execution_row(test_id: str, path: str, kind: str) -> dict[str, object
             "ssot_conformance.plugin",
             "--ssot-repo-root=.",
         ]
+        env["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
     else:
         argv = ["python", "-m", "pytest", path, "-q"]
     return {
         "mode": "command",
         "argv": argv,
         "cwd": ".",
-        "env": {},
+        "env": env,
         "timeout_seconds": 600,
         "success": {"type": "exit_code", "expected": 0},
     }
