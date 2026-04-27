@@ -4,6 +4,8 @@ import json
 import unittest
 from pathlib import Path
 
+from ssot_registry.util.document_io import load_document_yaml
+
 from tests.helpers import run_cli, workspace_tempdir
 
 
@@ -21,8 +23,12 @@ class CliInitTests(unittest.TestCase):
             self.assertTrue(registry["specs"])
             self.assertEqual({"ssot-origin"}, {row["origin"] for row in registry["adrs"]})
             self.assertEqual({"ssot-origin"}, {row["origin"] for row in registry["specs"]})
-            first_adr = repo / registry["adrs"][0]["path"]
-            self.assertTrue(first_adr.read_text(encoding="utf-8").lstrip().startswith("{"))
+            first_adr_row = registry["adrs"][0]
+            first_adr = repo / first_adr_row["path"]
+            first_adr_payload = load_document_yaml(first_adr)
+            self.assertEqual(first_adr.suffix, ".yaml")
+            self.assertEqual(first_adr_payload["id"], first_adr_row["id"])
+            self.assertEqual(first_adr_payload["kind"], "adr")
 
             validate = run_cli("validate", str(repo))
             self.assertEqual(validate.returncode, 0, validate.stderr)
