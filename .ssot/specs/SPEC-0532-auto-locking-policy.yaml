@@ -1,0 +1,40 @@
+schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0532"
+number: 532
+slug: "auto-locking-policy"
+title: "Auto-locking policy"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Define configurable auto-locking after manual locking semantics exist."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  Define configurable auto-locking after manual locking semantics exist.
+  
+  ## Requirements
+  
+  - Auto-locking shall be configuration driven.
+  - Auto-locking shall not be required for basic manual locking support.
+  - The config shall declare whether auto-locking is enabled.
+  - The config shall declare which commands automatically acquire leases.
+  - The config shall declare which paths are auto-locked for registry mutation, generation, sync, docs updates, and projection writes.
+  - `.ssot/registry.json` mutation shall be locked by default through the lightweight lock path unless a stronger lease registry is configured.
+  - Auto-acquired leases shall have default TTL and heartbeat behavior.
+  - Long-running automated operations shall either heartbeat or fail before lease expiry.
+  - Auto-locking shall fail closed on conflicting active leases unless an explicit, audited override policy exists.
+  - Optional SQLite-WAL lease coordination may be configured as the backing mechanism for multi-process lock coordination.
+  
+  ## Out of Scope
+  
+  This SPEC does not define feature or boundary implementation-space locking. Auto-locking for those higher-level spaces depends on a later mapping contract.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0530"
+  - "adr:0531"

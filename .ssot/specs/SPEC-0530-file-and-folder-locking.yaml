@@ -1,0 +1,38 @@
+schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0530"
+number: 530
+slug: "file-and-folder-locking"
+title: "File and folder locking"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Define the initial file-level and folder-level locking contract."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  Define the initial file-level and folder-level locking contract.
+  
+  ## Requirements
+  
+  - ssot-registry shall support lock leases for files and folders.
+  - Only one process may work within a locked file or folder at a time.
+  - Path overlap checks shall deny a child lease when a parent folder is leased.
+  - Path overlap checks shall deny a parent folder lease when any child path is leased.
+  - Lock ownership shall be represented by a peer or process identity.
+  - Leases shall include acquisition time, expiry, owner identity, path set, and reason where available.
+  - Commands that mutate `.ssot/registry.json` shall lock that file by default.
+  - A lightweight lock path shall support default `.ssot/registry.json` locking even when the SQLite-WAL lease registry is not configured.
+  - Manual acquire, release, heartbeat, inspect, and expire behavior shall be exposed through CLI surfaces when implemented.
+  
+  ## Out of Scope
+  
+  This SPEC does not require feature or boundary implementation-space mapping. That mapping may be layered over file and folder locks later.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0530"

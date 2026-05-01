@@ -1,0 +1,29 @@
+schema_version: "0.3.0"
+kind: "adr"
+id: "adr:0531"
+number: 531
+slug: "optional-sqlite-wal-lease-coordination"
+title: "Optional SQLite-WAL lease coordination"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "A lightweight registry-file lock is enough for default `.ssot/registry.json` protection, but coordinated multi-process work benefits from a durable lease registry with ordered events, TTL expiry, and concurrent readers."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Context
+  
+  A lightweight registry-file lock is enough for default `.ssot/registry.json` protection, but coordinated multi-process work benefits from a durable lease registry with ordered events, TTL expiry, and concurrent readers.
+  
+  ## Decision
+  
+  ssot-registry shall support optional lock coordination through a SQLite lease registry using WAL mode. The lease registry is the schema: an active `leases` table and append-only `events` table. SQLite WAL is the storage and concurrency mechanism that allows many readers while lease mutations serialize through one writer.
+  
+  Lease acquisition, release, heartbeat, expiry, and change notification shall run in `BEGIN IMMEDIATE` transactions so conflict checks, state updates, and event appends commit atomically. When enabled, the registry path shall create and use the SQLite main database, `-wal`, and `-shm` files.
+  
+  ## Consequences
+  
+  Coordinated peers can poll the event stream and recover from missed events without a separate coordinator. The SQLite-WAL lease registry remains optional configuration; repositories that only need default registry-file protection can use the lightweight lock path.

@@ -1,0 +1,37 @@
+schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0531"
+number: 531
+slug: "lease-event-stream"
+title: "Lease event stream"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Define the lease event stream used by coordinated locking."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  Define the lease event stream used by coordinated locking.
+  
+  ## Requirements
+  
+  - Coordinated locking shall maintain an append-only event stream.
+  - Events shall include lease acquired, lease heartbeat, lease released, lease expired, and change notification events.
+  - Peers shall be able to poll events by monotonically increasing event id.
+  - Peers shall be able to resume after downtime by reading events after their last seen event id.
+  - Peer in-memory lease caches are advisory only.
+  - The authoritative current lease set shall be the lease store, and the authoritative history shall be the event stream.
+  - Change notification events shall be tied to lease ownership when a lease id is provided.
+  - Event writes that accompany lease state changes shall commit atomically with the lease mutation.
+  
+  ## Out of Scope
+  
+  This SPEC does not require a push coordinator. Durable polling is sufficient for the initial design.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0531"

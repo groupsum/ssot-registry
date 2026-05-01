@@ -1,0 +1,36 @@
+schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0529"
+number: 529
+slug: "automation-sync-and-generation"
+title: "Automation sync and generation"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Define configurable automation for sync and generation behavior."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  Define configurable automation for sync and generation behavior.
+  
+  ## Requirements
+  
+  - The config shall declare which SSOT artifacts are generated.
+  - Generation targets shall include ADRs, SPECs, features, claims, tests, evidence, profiles, boundaries, releases, risks, issues, docs, reports, graphs, and registry projections where supported.
+  - The config shall declare whether generation is manual-only or may run automatically after registry changes.
+  - The config shall declare whether upstream package, docs, and template sync are manual-only or automatic.
+  - The config shall declare default generated formats, including YAML, JSON, TOML, and Markdown.
+  - The config may support global output format policy and later per-entity or per-artifact overrides.
+  - Automation that mutates canonical SSOT state shall be auditable and fail closed on validation errors.
+  
+  ## Out of Scope
+  
+  This SPEC does not define lock acquisition or event stream persistence, except that automation commands may later participate in locking and auto-locking policies.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0529"

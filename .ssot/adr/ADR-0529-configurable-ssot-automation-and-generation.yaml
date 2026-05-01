@@ -1,0 +1,29 @@
+schema_version: "0.3.0"
+kind: "adr"
+id: "adr:0529"
+number: 529
+slug: "configurable-ssot-automation-and-generation"
+title: "Configurable SSOT automation and generation"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "SSOT repositories need configurable automation for generated ADRs, SPECs, features, claims, tests, evidence, docs, reports, graphs, and projections. Operators also need control over whether generation and sync run automatically after registry changes or only when requested."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Context
+  
+  SSOT repositories need configurable automation for generated ADRs, SPECs, features, claims, tests, evidence, docs, reports, graphs, and projections. Operators also need control over whether generation and sync run automatically after registry changes or only when requested.
+  
+  ## Decision
+  
+  ssot-registry shall define configuration-driven automation policies. The config shall describe which artifacts are generated, when generation runs, when upstream package/docs/template sync runs, and which output formats are preferred. Supported generated formats shall include YAML, JSON, TOML, and Markdown, with global defaults and later per-entity or per-artifact overrides.
+  
+  Automation must remain auditable and fail-closed where it can mutate canonical SSOT state. Automatic generation after registry changes is configurable behavior, not an unconditional default.
+  
+  ## Consequences
+  
+  Repositories can adopt automation incrementally. Manual-only workflows remain possible, while teams that want generated artifacts and sync to run after registry mutation can enable that policy explicitly.

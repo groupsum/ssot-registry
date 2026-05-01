@@ -1,0 +1,37 @@
+schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0528"
+number: 528
+slug: "toml-configuration-contract"
+title: "TOML configuration contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Define the repo-local TOML configuration contract for ssot-registry."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  Define the repo-local TOML configuration contract for ssot-registry.
+  
+  ## Requirements
+  
+  - The CLI shall support a repo-local TOML configuration file for SSOT policy.
+  - Init and repo sync/adoption flows shall ensure the config file exists.
+  - When the config file is absent, the CLI shall generate a default template.
+  - Non-interactive execution shall use declared defaults without prompting.
+  - Interactive execution shall require an explicit flag and may ask questions before writing the config.
+  - Config creation shall be idempotent and shall not overwrite an existing file unless explicitly requested.
+  - The config file shall be validated before any command relies on it.
+  - The config file shall remain policy, while `.ssot/registry.json` remains canonical registry truth.
+  
+  ## Out of Scope
+  
+  This SPEC does not define automation execution, lock implementation, event streaming, or auto-locking behavior beyond naming their configuration sections.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0528"

@@ -1,0 +1,29 @@
+schema_version: "0.3.0"
+kind: "adr"
+id: "adr:0530"
+number: 530
+slug: "file-and-folder-lock-leases"
+title: "File and folder lock leases"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Multiple local or agentic processes may attempt to mutate `.ssot/registry.json`, generated projections, docs, or implementation files at the same time. The initial locking model must protect files and folders before higher-level feature or boundary implementation-space mapping exists."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Context
+  
+  Multiple local or agentic processes may attempt to mutate `.ssot/registry.json`, generated projections, docs, or implementation files at the same time. The initial locking model must protect files and folders before higher-level feature or boundary implementation-space mapping exists.
+  
+  ## Decision
+  
+  ssot-registry shall support file-level and folder-level lock leases. Only one process may work within a locked file or folder at a time. Path-overlap rules shall deny a child lock when a parent folder is leased and deny a parent folder lock when any child path is leased.
+  
+  Locking `.ssot/registry.json` is default behavior. A lightweight locking mechanism shall support this default even when the optional SQLite-WAL lease registry is not configured. Lease metadata shall include ownership, reason where available, acquisition time, expiry, and enough identity to release or reject conflicting work.
+  
+  ## Consequences
+  
+  The default safety model protects the canonical registry without requiring a database-backed coordinator. The same file/folder lease semantics can later become the substrate for feature and boundary implementation-space locks.

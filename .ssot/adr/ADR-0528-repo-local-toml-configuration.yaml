@@ -1,0 +1,29 @@
+schema_version: "0.3.0"
+kind: "adr"
+id: "adr:0528"
+number: 528
+slug: "repo-local-toml-configuration"
+title: "Repo-local TOML configuration"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Operators need repo-local policy for SSOT initialization, sync, generation, locking, and default output formats. These defaults must be visible, versionable, and editable without changing CLI code or relying on hidden global state."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Context
+  
+  Operators need repo-local policy for SSOT initialization, sync, generation, locking, and default output formats. These defaults must be visible, versionable, and editable without changing CLI code or relying on hidden global state.
+  
+  ## Decision
+  
+  ssot-registry shall support a repo-local TOML configuration file. Repository init and repo sync/adoption flows shall ensure that the config file exists. When the file is absent, the CLI shall generate a default template. Non-interactive execution shall use declared defaults, while an explicit interactive flag may ask operators questions and write the selected policy.
+  
+  The config file is a policy surface, not the canonical registry. It shall be validated before use and created idempotently without overwriting an existing config unless the operator explicitly requests replacement.
+  
+  ## Consequences
+  
+  Repositories gain durable, reviewable defaults for SSOT behavior. CLI commands can share one configuration source while keeping `.ssot/registry.json` as canonical registry truth.
