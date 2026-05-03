@@ -8,7 +8,7 @@ status: "draft"
 origin: "ssot-core"
 decision_date: null
 tags: []
-summary: "SSOT repositories need configurable automation for generated ADRs, SPECs, features, claims, tests, evidence, docs, reports, graphs, and projections. Operators also need control over whether generation and sync run automatically after registry changes or only when requested."
+summary: "Operators need two different execution modes for SSOT secondary actions such as validation, documentation sync, projections, screenshots, reports, and related generation flows."
 supersedes: []
 superseded_by: []
 status_notes: []
@@ -16,14 +16,28 @@ references: []
 body: |-
   ## Context
   
-  SSOT repositories need configurable automation for generated ADRs, SPECs, features, claims, tests, evidence, docs, reports, graphs, and projections. Operators also need control over whether generation and sync run automatically after registry changes or only when requested.
+  Operators need two different execution modes for SSOT secondary actions such as validation, documentation sync, projections, screenshots, reports, and related generation flows.
+  
+  First, operators need explicit commands they can invoke directly.
+  Second, repositories may want some of those actions to occur automatically at defined trigger points such as after init, after document mutation, or after feature/test/claim/evidence changes.
+  
+  These are related but not identical surfaces. Explicit commands are operator-driven. Automatic behavior is policy-driven.
   
   ## Decision
   
-  ssot-registry shall define configuration-driven automation policies. The config shall describe which artifacts are generated, when generation runs, when upstream package/docs/template sync runs, and which output formats are preferred. Supported generated formats shall include YAML, JSON, TOML, and Markdown, with global defaults and later per-entity or per-artifact overrides.
+  `ssot-registry` shall treat explicit command execution and config-driven automatic execution as separate but related surfaces.
   
-  Automation must remain auditable and fail-closed where it can mutate canonical SSOT state. Automatic generation after registry changes is configurable behavior, not an unconditional default.
+  The system shall support:
+  - explicit command surfaces for validation, sync, and generation workflows
+  - config-driven trigger policies that cause those commands to run automatically at defined points
+  - per-family and per-format selectors where supported
+  - auditable outputs for automation that mutates derived artifacts
+  - fail-closed behavior when automatic execution encounters invalid config or validation failures
+  
+  Automatic execution is configurable behavior, not a mandatory default. Repositories may choose manual-only operation, mixed operation, or automatic operation for supported actions.
+  
+  Automatic execution shall be policy-controlled through repo-local config, while explicit invocation shall remain available regardless of config defaults unless explicitly prohibited by future policy.
   
   ## Consequences
   
-  Repositories can adopt automation incrementally. Manual-only workflows remain possible, while teams that want generated artifacts and sync to run after registry mutation can enable that policy explicitly.
+  SSOT workflows become more ergonomic without collapsing operator control into hidden behavior. Teams can adopt automation incrementally. Command capability remains independently testable, and automation policy becomes explicit rather than implicit.

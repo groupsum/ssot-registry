@@ -8,7 +8,7 @@ status: "draft"
 origin: "ssot-core"
 decision_date: null
 tags: []
-summary: "Multiple local or agentic processes may attempt to mutate `.ssot/registry.json`, generated projections, docs, or implementation files at the same time. The initial locking model must protect files and folders before higher-level feature or boundary implementation-space mapping exists."
+summary: "Multiple local processes, tools, or agents may attempt to mutate `.ssot/registry.json`, document trees, generated outputs, reports, graphs, or future implementation-space files at the same time."
 supersedes: []
 superseded_by: []
 status_notes: []
@@ -16,14 +16,24 @@ references: []
 body: |-
   ## Context
   
-  Multiple local or agentic processes may attempt to mutate `.ssot/registry.json`, generated projections, docs, or implementation files at the same time. The initial locking model must protect files and folders before higher-level feature or boundary implementation-space mapping exists.
+  Multiple local processes, tools, or agents may attempt to mutate `.ssot/registry.json`, document trees, generated outputs, reports, graphs, or future implementation-space files at the same time.
+  
+  Registry mutation safety cannot depend on all callers behaving perfectly. A default coordination model is needed before broader collaborative or implementation-space mapping is introduced.
   
   ## Decision
   
-  ssot-registry shall support file-level and folder-level lock leases. Only one process may work within a locked file or folder at a time. Path-overlap rules shall deny a child lock when a parent folder is leased and deny a parent folder lock when any child path is leased.
+  `ssot-registry` shall support lease-based locking for files and folders.
   
-  Locking `.ssot/registry.json` is default behavior. A lightweight locking mechanism shall support this default even when the optional SQLite-WAL lease registry is not configured. Lease metadata shall include ownership, reason where available, acquisition time, expiry, and enough identity to release or reject conflicting work.
+  The lease model shall:
+  - support file-level and folder-level leases
+  - deny overlapping parent/child leases that would create ambiguous ownership
+  - protect `.ssot/registry.json` by default during registry mutation flows
+  - record lease identity sufficient for conflict detection, release, rejection, expiry, and diagnostics
+  - support expiry-based recovery from abandoned leases
+  - provide extension points for quarantined paths or folders
+  
+  A lightweight default lock path shall exist even when no optional database-backed coordinator is configured.
   
   ## Consequences
   
-  The default safety model protects the canonical registry without requiring a database-backed coordinator. The same file/folder lease semantics can later become the substrate for feature and boundary implementation-space locks.
+  The repository gets a default mutation safety model that works in the common case without requiring external infrastructure. The same semantics can later support broader workspace coordination, quarantine handling, and implementation-space ownership.

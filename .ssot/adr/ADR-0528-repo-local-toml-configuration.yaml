@@ -8,7 +8,7 @@ status: "draft"
 origin: "ssot-core"
 decision_date: null
 tags: []
-summary: "Operators need repo-local policy for SSOT initialization, sync, generation, locking, and default output formats. These defaults must be visible, versionable, and editable without changing CLI code or relying on hidden global state."
+summary: "SSOT repositories need durable local policy for command defaults, automation triggers, output preferences, sync behavior, and optional coordination settings. Those defaults must be visible in the repository, versionable in source control, and editable without patching CLI code or relying on hidden global state."
 supersedes: []
 superseded_by: []
 status_notes: []
@@ -16,14 +16,29 @@ references: []
 body: |-
   ## Context
   
-  Operators need repo-local policy for SSOT initialization, sync, generation, locking, and default output formats. These defaults must be visible, versionable, and editable without changing CLI code or relying on hidden global state.
+  SSOT repositories need durable local policy for command defaults, automation triggers, output preferences, sync behavior, and optional coordination settings. Those defaults must be visible in the repository, versionable in source control, and editable without patching CLI code or relying on hidden global state.
+  
+  `.ssot/registry.json` is canonical registry truth. It must not become an overloaded store for operator policy. Policy and truth must remain separate so registry semantics stay stable and automation settings stay explicit.
   
   ## Decision
   
-  ssot-registry shall support a repo-local TOML configuration file. Repository init and repo sync/adoption flows shall ensure that the config file exists. When the file is absent, the CLI shall generate a default template. Non-interactive execution shall use declared defaults, while an explicit interactive flag may ask operators questions and write the selected policy.
+  `ssot-registry` shall support one repo-local TOML configuration file as the authoritative policy surface for repository-local SSOT behavior.
   
-  The config file is a policy surface, not the canonical registry. It shall be validated before use and created idempotently without overwriting an existing config unless the operator explicitly requests replacement.
+  The config file:
+  - shall be non-canonical policy, not canonical SSOT truth
+  - shall be created idempotently by init and config bootstrap flows
+  - shall be validated before any command relies on it
+  - shall support explicit command defaults, automation defaults, output defaults, and optional coordination settings
+  - shall not overwrite an existing file unless the operator explicitly requests replacement
+  
+  Precedence shall be:
+  1. explicit CLI inputs
+  2. command-scoped config values
+  3. global config values
+  4. built-in defaults
+  
+  Non-interactive commands shall use resolved effective config without prompting. Interactive config authoring shall require an explicit operator action.
   
   ## Consequences
   
-  Repositories gain durable, reviewable defaults for SSOT behavior. CLI commands can share one configuration source while keeping `.ssot/registry.json` as canonical registry truth.
+  Repositories gain a durable, reviewable policy surface for SSOT behavior. CLI commands can share one configuration source while `.ssot/registry.json` remains the canonical registry. Validation and automation decisions become inspectable and testable.

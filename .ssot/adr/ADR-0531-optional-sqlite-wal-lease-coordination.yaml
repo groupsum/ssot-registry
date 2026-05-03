@@ -8,7 +8,7 @@ status: "draft"
 origin: "ssot-core"
 decision_date: null
 tags: []
-summary: "A lightweight registry-file lock is enough for default `.ssot/registry.json` protection, but coordinated multi-process work benefits from a durable lease registry with ordered events, TTL expiry, and concurrent readers."
+summary: "Lightweight file/folder leasing is sufficient for default local protection, but more advanced workflows benefit from durable coordination: lease heartbeats, TTL expiry, recovery after missed events, concurrent readers, and append-only audit/event history."
 supersedes: []
 superseded_by: []
 status_notes: []
@@ -16,14 +16,23 @@ references: []
 body: |-
   ## Context
   
-  A lightweight registry-file lock is enough for default `.ssot/registry.json` protection, but coordinated multi-process work benefits from a durable lease registry with ordered events, TTL expiry, and concurrent readers.
+  Lightweight file/folder leasing is sufficient for default local protection, but more advanced workflows benefit from durable coordination: lease heartbeats, TTL expiry, recovery after missed events, concurrent readers, and append-only audit/event history.
+  
+  A repository-local mechanism is preferred over introducing a separate coordination service.
   
   ## Decision
   
-  ssot-registry shall support optional lock coordination through a SQLite lease registry using WAL mode. The lease registry is the schema: an active `leases` table and append-only `events` table. SQLite WAL is the storage and concurrency mechanism that allows many readers while lease mutations serialize through one writer.
+  `ssot-registry` shall support optional lease coordination through a SQLite registry running in WAL mode.
   
-  Lease acquisition, release, heartbeat, expiry, and change notification shall run in `BEGIN IMMEDIATE` transactions so conflict checks, state updates, and event appends commit atomically. When enabled, the registry path shall create and use the SQLite main database, `-wal`, and `-shm` files.
+  When enabled, the SQLite coordinator shall:
+  - store active lease state and append-only lease events
+  - support acquisition, renewal, release, expiry, and conflict checks
+  - serialize lease mutation through transactions while permitting many readers
+  - provide enough event ordering for peers to detect missed updates and recover state
+  - remain optional, with fallback to the lightweight default lock path when not configured
+  
+  SQLite-WAL coordination is a coordination substrate, not the default requirement for all repositories.
   
   ## Consequences
   
-  Coordinated peers can poll the event stream and recover from missed events without a separate coordinator. The SQLite-WAL lease registry remains optional configuration; repositories that only need default registry-file protection can use the lightweight lock path.
+  Repositories that need stronger local coordination can opt into a durable evented lease model without depending on a remote coordinator. Simpler repositories can remain on the lightweight path.
