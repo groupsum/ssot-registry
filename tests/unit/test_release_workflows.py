@@ -32,7 +32,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("pkgs/ssot-registry", workflow)
         self.assertNotIn("run: uv build\n", workflow)
 
-    def test_release_workflow_targets_package_publish_wrappers(self) -> None:
+    def test_release_workflow_builds_once_and_publishes_layers(self) -> None:
         workflow = _read(".github/workflows/release.yml")
         self.assertIn("release_train", workflow)
         self.assertIn("- all", workflow)
@@ -42,14 +42,22 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("- ssot-core", workflow)
         self.assertIn("- ssot-conformance", workflow)
         self.assertIn("- ssot-registry", workflow)
-        self.assertIn("publish-ssot-contracts.yml", workflow)
-        self.assertIn("publish-ssot-views.yml", workflow)
-        self.assertIn("publish-ssot-codegen.yml", workflow)
-        self.assertIn("publish-ssot-core.yml", workflow)
-        self.assertIn("publish-ssot-conformance.yml", workflow)
-        self.assertIn("publish-ssot-registry.yml", workflow)
-        self.assertIn("publish-ssot-cli.yml", workflow)
-        self.assertIn("publish-ssot-tui.yml", workflow)
+        self.assertIn("publish_layer_1", workflow)
+        self.assertIn("build-distributions:", workflow)
+        self.assertIn("release-distributions", workflow)
+        self.assertIn("publish-layer-1:", workflow)
+        self.assertIn("publish-layer-3:", workflow)
+        self.assertIn("publish-layer-5:", workflow)
+        self.assertIn("./.github/workflows/_publish-built-package.yml", workflow)
+        self.assertNotIn("./.github/workflows/publish-ssot-contracts.yml", workflow)
+        self.assertNotIn("./.github/workflows/publish-ssot-registry.yml", workflow)
+
+    def test_ci_runs_shared_suite_once_per_python_version(self) -> None:
+        workflow = _read(".github/workflows/ci.yml")
+        self.assertIn("shared-tests:", workflow)
+        self.assertEqual(workflow.count("python -m unittest discover -s tests -v"), 1)
+        self.assertIn("release-build-smoke:", workflow)
+        self.assertIn("uv build --project pkgs/ssot-contracts", workflow)
 
     def test_ci_workflow_covers_each_package_across_supported_python_versions(self) -> None:
         workflow = _read(".github/workflows/ci.yml")
@@ -85,11 +93,19 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("tag_name: ${{ steps.release_meta.outputs.tag }}", workflow)
         self.assertIn("name: ${{ steps.release_meta.outputs.tag }}", workflow)
 
+    def test_built_package_publish_workflow_consumes_release_artifacts(self) -> None:
+        workflow = _read(".github/workflows/_publish-built-package.yml")
+        self.assertIn("actions/download-artifact@v6", workflow)
+        self.assertIn("release-distributions", workflow)
+        self.assertIn("gh release create", workflow)
+        self.assertIn("uv publish release-dist/$PACKAGE_NAME/*.whl release-dist/$PACKAGE_NAME/*.tar.gz", workflow)
+
     def test_prepare_release_uses_package_aware_bump_script(self) -> None:
         workflow = _read(".github/workflows/prepare-release.yml")
         self.assertIn("- all", workflow)
         self.assertIn("- ssot-conformance", workflow)
         self.assertIn("scripts/bump_release_train.py", workflow)
+        self.assertNotIn("scripts/release_metadata.py validate-train", workflow)
         self.assertNotIn("python scripts/bump_pyproject_version.py --bump \"$BUMP_TYPE\" pyproject.toml", workflow)
 
     def test_sync_packaged_docs_uses_contract_package_templates(self) -> None:

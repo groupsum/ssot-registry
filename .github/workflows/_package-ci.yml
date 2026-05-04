@@ -54,7 +54,3 @@ jobs:
 
       - name: Run tests
         run: uv run --python ${{ inputs.python_version }} --package ${{ inputs.package_name }} --no-sync ${{ inputs.test_command }}
-
-      - name: Build package
-        if: ${{ inputs.python_version == '3.12' }}
-        run: uv build --project ${{ inputs.project_path }} --out-dir ${{ inputs.project_path }}/dist

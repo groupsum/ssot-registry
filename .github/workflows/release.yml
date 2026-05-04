@@ -79,6 +79,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       targets: ${{ steps.targets.outputs.targets }}
+      publish_layer_1: ${{ steps.targets.outputs.publish_layer_1 }}
+      publish_layer_2: ${{ steps.targets.outputs.publish_layer_2 }}
+      publish_layer_3: ${{ steps.targets.outputs.publish_layer_3 }}
+      publish_layer_4: ${{ steps.targets.outputs.publish_layer_4 }}
+      publish_layer_5: ${{ steps.targets.outputs.publish_layer_5 }}
+      publish_layer_6: ${{ steps.targets.outputs.publish_layer_6 }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -101,128 +107,261 @@ jobs:
           import os
           import subprocess
 
-          result = subprocess.run(
-              [
-                  "python",
-                  "scripts/release_metadata.py",
-                  "targets",
-                  "--train",
-                  os.environ["RELEASE_TRAIN"],
-                  "--packages",
-                  os.environ["SELECTED_PACKAGES"],
-              ],
-              check=True,
-              text=True,
-              capture_output=True,
+          metadata = json.loads(
+              subprocess.run(
+                  ["python", "scripts/release_metadata.py", "show"],
+                  check=True,
+                  text=True,
+                  capture_output=True,
+              ).stdout
           )
-          targets = set(json.loads(result.stdout))
-          payload = {
-              "ssot_contracts": "ssot-contracts" in targets,
-              "ssot_views": "ssot-views" in targets,
-              "ssot_codegen": "ssot-codegen" in targets,
-              "ssot_core": "ssot-core" in targets,
-              "ssot_conformance": "ssot-conformance" in targets,
-              "ssot_registry": "ssot-registry" in targets,
-              "ssot_cli": "ssot-cli" in targets,
-              "ssot_tui": "ssot-tui" in targets,
-          }
+          targets = json.loads(
+              subprocess.run(
+                  [
+                      "python",
+                      "scripts/release_metadata.py",
+                      "targets",
+                      "--train",
+                      os.environ["RELEASE_TRAIN"],
+                      "--packages",
+                      os.environ["SELECTED_PACKAGES"],
+                  ],
+                  check=True,
+                  text=True,
+                  capture_output=True,
+              ).stdout
+          )
+          package_meta = metadata["packages"]
+          layers = [
+              ("publish_layer_1", ["ssot-contracts"]),
+              ("publish_layer_2", ["ssot-views"]),
+              ("publish_layer_3", ["ssot-codegen", "ssot-core"]),
+              ("publish_layer_4", ["ssot-conformance"]),
+              ("publish_layer_5", ["ssot-cli", "ssot-tui"]),
+              ("publish_layer_6", ["ssot-registry"]),
+          ]
+
+          target_set = set(targets)
+
+          def package_payload(package_name):
+              info = package_meta[package_name]
+              return {
+                  "name": package_name,
+                  "project_path": info["project_path"],
+                  "pypi_url": info["pypi_url"],
+                  "tag": info["tag"],
+                  "version": info["version"],
+              }
+
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
-              handle.write(f"targets={json.dumps(payload)}\n")
+              handle.write(f"targets={json.dumps(targets, separators=(',', ':'))}\n")
+              for output_name, package_names in layers:
+                  layer_targets = [
+                      package_payload(package_name)
+                      for package_name in package_names
+                      if package_name in target_set
+                  ]
+                  handle.write(
+                      f"{output_name}={json.dumps(layer_targets, separators=(',', ':'))}\n"
+                  )
           PY
         env:
           RELEASE_TRAIN: ${{ inputs.release_train }}
           SELECTED_PACKAGES: ${{ inputs.selected_packages }}
 
-  publish-ssot-contracts:
-    name: Publish ssot-contracts
+  build-distributions:
+    name: Build selected distributions once
+    runs-on: ubuntu-latest
     needs: validate
-    if: ${{ fromJSON(needs.validate.outputs.targets).ssot_contracts }}
-    uses: ./.github/workflows/publish-ssot-contracts.yml
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref_name }}
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install Python 3.12
+        run: uv python install 3.12
+
+      - name: Build selected packages
+        env:
+          RELEASE_TARGETS: ${{ needs.validate.outputs.targets }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import shutil
+          import subprocess
+          from pathlib import Path
+
+          targets = json.loads(os.environ["RELEASE_TARGETS"])
+          metadata = json.loads(
+              subprocess.run(
+                  ["python", "scripts/release_metadata.py", "show"],
+                  check=True,
+                  text=True,
+                  capture_output=True,
+              ).stdout
+          )
+
+          dist_root = Path("release-dist")
+          if dist_root.exists():
+              shutil.rmtree(dist_root)
+          dist_root.mkdir()
+
+          for package_name in targets:
+              package = metadata["packages"][package_name]
+              package_dist = dist_root / package_name
+              package_dist.mkdir(parents=True, exist_ok=True)
+              subprocess.run(
+                  [
+                      "uv",
+                      "build",
+                      "--project",
+                      package["project_path"],
+                      "--out-dir",
+                      str(package_dist),
+                  ],
+                  check=True,
+              )
+
+              checksum_lines = []
+              for path in sorted(package_dist.iterdir()):
+                  if path.is_file() and path.name != "SHA256SUMS":
+                      digest = hashlib.sha256(path.read_bytes()).hexdigest()
+                      checksum_lines.append(f"{digest}  {path.name}")
+              (package_dist / "SHA256SUMS").write_text(
+                  "\n".join(checksum_lines) + "\n",
+                  encoding="utf-8",
+              )
+          PY
+
+      - name: Upload release distributions
+        uses: actions/upload-artifact@v6
+        with:
+          name: release-distributions
+          path: release-dist/**
+          if-no-files-found: error
+
+  publish-layer-1:
+    name: Publish dependency layer 1
+    needs: [validate, build-distributions]
+    if: ${{ needs.validate.outputs.publish_layer_1 != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.validate.outputs.publish_layer_1) }}
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ${{ matrix.package.name }}
+      package_tag: ${{ matrix.package.tag }}
+      package_version: ${{ matrix.package.version }}
+      pypi_project_url: ${{ matrix.package.pypi_url }}
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
       create_github_release: ${{ inputs.create_github_release }}
     secrets: inherit
 
-  publish-ssot-views:
-    name: Publish ssot-views
-    needs: [validate, publish-ssot-contracts]
-    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_views && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-contracts.result) }}
-    uses: ./.github/workflows/publish-ssot-views.yml
+  publish-layer-2:
+    name: Publish dependency layer 2
+    needs: [validate, build-distributions, publish-layer-1]
+    if: ${{ always() && needs.validate.outputs.publish_layer_2 != '[]' && needs.build-distributions.result == 'success' && contains(fromJSON('["success","skipped"]'), needs.publish-layer-1.result) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.validate.outputs.publish_layer_2) }}
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ${{ matrix.package.name }}
+      package_tag: ${{ matrix.package.tag }}
+      package_version: ${{ matrix.package.version }}
+      pypi_project_url: ${{ matrix.package.pypi_url }}
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
       create_github_release: ${{ inputs.create_github_release }}
     secrets: inherit
 
-  publish-ssot-codegen:
-    name: Publish ssot-codegen
-    needs: [validate, publish-ssot-views]
-    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_codegen && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-views.result) }}
-    uses: ./.github/workflows/publish-ssot-codegen.yml
+  publish-layer-3:
+    name: Publish dependency layer 3
+    needs: [validate, build-distributions, publish-layer-2]
+    if: ${{ always() && needs.validate.outputs.publish_layer_3 != '[]' && needs.build-distributions.result == 'success' && contains(fromJSON('["success","skipped"]'), needs.publish-layer-2.result) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.validate.outputs.publish_layer_3) }}
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ${{ matrix.package.name }}
+      package_tag: ${{ matrix.package.tag }}
+      package_version: ${{ matrix.package.version }}
+      pypi_project_url: ${{ matrix.package.pypi_url }}
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
       create_github_release: ${{ inputs.create_github_release }}
     secrets: inherit
 
-  publish-ssot-core:
-    name: Publish ssot-core
-    needs: [validate, publish-ssot-codegen]
-    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_core && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-codegen.result) }}
-    uses: ./.github/workflows/publish-ssot-core.yml
+  publish-layer-4:
+    name: Publish dependency layer 4
+    needs: [validate, build-distributions, publish-layer-3]
+    if: ${{ always() && needs.validate.outputs.publish_layer_4 != '[]' && needs.build-distributions.result == 'success' && contains(fromJSON('["success","skipped"]'), needs.publish-layer-3.result) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.validate.outputs.publish_layer_4) }}
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ${{ matrix.package.name }}
+      package_tag: ${{ matrix.package.tag }}
+      package_version: ${{ matrix.package.version }}
+      pypi_project_url: ${{ matrix.package.pypi_url }}
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
       create_github_release: ${{ inputs.create_github_release }}
     secrets: inherit
 
-  publish-ssot-conformance:
-    name: Publish ssot-conformance
-    needs: [validate, publish-ssot-core]
-    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_conformance && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-core.result) }}
-    uses: ./.github/workflows/publish-ssot-conformance.yml
+  publish-layer-5:
+    name: Publish dependency layer 5
+    needs: [validate, build-distributions, publish-layer-4]
+    if: ${{ always() && needs.validate.outputs.publish_layer_5 != '[]' && needs.build-distributions.result == 'success' && contains(fromJSON('["success","skipped"]'), needs.publish-layer-4.result) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.validate.outputs.publish_layer_5) }}
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ${{ matrix.package.name }}
+      package_tag: ${{ matrix.package.tag }}
+      package_version: ${{ matrix.package.version }}
+      pypi_project_url: ${{ matrix.package.pypi_url }}
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
       create_github_release: ${{ inputs.create_github_release }}
     secrets: inherit
 
-  publish-ssot-cli:
-    name: Publish ssot-cli
-    needs: [validate, publish-ssot-conformance]
-    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_cli && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-conformance.result) }}
-    uses: ./.github/workflows/publish-ssot-cli.yml
+  publish-layer-6:
+    name: Publish dependency layer 6
+    needs: [validate, build-distributions, publish-layer-5]
+    if: ${{ always() && needs.validate.outputs.publish_layer_6 != '[]' && needs.build-distributions.result == 'success' && contains(fromJSON('["success","skipped"]'), needs.publish-layer-5.result) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.validate.outputs.publish_layer_6) }}
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
-      ref_name: ${{ inputs.ref_name }}
-      publish_to_pypi: ${{ inputs.publish_to_pypi }}
-      create_tag: true
-      create_github_release: ${{ inputs.create_github_release }}
-    secrets: inherit
-
-  publish-ssot-tui:
-    name: Publish ssot-tui
-    needs: [validate, publish-ssot-cli]
-    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_tui && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-cli.result) }}
-    uses: ./.github/workflows/publish-ssot-tui.yml
-    with:
-      ref_name: ${{ inputs.ref_name }}
-      publish_to_pypi: ${{ inputs.publish_to_pypi }}
-      create_tag: true
-      create_github_release: ${{ inputs.create_github_release }}
-    secrets: inherit
-
-  publish-ssot-registry:
-    name: Publish ssot-registry
-    needs: [validate, publish-ssot-cli, publish-ssot-tui]
-    if: ${{ always() && fromJSON(needs.validate.outputs.targets).ssot_registry && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-cli.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-tui.result) }}
-    uses: ./.github/workflows/publish-ssot-registry.yml
-    with:
+      package_name: ${{ matrix.package.name }}
+      package_tag: ${{ matrix.package.tag }}
+      package_version: ${{ matrix.package.version }}
+      pypi_project_url: ${{ matrix.package.pypi_url }}
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true

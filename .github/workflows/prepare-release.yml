@@ -72,9 +72,6 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Validate train policy
-        run: python scripts/release_metadata.py validate-train --train "${{ inputs.release_train }}" --packages "${{ inputs.selected_packages }}"
-
       - name: Bump selected release train
         id: bump_version
         run: |
