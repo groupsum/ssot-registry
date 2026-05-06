@@ -1,0 +1,40 @@
+schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0533"
+number: 533
+slug: "assurance-entity-origin-model"
+title: "Assurance entity origin model"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Define origin ownership for SSOT assurance entities: features, tests, claims, and evidence."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  Define origin ownership for SSOT assurance entities: features, tests, claims, and evidence.
+  
+  ## Requirements
+  
+  - Feature, test, claim, and evidence rows SHALL support `origin`.
+  - Allowed values SHALL be `ssot-core`, `ssot-origin`, and `repo-local`.
+  - Missing `origin` on pre-existing rows SHALL migrate or normalize to `repo-local` unless a governed migration maps the row to an upstream origin.
+  - Downstream `repo-local` repositories SHALL be allowed to create and mutate `repo-local` assurance rows.
+  - Downstream `repo-local` repositories SHALL NOT create `ssot-core` assurance rows.
+  - Downstream `repo-local` repositories SHALL treat synchronized `ssot-origin` assurance rows as governed shared obligations.
+  - Synchronized `ssot-origin` assurance rows SHALL preserve governed identity and ownership fields.
+  - Validators SHALL reject unsupported origin values.
+  - Validators SHALL reject origin transitions that move a row from `ssot-origin` or `ssot-core` to `repo-local` without an explicit migration.
+  - Validators SHALL reject local mutation of immutable `ssot-origin` row identity fields when the repository kind is `repo-local`.
+  - Graph exports and status synchronization SHOULD retain origin metadata for assurance rows when present.
+  
+  ## Out of Scope
+  
+  This SPEC does not define test template rendering. Test template rendering is governed separately by the origin conformance template contract.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0532"

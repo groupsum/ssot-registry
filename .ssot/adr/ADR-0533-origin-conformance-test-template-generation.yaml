@@ -1,0 +1,31 @@
+schema_version: "0.3.0"
+kind: "adr"
+id: "adr:0533"
+number: 533
+slug: "origin-conformance-test-template-generation"
+title: "Origin conformance test template generation"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "SSOT shall generate downstream conformance test case files from governed templates mapped to `ssot-origin` ADR and SPEC obligations."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Decision
+  
+  SSOT shall generate downstream conformance test case files from governed templates mapped to `ssot-origin` ADR and SPEC obligations.
+  
+  ## Context
+  
+  Existing conformance cases validate broad registry, document, id, linkage, proof-chain, boundary, and release contracts. They do not generate per-obligation downstream test files that make synchronized `ssot-origin` ADR and SPEC compliance explicit inside the downstream repository. Operators need inspectable, deterministic test files and SSOT rows that connect each generated check back to the origin obligation it verifies.
+  
+  ## Consequences
+  
+  - `ssot-origin` ADRs and SPECs can declare or resolve conformance test templates.
+  - Downstream scaffold flows can render physical test files and registry rows from those templates.
+  - Generated test files are local artifacts, while their generated rows remain linked to the upstream origin obligations.
+  - Template rendering must be deterministic, idempotent, and fail closed on local edit conflicts.
+  - Generated checks must not overclaim implementation proof; they provide compliance checks or call downstream-provided probes.

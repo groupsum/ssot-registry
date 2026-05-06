@@ -1,0 +1,42 @@
+schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0535"
+number: 535
+slug: "downstream-conformance-scaffold-generation"
+title: "Downstream conformance scaffold generation"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Extend downstream conformance scaffolding so it can discover `ssot-origin` obligations, generate registry rows, and render physical test files from governed templates."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  Extend downstream conformance scaffolding so it can discover `ssot-origin` obligations, generate registry rows, and render physical test files from governed templates.
+  
+  ## Requirements
+  
+  - The scaffold SHALL discover synchronized `ssot-origin` ADRs and SPECs in the target repository.
+  - The scaffold SHALL map selected origin obligations to conformance templates.
+  - The scaffold SHALL support dry-run mode that reports planned files, features, tests, claims, evidence, and covered ADR/SPEC ids without mutation.
+  - The scaffold SHALL support apply mode that creates or updates generated test files and corresponding SSOT rows.
+  - Generated feature rows SHALL link to the covered origin SPEC ids where applicable.
+  - Generated test rows SHALL link to the generated feature rows and include execution metadata.
+  - Claim and evidence row generation SHALL remain explicit opt-in.
+  - Generated rows SHALL carry origin metadata according to the assurance entity origin model.
+  - Generated physical test files SHALL be written under a predictable downstream path, such as `tests/ssot_origin/`, unless configured otherwise.
+  - Repeated scaffold runs SHALL be idempotent when inputs and templates are unchanged.
+  - The scaffold SHALL fail closed on generated-file conflicts unless an explicit, audited override is provided.
+  - The scaffold SHALL keep generic conformance case families separate from per-obligation `ssot-origin` generated tests.
+  
+  ## Out of Scope
+  
+  This SPEC does not require every `ssot-origin` obligation to have a template immediately. Missing templates SHALL be reportable as scaffold gaps.
+spec_kind: "operational"
+adr_ids:
+  - "adr:0532"
+  - "adr:0533"

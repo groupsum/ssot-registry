@@ -1,0 +1,39 @@
+schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0534"
+number: 534
+slug: "ssot-origin-conformance-test-template-contract"
+title: "SSOT origin conformance test template contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Define the contract for templates that generate downstream test case files for `ssot-origin` ADR and SPEC compliance."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  Define the contract for templates that generate downstream test case files for `ssot-origin` ADR and SPEC compliance.
+  
+  ## Requirements
+  
+  - Conformance test templates SHALL be packaged by SSOT and versioned with the package that owns the template catalog.
+  - Each template SHALL declare the `ssot-origin` ADR ids, SPEC ids, or obligation families it covers.
+  - Each template SHALL declare the generated test kind and default execution metadata.
+  - Template rendering SHALL be deterministic for the same input registry, selected obligations, and package version.
+  - Generated test files SHALL include stable SSOT metadata, either inline or through a sidecar, identifying covered ADR ids, SPEC ids, generated feature ids, generated test ids, and template id.
+  - Generated test files SHALL be idempotent when the template input has not changed.
+  - Template rendering SHALL fail closed when an existing generated file has local edits and no explicit override is provided.
+  - Generated tests SHALL verify compliance shape directly or call downstream-provided probes through declared extension points.
+  - Generated tests SHALL NOT by themselves assert implementation conformance stronger than their linked claim tier and evidence allow.
+  - Templates SHALL avoid repository-specific language assumptions unless the selected template explicitly declares a language or runner.
+  
+  ## Out of Scope
+  
+  This SPEC does not define origin ownership fields for assurance rows. Assurance entity origin ownership is governed by the assurance entity origin model.
+spec_kind: "operational"
+adr_ids:
+  - "adr:0533"

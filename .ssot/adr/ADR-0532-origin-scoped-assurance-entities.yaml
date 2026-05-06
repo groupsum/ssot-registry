@@ -1,0 +1,31 @@
+schema_version: "0.3.0"
+kind: "adr"
+id: "adr:0532"
+number: 532
+slug: "origin-scoped-assurance-entities"
+title: "Origin-scoped assurance entities"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "SSOT shall extend the origin model beyond ADR and SPEC documents to assurance entities: features, tests, claims, and evidence."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Decision
+  
+  SSOT shall extend the origin model beyond ADR and SPEC documents to assurance entities: features, tests, claims, and evidence.
+  
+  ## Context
+  
+  ADR and SPEC documents already distinguish `ssot-core`, `ssot-origin`, and `repo-local` ownership. Downstream conformance work now needs the same ownership distinction on the assurance rows that represent obligations, executable checks, claims, and evidence. Without this distinction, downstream repositories cannot tell whether a feature, test, claim, or evidence row is an upstream core governance row, a synchronized origin obligation, or a locally authored proof row.
+  
+  ## Consequences
+  
+  - Features, tests, claims, and evidence gain explicit origin semantics.
+  - `ssot-origin` assurance rows represent shared downstream compliance obligations.
+  - `repo-local` assurance rows represent local implementation and proof.
+  - `ssot-core` assurance rows remain upstream-maintainer governance rows and are not mutable downstream-local entities.
+  - Validators and scaffold flows must preserve origin ownership and reject invalid origin transitions.
