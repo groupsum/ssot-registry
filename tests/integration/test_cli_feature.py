@@ -30,6 +30,7 @@ class CliFeatureTests(unittest.TestCase):
         )
         self.assertEqual(create.returncode, 0, create.stderr)
         self.assertTrue(json.loads(create.stdout)["passed"])
+        self.assertFalse((repo / ".ssot" / "registry.json.lock").exists())
 
         get_result = run_cli("feature", "get", str(repo), "--id", "feat:cli.generated")
         self.assertEqual(get_result.returncode, 0, get_result.stderr)

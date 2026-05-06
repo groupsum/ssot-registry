@@ -6,7 +6,7 @@ from ssot_contracts.schema import list_schema_names, load_schema_text
 from ssot_registry.api.documents import sync_all_documents
 from ssot_registry.model.registry import build_minimal_registry, default_paths
 from ssot_registry.util.errors import RegistryError
-from ssot_registry.util.jsonio import save_json
+from .save import save_registry
 from .validate import validate_registry
 
 
@@ -36,7 +36,7 @@ def initialize_repo(
         (repo_root / relative_path).mkdir(parents=True, exist_ok=True)
 
     registry = build_minimal_registry(repo_id, repo_name, version)
-    save_json(registry_path, registry)
+    save_registry(registry_path, registry)
 
     _copy_schema_tree(repo_root / paths["schema_root"])
     sync_all_documents(registry_path)

@@ -18,6 +18,13 @@ CLAIM_TERMINAL_STATUSES = {"retired"}
 CLAIM_RELEASE_STATUSES = {"promoted", "published"}
 
 
+def _is_planned_path(path: object, marker: str) -> bool:
+    if not isinstance(path, str):
+        return False
+    normalized = path.replace("\\", "/")
+    return marker in normalized
+
+
 def _build_current_index(registry: dict[str, Any]) -> dict[str, dict[str, dict[str, object]]]:
     failures: list[str] = []
     return build_index(registry, failures)
@@ -65,7 +72,10 @@ def _sync_evidence(registry: dict[str, Any], repo_root: Path) -> list[dict[str, 
         evidence_id = evidence["id"]
         reason = "evidence artifact exists and linked claim tiers are satisfied"
         status = "passed"
-        if not (repo_root / evidence["path"]).exists():
+        if _is_planned_path(evidence.get("path"), "/evidence/planned/"):
+            status = "planned"
+            reason = "evidence path is a planned placeholder"
+        elif not (repo_root / evidence["path"]).exists():
             status = "planned"
             reason = "evidence artifact path does not exist"
         elif _missing_refs(evidence, "claim_ids", index["claims"]) or _missing_refs(evidence, "test_ids", index["tests"]):
@@ -95,7 +105,10 @@ def _sync_tests(registry: dict[str, Any], repo_root: Path) -> list[dict[str, obj
         test_id = test["id"]
         reason = "test path exists and linked evidence is passed"
         status = "passing"
-        if not (repo_root / test["path"]).exists():
+        if _is_planned_path(test.get("path"), "tests/planned/"):
+            status = "planned"
+            reason = "test path is a planned placeholder"
+        elif not (repo_root / test["path"]).exists():
             status = "planned"
             reason = "test path does not exist"
         elif _missing_refs(test, "feature_ids", index["features"]) or _missing_refs(test, "claim_ids", index["claims"]):
@@ -133,6 +146,10 @@ def _claim_support_status(claim: dict[str, Any], index: dict[str, dict[str, dict
     linked_evidence = [index["evidence"][evidence_id] for evidence_id in claim.get("evidence_ids", []) if evidence_id in index["evidence"]]
     if linked_evidence and any(evidence.get("status") in {"failed", "stale"} for evidence in linked_evidence):
         return "blocked", "claim has failed or stale linked evidence"
+    if (linked_tests or linked_evidence) and not any(test.get("status") != "planned" for test in linked_tests) and not any(
+        evidence.get("status") != "planned" for evidence in linked_evidence
+    ):
+        return "proposed", "claim has only planned verification support"
     if linked_tests and all(test.get("status") == "passing" for test in linked_tests) and linked_evidence:
         tier_met = any(
             evidence.get("status") == "passed" and CLAIM_TIER_RANK[evidence["tier"]] >= CLAIM_TIER_RANK[claim["tier"]]
@@ -191,9 +208,17 @@ def _sync_features_once(registry: dict[str, Any]) -> list[dict[str, object]]:
             tests_pass = bool(linked_tests) and all(test.get("status") == "passing" for test in linked_tests)
             claims_pass = any(_claim_satisfies_feature(claim, required_tier) for claim in linked_claims)
             requirements_pass = all(required.get("implementation_status") == "implemented" for required in required_features)
+            only_planned_support = (
+                bool(linked_tests or linked_claims)
+                and all(test.get("status") == "planned" for test in linked_tests)
+                and all(CLAIM_STATUS_RANK.get(claim.get("status"), -999) <= CLAIM_STATUS_RANK["proposed"] for claim in linked_claims)
+            )
             if tests_pass and claims_pass and requirements_pass:
                 status = "implemented"
                 reason = "feature has passing tests, satisfying claims, and implemented requirements"
+            elif only_planned_support:
+                status = "absent"
+                reason = "feature has only planned verification support"
             elif linked_tests or linked_claims or required_features:
                 status = "partial"
                 reason = "feature has linked support but does not yet satisfy implementation criteria"

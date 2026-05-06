@@ -1,0 +1,29 @@
+schema_version: "0.3.0"
+kind: "adr"
+id: "adr:0534"
+number: 534
+slug: "registry-json-file-locking"
+title: "Registry JSON file locking is scoped separately"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "The broader file and folder lease decision tracks general workspace coordination. The registry JSON file lock boundary is narrower: it only protects `.ssot/registry.json` mutation from concurrent local writers."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Context
+  
+  The broader file and folder lease decision tracks general workspace coordination. The registry JSON file lock boundary is narrower: it only protects `.ssot/registry.json` mutation from concurrent local writers.
+  
+  ## Decision
+  
+  `ssot-registry` shall serialize `.ssot/registry.json` mutations by default using a local sidecar lock beside the registry file.
+  
+  The registry lock decision shall not certify general file locks, folder locks, SQLite lease coordination, manual lease CLI workflows, or broader workspace locking.
+  
+  ## Consequences
+  
+  Registry mutation APIs get default local coordination without expanding the boundary to unrelated files or folders. Broader locking remains governed by separate lock features and boundaries.

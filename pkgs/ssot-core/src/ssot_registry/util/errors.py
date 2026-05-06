@@ -8,3 +8,7 @@ class ValidationError(RegistryError):
 
 class GuardError(RegistryError):
     """Raised when a gate or fence refuses a state transition."""
+
+
+class RegistryLockError(RegistryError):
+    """Raised when the registry file lock cannot be acquired or released."""

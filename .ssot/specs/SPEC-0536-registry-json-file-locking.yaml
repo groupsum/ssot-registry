@@ -1,0 +1,37 @@
+schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0536"
+number: 536
+slug: "registry-json-file-locking"
+title: "Registry JSON file locking"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This SPEC defines the registry-specific lock contract for `.ssot/registry.json` mutation only."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  This SPEC defines the registry-specific lock contract for `.ssot/registry.json` mutation only.
+  
+  ## Requirements
+  
+  - Registry mutation flows shall acquire a local lock for `.ssot/registry.json` before writing the registry.
+  - The lock shall use a sidecar path beside the registry file, such as `.ssot/registry.json.lock`.
+  - The lock metadata shall include target path, owner identity, process id, acquisition time, expiry, token, and reason.
+  - Active competing locks shall fail closed with a clear registry lock error.
+  - Expired stale locks shall be recoverable by a later writer.
+  - Lock release shall be limited to the owning lock token.
+  - Registry writes shall use canonical JSON and atomic same-directory replace semantics.
+  - Generic JSON artifact writes shall remain outside this registry-only lock contract.
+  
+  ## Out of Scope
+  
+  This SPEC does not implement or certify general file locks, folder locks, path-overlap checks, SQLite-WAL lease coordination, manual lease CLI commands, or workspace-wide locking.
+spec_kind: "operational"
+adr_ids:
+  - "adr:0534"

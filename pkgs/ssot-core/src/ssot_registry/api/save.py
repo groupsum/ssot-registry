@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ssot_registry.util.jsonio import save_json
+from ssot_registry.util.registry_lock import save_registry_json_locked
 
 
 def save_registry(registry_path: str | Path, registry: dict[str, object]) -> None:
-    save_json(registry_path, registry)
+    save_registry_json_locked(registry_path, registry)
