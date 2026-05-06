@@ -1,0 +1,1 @@
+{"kind":"planned-evidence-placeholder","note":"Placeholder artifact for planned tests, claims, and evidence rows. Replace with generated verification output when implementing the scoped features.","scope":["bnd:registry-json-file-lock.v1","bnd:origin-scoped-assurance-entities.v1","bnd:ssot-core-conformance-tests.v2","bnd:ssot-origin-conformance-generation.v1"],"status":"planned"}
