@@ -1,0 +1,39 @@
+﻿schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0545"
+number: 545
+slug: "extension-pack-package-reference-and-selector-contract"
+title: "Extension-pack package reference and selector contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines how the pack CLI resolves package references and catalog selectors."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+
+  This specification defines how the pack CLI resolves package references and catalog selectors.
+
+  ## Package Reference Rules
+
+  - ssot pack add SHALL accept a package reference as the normal operator input.
+  - A package reference MAY include a pinned version.
+  - The package reference SHALL be sufficient to locate package-self-describing ingest metadata.
+
+  ## Selector Rules
+
+  - Catalog-oriented pack subcommands SHALL accept a catalog selector rather than duplicated identity flags.
+  - A selector MAY resolve by catalog id, package reference, or another normalized catalog alias defined by repo-local state.
+
+  ## CLI Minimality
+
+  - Operators SHALL NOT be required to supply publisher, origin type, reservation ranges, or catalog id if those fields are present in the package metadata.
+  - Override flags are reserved for trust and execution policy, not identity restatement.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0540"
+  - "adr:0541"

@@ -6,7 +6,7 @@
     "title": "Registry core",
     "filename": "SPEC-0600-registry-core.yaml",
     "target_path": ".ssot/specs/SPEC-0600-registry-core.yaml",
-    "sha256": "da939c4237f61e6c8b209bb53491b5021d3bfe57e23b8a5a477a4195575807d4",
+    "sha256": "730df44a168f8f14a07f928685b76f9cd1d11b85e1a6fdf3240802abbd9c03bc",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -139,7 +139,7 @@
     "title": "Repository policy",
     "filename": "SPEC-0607-repo-policy.yaml",
     "target_path": ".ssot/specs/SPEC-0607-repo-policy.yaml",
-    "sha256": "ead1977983658e854ceafc06f8e9eff4785827ea387518e984ca585a9dab7814",
+    "sha256": "24dfb7e108a2182bf9884e325698034f989e683496287818deda273cf426cec5",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -196,7 +196,7 @@
     "title": "File tree",
     "filename": "SPEC-0610-file-tree.yaml",
     "target_path": ".ssot/specs/SPEC-0610-file-tree.yaml",
-    "sha256": "4a575f660aecc6d5afee30ec4beec7ec8d983596eb7ac5516ba3db6792f5e0a5",
+    "sha256": "b1b00db672c7b5e5a2184fc3cb581dbc62f5994ad86efdd56c93facbc844a3cc",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -326,6 +326,28 @@
     "kind": "normative",
     "adr_ids": [
       "adr:0616"
+    ]
+  },
+  {
+    "id": "spc:0617",
+    "number": 617,
+    "slug": "feature-implementation-claim-ceilings",
+    "title": "Feature implementation claim ceilings",
+    "filename": "SPEC-0617-feature-implementation-claim-ceilings.yaml",
+    "target_path": ".ssot/specs/SPEC-0617-feature-implementation-claim-ceilings.yaml",
+    "sha256": "059fb567584a9ec0e05ef23cbf0affd61d7d86faa1fe0958f82b15119ab91b6f",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.2.0",
+    "introduced_in": "0.2.13",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [],
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0617"
     ]
   }
 ]

@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from ssot_registry.guards.feature_claims import feature_claim_ceiling_failures
 from ssot_registry.model.enums import CLAIM_STATUS_RANK, CLAIM_TIER_RANK
 
 
 def validate_tiers(index: dict[str, dict[str, dict[str, object]]], failures: list[str]) -> None:
     for feature_id, feature in index["features"].items():
+        if feature.get("implementation_status") == "implemented":
+            failures.extend(feature_claim_ceiling_failures(feature, index, require_evidenced_status=False))
         target_tier = feature.get("plan", {}).get("target_claim_tier")
         if target_tier is None:
             continue

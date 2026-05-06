@@ -9,6 +9,7 @@ from ssot_registry.model.document import (
     document_path_variants,
     DOCUMENT_ORIGINS,
     SPEC_KINDS,
+    is_extension_pack_reservation_owner,
     load_document_manifest,
     normalize_document_id,
     reservation_kind_key,
@@ -174,14 +175,20 @@ def validate_document_rows(
                 failures.append(
                     f"{prefix}.number belongs to reservation owner {reservation.get('owner')} but origin is {origin}"
                 )
+            if reservation is not None and origin == "extension-pack" and not is_extension_pack_reservation_owner(
+                reservation.get("owner")
+            ):
+                failures.append(
+                    f"{prefix}.number belongs to reservation owner {reservation.get('owner')} but origin is extension-pack"
+                )
             if repo_kind == "repo-local":
                 if origin == "ssot-core":
                     failures.append(f"{prefix}.origin must not be ssot-core in repo-local")
-                if origin == "ssot-origin":
+                if origin in {"ssot-origin", "extension-pack"}:
                     if managed is not True:
-                        failures.append(f"{prefix}.managed must be true for ssot-origin documents in repo-local")
+                        failures.append(f"{prefix}.managed must be true for packaged documents in repo-local")
                     if immutable is not True:
-                        failures.append(f"{prefix}.immutable must be true for ssot-origin documents in repo-local")
+                        failures.append(f"{prefix}.immutable must be true for packaged documents in repo-local")
                 if origin == "repo-local":
                     if managed is not False:
                         failures.append(f"{prefix}.managed must be false for repo-local documents")
@@ -229,13 +236,13 @@ def validate_document_rows(
             if status != "superseded" and isinstance(superseded_by, list) and superseded_by:
                 failures.append(f"{prefix}.superseded_by must be empty unless status is superseded")
 
-            if repo_kind == "repo-local" and origin == "ssot-origin":
+            if repo_kind == "repo-local" and origin in {"ssot-origin", "extension-pack"}:
                 manifest_entry = manifest_lookup[section].get(entity_id)
                 if manifest_entry is None:
-                    failures.append(f"{prefix} is ssot-origin managed but not present in the packaged manifest")
+                    failures.append(f"{prefix} is packaged and managed but not present in the packaged manifest")
                     continue
-                if manifest_entry.get("origin") != "ssot-origin":
-                    failures.append(f"packaged {kind} manifest entry {entity_id} must use origin ssot-origin")
+                if manifest_entry.get("origin") != origin:
+                    failures.append(f"packaged {kind} manifest entry {entity_id} must use origin {origin}")
                 for field_name in ("number", "slug", "title"):
                     if row.get(field_name) != manifest_entry.get(field_name):
                         failures.append(f"{prefix}.{field_name} must match the packaged manifest")

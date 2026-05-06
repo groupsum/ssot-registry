@@ -11,7 +11,7 @@ from ssot_registry.version import __version__
 from .enums import SCHEMA_VERSION
 
 
-REPO_KINDS = {"ssot-core", "ssot-origin", "repo-local"}
+REPO_KINDS = {"ssot-core", "ssot-origin", "repo-local", "extension-pack"}
 REPO_KIND_ALIASES = {
     "ssot-upstream": "ssot-core",
     "operator-repo": "repo-local",

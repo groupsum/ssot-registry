@@ -3,6 +3,10 @@ from __future__ import annotations
 from typing import Any
 
 from ssot_registry.guards.claim_closure import evaluate_claim_guard
+from ssot_registry.guards.feature_claims import (
+    active_required_feature_claims,
+    feature_claim_ceiling_failures,
+)
 from ssot_registry.guards.feature_requirements import evaluate_required_feature_failures
 from ssot_registry.model.enums import CLAIM_TIER_RANK
 from ssot_registry.validators.identity import build_index
@@ -42,24 +46,23 @@ def evaluate_feature_passing(
 
     checked_claim_ids: list[str] = []
     satisfying_claim_ids: list[str] = []
-    for claim_id in feature.get("claim_ids", []):
-        if claim_id not in index["claims"]:
-            continue
+    active_claims = active_required_feature_claims(feature, index)
+    for claim in active_claims:
+        claim_id = str(claim["id"])
         checked_claim_ids.append(claim_id)
-        claim = index["claims"][claim_id]
         guard = evaluate_claim_guard(claim, index, guard_policies)
         if not guard.get("passed"):
             continue
-        if required_tier is not None and CLAIM_TIER_RANK[claim["tier"]] < CLAIM_TIER_RANK[required_tier]:
-            continue
-        satisfying_claim_ids.append(claim_id)
+        if claim.get("tier") != "T0" and (required_tier is None or CLAIM_TIER_RANK[claim["tier"]] >= CLAIM_TIER_RANK[required_tier]):
+            satisfying_claim_ids.append(claim_id)
 
-    checks["claim_target_met"] = bool(satisfying_claim_ids) if required_tier is not None else bool(checked_claim_ids)
+    checks["claim_target_met"] = bool(active_claims) and len(satisfying_claim_ids) == len(active_claims)
     if not checks["claim_target_met"]:
         if required_tier is None:
             failures.append(f"Feature {feature_id} has no effective required claim tier")
         else:
-            failures.append(f"Feature {feature_id} has no satisfying claim at or above tier {required_tier}")
+            failures.append(f"Feature {feature_id} does not have all active required claims satisfying tier {required_tier}")
+        failures.extend(failure.removeprefix(f"features.{feature_id} ") for failure in feature_claim_ceiling_failures(feature, index))
 
     return {
         "feature_id": feature_id,

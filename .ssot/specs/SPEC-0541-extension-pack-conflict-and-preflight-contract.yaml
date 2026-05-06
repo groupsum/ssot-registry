@@ -1,0 +1,38 @@
+﻿schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0541"
+number: 541
+slug: "extension-pack-conflict-and-preflight-contract"
+title: "Extension-pack conflict and preflight contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines fail-closed validation before external-pack mutation and sync."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+
+  This specification defines fail-closed validation before external-pack mutation and sync.
+
+  ## Required Preflight Checks
+
+  Validation SHALL reject, at minimum:
+  - duplicate document ids
+  - duplicate reserved numbers
+  - duplicate target paths
+  - trust failures
+  - schema incompatibility
+  - missing package artifacts or manifests
+
+  ## Rules
+
+  - Preflight validation SHALL run before downstream file mutation.
+  - Conflicts across trusted catalogs SHALL fail closed unless explicitly resolved by policy.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0538"
+  - "adr:0540"

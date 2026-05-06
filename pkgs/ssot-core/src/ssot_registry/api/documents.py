@@ -12,14 +12,17 @@ from ssot_registry.guards.document_lifecycle import (
 )
 from ssot_registry.guards.document_supersession import apply_supersession
 from ssot_registry.model.document import (
+    DOCUMENT_ORIGINS,
     DOCUMENT_STATUSES,
     DOCUMENT_SLUG_PATTERN,
+    EXTENSION_PACK_RESERVATION_PREFIX,
     SPEC_KINDS,
     build_document_path,
     default_document_id_reservations,
+    is_extension_pack_reservation_owner,
     load_document_manifest as load_packaged_document_manifest,
     normalize_document_id,
-    read_packaged_document_bytes,
+    read_manifest_document_bytes,
     read_packaged_document_text,
     reservation_kind_key,
     section_for_document_kind,
@@ -199,6 +202,53 @@ def _manifest_row_to_registry_row(registry: dict[str, Any], kind: str, manifest_
     return row
 
 
+def _packaged_manifest_entries(kind: str) -> list[dict[str, Any]]:
+    manifest_entries = load_packaged_document_manifest(kind, include_untrusted=True)
+    untrusted_extension_catalogs = sorted(
+        {
+            str(entry.get("catalog_id", ""))
+            for entry in manifest_entries
+            if entry.get("origin") == "extension-pack" and not bool(entry.get("trusted", False))
+        }
+    )
+    if untrusted_extension_catalogs:
+        raise ValidationError(
+            "Untrusted extension-pack catalogs are available but not allowed for sync: "
+            + ", ".join(untrusted_extension_catalogs)
+        )
+
+    trusted_entries = [entry for entry in manifest_entries if bool(entry.get("trusted", False))]
+    seen_ids: dict[str, str] = {}
+    seen_numbers: dict[int, str] = {}
+    seen_paths: dict[str, str] = {}
+    for entry in trusted_entries:
+        entry_id = str(entry.get("id", ""))
+        catalog_id = str(entry.get("catalog_id", ""))
+        number = entry.get("number")
+        target_path = str(entry.get("target_path", ""))
+        origin = entry.get("origin")
+        if origin not in {"ssot-origin", "extension-pack"}:
+            raise ValidationError(f"Packaged {kind} manifest entry {entry_id} must use origin 'ssot-origin' or 'extension-pack'")
+        if entry_id in seen_ids:
+            raise ValidationError(
+                f"Packaged {kind} id conflict: {entry_id} is present in both {seen_ids[entry_id]} and {catalog_id}"
+            )
+        if isinstance(number, int) and number in seen_numbers:
+            raise ValidationError(
+                f"Packaged {kind} number conflict: {number:04d} is present in both {seen_numbers[number]} and {catalog_id}"
+            )
+        if target_path and target_path in seen_paths:
+            raise ValidationError(
+                f"Packaged {kind} target_path conflict: {target_path} is present in both {seen_paths[target_path]} and {catalog_id}"
+            )
+        seen_ids[entry_id] = catalog_id
+        if isinstance(number, int):
+            seen_numbers[number] = catalog_id
+        if target_path:
+            seen_paths[target_path] = catalog_id
+    return trusted_entries
+
+
 def _existing_numbers(registry: dict[str, Any], kind: str) -> set[int]:
     return {
         row["number"]
@@ -318,7 +368,7 @@ def create_document(
     spec_kind: str | None = None,
     adr_ids: list[str] | None = None,
 ) -> dict[str, Any]:
-    if origin not in {"repo-local", "ssot-core", "ssot-origin"}:
+    if origin not in DOCUMENT_ORIGINS:
         raise ValidationError(f"Unsupported origin '{origin}' for {_document_label(kind)} creation")
     if not isinstance(title, str) or not title.strip():
         raise ValidationError(f"{_document_label(kind)} title must be a non-empty string")
@@ -335,23 +385,32 @@ def create_document(
     repo_kind = _repo_kind(registry)
     if repo_kind == "repo-local" and origin != "repo-local":
         raise ValidationError(f"Repo-local repositories may only create repo-local {_document_label(kind)} rows")
-    if repo_kind in {"ssot-core", "ssot-origin"} and origin == "repo-local":
+    if repo_kind in {"ssot-core", "ssot-origin"} and origin not in {"ssot-core", "ssot-origin"}:
         raise ValidationError(f"{repo_kind} repositories may only create ssot-core or ssot-origin {_document_label(kind)} rows")
+    if repo_kind == "extension-pack" and origin != "extension-pack":
+        raise ValidationError(f"extension-pack repositories may only create extension-pack {_document_label(kind)} rows")
     if number is None:
         if repo_kind in {"ssot-core", "ssot-origin"} and origin in {"ssot-core", "ssot-origin"}:
             raise ValidationError(f"{repo_kind} {_document_label(kind)} creation for {origin} requires an explicit --number")
+        if repo_kind == "extension-pack" and origin == "extension-pack":
+            raise ValidationError(f"extension-pack {_document_label(kind)} creation for {origin} requires an explicit --number")
         number = _allocate_number(registry, kind, reserve_range)
     else:
         _ensure_assignable_number(
             registry,
             kind,
             number,
-            allow_non_assignable=repo_kind in {"ssot-core", "ssot-origin"} and origin in {"ssot-core", "ssot-origin"},
+            allow_non_assignable=repo_kind in {"ssot-core", "ssot-origin", "extension-pack"}
+            and origin in {"ssot-core", "ssot-origin", "extension-pack"},
         )
     reservation = _reservation_for_number(registry, kind, number)
     if origin in {"ssot-core", "ssot-origin"} and reservation.get("owner") != origin:
         raise ValidationError(
             f"{_document_label(kind)} number {number} must use reservation owned by {origin}; got {reservation.get('owner')}"
+        )
+    if origin == "extension-pack" and not is_extension_pack_reservation_owner(reservation.get("owner")):
+        raise ValidationError(
+            f"{_document_label(kind)} number {number} must use reservation owned by {EXTENSION_PACK_RESERVATION_PREFIX}<catalog-id>; got {reservation.get('owner')}"
         )
 
     authored_payload = _resolve_authored_payload(kind, title=title, body=body, body_file=body_file, require_one=True)
@@ -596,7 +655,7 @@ def _sync_manifest_document(
                 raise ValidationError(
                     f"Cannot sync {document_id}; number {expected_row['number']} is already used by {row.get('id')}"
                 )
-        payload = read_packaged_document_bytes(kind, manifest_entry["filename"])
+        payload = read_manifest_document_bytes(kind, manifest_entry)
         target = repo_root / expected_row["path"]
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(payload)
@@ -610,7 +669,7 @@ def _sync_manifest_document(
                 f"Cannot sync {document_id}; field {field_name} was locally modified from {expected_row.get(field_name)} to {current.get(field_name)}"
             )
 
-    payload = read_packaged_document_bytes(kind, manifest_entry["filename"])
+    payload = read_manifest_document_bytes(kind, manifest_entry)
     target = repo_root / expected_row["path"]
     target.parent.mkdir(parents=True, exist_ok=True)
     actual_hash = sha256_normalized_text_path(target) if target.exists() else None
@@ -641,9 +700,7 @@ def sync_documents_in_memory(registry: dict[str, Any], repo_root: Path, kind: st
     lookup = _row_lookup(registry, kind)
     summary: dict[str, list[str]] = {"created": [], "updated": [], "unchanged": []}
 
-    for manifest_entry in load_packaged_document_manifest(kind):
-        if manifest_entry.get("origin") != "ssot-origin":
-            raise ValidationError(f"Packaged {kind} manifest entry {manifest_entry.get('id')} must use origin 'ssot-origin'")
+    for manifest_entry in _packaged_manifest_entries(kind):
         if not schema_version_meets_minimum(registry.get("schema_version", 0), manifest_entry.get("minimum_schema_version", 0)):
             continue
         outcome, document_id = _sync_manifest_document(registry, repo_root, kind, manifest_entry, lookup)
@@ -658,7 +715,7 @@ def sync_documents_in_memory(registry: dict[str, Any], repo_root: Path, kind: st
 def sync_documents(path: str | Path, kind: str) -> dict[str, Any]:
     registry_path, repo_root, registry = load_registry(path)
     section = section_for_document_kind(kind)
-    if _repo_kind(registry) in {"ssot-core", "ssot-origin"}:
+    if _repo_kind(registry) in {"ssot-core", "ssot-origin", "extension-pack"}:
         return {
             "passed": True,
             "registry_path": registry_path.as_posix(),

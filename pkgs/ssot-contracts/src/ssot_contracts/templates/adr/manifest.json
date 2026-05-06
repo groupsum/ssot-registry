@@ -304,5 +304,23 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": []
+  },
+  {
+    "id": "adr:0617",
+    "number": 617,
+    "slug": "feature-implementation-claim-ceilings",
+    "title": "Feature implementation is capped by active required claims",
+    "filename": "ADR-0617-feature-implementation-claim-ceilings.yaml",
+    "target_path": ".ssot/adr/ADR-0617-feature-implementation-claim-ceilings.yaml",
+    "sha256": "1e21944c47759757773e66f5bbfaae8801a33bca966c69772d3a31543062078e",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.2.0",
+    "introduced_in": "0.2.13",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   }
 ]

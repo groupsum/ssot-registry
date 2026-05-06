@@ -1,0 +1,44 @@
+﻿schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0539"
+number: 539
+slug: "extension-pack-catalog-registry-contract"
+title: "Extension-pack catalog registry contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines the repo-local SSOT state for registered external ADR and SPEC catalogs."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+
+  This specification defines the repo-local SSOT state for registered external ADR and SPEC catalogs.
+
+  ## Required Catalog Fields
+
+  Each registered extension-pack catalog SHALL carry:
+  - a stable catalog_id
+  - publisher identity
+  - origin type
+  - distribution channel and package identity
+  - trust state
+  - desired version or pin policy
+  - owned ADR/SPEC reservation ranges
+  - references to the packaged catalog metadata used for ingest
+
+  ## Rules
+
+  - Repo-local catalog state SHALL be authoritative for operator intent.
+  - Catalog metadata SHALL be inspectable without resolving package artifacts.
+  - Package-self-describing ingest metadata SHALL be imported rather than redundantly re-entered through CLI flags.
+  - Catalog-owned reservations SHALL be stored as governed repo-local state.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0537"
+  - "adr:0538"
+  - "adr:0540"
+  - "adr:0541"

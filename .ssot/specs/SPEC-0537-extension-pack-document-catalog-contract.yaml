@@ -1,0 +1,63 @@
+﻿adr_ids:
+  - "adr:0535"
+  - "adr:0536"
+body: |-
+  ## Scope
+
+  This is an `ssot-core` maintainer specification for the upstream `ssot-registry`
+  repository.
+
+  This phase governs packaged ADR and SPEC catalogs only. It does not extend
+  assurance entities, conformance templates, or non-document truth families.
+
+  ## Extension Pack Authority
+
+  - `extension-pack` is a valid packaged document authority for ADR and SPEC catalogs.
+  - Installable delivery SHALL NOT by itself imply `ssot-origin`.
+  - A packaged catalog SHALL carry authority metadata separately from delivery metadata.
+
+  ## Required Catalog Metadata
+
+  An extension-pack document catalog SHALL expose, at minimum:
+
+  - `catalog_id`
+  - `origin: extension-pack`
+  - `publisher`
+  - delivery metadata sufficient to identify the distribution channel and package
+  - deterministic ADR/SPEC manifest rows
+
+  The catalog identifier SHALL be stable across releases of the same catalog.
+
+  ## Manifest Rules
+
+  Packaged ADR/SPEC manifest entries SHALL:
+
+  - use deterministic ids, numbers, slugs, titles, and target paths
+  - carry content hashes for the packaged document body
+  - be immutable for a given published package artifact
+  - describe only ADR/SPEC documents in this phase
+
+  ## Number Ownership
+
+  Extension-pack document numbers SHALL be governed through catalog-scoped
+  reservations, not by reuse of repo-local reservations and not by a single
+  shared global extension range.
+
+  Reservation ownership for extension-pack ADR/SPEC catalogs SHALL be represented
+  distinctly from `ssot-core`, `ssot-origin`, and `repo-local`.
+summary: "Extension-pack packaged ADR/SPEC catalogs carry authority metadata separately from delivery metadata."
+decision_date: null
+id: "spc:0537"
+kind: "spec"
+number: 537
+origin: "ssot-core"
+references: []
+schema_version: "0.1.0"
+slug: "extension-pack-document-catalog-contract"
+spec_kind: "governance"
+status: "draft"
+status_notes: []
+superseded_by: []
+supersedes: []
+tags: []
+title: "Extension-pack document catalog contract"

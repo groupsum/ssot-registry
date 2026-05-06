@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, TypedDict
+from typing import Any, Callable, TypedDict
 
 from ssot_contracts import load_document_manifest as contracts_load_document_manifest
 from ssot_contracts import read_packaged_document_bytes as contracts_read_packaged_document_bytes
@@ -17,7 +17,8 @@ DOCUMENT_FILENAME_PREFIXES = CONTRACT_DATA["document_contract"]["filename_prefix
 DOCUMENT_PATH_KEYS = CONTRACT_DATA["document_contract"]["path_keys"]
 DOCUMENT_RESERVATION_KEYS = CONTRACT_DATA["document_contract"]["reservation_keys"]
 DOCUMENT_FILE_SUFFIXES = (".json", ".yaml")
-DOCUMENT_ORIGINS = {"ssot-core", "ssot-origin", "repo-local"}
+DOCUMENT_ORIGINS = {"ssot-core", "ssot-origin", "repo-local", "extension-pack"}
+EXTENSION_PACK_RESERVATION_PREFIX = "extension-pack:"
 DOCUMENT_STATUSES = tuple(CONTRACT_DATA["choice_sets"]["document_statuses"])
 CREATE_ALLOWED_STATUSES = ("draft", "in_review", "accepted", "rejected", "withdrawn")
 TERMINAL_STATUSES = ("rejected", "withdrawn", "superseded", "retired")
@@ -63,6 +64,14 @@ class SpecRow(TypedDict, total=False):
     supersedes: list[str]
     superseded_by: list[str]
     status_notes: list[StatusNote]
+
+
+class DocumentCatalogProvider(TypedDict):
+    catalog_id: str
+    trusted_by_default: bool
+    load_manifest: Callable[[str], list[dict[str, Any]]]
+    read_text: Callable[[str, str], str]
+    read_bytes: Callable[[str, str], bytes]
 
 
 def format_document_number(number: int) -> str:
@@ -114,8 +123,54 @@ def default_document_id_reservations() -> dict[str, list[dict[str, Any]]]:
     }
 
 
-def load_document_manifest(kind: str) -> list[dict[str, Any]]:
-    return contracts_load_document_manifest(kind)
+_DOCUMENT_CATALOG_PROVIDERS: list[DocumentCatalogProvider] = [
+    {
+        "catalog_id": "ssot-origin",
+        "trusted_by_default": True,
+        "load_manifest": contracts_load_document_manifest,
+        "read_text": contracts_read_packaged_document_text,
+        "read_bytes": contracts_read_packaged_document_bytes,
+    }
+]
+
+
+def extension_pack_reservation_owner(catalog_id: str) -> str:
+    return f"{EXTENSION_PACK_RESERVATION_PREFIX}{catalog_id}"
+
+
+def is_extension_pack_reservation_owner(owner: object) -> bool:
+    return isinstance(owner, str) and owner.startswith(EXTENSION_PACK_RESERVATION_PREFIX) and len(owner) > len(
+        EXTENSION_PACK_RESERVATION_PREFIX
+    )
+
+
+def load_document_manifest(kind: str, *, include_untrusted: bool = False) -> list[dict[str, Any]]:
+    entries: list[dict[str, Any]] = []
+    for provider in _DOCUMENT_CATALOG_PROVIDERS:
+        if not include_untrusted and not provider["trusted_by_default"]:
+            continue
+        for raw_entry in provider["load_manifest"](kind):
+            entry = dict(raw_entry)
+            entry.setdefault("catalog_id", provider["catalog_id"])
+            entry.setdefault("trusted", provider["trusted_by_default"])
+            entries.append(entry)
+    return entries
+
+
+def read_manifest_document_text(kind: str, manifest_entry: dict[str, Any]) -> str:
+    catalog_id = str(manifest_entry.get("catalog_id", "ssot-origin"))
+    for provider in _DOCUMENT_CATALOG_PROVIDERS:
+        if provider["catalog_id"] == catalog_id:
+            return provider["read_text"](kind, str(manifest_entry["filename"]))
+    raise ValueError(f"Unknown document catalog provider: {catalog_id}")
+
+
+def read_manifest_document_bytes(kind: str, manifest_entry: dict[str, Any]) -> bytes:
+    catalog_id = str(manifest_entry.get("catalog_id", "ssot-origin"))
+    for provider in _DOCUMENT_CATALOG_PROVIDERS:
+        if provider["catalog_id"] == catalog_id:
+            return provider["read_bytes"](kind, str(manifest_entry["filename"]))
+    raise ValueError(f"Unknown document catalog provider: {catalog_id}")
 
 
 def read_packaged_document_text(kind: str, filename: str) -> str:

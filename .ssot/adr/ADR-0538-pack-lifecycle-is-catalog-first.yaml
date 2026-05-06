@@ -1,0 +1,30 @@
+﻿schema_version: "0.3.0"
+kind: "adr"
+id: "adr:0538"
+number: 538
+slug: "pack-lifecycle-is-catalog-first"
+title: "Pack lifecycle is catalog-first"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "External pack lifecycle operations SHALL be modeled at the catalog level."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Decision
+
+  External pack lifecycle operations SHALL be modeled at the catalog level.
+
+  ## Rules
+
+  - Install, trust, pin, validate, sync, upgrade, and remove actions SHALL target a catalog identity rather than individual ADR or SPEC rows.
+  - ADR and SPEC sync remains the materialization step, but catalog state governs whether and how that sync is allowed.
+  - CLI and API surfaces SHALL present external-pack lifecycle as catalog-first operations.
+
+  ## Consequences
+
+  - Operators can reason about one pack as a governed unit.
+  - Trust, versioning, and conflict policy stay aligned across all documents shipped by that pack.

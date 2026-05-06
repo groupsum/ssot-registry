@@ -1,0 +1,30 @@
+﻿schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0544"
+number: 544
+slug: "extension-pack-reservation-registration-contract"
+title: "Extension-pack reservation registration contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines how catalog-owned ADR and SPEC number bands are represented and validated."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+
+  This specification defines how catalog-owned ADR and SPEC number bands are represented and validated.
+
+  ## Rules
+
+  - External catalog reservations SHALL be tracked separately from repo-local assignable reservations.
+  - Reservation ownership SHALL identify the external catalog, not just the generic origin type.
+  - Validation SHALL reject reuse of repo-local reservations for extension-pack numbering.
+  - Reservation import and registration SHALL preserve catalog identity and range boundaries.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0537"
+  - "adr:0540"

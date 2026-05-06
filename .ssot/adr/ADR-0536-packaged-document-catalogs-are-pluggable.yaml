@@ -1,0 +1,61 @@
+﻿schema_version: "0.3.0"
+kind: "adr"
+id: "adr:0536"
+number: 536
+slug: "packaged-document-catalogs-are-pluggable"
+title: "Packaged document catalogs are pluggable"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags:
+  - "catalog"
+  - "templates"
+  - "extension-pack"
+summary: "Packaged ADR and SPEC catalogs are pluggable SSOT inputs. `ssot-contracts` remains the official `ssot-origin` catalog, but it is not the only packaged catalog that SSOT may consume."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Context
+
+  `ssot-registry` currently loads packaged ADR and SPEC manifests from the
+  built-in `ssot-contracts` package and assumes those catalogs are the only
+  packaged document source.
+
+  That design couples:
+
+  - the existence of packaged document catalogs,
+  - the identity of the `ssot-origin` publisher, and
+  - the runtime's packaged catalog loading mechanism.
+
+  Once external SSOT packs exist, the runtime needs to accept more than one
+  packaged catalog while preserving the official role of `ssot-contracts` as
+  the `ssot-origin` catalog.
+
+  ## Decision
+
+  Packaged ADR and SPEC catalogs shall be treated as pluggable SSOT inputs.
+
+  `ssot-contracts` remains the official packaged catalog for `ssot-origin`
+  documents, but it shall not be modeled as the only packaged document catalog
+  that `ssot-registry` can load.
+
+  The runtime shall support multiple packaged catalog providers, including:
+
+  - the built-in `ssot-origin` catalog provided by `ssot-contracts`
+  - third-party `extension-pack` catalogs
+
+  The sync and import model shall be catalog-aware rather than package-name
+  hard-coded.
+
+  ## Consequences
+
+  - Manifest and sync APIs must identify which catalog a document came from.
+  - Downstream policy must decide which external catalogs are trusted or
+    allowed.
+  - Conflicts between official `ssot-origin` documents and extension-pack
+    documents must be governed explicitly instead of being hidden behind a
+    single hard-coded packaged source.
+  - `ssot-contracts` remains authoritative for official packaged SSOT
+    documents, but the packaged document runtime surface becomes extensible.

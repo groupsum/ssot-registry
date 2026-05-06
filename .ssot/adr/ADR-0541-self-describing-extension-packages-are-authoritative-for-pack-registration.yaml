@@ -1,0 +1,31 @@
+﻿schema_version: "0.3.0"
+kind: "adr"
+id: "adr:0541"
+number: 541
+slug: "self-describing-extension-packages-are-authoritative-for-pack-registration"
+title: "Self-describing extension packages are authoritative for pack registration"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "A self-describing external package SHALL be the authoritative source of extension-pack ingest metadata."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Decision
+
+  A self-describing external package SHALL be the authoritative source of extension-pack ingest metadata.
+
+  ## Rules
+
+  - Operators SHALL provide a package reference, not restate catalog metadata already carried by the package.
+  - ssot pack add SHALL derive catalog identity, publisher identity, origin type, reservations, and manifest metadata from the packaged catalog description.
+  - CLI flags SHALL be limited to operator intent overrides such as trust, pinning, sync behavior, or forceful conflict handling.
+  - Package registration and package resolution remain separate, but the package artifact remains authoritative for ingest metadata.
+
+  ## Consequences
+
+  - Normal extension-pack registration stays concise.
+  - Operator-entered flags are reserved for policy choices rather than duplicated identity data.

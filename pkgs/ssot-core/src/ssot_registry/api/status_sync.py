@@ -5,6 +5,11 @@ from pathlib import Path
 from typing import Any
 
 from ssot_registry.guards.claim_closure import evaluate_claim_guard
+from ssot_registry.guards.feature_claims import (
+    active_required_feature_claims,
+    claim_satisfies_feature_implementation,
+    feature_claim_ceiling_failures,
+)
 from ssot_registry.model.enums import CLAIM_STATUS_RANK, CLAIM_TIER_RANK
 from ssot_registry.validators.identity import build_index
 
@@ -184,9 +189,7 @@ def _sync_claims(registry: dict[str, Any]) -> list[dict[str, object]]:
 
 
 def _claim_satisfies_feature(claim: dict[str, Any], required_tier: str | None) -> bool:
-    if required_tier is not None and CLAIM_TIER_RANK[claim["tier"]] < CLAIM_TIER_RANK[required_tier]:
-        return False
-    return CLAIM_STATUS_RANK.get(claim.get("status"), -999) >= CLAIM_STATUS_RANK["evidenced"]
+    return claim_satisfies_feature_implementation(claim, required_tier)
 
 
 def _sync_features_once(registry: dict[str, Any]) -> list[dict[str, object]]:
@@ -203,25 +206,27 @@ def _sync_features_once(registry: dict[str, Any]) -> list[dict[str, object]]:
         else:
             linked_tests = [index["tests"][test_id] for test_id in feature.get("test_ids", []) if test_id in index["tests"]]
             linked_claims = [index["claims"][claim_id] for claim_id in feature.get("claim_ids", []) if claim_id in index["claims"]]
+            active_claims = active_required_feature_claims(feature, index)
             required_features = [index["features"][required_id] for required_id in feature.get("requires", []) if required_id in index["features"]]
             required_tier = feature.get("plan", {}).get("target_claim_tier")
             tests_pass = bool(linked_tests) and all(test.get("status") == "passing" for test in linked_tests)
-            claims_pass = any(_claim_satisfies_feature(claim, required_tier) for claim in linked_claims)
+            claims_pass = bool(active_claims) and all(_claim_satisfies_feature(claim, required_tier) for claim in active_claims)
             requirements_pass = all(required.get("implementation_status") == "implemented" for required in required_features)
             only_planned_support = (
                 bool(linked_tests or linked_claims)
                 and all(test.get("status") == "planned" for test in linked_tests)
-                and all(CLAIM_STATUS_RANK.get(claim.get("status"), -999) <= CLAIM_STATUS_RANK["proposed"] for claim in linked_claims)
+                and all(CLAIM_STATUS_RANK.get(claim.get("status"), -999) <= CLAIM_STATUS_RANK["proposed"] for claim in active_claims)
             )
             if tests_pass and claims_pass and requirements_pass:
                 status = "implemented"
-                reason = "feature has passing tests, satisfying claims, and implemented requirements"
+                reason = "feature has passing tests, all active required claims satisfy implementation, and implemented requirements"
             elif only_planned_support:
                 status = "absent"
                 reason = "feature has only planned verification support"
             elif linked_tests or linked_claims or required_features:
                 status = "partial"
-                reason = "feature has linked support but does not yet satisfy implementation criteria"
+                ceiling_failures = feature_claim_ceiling_failures(feature, index)
+                reason = "; ".join(ceiling_failures) if ceiling_failures else "feature has linked support but does not yet satisfy implementation criteria"
             else:
                 status = "absent"
                 reason = "feature has no linked implementation support"

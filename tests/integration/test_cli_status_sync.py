@@ -9,6 +9,78 @@ from tests.helpers import run_cli, temp_repo_from_fixture
 
 
 class CliStatusSyncTests(unittest.TestCase):
+    def _append_feature_claim_ceiling_rows(
+        self,
+        repo: Path,
+        registry: dict[str, object],
+        *,
+        feature_id: str,
+        claim_tiers: list[str],
+        target_tier: str = "T1",
+    ) -> None:
+        test_id = f"tst:{feature_id.removeprefix('feat:')}"
+        evidence_id = f"evd:{feature_id.removeprefix('feat:')}"
+        claim_ids = [f"clm:{feature_id.removeprefix('feat:')}.{tier.lower()}.{index}" for index, tier in enumerate(claim_tiers, start=1)]
+        test_path = f"tests/{feature_id.removeprefix('feat:').replace('.', '_')}.py"
+        evidence_path = f".ssot/evidence/reports/{feature_id.removeprefix('feat:').replace('.', '_')}.json"
+        (repo / test_path).write_text("def test_feature_claim_ceiling():\n    assert True\n", encoding="utf-8")
+        evidence_target = repo / evidence_path
+        evidence_target.parent.mkdir(parents=True, exist_ok=True)
+        evidence_target.write_text("{}", encoding="utf-8")
+
+        registry["features"].append(
+            {
+                "id": feature_id,
+                "title": "Feature claim ceiling fixture",
+                "description": "Feature used to verify claim ceilings during status sync.",
+                "implementation_status": "absent",
+                "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": None},
+                "plan": {"horizon": "current", "slot": None, "target_claim_tier": target_tier, "target_lifecycle_stage": "active"},
+                "requires": [],
+                "spec_ids": [],
+                "claim_ids": claim_ids,
+                "test_ids": [test_id],
+            }
+        )
+        for claim_id, tier in zip(claim_ids, claim_tiers, strict=True):
+            registry["claims"].append(
+                {
+                    "id": claim_id,
+                    "title": "Feature claim ceiling claim",
+                    "status": "asserted",
+                    "tier": tier,
+                    "kind": "conformance",
+                    "description": "Claim used to verify feature implementation ceilings.",
+                    "feature_ids": [feature_id],
+                    "test_ids": [test_id],
+                    "evidence_ids": [evidence_id],
+                }
+            )
+        registry["tests"].append(
+            {
+                "id": test_id,
+                "title": "Feature claim ceiling test",
+                "status": "planned",
+                "kind": "conformance",
+                "path": test_path,
+                "feature_ids": [feature_id],
+                "claim_ids": claim_ids,
+                "evidence_ids": [evidence_id],
+            }
+        )
+        registry["evidence"].append(
+            {
+                "id": evidence_id,
+                "title": "Feature claim ceiling evidence",
+                "status": "collected",
+                "kind": "report",
+                "tier": max(claim_tiers),
+                "path": evidence_path,
+                "claim_ids": claim_ids,
+                "test_ids": [test_id],
+            }
+        )
+
     def test_registry_sync_statuses_updates_all_automated_entity_sections(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)
@@ -142,6 +214,58 @@ class CliStatusSyncTests(unittest.TestCase):
         self.assertEqual(claim["status"], "proposed")
         self.assertEqual(test["status"], "planned")
         self.assertEqual(evidence["status"], "planned")
+
+    def test_registry_sync_statuses_caps_t0_feature_at_partial(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+        registry_path = repo / ".ssot" / "registry.json"
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+
+        feature_id = "feat:claim-ceiling.t0"
+        self._append_feature_claim_ceiling_rows(repo, registry, feature_id=feature_id, claim_tiers=["T0"], target_tier="T0")
+        registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
+
+        dry_run = run_cli("registry", "sync-statuses", str(repo), "--dry-run")
+        self.assertEqual(dry_run.returncode, 0, dry_run.stderr)
+        dry_payload = json.loads(dry_run.stdout)
+        feature_changes = [
+            change
+            for change in dry_payload["changes"]
+            if change["section"] == "features" and change["id"] == feature_id
+        ]
+        self.assertTrue(any("active T0 claim" in change["reason"] for change in feature_changes), dry_payload)
+
+        result = run_cli("registry", "sync-statuses", str(repo))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+        updated = json.loads(registry_path.read_text(encoding="utf-8"))
+        feature = next(row for row in updated["features"] if row["id"] == feature_id)
+        claim = next(row for row in updated["claims"] if row["id"] == "clm:claim-ceiling.t0.t0.1")
+        self.assertEqual(claim["status"], "evidenced")
+        self.assertEqual(feature["implementation_status"], "partial")
+
+    def test_registry_sync_statuses_requires_all_active_claims_to_pass(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+        registry_path = repo / ".ssot" / "registry.json"
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+
+        capped_feature_id = "feat:claim-ceiling.mixed"
+        passing_feature_id = "feat:claim-ceiling.all-pass"
+        self._append_feature_claim_ceiling_rows(repo, registry, feature_id=capped_feature_id, claim_tiers=["T1", "T0"])
+        self._append_feature_claim_ceiling_rows(repo, registry, feature_id=passing_feature_id, claim_tiers=["T1", "T2"])
+        registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
+
+        result = run_cli("registry", "sync-statuses", str(repo))
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+        updated = json.loads(registry_path.read_text(encoding="utf-8"))
+        capped_feature = next(row for row in updated["features"] if row["id"] == capped_feature_id)
+        passing_feature = next(row for row in updated["features"] if row["id"] == passing_feature_id)
+        self.assertEqual(capped_feature["implementation_status"], "partial")
+        self.assertEqual(passing_feature["implementation_status"], "implemented")
 
 
 if __name__ == "__main__":
