@@ -1,6 +1,6 @@
 ---
 name: ssot-e2e-release-closure
-description: Execute end-to-end release closure from beginning boundary setup through freeze, post-freeze implementation and verification, publication, and ending boundary verification, with fail-closed gates and mandatory status synchronization.
+description: Execute end-to-end release closure from beginning boundary setup through freeze, post-freeze runtime implementation, required-test delivery, verification, publication, and ending boundary verification, with fail-closed gates and mandatory status synchronization.
 ---
 
 # SSOT E2E Release Closure
@@ -26,12 +26,16 @@ Use this skill when the request is boundary-to-boundary release execution, not j
 - Freeze boundary with `boundary freeze`.
 - Treat freeze as the point where scope is locked; it does not mean the frozen work is already implemented or certifiable.
 
-3. Post-freeze implementation delivery
-- Implement the frozen scope in code, schema, migrations, and repo-native tests before attempting proof closure.
+3. Post-freeze runtime and test delivery
+- Implement the frozen scope in runtime code, schema, migrations, and repo-native tests before attempting verification or proof closure.
+- Code-first and tests-first are both valid, but both the runtime implementation and required tests must exist before verification begins.
+- Functional tests must cover happy paths, unhappy paths, valid and invalid inputs, expected outputs, and observable behavior.
+- Add performance and conformance tests when requested by the user, required by a feature, or required by the target claim tier.
 - Keep feature implementation state aligned with the code that actually landed.
 
 4. Verification execution and evidence ingestion
 - Treat `test list` rows as required verification set.
+- Confirm implementation and test coverage are complete before treating the run as verification.
 - Execute repo-native tests per `test.kind`/`test.path`.
 - Update evidence rows with real artifact outcomes and paths.
 
@@ -60,7 +64,7 @@ Use this skill when the request is boundary-to-boundary release execution, not j
 ## Operating rules
 
 - Fail closed at every gate. Do not advance if any required guard fails.
-- Do not skip from `boundary freeze` straight to `release certify`; the expected middle is implementation plus real verification evidence.
+- Do not skip from `boundary freeze` straight to verification, proof closure, or `release certify`; the expected middle is runtime implementation plus real test coverage and evidence.
 - Treat `registry sync-statuses` as required after evidence updates and after publish.
 - Do not force claim publication statuses manually; use release progression to advance them.
 - If request scope broadens beyond release closure (for example ADR/SPEC authoring or major implementation planning), escalate to `$ssot-e2e-change-orchestrator`.
@@ -70,7 +74,8 @@ Use this skill when the request is boundary-to-boundary release execution, not j
 ```powershell
 uv run ssot validate . --write-report
 uv run ssot boundary freeze . --boundary-id bnd:example
-# implement the frozen change and execute repo-native verification here
+# implement frozen runtime code and required tests here
+# execute repo-native verification and collect evidence here
 uv run ssot registry sync-statuses . --dry-run
 uv run ssot registry sync-statuses .
 uv run ssot validate . --write-report

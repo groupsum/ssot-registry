@@ -2,6 +2,7 @@ version: 1
 default_execution_policy: fail_closed_safe
 gate_barriers:
   - validate
+  - implementation_and_required_tests
   - registry.sync_statuses
   - release.certify
   - release.promote
@@ -81,7 +82,7 @@ skills:
   ssot-release:
     inputs: [release_id, boundary_id, claim_ids, evidence_ids]
     outputs: [release_row, release_reports, release_snapshots]
-    preconditions: [boundary_frozen]
+    preconditions: [boundary_frozen, runtime_implemented, required_tests_complete, evidence_collected]
     mutates_sections: [releases, claims]
     parallel_safety: write_serialized
     required_gates: [release.certify, release.promote, release.publish, validate]
@@ -121,5 +122,4 @@ skills:
     preconditions: []
     mutates_sections: [features, tests, evidence, claims, boundaries, releases, profiles]
     parallel_safety: orchestrated
-    required_gates: [validate, registry.sync_statuses, release.certify, release.promote, release.publish]
-
+    required_gates: [validate, implementation_and_required_tests, registry.sync_statuses, release.certify, release.promote, release.publish]

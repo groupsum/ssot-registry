@@ -8,6 +8,7 @@ This orchestrator policy is deterministic and guard-first.
 2. Writes are serialized by section.
 3. Read-only operations may run in parallel.
 4. A write step and read step may run in parallel only when the read scope does not depend on in-flight writes.
+5. Code-first and tests-first post-freeze delivery may be scheduled in either order, but both must converge before verification or proof gates run.
 
 ## Conflict rules
 
@@ -23,10 +24,11 @@ This orchestrator policy is deterministic and guard-first.
 Always stop and evaluate at these barriers:
 
 1. `validate`
-2. `registry sync-statuses --dry-run` then `registry sync-statuses`
-3. `release certify`
-4. `release promote`
-5. `release publish`
+2. `implementation_and_required_tests` confirms runtime code, functional tests, and required performance/conformance tests exist
+3. `registry sync-statuses --dry-run` then `registry sync-statuses`
+4. `release certify`
+5. `release promote`
+6. `release publish`
 
 If any barrier fails:
 
@@ -54,4 +56,3 @@ Run order:
 1. If request scope is one entity family: route to that `ssot-<entity>` skill.
 2. If request crosses families but stays read-only: route to `ssot-entity-analyze` / `ssot-entity-review`.
 3. If request spans freeze/certify/promote/publish or multi-phase lifecycle: route to orchestrated E2E flow (`ssot-e2e-portable-lifecycle` or phase skills).
-

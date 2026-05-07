@@ -13,7 +13,7 @@ Use this skill when the request spans multiple SSOT phases. Treat this as a dete
 2. ADR and SPEC authoring or sync
 3. Feature creation and target setting
 4. Boundary creation and freeze
-5. Implementation and migration delivery
+5. Frozen-scope delivery: runtime implementation plus required tests
 6. Claim, test, and evidence closure
 7. Release creation and certification
 8. Promotion and publication
@@ -36,7 +36,7 @@ Use this skill when the request spans multiple SSOT phases. Treat this as a dete
   - `$ssot-adr`, `$ssot-spec`, `$ssot-feature`, `$ssot-profile`, `$ssot-test`, `$ssot-issue`, `$ssot-claim`, `$ssot-evidence`, `$ssot-risk`, `$ssot-boundary`, `$ssot-release`.
 - Use `$ssot-decision-to-scope` for ADR/SPEC + initial feature targeting.
 - Use `$ssot-scope-to-frozen-boundary` for target setting through freeze.
-- Use `$ssot-implementation-and-migration-delivery` for post-freeze implementation/test delivery.
+- Use `$ssot-implementation-and-migration-delivery` for post-freeze runtime implementation and required-test delivery.
 - Use `$ssot-proof-chain-and-certification` for proof closure and release gates.
 - Use `$ssot-e2e-portable-lifecycle` for repeatable, test-framework-agnostic full lifecycle with mandatory status synchronization.
 - Keep `$ssot-entity-get/list/review/analyze` as read-oriented wrappers.
@@ -46,8 +46,11 @@ Use this skill when the request spans multiple SSOT phases. Treat this as a dete
 - Default execution mode is fail-closed safe.
 - Reject skipped gates unless the user explicitly asks for partial workflow coverage.
 - Treat freeze as the point where scope stops changing; after freeze, implementation should satisfy the frozen target instead of rewriting scope.
+- Treat post-freeze delivery as a required middle phase unless the runtime implementation and functional tests already exist and are evidenced.
+- Allow code-first or tests-first delivery, but do not enter verification, proof closure, certification, promotion, or publication until both the frozen-scope runtime code and its required tests are complete.
+- Required tests must cover happy paths, unhappy paths, valid and invalid inputs, expected outputs, and observable behavior. Add performance and conformance tests when requested by the user, required by a feature, or required by the target claim tier.
 - If a breaking schema change is requested, require a schema version bump and upgrade-path coverage.
-- If the request says "fully featured" or "fully conformant", require docs, targets, freeze, implementation, migration, tests, proof links, and clean release progression.
+- If the request says "fully featured" or "fully conformant", require docs, targets, freeze, implementation, migration, functional tests, required performance/conformance tests, proof links, and clean release progression.
 - Require `registry sync-statuses --dry-run` then `registry sync-statuses` after test/evidence updates and after publish, followed by `validate --write-report`.
 - Never continue from failed certify/promote/publish gates.
 

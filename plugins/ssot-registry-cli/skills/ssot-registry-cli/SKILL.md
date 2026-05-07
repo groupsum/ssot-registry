@@ -27,8 +27,8 @@ Use these focused skills by default:
   - Decision through initial target rows: `$ssot-decision-to-scope`
   - Scoped pre-freeze ADR/SPEC/feature/test flow: `$ssot-decision-to-scope` then `$ssot-feature-test-linking`
   - Target setting through frozen boundary: `$ssot-scope-to-frozen-boundary`
-  - Post-freeze implementation and migration delivery: `$ssot-implementation-and-migration-delivery`
-  - Proof closure and release gates after implementation exists: `$ssot-proof-chain-and-certification`
+  - Post-freeze runtime implementation and required-test delivery: `$ssot-implementation-and-migration-delivery`
+  - Proof closure and release gates after implementation plus required tests exist: `$ssot-proof-chain-and-certification`
 - Entity-focused operations:
   - ADR: `$ssot-adr`
   - SPEC: `$ssot-spec`
@@ -93,7 +93,7 @@ If you only need the CLI parser behavior, this fallback is sufficient and matche
 - Keep outputs structured. The CLI defaults to JSON; use `--output-format` only when the user asks for another rendering.
 - When mutating entities, prefer the CLI over manual edits so IDs, links, lifecycle fields, and derived artifacts stay normalized.
 - For release and boundary flows, inspect the current boundary or release first before adding or removing linked records.
-- Treat `boundary freeze` as a scope checkpoint, not as an implementation-complete signal. In normal workflows, implementation/migration/test delivery still happens after freeze and before any certification attempt.
+- Treat `boundary freeze` as a scope checkpoint, not as an implementation-complete signal. In normal workflows, runtime implementation, migration work, required functional tests, and requested/required performance or conformance tests still happen after freeze and before verification or certification.
 - For pre-freeze scoping work that includes ADRs, SPECs, features, and tests, chain `$ssot-decision-to-scope` into `$ssot-feature-test-linking` and stop before `$ssot-scope-to-frozen-boundary`.
 
 ## Common flows
@@ -145,7 +145,7 @@ uv run ssot validate . --write-report
 
 ```powershell
 uv run ssot boundary freeze . --boundary-id bnd:demo.v0
-# use $ssot-implementation-and-migration-delivery or equivalent repo-native delivery work here
+# implement runtime code and required tests; run verification and collect evidence here
 uv run ssot release certify . --release-id rel:0.1.0 --write-report
 ```
 

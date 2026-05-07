@@ -1,6 +1,6 @@
 ---
 name: ssot-e2e-portable-lifecycle
-description: Run a robust, repeatable, and portable SSOT end-to-end workflow from feature creation through target setting, boundary freeze, post-freeze implementation and migration delivery, proof execution, status synchronization, certification, promotion, publication, and closure verification. Use when the user asks for full-lifecycle execution with CLI-grounded gates and fail-closed controls.
+description: Run a robust, repeatable, and portable SSOT end-to-end workflow from feature creation through target setting, boundary freeze, post-freeze runtime implementation, required-test delivery, proof execution, status synchronization, certification, promotion, publication, and closure verification. Use when the user asks for full-lifecycle execution with CLI-grounded gates and fail-closed controls.
 ---
 
 # SSOT E2E Portable Lifecycle
@@ -29,13 +29,17 @@ Use this skill when the user needs one strong workflow pattern that is accurate 
 - Freeze with `boundary freeze` and keep scope stable after this point.
 - Interpret freeze as a scope lock, not as proof that implementation is already complete.
 
-4. Deliver the frozen change in implementation, schema, migrations, and tests
-- Implement the repo changes required by the frozen boundary before attempting certification.
+4. Deliver the frozen change in runtime code and required tests
+- Implement the repo changes required by the frozen boundary before attempting verification or certification.
+- Code-first and tests-first are both valid delivery orders, but verification cannot begin until both runtime implementation and required tests exist.
+- Fully implement functional testing required by the frozen features: happy paths, unhappy paths, valid and invalid inputs, expected outputs, and observable behavior.
+- Add performance and conformance tests when requested by the user, required by a feature, or required by the target claim tier.
 - Advance schema versioning and migration coverage when the frozen change alters persisted contracts or document shapes.
 - Keep feature implementation state aligned with actual repo reality; do not treat a frozen target as implemented by default.
 
 5. Execute tests using a test-runner adapter (test-framework agnostic)
 - Enumerate SSOT tests (`test list`) and treat each row as the source of required verification.
+- Confirm the frozen-scope runtime implementation exists before interpreting passing test rows as verification.
 - Execute each test row with the repository's native runner based on `test.kind` and `test.path` (do not hard-code a single test framework).
 - Persist raw outputs and machine-readable summaries as evidence artifacts.
 
@@ -66,7 +70,7 @@ Use this skill when the user needs one strong workflow pattern that is accurate 
 ## Operating rules
 
 - Never advance stages when a guard fails.
-- Never collapse `freeze -> certify` into one implied step; implementation and verification usually sit between them.
+- Never collapse `freeze -> verify`, `freeze -> proof`, or `freeze -> certify` into one implied step; implementation and required tests sit between them unless already complete and evidenced.
 - Treat `registry sync-statuses` as mandatory after test/evidence updates and after publish.
 - Use release actions to advance release and claim publication states; do not force claim publication statuses manually unless recovery is explicitly required.
 - Keep test execution adapter-specific, but SSOT commands invariant.
@@ -77,7 +81,8 @@ Use this skill when the user needs one strong workflow pattern that is accurate 
 uv run ssot validate . --write-report
 uv run ssot feature plan . --ids feat:example --horizon current --claim-tier T1 --target-lifecycle-stage active
 uv run ssot boundary freeze . --boundary-id bnd:example
-# implement the frozen change in code/schema/migrations here
+# implement the frozen runtime code and required tests here
+# run the repo-native tests and collect evidence before proof/certification
 uv run ssot registry sync-statuses . --dry-run
 uv run ssot registry sync-statuses .
 uv run ssot release create . --id rel:example --version 0.1.0 --boundary-id bnd:example

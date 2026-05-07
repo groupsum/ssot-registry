@@ -31,7 +31,7 @@
         "docs_sync",
         "feature_targeting",
         "boundary_freeze",
-        "implementation_verification",
+        "implementation_and_test_delivery",
         "proof_closure",
         "release_certification",
         "release_promotion",
@@ -90,4 +90,3 @@
     "resume_from_step": { "type": ["string", "null"] }
   }
 }
-

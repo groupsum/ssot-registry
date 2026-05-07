@@ -20,8 +20,9 @@ Use this skill for boundary-only operations.
 ## Operating rules
 
 - Freeze is a hard scope gate; avoid post-freeze scope churn.
+- Freeze does not prove runtime implementation, required tests, evidence, or verification are complete.
 - Confirm in-scope features are targeted appropriately before freezing.
-- If the request includes release certify/promote/publish, escalate to `$ssot-e2e-change-orchestrator`.
+- If the request includes implementation, tests, verification, release certify/promote/publish, or closure, escalate to `$ssot-e2e-change-orchestrator`.
 
 ## Example
 
@@ -30,4 +31,3 @@ ssot boundary get . --id bnd:demo.v1
 ssot boundary add-feature . --id bnd:demo.v1 --feature-ids feat:demo.login feat:demo.audit
 ssot boundary freeze . --boundary-id bnd:demo.v1
 ```
-

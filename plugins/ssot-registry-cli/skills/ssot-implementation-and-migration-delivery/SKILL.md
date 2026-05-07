@@ -5,7 +5,7 @@ description: Guide SSOT implementation work after scope freeze, including schema
 
 # SSOT Implementation And Migration Delivery
 
-Use this skill after the boundary is frozen and the task is to deliver the governed change in code, schemas, migrations, and tests. In many real workflows this is the largest phase between freeze and any later proof/certification work.
+Use this skill after the boundary is frozen and the task is to deliver the governed change in code, schemas, migrations, and tests. In many real workflows this is the largest phase between freeze and any later verification, proof, or certification work.
 
 ## Repo checklist
 
@@ -22,14 +22,17 @@ Use this skill after the boundary is frozen and the task is to deliver the gover
 3. Implement schema and runtime changes.
 4. If the schema is broken compatibly or incompatibly, advance the schema version and add migration coverage.
 5. Add or update tests for behavior, CLI, and migrations.
-6. Keep feature implementation state aligned with code reality.
-7. Hand off to proof/certification only after the frozen implementation is real and verifiable.
+6. Cover happy paths, unhappy paths, valid and invalid inputs, expected outputs, and observable behavior.
+7. Add performance and conformance tests when requested by the user, required by a feature, or required by the target claim tier.
+8. Keep feature implementation state aligned with code reality.
+9. Hand off to verification/proof/certification only after runtime implementation and required tests both exist.
 
 ## Operating rules
 
 - Breaking schema changes require schema-version advancement and migration logic.
+- Code-first and tests-first are both valid delivery orders, but do not verify or certify until both runtime implementation and required tests are complete.
 - Do not treat implementation as complete until tests and migration coverage exist.
-- Freeze locks scope. It does not eliminate the need for post-freeze implementation, migration, and verification work.
+- Freeze locks scope. It does not eliminate the need for post-freeze runtime implementation, migration work, required tests, evidence collection, and later verification.
 - If the request also needs claims, evidence, or release work, escalate to `$ssot-e2e-change-orchestrator` or hand off to `$ssot-proof-chain-and-certification`.
 - Read `references/repo-touchpoints.md` before giving concrete edit guidance.
 

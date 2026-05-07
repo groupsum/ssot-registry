@@ -5,23 +5,25 @@ description: Drive the SSOT proof and release phase by creating and linking clai
 
 # SSOT Proof Chain And Certification
 
-Use this skill after scope is frozen and implementation exists. The job here is proof closure and release progression, not post-freeze implementation delivery.
+Use this skill after scope is frozen and implementation plus required tests exist. The job here is proof closure and release progression, not post-freeze implementation delivery.
 
 ## Workflow
 
 1. Confirm the frozen boundary and its resolved feature scope.
 2. Confirm the repo already contains the code, schema, migration, and test changes required by that frozen scope.
-3. Create or update claims, tests, and evidence for that scope.
-4. Add reciprocal links so the graph is complete.
-5. Run claim evaluation and evidence verification.
-6. Create the release against the frozen boundary.
-7. Run certification; only if it passes continue to promotion and publication.
-8. Verify closure outputs such as reports, snapshots, and final statuses.
+3. Confirm required tests cover happy paths, unhappy paths, valid and invalid inputs, expected outputs, observable behavior, and any requested or feature-required performance/conformance cases.
+4. Create or update claims, tests, and evidence for that scope.
+5. Add reciprocal links so the graph is complete.
+6. Run claim evaluation and evidence verification.
+7. Create the release against the frozen boundary.
+8. Run certification; only if it passes continue to promotion and publication.
+9. Verify closure outputs such as reports, snapshots, and final statuses.
 
 ## Operating rules
 
 - Require release coverage for all frozen boundary features.
-- Reject any implied `freeze -> certify` shortcut when implementation or verification artifacts are still missing.
+- Reject any implied `freeze -> certify` shortcut when runtime implementation, required tests, or evidence artifacts are still missing.
+- Reject proof closure when runtime implementation or required tests are missing, regardless of whether the team chose code-first or tests-first delivery.
 - Treat certification as fail-closed; do not continue through failures.
 - Do not publish unless promotion has succeeded.
 - If the request also needs upstream scope or implementation work, escalate to `$ssot-e2e-change-orchestrator`.
