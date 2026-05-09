@@ -1,0 +1,38 @@
+﻿schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0618"
+number: 618
+slug: "local-release-assurance-candidate-scope"
+title: "Local Release Assurance Candidate Scope"
+status: "draft"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "Draft candidate scope."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Tentative local release assurance proposal; not accepted or implementation-bound."
+    at: "2026-05-08T07:34:02Z"
+references: []
+body: |-
+  ## Status
+
+  Draft candidate scope.
+
+  ## Scope
+
+  This SPEC defines the exploratory local release assurance scope. The candidate surface includes governed source snapshots, deterministic root hashes, local evidence bundles, output artifact manifests, local verification reports, tamper detection, and release gate integration.
+
+  ## Out Of Scope
+
+  Mandatory CUE, Bazel, Nix, Sigstore, Cosign, Rekor, Docker-only artifact handling, network services, and required external build systems are out of scope. Optional adapters may be proposed separately later.
+
+  ## Tentative Nature
+
+  Rows linked to this SPEC should remain draft, absent, backlog, or future until implementation and proof chains exist.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0618"
