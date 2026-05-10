@@ -14,6 +14,8 @@
 <!-- ssot-schema-badges:end -->
 </div>
 
+![ssot-registry technical marketing graphic](https://raw.githubusercontent.com/groupsum/ssot-registry/master/assets/ssot-registry-technical-marketing.png)
+
 `ssot-registry` is a portable, repository-agnostic single-source-of-truth system built from [ssot-core](https://pypi.org/project/ssot-core/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-tui](https://pypi.org/project/ssot-tui/), and [ssot-codegen](https://pypi.org/project/ssot-codegen/).
 
 - GitHub: https://github.com/groupsum/ssot-registry
