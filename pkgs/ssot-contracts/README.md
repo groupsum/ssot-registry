@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>ðŸ”· ssot-contracts</h1>
+  <h1>🔷 ssot-contracts</h1>
   <p><strong>Canonical schemas, templates, manifests, and generated contract metadata for SSOT.</strong></p>
 </div>
 

@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>ðŸ”· ssot-registry</h1>
+  <h1>🔷 ssot-registry</h1>
   <p><strong>Single Source of Truth for features, claims, tests, releases, ADRs, and specs.</strong></p>
 </div>
 
