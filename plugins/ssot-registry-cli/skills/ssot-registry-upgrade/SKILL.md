@@ -5,13 +5,26 @@ description: Upgrade a repository to the latest PyPI `ssot-registry`, run the CL
 
 # SSOT Registry Upgrade
 
-Use this skill for one bounded workflow: install the latest PyPI `ssot-registry` in the workspace, run the CLI upgrade for `.ssot/registry.json`, validate with the same installed CLI, and repair validation blockers until the registry passes or a concrete blocker remains.
+Use this skill for one bounded workflow: run the latest available `ssot-registry` CLI, upgrade `.ssot/registry.json`, validate with the same CLI rail, and repair validation blockers until the registry passes or a concrete blocker remains.
 
 ## Command Surface
 
-Preferred local `uv` rail:
+Preferred global rail when already installed and current:
 
 ```powershell
+Get-Command ssot
+ssot validate --help
+ssot upgrade . --sync-docs --write-report
+ssot validate . --write-report
+```
+
+Use `ssot --version`, `ssot-registry --version`, or Python package metadata when that rail supports it. If the global executable fails with launcher, canonicalization, or parser-bootstrap errors, treat it as unavailable and use the repo-local `uv` rail.
+
+Preferred repo-local `uv` rail when the global CLI is unavailable, stale, or unverified:
+
+```powershell
+$env:UV_CACHE_DIR='.tmp\uv-cache'
+$env:UV_LINK_MODE='copy'
 uv venv
 uv pip install --upgrade ssot-registry
 uv run python -c "import importlib.metadata as m; print(m.version('ssot-registry'))"
@@ -35,8 +48,8 @@ Use absolute paths in `PYTHONPATH` only when required by the host shell; do not 
 
 1. Confirm the repository root contains `.ssot/registry.json`.
 2. Record current `schema_version`, `tooling.ssot_registry_version`, and package pin/lock state.
-3. Install the latest PyPI `ssot-registry` into the workspace.
-4. Verify the installed package version from the same execution rail that will run `upgrade`.
+3. Verify the latest available CLI rail. Use a current global CLI if present; otherwise install the latest PyPI `ssot-registry` into the workspace with repo-local `uv` cache settings.
+4. Verify the package version from the same execution rail that will run `upgrade`.
 5. Run `ssot upgrade . --sync-docs --write-report`.
 6. If upgrade fails, fix the concrete validation blockers and rerun upgrade.
 7. Run `ssot validate . --write-report` with the same installed CLI.
@@ -46,11 +59,12 @@ Use absolute paths in `PYTHONPATH` only when required by the host shell; do not 
 
 ### Windows `uv` or venv failures
 
-If `uv` fails with cache errors, set a repo-local cache and retry:
+Set a repo-local cache before the first `uv` command on Windows, especially when prior runs showed cache or launcher access errors:
 
 ```powershell
 $env:UV_CACHE_DIR='.tmp\uv-cache'
-uv lock --upgrade-package ssot-registry
+$env:UV_LINK_MODE='copy'
+uv pip install --upgrade ssot-registry
 ```
 
 If `uv` or `.venv\Scripts\python.exe` fails with `Access is denied`, use the workspace fallback rail. Do not keep retrying the same blocked interpreter.

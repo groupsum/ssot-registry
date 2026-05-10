@@ -1,13 +1,13 @@
 ---
 name: ssot-cli
-description: Use a `uv`-managed virtual environment with the PyPI-published `ssot-registry` package to run the SSOT CLI and its aliases for inspecting, validating, and mutating SSOT registries. Use when Codex should operate through `uv run ssot ...` from a local venv instead of editing `.ssot/registry.json` by hand or relying on a global tool install.
+description: Use the latest available `ssot-registry` CLI, either from a current global install or from a repo-local `uv` environment with a repo-local cache, to inspect, validate, and mutate SSOT registries. Use when Codex should operate through the CLI instead of editing `.ssot/registry.json` by hand.
 ---
 
 # SSOT Registry CLI
 
-Use this skill when the user wants to operate on an SSOT repository through a local `uv` virtual environment and CLI aliases instead of editing `.ssot/registry.json` by hand.
+Use this skill when the user wants to operate on an SSOT repository through the `ssot-registry` CLI and its aliases instead of editing `.ssot/registry.json` by hand.
 
-This plugin is centered on the CLI exposed by the PyPI-published `ssot-registry` distribution. The preferred execution path is a local `.venv` managed by `uv`, with `ssot-registry` installed into that environment and invoked with `uv run ssot ...`.
+This plugin is centered on the CLI exposed by the PyPI-published `ssot-registry` distribution. The preferred execution path is the latest available CLI. Use a verified current global `ssot`/`ssot-registry` executable when present; otherwise create or refresh a repo-local `uv` environment with repo-local cache settings before invoking `uv run ssot ...`.
 
 ## What this skill covers
 
@@ -46,22 +46,36 @@ Use these focused skills by default:
 
 ## Command selection
 
-- Prefer `uv run ssot ...` in new commands and automation.
-- Accept `ssot-registry ...` as a compatibility alias when the user explicitly names it.
+- Prefer the latest verified CLI available on the machine. A current global `ssot ...` or `ssot-registry ...` rail is acceptable.
+- If the global rail is missing, stale, or unverified, use repo-local `uv run ssot ...` with repo-local cache settings.
+- Accept `ssot-registry ...` as a compatibility alias.
 - Treat `ssot-cli` as equivalent for help and parser inspection.
-- Prefer a local `uv` venv over any globally installed copy, even when running inside this repository.
 
-## Preferred local environment
+## Preferred command rails
 
-Create or refresh a local virtual environment, then install the PyPI package into it:
+First check whether a global CLI is already available and current enough for the requested operation:
 
 ```powershell
+Get-Command ssot
+ssot validate --help
+```
+
+Use `ssot --version`, `ssot-registry --version`, or Python package metadata when that rail supports it, but do not require those flags for every install because older CLI shims may not expose a version command. If the global executable fails with launcher, canonicalization, or parser-bootstrap errors, treat it as unavailable and use the repo-local `uv` rail.
+
+When a global CLI is unavailable or stale, create or refresh a local virtual environment with repo-local cache settings, then install the PyPI package into it:
+
+```powershell
+$env:UV_CACHE_DIR='.tmp\uv-cache'
+$env:UV_LINK_MODE='copy'
 uv venv
-uv pip install ssot-registry
+uv pip install --upgrade ssot-registry
+uv run python -c "import importlib.metadata as m; print(m.version('ssot-registry'))"
 uv run ssot --help
 ```
 
-This keeps execution inside a local `uv`-managed venv while still exercising the published package from PyPI.
+This keeps execution inside the repository workspace while still exercising the published package from PyPI. Always set `UV_CACHE_DIR` before the first `uv` command on Windows when the user cache or launcher path has shown access errors.
+
+If `uv run` reaches `.venv\Scripts\python.exe` and fails with `Access is denied`, stop retrying `uv` and use the local development fallback below or the workspace fallback rail from `$ssot-registry-upgrade`.
 
 Available CLI names inside that environment:
 
@@ -69,7 +83,7 @@ Available CLI names inside that environment:
 - `ssot-cli`
 - `ssot-registry`
 
-Prefer `uv run ssot ...` in new commands unless the user explicitly wants the compatibility alias.
+Prefer the already-verified rail consistently within a workflow. Do not switch between global and local CLI versions during a mutation sequence unless the first rail fails before touching repo state.
 
 ## Local development fallback
 
@@ -87,8 +101,9 @@ If you only need the CLI parser behavior, this fallback is sufficient and matche
 ## Operating rules
 
 - Run commands from the repository root unless the user is targeting a different SSOT repo path.
-- Never recommend `uv tool install`, `pipx`, or a bare global `pip install` for this skill.
-- Prefer `uv run ssot ...` over bare `ssot ...` so the command resolves through the local venv rather than a machine-global install.
+- Do not recommend `pipx` or a bare global `pip install` for this skill.
+- A preexisting or user-requested global `ssot`/`ssot-registry` install is acceptable after verifying its version.
+- Prefer repo-local `UV_CACHE_DIR` and `UV_LINK_MODE=copy` for any `uv` command before diagnosing registry logic.
 - Prefer read-only inspection commands before mutation commands when the current state is unclear.
 - Keep outputs structured. The CLI defaults to JSON; use `--output-format` only when the user asks for another rendering.
 - When mutating entities, prefer the CLI over manual edits so IDs, links, lifecycle fields, and derived artifacts stay normalized.
@@ -101,8 +116,10 @@ If you only need the CLI parser behavior, this fallback is sufficient and matche
 ### Create the local CLI environment
 
 ```powershell
+$env:UV_CACHE_DIR='.tmp\uv-cache'
+$env:UV_LINK_MODE='copy'
 uv venv
-uv pip install ssot-registry
+uv pip install --upgrade ssot-registry
 uv run ssot --help
 ```
 
