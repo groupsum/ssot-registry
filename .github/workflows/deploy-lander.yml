@@ -96,9 +96,6 @@ jobs:
       - name: Validate npmctl desired state
         run: uv run npmctl validate desired-state
 
-      - name: Adopt matching unmanaged NPM resources
-        run: uv run npmctl adopt desired-state --owner ssot-registry --force
-
       - name: Plan NPM changes
         run: uv run npmctl plan desired-state --owner ssot-registry
 
