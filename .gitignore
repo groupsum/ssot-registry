@@ -12,3 +12,5 @@ build/
 /.ssot/tui-session
 .tmp/
 .tmp*
+node_modules/
+desired-state/

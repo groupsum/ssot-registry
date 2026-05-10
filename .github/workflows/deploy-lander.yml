@@ -1,0 +1,123 @@
+name: Deploy SSOT Registry Lander
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ssot-registry-lander-deploy
+  cancel-in-progress: false
+
+env:
+  DOMAIN_NAME: ssot-registry.com
+  SERVER_IP: ${{ secrets.SERVER_IP }}
+  FORWARD_PORT: ${{ secrets.FORWARD_PORT }}
+  NPM_BASE_URL: ${{ secrets.NPM_BASE_URL }}
+  NPM_IDENTITY: ${{ secrets.NPM_EMAIL }}
+  NPM_SECRET: ${{ secrets.NPM_SECRET }}
+  LETSENCRYPT_EMAIL: ${{ secrets.LETSENCRYPT_EMAIL }}
+  NAMECHEAP_USERNAME: ${{ secrets.NAMECHEAP_USERNAME }}
+  NAMECHEAP_API_USER: ${{ secrets.NAMECHEAP_API_USER }}
+  NAMECHEAP_API_KEY: ${{ secrets.NAMECHEAP_API_KEY }}
+  NAMECHEAP_CLIENT_IP: ${{ secrets.NAMECHEAP_CLIENT_IP }}
+
+jobs:
+  deploy:
+    runs-on: deployment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify required secrets
+        shell: bash
+        run: |
+          missing=0
+          for name in SERVER_IP FORWARD_PORT NPM_BASE_URL NPM_IDENTITY NPM_SECRET LETSENCRYPT_EMAIL NAMECHEAP_USERNAME NAMECHEAP_API_USER NAMECHEAP_API_KEY NAMECHEAP_CLIENT_IP; do
+            if [ -z "${!name}" ]; then
+              echo "Missing required secret-backed environment value: $name"
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Select Docker Compose command
+        shell: bash
+        run: |
+          if docker compose version >/dev/null 2>&1; then
+            echo 'COMPOSE_CMD=docker compose' >> "$GITHUB_ENV"
+          elif command -v docker-compose >/dev/null 2>&1; then
+            echo 'COMPOSE_CMD=docker-compose' >> "$GITHUB_ENV"
+          else
+            echo "Neither docker compose nor docker-compose is available"
+            exit 1
+          fi
+
+      - name: Deploy Docker container
+        run: $COMPOSE_CMD up -d --build
+
+      - name: Wait for local health check
+        shell: bash
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent "http://127.0.0.1:${FORWARD_PORT}/healthz"; then
+              exit 0
+            fi
+            sleep 2
+          done
+          $COMPOSE_CMD ps
+          $COMPOSE_CMD logs --no-color --tail=100
+          exit 1
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Create uv virtualenv
+        run: |
+          uv python install 3.12
+          uv venv --python 3.12 .venv
+
+      - name: Install npmctl and Namecheap DNS provider with uv
+        run: uv pip install "npmctl==0.3.2" "npmctl-namecheap==0.3.2"
+
+      - name: Verify npmctl Namecheap provider
+        run: |
+          uv run npmctl dns providers
+          uv run npmctl dns doctor --provider namecheap
+
+      - name: Configure Namecheap DNS records
+        run: uv run python scripts/namecheap_dns.py
+
+      - name: Write npmctl desired state
+        run: uv run python scripts/write_npmctl_state.py
+
+      - name: Validate npmctl desired state
+        run: uv run npmctl validate desired-state
+
+      - name: Adopt matching unmanaged NPM resources
+        run: uv run npmctl adopt desired-state --owner ssot-registry --force
+
+      - name: Plan NPM changes
+        run: uv run npmctl plan desired-state --owner ssot-registry
+
+      - name: Apply NPM reverse proxy and SSL
+        run: uv run npmctl apply desired-state --owner ssot-registry
+
+      - name: Verify public endpoints
+        shell: bash
+        run: |
+          for url in "https://${DOMAIN_NAME}" "https://www.${DOMAIN_NAME}"; do
+            for attempt in {1..40}; do
+              if curl --fail --silent --show-error "$url" | grep -q "Hello, world."; then
+                echo "$url is serving the app"
+                break
+              fi
+              if [ "$attempt" -eq 40 ]; then
+                echo "Timed out waiting for $url"
+                exit 1
+              fi
+              sleep 15
+            done
+          done
