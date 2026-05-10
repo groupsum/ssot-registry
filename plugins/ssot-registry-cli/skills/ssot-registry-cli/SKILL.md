@@ -60,7 +60,7 @@ Get-Command ssot
 ssot validate --help
 ```
 
-Use `ssot --version`, `ssot-registry --version`, or Python package metadata when that rail supports it, but do not require those flags for every install because older CLI shims may not expose a version command. If the global executable fails with launcher, canonicalization, or parser-bootstrap errors, treat it as unavailable and use the repo-local `uv` rail.
+Use Python package metadata to verify the installed `ssot-registry` version. The CLI does not expose a root `ssot --version` or `ssot-registry --version` command, so do not use version flags as a rail check. If the global executable fails with launcher, canonicalization, or parser-bootstrap errors, treat it as unavailable and use the repo-local `uv` rail.
 
 When a global CLI is unavailable or stale, create or refresh a local virtual environment with repo-local cache settings, then install the PyPI package into it:
 
@@ -102,7 +102,7 @@ If you only need the CLI parser behavior, this fallback is sufficient and matche
 
 - Run commands from the repository root unless the user is targeting a different SSOT repo path.
 - Do not recommend `pipx` or a bare global `pip install` for this skill.
-- A preexisting or user-requested global `ssot`/`ssot-registry` install is acceptable after verifying its version.
+- A preexisting or user-requested global `ssot`/`ssot-registry` install is acceptable after verifying the installed package version through Python package metadata.
 - Prefer repo-local `UV_CACHE_DIR` and `UV_LINK_MODE=copy` for any `uv` command before diagnosing registry logic.
 - Prefer read-only inspection commands before mutation commands when the current state is unclear.
 - Keep outputs structured. The CLI defaults to JSON; use `--output-format` only when the user asks for another rendering.

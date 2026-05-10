@@ -18,7 +18,7 @@ ssot upgrade . --sync-docs --write-report
 ssot validate . --write-report
 ```
 
-Use `ssot --version`, `ssot-registry --version`, or Python package metadata when that rail supports it. If the global executable fails with launcher, canonicalization, or parser-bootstrap errors, treat it as unavailable and use the repo-local `uv` rail.
+Use Python package metadata to verify the installed `ssot-registry` version. The CLI does not expose a root `ssot --version` or `ssot-registry --version` command, so do not use version flags as a rail check. If the global executable fails with launcher, canonicalization, or parser-bootstrap errors, treat it as unavailable and use the repo-local `uv` rail.
 
 Preferred repo-local `uv` rail when the global CLI is unavailable, stale, or unverified:
 

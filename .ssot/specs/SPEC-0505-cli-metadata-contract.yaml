@@ -1,25 +1,28 @@
-adr_ids: []
+schema_version: "0.3.0"
+kind: "spec"
+id: "spc:0505"
+number: 505
+slug: "cli-metadata-contract"
+title: "CLI metadata contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "CLI metadata SHALL describe:"
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
 body: |-
   CLI metadata SHALL describe:
-  
+
   - output formats
   - entity families
+  - root metadata flags
   - future command / flag metadata
-  
+
   `ssot-cli` SHALL consume generated CLI metadata where practical.
-decision_date: null
-id: "spc:0505"
-kind: "spec"
-number: 505
-origin: "ssot-core"
-references: []
-schema_version: "0.1.0"
-slug: "cli-metadata-contract"
+
+  Root version metadata SHALL be sourced from installed Python package metadata for `ssot-cli`. Root `--version` handling SHALL be represented as CLI metadata distinct from command-specific semantic version fields such as `init --version` or `release create --version`.
 spec_kind: "governance"
-status: "draft"
-status_notes: []
-summary: "CLI metadata SHALL describe:"
-superseded_by: []
-supersedes: []
-tags: []
-title: "CLI metadata contract"
+adr_ids: []
