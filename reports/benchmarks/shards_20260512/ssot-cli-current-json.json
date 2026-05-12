@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-05-12T03:54:45.017638",
+  "cwd": "E:\\swarmauri_github\\ssot-registry",
+  "repeats": 1,
+  "workload": {
+    "total_instances": 100,
+    "feature_count": 25,
+    "claim_count": 25,
+    "test_count": 25,
+    "evidence_count": 25
+  },
+  "rows": [
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "8.202092",
+      "median_ms_per_op": "328.084",
+      "file_count": 57,
+      "cumulative_bytes": 66193
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "6.781803",
+      "median_ms_per_op": "271.272",
+      "file_count": 57,
+      "cumulative_bytes": 66193
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "8.232802",
+      "median_ms_per_op": "329.312",
+      "file_count": 57,
+      "cumulative_bytes": 66193
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.284305",
+      "median_ms_per_op": "284.305",
+      "file_count": 57,
+      "cumulative_bytes": 66193
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "26.300127",
+      "median_ms_per_op": "1052.005",
+      "file_count": 57,
+      "cumulative_bytes": 66193
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "31.124251",
+      "median_ms_per_op": "1244.970",
+      "file_count": 57,
+      "cumulative_bytes": 66193
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.279291",
+      "median_ms_per_op": "279.291",
+      "file_count": 57,
+      "cumulative_bytes": 66193
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-05-12T04:12:09.638212",
+  "cwd": "E:\\swarmauri_github\\ssot-registry",
+  "repeats": 1,
+  "workload": {
+    "total_instances": 100,
+    "feature_count": 25,
+    "claim_count": 25,
+    "test_count": 25,
+    "evidence_count": 25
+  },
+  "rows": [
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "17.449877",
+      "median_ms_per_op": "697.995",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "11.820231",
+      "median_ms_per_op": "472.809",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "19.013880",
+      "median_ms_per_op": "760.555",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.461538",
+      "median_ms_per_op": "461.538",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "50.238639",
+      "median_ms_per_op": "2009.546",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "51.977830",
+      "median_ms_per_op": "2079.113",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000024",
+      "median_ms_per_op": "0.024",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    }
+  ]
+}

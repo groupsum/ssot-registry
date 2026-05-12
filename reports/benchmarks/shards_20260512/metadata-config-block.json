@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-05-12T04:34:20.233594",
+  "cwd": "E:\\swarmauri_github\\ssot-registry",
+  "repeats": 1,
+  "workload": {
+    "total_instances": 100,
+    "feature_count": 25,
+    "claim_count": 25,
+    "test_count": 25,
+    "evidence_count": 25
+  },
+  "rows": [
+    {
+      "contender": "metadata-config-block",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "19.399839",
+      "median_ms_per_op": "775.994",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "12.753251",
+      "median_ms_per_op": "510.130",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "18.404780",
+      "median_ms_per_op": "736.191",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.573655",
+      "median_ms_per_op": "573.655",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "48.190220",
+      "median_ms_per_op": "1927.609",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "47.097261",
+      "median_ms_per_op": "1883.890",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000020",
+      "median_ms_per_op": "0.020",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    }
+  ]
+}
