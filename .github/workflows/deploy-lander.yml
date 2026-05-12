@@ -97,11 +97,38 @@ jobs:
         run: uv run npmctl validate desired-state
 
       - name: Plan NPM changes
-        run: uv run npmctl plan desired-state --owner ssot-registry
+        shell: bash
+        run: |
+          set +e
+          output_file="$(mktemp)"
+          uv run npmctl plan desired-state --owner ssot-registry >"$output_file" 2>&1
+          status=$?
+          set -e
+
+          cat "$output_file"
+          if [ "$status" -eq 0 ]; then
+            rm -f "$output_file"
+            exit 0
+          fi
+
+          if grep -q "unmanaged_resource: proxy_host" "$output_file"; then
+            echo "::warning::npmctl plan found an unmanaged existing proxy_host for ${DOMAIN_NAME}; skipping npmctl mutation steps and falling back to public endpoint verification."
+            echo "NPMCTL_SKIP_APPLY=true" >> "$GITHUB_ENV"
+            rm -f "$output_file"
+            exit 0
+          fi
+
+          rm -f "$output_file"
+          exit "$status"
 
       - name: Apply NPM reverse proxy and SSL
         shell: bash
         run: |
+          if [ "${NPMCTL_SKIP_APPLY:-false}" = "true" ]; then
+            echo "Skipping npmctl apply because plan detected an unmanaged live proxy host."
+            exit 0
+          fi
+
           set +e
           output_file="$(mktemp)"
           uv run npmctl apply desired-state --owner ssot-registry >"$output_file" 2>&1
