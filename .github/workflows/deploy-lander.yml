@@ -139,9 +139,10 @@ jobs:
           fi
 
           if grep -q "unmanaged_resource: proxy_host" "$output_file"; then
-            echo "::warning::npmctl plan found an unmanaged existing proxy_host for ${DOMAIN_NAME}; skipping npmctl mutation steps and falling back to public endpoint verification."
-            echo "NPMCTL_SKIP_APPLY=true" >> "$GITHUB_ENV"
+            echo "::warning::npmctl plan found an unmanaged existing proxy_host for ${DOMAIN_NAME}; adopting the matching live resource into the ssot-registry owner scope."
             rm -f "$output_file"
+            uv run npmctl adopt desired-state --owner ssot-registry --force
+            uv run npmctl plan desired-state --owner ssot-registry
             exit 0
           fi
 
@@ -152,11 +153,6 @@ jobs:
         if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         shell: bash
         run: |
-          if [ "${NPMCTL_SKIP_APPLY:-false}" = "true" ]; then
-            echo "Skipping npmctl apply because plan detected an unmanaged live proxy host."
-            exit 0
-          fi
-
           set +e
           output_file="$(mktemp)"
           uv run npmctl apply desired-state --owner ssot-registry >"$output_file" 2>&1
@@ -185,11 +181,6 @@ jobs:
         run: |
           if [ "${{ inputs.rotate_certificate }}" != "true" ]; then
             echo "::notice::Skipping public proxy mutation because rotate_certificate was not enabled; verifying the existing public endpoints only."
-          fi
-
-          if [ "${NPMCTL_SKIP_APPLY:-false}" = "true" ]; then
-            echo "::warning::Skipping public endpoint verification because the live proxy host is unmanaged and this workflow intentionally did not mutate it."
-            exit 0
           fi
 
           for url in "https://${DOMAIN_NAME}" "https://www.${DOMAIN_NAME}"; do
