@@ -485,6 +485,8 @@ def migrate_v10_to_v0_1_0(
             full_path.write_text(dump_document_text(payload, full_path), encoding="utf-8", newline="\n")
             spec["content_sha256"] = sha256_normalized_text_path(full_path)
             spec["package_version"] = target_version
+    sync_documents_in_memory(migrated, repo_root, "adr")
+    sync_documents_in_memory(migrated, repo_root, "spec")
     return migrated
 
 
@@ -507,6 +509,8 @@ def migrate_v0_1_0_to_v0_2_0(
             full_path.write_text(dump_document_text(payload, full_path), encoding="utf-8", newline="\n")
             spec["content_sha256"] = sha256_normalized_text_path(full_path)
             spec["package_version"] = target_version
+    sync_documents_in_memory(migrated, repo_root, "adr")
+    sync_documents_in_memory(migrated, repo_root, "spec")
     return migrated
 
 
