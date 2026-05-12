@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import re
 from pathlib import Path
 from typing import Any, Callable, TypedDict
@@ -171,6 +172,40 @@ def read_manifest_document_bytes(kind: str, manifest_entry: dict[str, Any]) -> b
         if provider["catalog_id"] == catalog_id:
             return provider["read_bytes"](kind, str(manifest_entry["filename"]))
     raise ValueError(f"Unknown document catalog provider: {catalog_id}")
+
+
+def canonical_manifest_document_sha256(kind: str, manifest_entry: dict[str, Any]) -> str:
+    from ssot_registry.util.document_io import (
+        build_document_payload,
+        document_body_from_payload,
+        dump_document_text,
+        load_document_text,
+        normalize_document_payload,
+    )
+
+    authored_payload = normalize_document_payload(
+        kind,
+        load_document_text(read_manifest_document_text(kind, manifest_entry), source=f"packaged:{manifest_entry['filename']}"),
+    )
+    row: dict[str, Any] = {
+        "id": manifest_entry["id"],
+        "number": manifest_entry["number"],
+        "slug": manifest_entry["slug"],
+        "title": manifest_entry["title"],
+        "status": manifest_entry.get("status", "draft"),
+        "origin": manifest_entry["origin"],
+        "supersedes": manifest_entry.get("supersedes", []),
+        "superseded_by": manifest_entry.get("superseded_by", []),
+        "status_notes": manifest_entry.get("status_notes", []),
+    }
+    if kind == "spec":
+        row["kind"] = manifest_entry.get("kind", "normative")
+        row["adr_ids"] = manifest_entry.get("adr_ids", [])
+    rendered = dump_document_text(
+        build_document_payload(kind, row, document_body_from_payload(kind, authored_payload)),
+        Path(str(manifest_entry["target_path"])),
+    )
+    return hashlib.sha256(rendered.encode("utf-8")).hexdigest()
 
 
 def read_packaged_document_text(kind: str, filename: str) -> str:

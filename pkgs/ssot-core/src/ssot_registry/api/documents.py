@@ -18,6 +18,7 @@ from ssot_registry.model.document import (
     EXTENSION_PACK_RESERVATION_PREFIX,
     SPEC_KINDS,
     build_document_path,
+    canonical_manifest_document_sha256,
     default_document_id_reservations,
     is_extension_pack_reservation_owner,
     load_document_manifest as load_packaged_document_manifest,
@@ -191,7 +192,7 @@ def _manifest_row_to_registry_row(registry: dict[str, Any], kind: str, manifest_
         "managed": True,
         "immutable": bool(manifest_entry["immutable"]),
         "package_version": __version__,
-        "content_sha256": manifest_entry["sha256"],
+        "content_sha256": canonical_manifest_document_sha256(kind, manifest_entry),
     }
     row["status"] = manifest_entry.get("status", "draft")
     row["supersedes"] = manifest_entry.get("supersedes", [])
@@ -659,7 +660,16 @@ def _sync_manifest_document(
         payload = read_manifest_document_bytes(kind, manifest_entry)
         target = repo_root / expected_row["path"]
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(payload)
+        authored_payload = normalize_document_payload(
+            kind,
+            load_document_text(payload.decode("utf-8-sig"), source=f"packaged:{manifest_entry['filename']}"),
+        )
+        rendered = dump_document_text(
+            build_document_payload(kind, expected_row, document_body_from_payload(kind, authored_payload)),
+            target,
+        )
+        target.write_text(rendered, encoding="utf-8", newline="\n")
+        expected_row["content_sha256"] = sha256_normalized_text_path(target)
         registry[section_for_document_kind(kind)].append(expected_row)
         lookup[document_id] = expected_row
         return "created", document_id

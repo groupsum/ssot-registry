@@ -5,6 +5,7 @@ from typing import Any
 
 from ssot_registry.model.document import (
     DOCUMENT_STATUSES,
+    canonical_manifest_document_sha256,
     document_path_has_supported_suffix,
     document_path_variants,
     DOCUMENT_ORIGINS,
@@ -248,5 +249,7 @@ def validate_document_rows(
                         failures.append(f"{prefix}.{field_name} must match the packaged manifest")
                 if row.get("path") != manifest_entry.get("target_path"):
                     failures.append(f"{prefix}.path must match packaged target path {manifest_entry.get('target_path')}")
-                if package_version == __version__ and row.get("content_sha256") != manifest_entry.get("sha256"):
+                if package_version == __version__ and row.get("content_sha256") != canonical_manifest_document_sha256(
+                    kind, manifest_entry
+                ):
                     failures.append(f"{prefix} is SSOT-managed and immutable, but content hash differs from packaged source")
