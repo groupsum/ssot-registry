@@ -73,7 +73,7 @@ jobs:
           fi
 
       - name: Deploy Docker container
-        run: $COMPOSE_CMD up -d --build
+        run: $COMPOSE_CMD up -d --build --remove-orphans
 
       - name: Wait for local health check
         shell: bash
