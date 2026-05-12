@@ -33,6 +33,7 @@ from ssot_registry.util.document_io import (
     build_document_payload,
     document_body_from_payload,
     dump_document_text,
+    load_document_text,
     load_document_yaml,
     normalize_document_payload,
     validate_document_payload,
@@ -686,7 +687,16 @@ def _sync_manifest_document(
         or (kind == "spec" and current.get("adr_ids") != expected_row["adr_ids"])
     )
     if needs_write:
-        target.write_bytes(payload)
+        authored_payload = normalize_document_payload(
+            kind,
+            load_document_text(payload.decode("utf-8-sig"), source=f"packaged:{manifest_entry['filename']}"),
+        )
+        rendered = dump_document_text(
+            build_document_payload(kind, expected_row, document_body_from_payload(kind, authored_payload)),
+            target,
+        )
+        target.write_text(rendered, encoding="utf-8", newline="\n")
+        expected_row["content_sha256"] = sha256_normalized_text_path(target)
         current.clear()
         current.update(expected_row)
         return "updated", document_id

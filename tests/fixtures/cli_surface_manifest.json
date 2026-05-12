@@ -676,7 +676,8 @@
   },
   "global_flags": [
     "--output-file",
-    "--output-format"
+    "--output-format",
+    "--version"
   ],
   "subcommand_paths": [
     "adr",

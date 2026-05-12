@@ -10,6 +10,7 @@ from tests.helpers import run_cli, temp_repo_from_fixture
 class CliFlagGapCoverageTests(unittest.TestCase):
     def test_manifest_includes_new_body_flags(self) -> None:
         manifest = json.loads((Path(__file__).resolve().parents[1] / "fixtures" / "cli_surface_manifest.json").read_text(encoding="utf-8"))
+        self.assertIn("--version", manifest["global_flags"])
         self.assertIn("--body", manifest["flags_by_path"]["adr create"])
         self.assertIn("--body", manifest["flags_by_path"]["adr update"])
         self.assertIn("--body", manifest["flags_by_path"]["spec create"])

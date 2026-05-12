@@ -1,9 +1,9 @@
 services:
-  ssot_registry_lander:
+  ssot-registry_lander:
     build:
       context: .
-    image: ssot_registry_lander:latest
-    container_name: ssot_registry_lander
+    image: ssot-registry_lander:latest
+    container_name: ssot-registry_lander
     restart: unless-stopped
     ports:
       - "${FORWARD_PORT:?FORWARD_PORT is required}:80"

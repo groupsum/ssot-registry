@@ -408,8 +408,7 @@ class _YamlSubsetParser:
         return value_text
 
 
-def load_document_yaml(path: Path) -> dict[str, Any]:
-    text = path.read_text(encoding="utf-8")
+def load_document_text(text: str, *, source: str) -> dict[str, Any]:
     stripped = text.lstrip("\ufeff").strip()
     try:
         if stripped.startswith(("{", "[")):
@@ -417,10 +416,15 @@ def load_document_yaml(path: Path) -> dict[str, Any]:
         else:
             payload = _YamlSubsetParser(text).parse()
     except (ValidationError, json.JSONDecodeError, ValueError) as exc:
-        raise ValidationError(f"Document is not valid YAML/JSON content: {path.as_posix()}") from exc
+        raise ValidationError(f"Document is not valid YAML/JSON content: {source}") from exc
     if not isinstance(payload, dict):
-        raise ValidationError(f"Document payload must be an object: {path.as_posix()}")
+        raise ValidationError(f"Document payload must be an object: {source}")
     return payload
+
+
+def load_document_yaml(path: Path) -> dict[str, Any]:
+    text = path.read_text(encoding="utf-8-sig")
+    return load_document_text(text, source=path.as_posix())
 
 
 def _load_document_schema(kind: str) -> dict[str, Any]:

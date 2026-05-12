@@ -30,6 +30,7 @@ class CliPackageLayoutTests(unittest.TestCase):
         options = {flag for action in parser._actions for flag in action.option_strings}
         self.assertIn("--output-format", options)
         self.assertIn("--output-file", options)
+        self.assertIn("--version", options)
 
     def test_entity_parsers_expose_semantic_descriptions(self) -> None:
         parser = build_parser(prog="ssot")

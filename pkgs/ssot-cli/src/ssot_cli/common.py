@@ -81,5 +81,5 @@ def load_text_argument(
     if inline_value is not None and file_value is not None:
         raise ValueError(f"{label} accepts only one of body or body_file")
     if file_value is not None:
-        return Path(file_value).read_text(encoding="utf-8")
+        return Path(file_value).read_text(encoding="utf-8-sig")
     return inline_value

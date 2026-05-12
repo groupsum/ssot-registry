@@ -157,6 +157,34 @@ class DocumentYamlCanonicalTests(unittest.TestCase):
             self.assertEqual("Inline spec updated", payload["title"])
             self.assertEqual("Initial spec body.", payload["body"])
 
+    def test_update_document_rewrites_bom_affected_files_canonically(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            repo.mkdir()
+            initialize_repo(repo, repo_id="repo:bom-doc", repo_name="bom-doc", version="1.0.0")
+
+            create_result = create_document(
+                repo,
+                "adr",
+                title="BOM decision",
+                slug="bom-decision",
+                body="Initial ADR body.",
+            )
+            self.assertTrue(create_result["passed"])
+
+            _registry_path, repo_root, registry = load_registry(repo)
+            row = next(row for row in registry["adrs"] if row["id"] == "adr:1000")
+            target = repo_root / row["path"]
+            original = target.read_text(encoding="utf-8")
+            target.write_text("\ufeff" + original, encoding="utf-8")
+
+            update_result = update_document(repo, "adr", "adr:1000", title="BOM decision updated")
+            self.assertTrue(update_result["passed"])
+
+            rewritten = target.read_text(encoding="utf-8")
+            self.assertFalse(rewritten.startswith("\ufeff"))
+            self.assertEqual("BOM decision updated", load_document_yaml(target)["title"])
+
 
 if __name__ == "__main__":
     unittest.main()

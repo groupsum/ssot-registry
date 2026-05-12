@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
+from importlib.metadata import PackageNotFoundError, version as package_version
 from pathlib import Path
 from typing import Any
 
@@ -27,14 +29,49 @@ from .test_cmd import register_test
 from .upgrade_cmd import register_upgrade
 from .validate_cmd import register_validate
 
+_PACKAGE_NAME = "ssot-cli"
+_PYPROJECT_PATH = Path(__file__).resolve().parents[2] / "pyproject.toml"
+_VERSION_PATTERN = re.compile(r'^version\s*=\s*"(?P<version>[^"]+)"\s*$')
+
 
 def _default_prog() -> str:
     executable = Path(sys.argv[0]).name
-    if executable.endswith(".exe"):
-        executable = executable[:-4]
+    for suffix in (".exe", ".py"):
+        if executable.endswith(suffix):
+            executable = executable[: -len(suffix)]
+            break
     if executable in {"", "__main__", "-m"}:
         return "ssot-registry"
     return executable
+
+
+def _read_version_from_pyproject(pyproject_path: Path = _PYPROJECT_PATH) -> str:
+    in_project_section = False
+
+    for line in pyproject_path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+
+        if stripped.startswith("[") and stripped.endswith("]"):
+            in_project_section = stripped == "[project]"
+            continue
+
+        if not in_project_section:
+            continue
+
+        match = _VERSION_PATTERN.match(stripped)
+        if match is not None:
+            return match.group("version")
+
+    raise RuntimeError(f"Unable to locate [project].version in {pyproject_path}")
+
+
+def _cli_version() -> str:
+    if _PYPROJECT_PATH.exists():
+        return _read_version_from_pyproject()
+    try:
+        return package_version(_PACKAGE_NAME)
+    except PackageNotFoundError:
+        return _read_version_from_pyproject()
 
 
 def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
@@ -45,6 +82,12 @@ def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
             "Operate an SSOT registry that tracks architecture documents, scoped delivery boundaries, "
             "implementation features, verification artifacts, and publication-ready releases."
         ),
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {_cli_version()}",
+        help="Print the installed CLI package version and exit.",
     )
     parser.add_argument(
         "--output-format",

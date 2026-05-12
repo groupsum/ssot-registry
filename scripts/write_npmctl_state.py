@@ -13,12 +13,13 @@ def env(name: str) -> str:
 
 domain = env("DOMAIN_NAME")
 server_ip = env("SERVER_IP")
-forward_port = env("FORWARD_PORT")
 letsencrypt_email = env("LETSENCRYPT_EMAIL")
 namecheap_username = env("NAMECHEAP_USERNAME")
 namecheap_api_user = env("NAMECHEAP_API_USER")
 namecheap_api_key = env("NAMECHEAP_API_KEY")
 namecheap_client_ip = env("NAMECHEAP_CLIENT_IP")
+lander_service_name = "ssot-registry_lander"
+lander_internal_port = "80"
 
 state = f"""apiVersion: npmctl.com/v1
 schemaVersion: 2
@@ -53,8 +54,8 @@ proxy_hosts:
       - {domain}
       - www.{domain}
     forward_scheme: http
-    forward_host: {server_ip}
-    forward_port: {forward_port}
+    forward_host: {lander_service_name}
+    forward_port: {lander_internal_port}
     certificate_ref: cert.ssot-registry
     ssl_forced: 1
     http2_support: 1
