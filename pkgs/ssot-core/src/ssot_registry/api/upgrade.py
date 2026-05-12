@@ -37,6 +37,7 @@ LEGACY_V3_VERSION = "0.1.2"
 SSOT_ORIGIN_V8_OFFSET = 599
 SCHEMA_V0_1_0 = "0.1.0"
 SCHEMA_V0_2_0 = "0.2.0"
+SCHEMA_V0_3_0 = "0.3.0"
 MIGRATION_RELEASE_WINDOWS = {
     (3, 4): "0.1.x->0.2.1",
     (4, 5): "0.2.1->0.2.2",
@@ -47,7 +48,8 @@ MIGRATION_RELEASE_WINDOWS = {
     (9, 10): "0.2.6->0.2.7",
     (10, SCHEMA_V0_1_0): "0.2.7->0.2.7",
     (SCHEMA_V0_1_0, SCHEMA_V0_2_0): "0.2.10->0.2.10",
-    (SCHEMA_V0_2_0, "0.3.0"): "0.2.10->0.3.0",
+    (SCHEMA_V0_2_0, SCHEMA_V0_3_0): "0.2.10->0.3.0",
+    (SCHEMA_V0_3_0, SCHEMA_VERSION): "0.2.10->0.4.0",
 }
 
 MIGRATION_PATHS = (
@@ -60,7 +62,8 @@ MIGRATION_PATHS = (
     (9, 10, "migrate_v9_to_v10"),
     (10, SCHEMA_V0_1_0, "migrate_v10_to_v0_1_0"),
     (SCHEMA_V0_1_0, SCHEMA_V0_2_0, "migrate_v0_1_0_to_v0_2_0"),
-    (SCHEMA_V0_2_0, SCHEMA_VERSION, "migrate_v0_2_0_to_v0_3_0"),
+    (SCHEMA_V0_2_0, SCHEMA_V0_3_0, "migrate_v0_2_0_to_v0_3_0"),
+    (SCHEMA_V0_3_0, SCHEMA_VERSION, "migrate_v0_3_0_to_v0_4_0"),
 )
 
 
@@ -527,8 +530,21 @@ def migrate_v0_2_0_to_v0_3_0(
 ) -> dict[str, Any]:
     _ = repo_root, previous_version, target_version
     migrated = deepcopy(registry)
-    migrated["schema_version"] = SCHEMA_VERSION
+    migrated["schema_version"] = SCHEMA_V0_3_0
     _seed_release_boundary_ids(migrated)
+    return migrated
+
+
+def migrate_v0_3_0_to_v0_4_0(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    _ = repo_root, previous_version, target_version
+    migrated = deepcopy(registry)
+    migrated["schema_version"] = SCHEMA_VERSION
     return migrated
 
 
@@ -668,11 +684,21 @@ def upgrade_registry(
             target_version=target_version,
         )
         schema_migrations.append("migrate_v0_2_0_to_v0_3_0")
-        migrations.append(_migration_window_label(SCHEMA_V0_2_0, SCHEMA_VERSION))
+        migrations.append(_migration_window_label(SCHEMA_V0_2_0, SCHEMA_V0_3_0))
+        source_schema = SCHEMA_V0_3_0
+    if source_schema == SCHEMA_V0_3_0:
+        working = migrate_v0_3_0_to_v0_4_0(
+            working,
+            repo_root,
+            previous_version=source_tooling_version,
+            target_version=target_version,
+        )
+        schema_migrations.append("migrate_v0_3_0_to_v0_4_0")
+        migrations.append(_migration_window_label(SCHEMA_V0_3_0, SCHEMA_VERSION))
         source_schema = SCHEMA_VERSION
     elif source_schema != SCHEMA_VERSION:
         raise RegistryError(
-            f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10, 0.1.0, 0.2.0 or {SCHEMA_VERSION}"
+            f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10, 0.1.0, 0.2.0, 0.3.0 or {SCHEMA_VERSION}"
         )
 
     normalized_current = _normalize_current_registry(working)

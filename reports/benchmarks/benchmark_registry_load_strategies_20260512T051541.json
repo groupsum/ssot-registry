@@ -1,0 +1,242 @@
+{
+  "generated_at": "2026-05-12T05:15:41.076201",
+  "cwd": "E:/swarmauri_github/ssot-registry",
+  "entity_count_per_family": 1000,
+  "sample_count": 50,
+  "repeats": 1,
+  "initial_registry_bytes": 1492856,
+  "orjson_available": true,
+  "rust_pyo3_available": true,
+  "strategies": {
+    "single-json-current": {
+      "file_count": 1,
+      "cumulative_bytes": 1493956
+    },
+    "single-json-orjson": {
+      "file_count": 1,
+      "cumulative_bytes": 1493957
+    },
+    "single-json-rust-pyo3": {
+      "file_count": 1,
+      "cumulative_bytes": 1493956
+    }
+  },
+  "rows": [
+    {
+      "strategy": "single-json-current",
+      "phase": "create",
+      "operations": 1,
+      "median_seconds": 0.04037930001504719,
+      "median_ms_per_op": 40.37930001504719,
+      "min_seconds": 0.04037930001504719,
+      "max_seconds": 0.04037930001504719
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "delete",
+      "operations": 1,
+      "median_seconds": 0.036295600002631545,
+      "median_ms_per_op": 36.295600002631545,
+      "min_seconds": 0.036295600002631545,
+      "max_seconds": 0.036295600002631545
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "list",
+      "operations": 1,
+      "median_seconds": 0.02062870003283024,
+      "median_ms_per_op": 20.62870003283024,
+      "min_seconds": 0.02062870003283024,
+      "max_seconds": 0.02062870003283024
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "read",
+      "operations": 50,
+      "median_seconds": 0.696003400022164,
+      "median_ms_per_op": 13.92006800044328,
+      "min_seconds": 0.696003400022164,
+      "max_seconds": 0.696003400022164
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "search",
+      "operations": 1,
+      "median_seconds": 0.012660900130867958,
+      "median_ms_per_op": 12.660900130867958,
+      "min_seconds": 0.012660900130867958,
+      "max_seconds": 0.012660900130867958
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "traverse_children",
+      "operations": 50,
+      "median_seconds": 0.6604830999858677,
+      "median_ms_per_op": 13.209661999717355,
+      "min_seconds": 0.6604830999858677,
+      "max_seconds": 0.6604830999858677
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "traverse_parents",
+      "operations": 50,
+      "median_seconds": 0.6525159999728203,
+      "median_ms_per_op": 13.050319999456406,
+      "min_seconds": 0.6525159999728203,
+      "max_seconds": 0.6525159999728203
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "update",
+      "operations": 50,
+      "median_seconds": 1.992930700071156,
+      "median_ms_per_op": 39.85861400142312,
+      "min_seconds": 1.992930700071156,
+      "max_seconds": 1.992930700071156
+    },
+    {
+      "strategy": "single-json-orjson",
+      "phase": "create",
+      "operations": 1,
+      "median_seconds": 0.026712399907410145,
+      "median_ms_per_op": 26.712399907410145,
+      "min_seconds": 0.026712399907410145,
+      "max_seconds": 0.026712399907410145
+    },
+    {
+      "strategy": "single-json-orjson",
+      "phase": "delete",
+      "operations": 1,
+      "median_seconds": 0.020710800075903535,
+      "median_ms_per_op": 20.710800075903535,
+      "min_seconds": 0.020710800075903535,
+      "max_seconds": 0.020710800075903535
+    },
+    {
+      "strategy": "single-json-orjson",
+      "phase": "list",
+      "operations": 1,
+      "median_seconds": 0.018555999966338277,
+      "median_ms_per_op": 18.555999966338277,
+      "min_seconds": 0.018555999966338277,
+      "max_seconds": 0.018555999966338277
+    },
+    {
+      "strategy": "single-json-orjson",
+      "phase": "read",
+      "operations": 50,
+      "median_seconds": 0.5324011000338942,
+      "median_ms_per_op": 10.648022000677884,
+      "min_seconds": 0.5324011000338942,
+      "max_seconds": 0.5324011000338942
+    },
+    {
+      "strategy": "single-json-orjson",
+      "phase": "search",
+      "operations": 1,
+      "median_seconds": 0.012767300009727478,
+      "median_ms_per_op": 12.767300009727478,
+      "min_seconds": 0.012767300009727478,
+      "max_seconds": 0.012767300009727478
+    },
+    {
+      "strategy": "single-json-orjson",
+      "phase": "traverse_children",
+      "operations": 50,
+      "median_seconds": 0.415385200176388,
+      "median_ms_per_op": 8.30770400352776,
+      "min_seconds": 0.415385200176388,
+      "max_seconds": 0.415385200176388
+    },
+    {
+      "strategy": "single-json-orjson",
+      "phase": "traverse_parents",
+      "operations": 50,
+      "median_seconds": 0.5069659999571741,
+      "median_ms_per_op": 10.139319999143481,
+      "min_seconds": 0.5069659999571741,
+      "max_seconds": 0.5069659999571741
+    },
+    {
+      "strategy": "single-json-orjson",
+      "phase": "update",
+      "operations": 50,
+      "median_seconds": 1.2650057000573725,
+      "median_ms_per_op": 25.30011400114745,
+      "min_seconds": 1.2650057000573725,
+      "max_seconds": 1.2650057000573725
+    },
+    {
+      "strategy": "single-json-rust-pyo3",
+      "phase": "create",
+      "operations": 1,
+      "median_seconds": 0.05668199993669987,
+      "median_ms_per_op": 56.68199993669987,
+      "min_seconds": 0.05668199993669987,
+      "max_seconds": 0.05668199993669987
+    },
+    {
+      "strategy": "single-json-rust-pyo3",
+      "phase": "delete",
+      "operations": 1,
+      "median_seconds": 0.035929000005126,
+      "median_ms_per_op": 35.929000005126,
+      "min_seconds": 0.035929000005126,
+      "max_seconds": 0.035929000005126
+    },
+    {
+      "strategy": "single-json-rust-pyo3",
+      "phase": "list",
+      "operations": 1,
+      "median_seconds": 0.028228400042280555,
+      "median_ms_per_op": 28.228400042280555,
+      "min_seconds": 0.028228400042280555,
+      "max_seconds": 0.028228400042280555
+    },
+    {
+      "strategy": "single-json-rust-pyo3",
+      "phase": "read",
+      "operations": 50,
+      "median_seconds": 1.099192500114441,
+      "median_ms_per_op": 21.98385000228882,
+      "min_seconds": 1.099192500114441,
+      "max_seconds": 1.099192500114441
+    },
+    {
+      "strategy": "single-json-rust-pyo3",
+      "phase": "search",
+      "operations": 1,
+      "median_seconds": 0.02589980000630021,
+      "median_ms_per_op": 25.89980000630021,
+      "min_seconds": 0.02589980000630021,
+      "max_seconds": 0.02589980000630021
+    },
+    {
+      "strategy": "single-json-rust-pyo3",
+      "phase": "traverse_children",
+      "operations": 50,
+      "median_seconds": 2.0577227999456227,
+      "median_ms_per_op": 41.154455998912454,
+      "min_seconds": 2.0577227999456227,
+      "max_seconds": 2.0577227999456227
+    },
+    {
+      "strategy": "single-json-rust-pyo3",
+      "phase": "traverse_parents",
+      "operations": 50,
+      "median_seconds": 1.8205983999650925,
+      "median_ms_per_op": 36.41196799930185,
+      "min_seconds": 1.8205983999650925,
+      "max_seconds": 1.8205983999650925
+    },
+    {
+      "strategy": "single-json-rust-pyo3",
+      "phase": "update",
+      "operations": 50,
+      "median_seconds": 1.811904199887067,
+      "median_ms_per_op": 36.23808399774134,
+      "min_seconds": 1.811904199887067,
+      "max_seconds": 1.811904199887067
+    }
+  ]
+}

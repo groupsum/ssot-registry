@@ -16,14 +16,21 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 TEMP_ROOT = REPO_ROOT / ".tmp_test_runs"
 REPORT_ROOT = REPO_ROOT / "reports" / "benchmarks"
 LOCAL_ORJSON_ROOT = REPO_ROOT / ".tmp_pydeps" / "orjson"
+LOCAL_REGISTRY_RS_ROOT = REPO_ROOT / ".tmp_pydeps" / "registry_bench_rs"
 
 if str(LOCAL_ORJSON_ROOT) not in sys.path and LOCAL_ORJSON_ROOT.exists():
     sys.path.insert(0, str(LOCAL_ORJSON_ROOT))
+if str(LOCAL_REGISTRY_RS_ROOT) not in sys.path and LOCAL_REGISTRY_RS_ROOT.exists():
+    sys.path.insert(0, str(LOCAL_REGISTRY_RS_ROOT))
 
 try:
     import orjson
 except ImportError:
     orjson = None
+try:
+    import registry_bench_rs
+except ImportError:
+    registry_bench_rs = None
 
 SECTIONS = ("features", "claims", "tests", "evidence")
 
@@ -317,6 +324,48 @@ class OrjsonSingleJsonStrategy(SingleJsonStrategy):
 
     def _save(self, registry: dict[str, Any]) -> None:
         _write_orjson(self.registry_path, registry)
+
+
+class RustPyo3SingleJsonStrategy(SingleJsonStrategy):
+    name = "single-json-rust-pyo3"
+
+    def __init__(self, root: Path) -> None:
+        if registry_bench_rs is None:
+            raise RuntimeError("registry_bench_rs is not installed")
+        super().__init__(root)
+
+    def _load_bytes(self) -> bytes:
+        return self.registry_path.read_bytes()
+
+    def initialize(self, registry: dict[str, Any]) -> None:
+        _write_json(self.registry_path, registry)
+
+    def create(self) -> None:
+        payload = registry_bench_rs.create_feature(self._load_bytes(), len(self.list_features()) + 1_000_000)
+        self.registry_path.write_bytes(payload)
+
+    def read(self, entity_id: str) -> dict[str, Any]:
+        return dict(registry_bench_rs.read_feature(self._load_bytes(), entity_id))
+
+    def update(self, entity_id: str) -> None:
+        payload = registry_bench_rs.update_feature(self._load_bytes(), entity_id, " Updated by benchmark.")
+        self.registry_path.write_bytes(payload)
+
+    def delete(self, entity_id: str) -> None:
+        payload = registry_bench_rs.delete_feature(self._load_bytes(), entity_id)
+        self.registry_path.write_bytes(payload)
+
+    def list_features(self) -> list[str]:
+        return list(registry_bench_rs.list_features(self._load_bytes()))
+
+    def traverse_children(self, feature_id: str) -> list[dict[str, Any]]:
+        return list(registry_bench_rs.traverse_children(self._load_bytes(), feature_id))
+
+    def traverse_parents(self, test_id: str) -> list[dict[str, Any]]:
+        return list(registry_bench_rs.traverse_parents(self._load_bytes(), test_id))
+
+    def search(self, query: str) -> list[str]:
+        return list(registry_bench_rs.search_features(self._load_bytes(), query))
 
 
 class ShardedIndexStrategy:
@@ -617,6 +666,7 @@ def _write_report(
         "repeats": repeats,
         "initial_registry_bytes": registry_bytes,
         "orjson_available": orjson is not None,
+        "rust_pyo3_available": registry_bench_rs is not None,
         "strategies": {
             name: {"file_count": fp.file_count, "cumulative_bytes": fp.cumulative_bytes}
             for name, fp in footprints.items()
@@ -649,6 +699,8 @@ def main() -> int:
     strategy_types = [SingleJsonStrategy]
     if orjson is not None:
         strategy_types.append(OrjsonSingleJsonStrategy)
+    if registry_bench_rs is not None:
+        strategy_types.append(RustPyo3SingleJsonStrategy)
     strategy_types.extend([ShardedIndexStrategy, CachedShardedIndexStrategy])
     if args.strategy:
         allowed = set(args.strategy)

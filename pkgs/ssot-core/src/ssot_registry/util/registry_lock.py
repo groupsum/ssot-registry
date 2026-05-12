@@ -13,6 +13,11 @@ from typing import Any
 from ssot_registry.util.errors import RegistryLockError
 from ssot_registry.util.jsonio import stable_json_dumps
 
+try:
+    import orjson
+except ImportError:
+    orjson = None
+
 DEFAULT_REGISTRY_LOCK_TTL_SECONDS = 300
 
 
@@ -26,8 +31,11 @@ def registry_lock_path(registry_path: str | Path) -> Path:
 
 def _read_lock_metadata(lock_path: Path) -> dict[str, Any]:
     try:
-        payload = json.loads(lock_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+        if orjson is not None:
+            payload = orjson.loads(lock_path.read_bytes())
+        else:
+            payload = json.loads(lock_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, ValueError):
         return {}
     return payload if isinstance(payload, dict) else {}
 

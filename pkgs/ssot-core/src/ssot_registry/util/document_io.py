@@ -12,6 +12,11 @@ from ssot_registry.model.schema_version import is_semver_schema_version
 from ssot_registry.util.errors import ValidationError
 from ssot_registry.util.jsonio import stable_json_dumps
 
+try:
+    import orjson
+except ImportError:
+    orjson = None
+
 
 SECTION_HEADING_PATTERN = re.compile(r"^## (?P<title>.+?)\s*$")
 _INTEGER_PATTERN = re.compile(r"^-?(0|[1-9]\d*)$")
@@ -395,8 +400,10 @@ class _YamlSubsetParser:
             return int(value_text)
         if value_text.startswith('"'):
             try:
+                if orjson is not None:
+                    return orjson.loads(value_text)
                 return json.loads(value_text)
-            except json.JSONDecodeError as exc:
+            except (json.JSONDecodeError, ValueError) as exc:
                 raise ValidationError(f"Invalid YAML string scalar {value_text!r}") from exc
         return value_text
 
@@ -406,10 +413,10 @@ def load_document_yaml(path: Path) -> dict[str, Any]:
     stripped = text.lstrip("\ufeff").strip()
     try:
         if stripped.startswith(("{", "[")):
-            payload = json.loads(stripped)
+            payload = orjson.loads(stripped) if orjson is not None else json.loads(stripped)
         else:
             payload = _YamlSubsetParser(text).parse()
-    except (ValidationError, json.JSONDecodeError) as exc:
+    except (ValidationError, json.JSONDecodeError, ValueError) as exc:
         raise ValidationError(f"Document is not valid YAML/JSON content: {path.as_posix()}") from exc
     if not isinstance(payload, dict):
         raise ValidationError(f"Document payload must be an object: {path.as_posix()}")
@@ -419,7 +426,8 @@ def load_document_yaml(path: Path) -> dict[str, Any]:
 def _load_document_schema(kind: str) -> dict[str, Any]:
     if kind not in _DOCUMENT_SCHEMA_CACHE:
         schema_name = "adr.schema.json" if kind == "adr" else "spec.schema.json"
-        _DOCUMENT_SCHEMA_CACHE[kind] = json.loads(load_schema_text(schema_name))
+        schema_text = load_schema_text(schema_name)
+        _DOCUMENT_SCHEMA_CACHE[kind] = orjson.loads(schema_text) if orjson is not None else json.loads(schema_text)
     return _DOCUMENT_SCHEMA_CACHE[kind]
 
 

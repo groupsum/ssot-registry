@@ -1,0 +1,14 @@
+E:\swarmauri_github\ssot-registry\scripts\registry_bench_rs\target\release\deps\libserde-0dbb1970dc5041c8.rmeta: C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs E:\swarmauri_github\ssot-registry\scripts\registry_bench_rs\target\release\build\serde-a735da1065d8956e\out/private.rs
+
+E:\swarmauri_github\ssot-registry\scripts\registry_bench_rs\target\release\deps\libserde-0dbb1970dc5041c8.rlib: C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs E:\swarmauri_github\ssot-registry\scripts\registry_bench_rs\target\release\build\serde-a735da1065d8956e\out/private.rs
+
+E:\swarmauri_github\ssot-registry\scripts\registry_bench_rs\target\release\deps\serde-0dbb1970dc5041c8.d: C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs E:\swarmauri_github\ssot-registry\scripts\registry_bench_rs\target\release\build\serde-a735da1065d8956e\out/private.rs
+
+C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs:
+C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs:
+C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs:
+C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs:
+C:\Users\bigman\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs:
+E:\swarmauri_github\ssot-registry\scripts\registry_bench_rs\target\release\build\serde-a735da1065d8956e\out/private.rs:
+
+# env-dep:OUT_DIR=E:\\swarmauri_github\\ssot-registry\\scripts\\registry_bench_rs\\target\\release\\build\\serde-a735da1065d8956e\\out
