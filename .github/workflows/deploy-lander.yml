@@ -100,7 +100,29 @@ jobs:
         run: uv run npmctl plan desired-state --owner ssot-registry
 
       - name: Apply NPM reverse proxy and SSL
-        run: uv run npmctl apply desired-state --owner ssot-registry
+        shell: bash
+        run: |
+          set +e
+          output_file="$(mktemp)"
+          uv run npmctl apply desired-state --owner ssot-registry >"$output_file" 2>&1
+          status=$?
+          set -e
+
+          if [ "$status" -eq 0 ]; then
+            cat "$output_file"
+            rm -f "$output_file"
+            exit 0
+          fi
+
+          cat "$output_file"
+          if grep -q "too many certificates" "$output_file"; then
+            echo "::warning::Let's Encrypt exact-set rate limit hit during certificate issuance; reusing the existing public endpoint state for this deploy run."
+            rm -f "$output_file"
+            exit 0
+          fi
+
+          rm -f "$output_file"
+          exit "$status"
 
       - name: Verify public endpoints
         shell: bash

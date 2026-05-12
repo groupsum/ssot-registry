@@ -12,7 +12,7 @@ body: |-
   
   Profile row fields:
   
-  - `id`, `title`, `description`, `status`, `kind`
+  - `id`, `title`, `description`, `body`, `status`, `kind`
   - `feature_ids: list[str]`
   - `profile_ids: list[str]`
   - `claim_tier: T0..T4 | null`
@@ -21,6 +21,7 @@ body: |-
   
   Boundary rows include:
   
+  - `body: str | null`
   - `feature_ids: list[str]`
   - `profile_ids: list[str]`
   
