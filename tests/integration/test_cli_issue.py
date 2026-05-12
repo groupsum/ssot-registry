@@ -12,6 +12,10 @@ class CliIssueSurfaceTests(unittest.TestCase):
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)
         self.repo = Path(temp_dir.name) / "repo"
+        self.create_body_path = self.repo / "issue-body.txt"
+        self.create_body_path.write_text("generated issue body from file", encoding="utf-8")
+        self.update_body_path = self.repo / "issue-body-update.txt"
+        self.update_body_path.write_text("updated issue body from file", encoding="utf-8")
 
     def _run_ok(self, *args: str) -> dict[str, object] | list[dict[str, object]]:
         result = run_cli(*args)
@@ -76,6 +80,8 @@ class CliIssueSurfaceTests(unittest.TestCase):
             "critical",
             "--description",
             "generated issue",
+            "--body-file",
+            str(self.create_body_path),
             "--horizon",
             "explicit",
             "--slot",
@@ -98,6 +104,7 @@ class CliIssueSurfaceTests(unittest.TestCase):
             status="blocked",
             severity="critical",
             description="generated issue",
+            body="generated issue body from file",
             plan={"horizon": "explicit", "slot": "2026.q3"},
             feature_ids=["feat:rfc.9000.connection-migration"],
             claim_ids=["clm:rfc.9000.connection-migration.t3"],
@@ -190,6 +197,8 @@ class CliIssueSurfaceTests(unittest.TestCase):
             "low",
             "--description",
             "after update",
+            "--body-file",
+            str(self.update_body_path),
             "--no-release-blocking",
         )
         self.assertEqual(update_payload["entity"]["title"], "CLI lifecycle issue updated")
@@ -198,6 +207,7 @@ class CliIssueSurfaceTests(unittest.TestCase):
             title="CLI lifecycle issue updated",
             severity="low",
             description="after update",
+            body="updated issue body from file",
             status="open",
             plan={"horizon": "backlog", "slot": None},
             release_blocking=False,

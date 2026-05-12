@@ -57,6 +57,8 @@
       "--profile-ids"
     ],
     "boundary create": [
+      "--body",
+      "--body-file",
       "--feature-ids",
       "--frozen",
       "--id",
@@ -91,6 +93,8 @@
       "--id"
     ],
     "boundary update": [
+      "--body",
+      "--body-file",
       "--frozen",
       "--id",
       "--no-frozen",
@@ -99,6 +103,8 @@
     ],
     "claim": [],
     "claim create": [
+      "--body",
+      "--body-file",
       "--description",
       "--evidence-ids",
       "--feature-ids",
@@ -142,6 +148,8 @@
       "--test-ids"
     ],
     "claim update": [
+      "--body",
+      "--body-file",
       "--description",
       "--id",
       "--kind",
@@ -166,6 +174,8 @@
     ],
     "evidence": [],
     "evidence create": [
+      "--body",
+      "--body-file",
       "--claim-ids",
       "--evidence-path",
       "--id",
@@ -195,6 +205,8 @@
       "--test-ids"
     ],
     "evidence update": [
+      "--body",
+      "--body-file",
       "--evidence-path",
       "--id",
       "--kind",
@@ -207,6 +219,8 @@
     ],
     "feature": [],
     "feature create": [
+      "--body",
+      "--body-file",
       "--claim-ids",
       "--claim-tier",
       "--description",
@@ -264,6 +278,8 @@
       "--test-ids"
     ],
     "feature update": [
+      "--body",
+      "--body-file",
       "--description",
       "--id",
       "--implementation-status",
@@ -285,6 +301,8 @@
       "--id"
     ],
     "issue create": [
+      "--body",
+      "--body-file",
       "--claim-ids",
       "--description",
       "--evidence-ids",
@@ -334,6 +352,8 @@
       "--test-ids"
     ],
     "issue update": [
+      "--body",
+      "--body-file",
       "--description",
       "--id",
       "--no-release-blocking",
@@ -344,6 +364,8 @@
     "profile": [],
     "profile create": [
       "--allow-feature-override-tier",
+      "--body",
+      "--body-file",
       "--claim-tier",
       "--description",
       "--feature-ids",
@@ -377,6 +399,8 @@
       "--profile-ids"
     ],
     "profile update": [
+      "--body",
+      "--body-file",
       "--claim-tier",
       "--description",
       "--id",
@@ -413,6 +437,8 @@
       "--write-report"
     ],
     "release create": [
+      "--body",
+      "--body-file",
       "--boundary-id",
       "--boundary-ids",
       "--claim-ids",
@@ -453,6 +479,8 @@
       "--release-id"
     ],
     "release update": [
+      "--body",
+      "--body-file",
       "--boundary-id",
       "--boundary-ids",
       "--id",
@@ -464,6 +492,8 @@
       "--id"
     ],
     "risk create": [
+      "--body",
+      "--body-file",
       "--claim-ids",
       "--description",
       "--evidence-ids",
@@ -509,6 +539,8 @@
       "--test-ids"
     ],
     "risk update": [
+      "--body",
+      "--body-file",
       "--description",
       "--id",
       "--no-release-blocking",
@@ -582,6 +614,8 @@
     ],
     "test": [],
     "test create": [
+      "--body",
+      "--body-file",
       "--claim-ids",
       "--evidence-ids",
       "--execution-file",
@@ -621,6 +655,8 @@
       "--id"
     ],
     "test update": [
+      "--body",
+      "--body-file",
       "--execution-file",
       "--execution-json",
       "--id",

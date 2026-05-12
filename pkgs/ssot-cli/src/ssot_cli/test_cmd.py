@@ -3,7 +3,7 @@
 import argparse
 
 from ssot_registry.api import create_entity, delete_entity, get_entity, link_entities, list_entities, run_tests, unlink_entities, update_entity
-from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict, load_json_object_argument
+from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict, load_json_object_argument, load_text_argument
 
 
 _LINK_MAPPING = {
@@ -25,6 +25,8 @@ def register_test(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(create)
     create.add_argument("--id", required=True, help="Normalized test id to create.")
     create.add_argument("--title", required=True, help="Human-readable test title.")
+    create.add_argument("--body", default=None, help="Optional longer-form narrative for the test.")
+    create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the test body.")
     create.add_argument("--status", choices=["planned", "passing", "failing", "blocked", "skipped"], default="planned", help="Current execution or readiness state of the test.")
     create.add_argument("--kind", required=True, help="Operator-defined test category such as unit, integration, or manual.")
     create.add_argument("--test-path", dest="test_path", required=True, help="Repository-relative location of the executable test or test specification.")
@@ -49,6 +51,8 @@ def register_test(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(update)
     update.add_argument("--id", required=True, help="Test id to update.")
     update.add_argument("--title", default=None, help="Replacement test title.")
+    update.add_argument("--body", default=None, help="Replacement longer-form test narrative.")
+    update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement test body.")
     update.add_argument("--status", choices=["planned", "passing", "failing", "blocked", "skipped"], default=None, help="Updated execution or readiness state.")
     update.add_argument("--kind", default=None, help="Updated test category.")
     update.add_argument("--test-path", dest="test_path", default=None, help="Updated repository-relative path to the test or procedure.")
@@ -99,6 +103,7 @@ def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="test")
     execution = load_json_object_argument(
         inline_value=args.execution_json,
         file_value=args.execution_file,
@@ -107,6 +112,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
     row = {
         "id": args.id,
         "title": args.title,
+        "body": body,
         "status": args.status,
         "kind": args.kind,
         "path": args.test_path,
@@ -127,6 +133,7 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="test")
     execution = load_json_object_argument(
         inline_value=args.execution_json,
         file_value=args.execution_file,
@@ -135,6 +142,7 @@ def run_update(args: argparse.Namespace) -> dict[str, object]:
     changes = compact_dict(
         {
             "title": args.title,
+            "body": body,
             "status": args.status,
             "kind": args.kind,
             "path": args.test_path,

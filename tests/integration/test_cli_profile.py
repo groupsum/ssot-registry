@@ -12,6 +12,10 @@ class CliProfileSurfaceTests(unittest.TestCase):
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)
         repo = Path(temp_dir.name) / "repo"
+        create_body = repo / "profile-body.txt"
+        create_body.write_text("generated profile body from file", encoding="utf-8")
+        update_body = repo / "profile-body-update.txt"
+        update_body.write_text("updated profile body from file", encoding="utf-8")
 
         create = run_cli(
             "profile",
@@ -23,6 +27,8 @@ class CliProfileSurfaceTests(unittest.TestCase):
             "HTTP/3 Core",
             "--description",
             "Core bundle",
+            "--body-file",
+            str(create_body),
             "--status",
             "active",
             "--kind",
@@ -36,7 +42,9 @@ class CliProfileSurfaceTests(unittest.TestCase):
 
         get_result = run_cli("profile", "get", str(repo), "--id", "prf:http3-core")
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
-        self.assertEqual(json.loads(get_result.stdout)["id"], "prf:http3-core")
+        get_payload = json.loads(get_result.stdout)
+        self.assertEqual(get_payload["id"], "prf:http3-core")
+        self.assertEqual(get_payload["body"], "generated profile body from file")
 
         list_result = run_cli("profile", "list", str(repo))
         self.assertEqual(list_result.returncode, 0, list_result.stderr)
@@ -45,8 +53,19 @@ class CliProfileSurfaceTests(unittest.TestCase):
         ids = {row["id"] for row in list_payload}
         self.assertIn("prf:http3-core", ids)
 
-        update = run_cli("profile", "update", str(repo), "--id", "prf:http3-core", "--title", "HTTP/3 core updated")
+        update = run_cli(
+            "profile",
+            "update",
+            str(repo),
+            "--id",
+            "prf:http3-core",
+            "--title",
+            "HTTP/3 core updated",
+            "--body-file",
+            str(update_body),
+        )
         self.assertEqual(update.returncode, 0, update.stderr)
+        self.assertEqual(json.loads(update.stdout)["entity"]["body"], "updated profile body from file")
 
         link = run_cli("profile", "link", str(repo), "--id", "prf:http3-core", "--profile-ids", "prf:http3-core")
         self.assertNotEqual(link.returncode, 0, "self-cycle link should fail validation")

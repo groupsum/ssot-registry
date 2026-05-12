@@ -15,7 +15,7 @@ from ssot_registry.api import (
     run_boundary_tests,
     update_entity,
 )
-from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, compact_dict
+from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, compact_dict, load_text_argument
 
 
 def register_boundary(subparsers: argparse._SubParsersAction) -> None:
@@ -30,6 +30,8 @@ def register_boundary(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(create)
     create.add_argument("--id", required=True, help="Normalized boundary id to create.")
     create.add_argument("--title", required=True, help="Human-readable boundary title.")
+    create.add_argument("--body", default=None, help="Optional longer-form narrative for the boundary.")
+    create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the boundary body.")
     create.add_argument("--status", choices=["draft", "active", "frozen", "retired"], default="draft", help="Current lifecycle state of the boundary.")
     add_optional_bool_argument(create, "--frozen", default=False, help_text="Record whether the boundary contents are locked against further scope edits.")
     create.add_argument("--feature-ids", nargs="*", default=[], help="Direct feature ids included in the scoped delivery unit.")
@@ -50,6 +52,8 @@ def register_boundary(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(update)
     update.add_argument("--id", required=True, help="Boundary id to update.")
     update.add_argument("--title", default=None, help="Replacement boundary title.")
+    update.add_argument("--body", default=None, help="Replacement longer-form boundary narrative.")
+    update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement boundary body.")
     update.add_argument("--status", choices=["draft", "active", "frozen", "retired"], default=None, help="Updated lifecycle state.")
     add_optional_bool_argument(update, "--frozen", default=None, help_text="Change whether the boundary is locked against scope edits.")
     update.set_defaults(func=run_update)
@@ -101,9 +105,11 @@ def register_boundary(subparsers: argparse._SubParsersAction) -> None:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="boundary")
     row = {
         "id": args.id,
         "title": args.title,
+        "body": body,
         "status": args.status,
         "frozen": args.frozen,
         "feature_ids": args.feature_ids,
@@ -121,7 +127,8 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
-    changes = compact_dict({"title": args.title, "status": args.status, "frozen": args.frozen})
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="boundary")
+    changes = compact_dict({"title": args.title, "body": body, "status": args.status, "frozen": args.frozen})
     if not changes:
         raise ValueError("At least one update field is required")
     return update_entity(args.path, "boundaries", args.id, changes)

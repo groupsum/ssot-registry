@@ -12,6 +12,10 @@ class CliBoundarySurfaceTests(unittest.TestCase):
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)
         repo = Path(temp_dir.name) / "repo"
+        create_body = repo / "boundary-body.txt"
+        create_body.write_text("generated boundary body from file", encoding="utf-8")
+        update_body = repo / "boundary-body-update.txt"
+        update_body.write_text("updated boundary body from file", encoding="utf-8")
 
         create = run_cli(
             "boundary",
@@ -21,12 +25,16 @@ class CliBoundarySurfaceTests(unittest.TestCase):
             "bnd:cli.generated",
             "--title",
             "CLI generated boundary",
+            "--body-file",
+            str(create_body),
         )
         self.assertEqual(create.returncode, 0, create.stderr)
 
         get_result = run_cli("boundary", "get", str(repo), "--id", "bnd:cli.generated")
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
-        self.assertEqual(json.loads(get_result.stdout)["id"], "bnd:cli.generated")
+        get_payload = json.loads(get_result.stdout)
+        self.assertEqual(get_payload["id"], "bnd:cli.generated")
+        self.assertEqual(get_payload["body"], "generated boundary body from file")
 
         list_result = run_cli("boundary", "list", str(repo))
         self.assertEqual(list_result.returncode, 0, list_result.stderr)
@@ -41,10 +49,13 @@ class CliBoundarySurfaceTests(unittest.TestCase):
             str(repo),
             "--id",
             "bnd:cli.generated",
+            "--body-file",
+            str(update_body),
             "--status",
             "active",
         )
         self.assertEqual(update.returncode, 0, update.stderr)
+        self.assertEqual(json.loads(update.stdout)["entity"]["body"], "updated boundary body from file")
 
         add_feature = run_cli(
             "boundary",

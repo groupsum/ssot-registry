@@ -13,7 +13,7 @@ from ssot_registry.api import (
     unlink_entities,
     update_entity,
 )
-from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
 
 
 _LINK_MAPPING = {
@@ -40,6 +40,8 @@ def register_issue(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--status", choices=["open", "in_progress", "blocked", "resolved", "closed"], default="open", help="Current workflow state of the issue.")
     create.add_argument("--severity", choices=["low", "medium", "high", "critical"], default="medium", help="Operational severity of the issue.")
     create.add_argument("--description", default="", help="Operator-facing problem summary and context.")
+    create.add_argument("--body", default=None, help="Optional longer-form narrative for the issue.")
+    create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the issue body.")
     create.add_argument("--horizon", choices=["current", "next", "future", "explicit", "backlog", "out_of_bounds"], default="backlog", help="Planning horizon used to schedule the issue.")
     create.add_argument("--slot", default=None, help="Explicit release train, sprint, or slot label when planning explicitly.")
     create.add_argument("--feature-ids", nargs="*", default=[], help="Feature ids affected by the issue.")
@@ -66,6 +68,8 @@ def register_issue(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--title", default=None, help="Replacement issue title.")
     update.add_argument("--severity", choices=["low", "medium", "high", "critical"], default=None, help="Updated operational severity.")
     update.add_argument("--description", default=None, help="Replacement issue description.")
+    update.add_argument("--body", default=None, help="Replacement longer-form issue narrative.")
+    update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement issue body.")
     add_optional_bool_argument(update, "--release-blocking", default=None, help_text="Change whether the issue is treated as a release blocker.")
     update.set_defaults(func=run_update)
 
@@ -125,12 +129,14 @@ def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="issue")
     row = {
         "id": args.id,
         "title": args.title,
         "status": args.status,
         "severity": args.severity,
         "description": args.description,
+        "body": body,
         "plan": {"horizon": args.horizon, "slot": args.slot},
         "feature_ids": args.feature_ids,
         "claim_ids": args.claim_ids,
@@ -151,11 +157,13 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="issue")
     changes = compact_dict(
         {
             "title": args.title,
             "severity": args.severity,
             "description": args.description,
+            "body": body,
             "release_blocking": args.release_blocking,
         }
     )

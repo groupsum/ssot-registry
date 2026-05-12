@@ -12,7 +12,7 @@ from ssot_registry.api import (
     unlink_entities,
     update_entity,
 )
-from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
 
 
 _LINK_MAPPING = {
@@ -39,6 +39,8 @@ def register_risk(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--status", choices=["active", "mitigated", "accepted", "retired"], default="active", help="Current treatment state of the risk.")
     create.add_argument("--severity", choices=["low", "medium", "high", "critical"], default="medium", help="Operational severity of the exposure.")
     create.add_argument("--description", default="", help="Operator-facing description of the exposure and context.")
+    create.add_argument("--body", default=None, help="Optional longer-form narrative for the risk.")
+    create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the risk body.")
     create.add_argument("--feature-ids", nargs="*", default=[], help="Feature ids exposed by the risk.")
     create.add_argument("--claim-ids", nargs="*", default=[], help="Claim ids affected by the risk.")
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids related to the risk.")
@@ -63,6 +65,8 @@ def register_risk(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--title", default=None, help="Replacement risk title.")
     update.add_argument("--severity", choices=["low", "medium", "high", "critical"], default=None, help="Updated operational severity.")
     update.add_argument("--description", default=None, help="Replacement risk description.")
+    update.add_argument("--body", default=None, help="Replacement longer-form risk narrative.")
+    update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement risk body.")
     add_optional_bool_argument(update, "--release-blocking", default=None, help_text="Change whether the risk is treated as a release blocker.")
     update.set_defaults(func=run_update)
 
@@ -115,12 +119,14 @@ def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="risk")
     row = {
         "id": args.id,
         "title": args.title,
         "status": args.status,
         "severity": args.severity,
         "description": args.description,
+        "body": body,
         "feature_ids": args.feature_ids,
         "claim_ids": args.claim_ids,
         "test_ids": args.test_ids,
@@ -140,11 +146,13 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="risk")
     changes = compact_dict(
         {
             "title": args.title,
             "severity": args.severity,
             "description": args.description,
+            "body": body,
             "release_blocking": args.release_blocking,
         }
     )

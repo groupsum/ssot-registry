@@ -5,6 +5,7 @@ from typing import TypedDict
 
 class ReleaseRow(TypedDict, total=False):
     id: str
+    body: str
     version: str
     status: str
     boundary_id: str

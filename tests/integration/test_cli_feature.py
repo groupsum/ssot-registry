@@ -12,6 +12,10 @@ class CliFeatureTests(unittest.TestCase):
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)
         repo = Path(temp_dir.name) / "repo"
+        create_body = repo / "feature-body.txt"
+        create_body.write_text("generated feature body from file", encoding="utf-8")
+        update_body = repo / "feature-body-update.txt"
+        update_body.write_text("updated feature body from file", encoding="utf-8")
 
         create = run_cli(
             "feature",
@@ -23,6 +27,8 @@ class CliFeatureTests(unittest.TestCase):
             "CLI generated feature",
             "--description",
             "generated from cli test",
+            "--body-file",
+            str(create_body),
             "--implementation-status",
             "partial",
             "--requires",
@@ -36,6 +42,7 @@ class CliFeatureTests(unittest.TestCase):
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
         get_payload = json.loads(get_result.stdout)
         self.assertEqual(get_payload["id"], "feat:cli.generated")
+        self.assertEqual(get_payload["body"], "generated feature body from file")
 
         list_result = run_cli("feature", "list", str(repo))
         self.assertEqual(list_result.returncode, 0, list_result.stderr)
@@ -56,9 +63,12 @@ class CliFeatureTests(unittest.TestCase):
             "feat:cli.generated",
             "--title",
             "CLI generated feature updated",
+            "--body-file",
+            str(update_body),
         )
         self.assertEqual(update.returncode, 0, update.stderr)
         self.assertEqual(json.loads(update.stdout)["entity"]["title"], "CLI generated feature updated")
+        self.assertEqual(json.loads(update.stdout)["entity"]["body"], "updated feature body from file")
 
         link = run_cli(
             "feature",

@@ -6,6 +6,7 @@ from typing import TypedDict
 class ClaimRow(TypedDict, total=False):
     id: str
     title: str
+    body: str
     status: str
     tier: str
     kind: str

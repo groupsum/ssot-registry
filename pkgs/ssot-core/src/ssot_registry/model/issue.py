@@ -6,6 +6,7 @@ from typing import TypedDict
 class IssueRow(TypedDict, total=False):
     id: str
     title: str
+    body: str
     status: str
     severity: str
     description: str

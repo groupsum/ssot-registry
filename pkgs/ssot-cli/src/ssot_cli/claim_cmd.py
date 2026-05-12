@@ -14,7 +14,7 @@ from ssot_registry.api import (
     unlink_entities,
     update_entity,
 )
-from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
 
 
 _LINK_MAPPING = {
@@ -40,6 +40,8 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--tier", choices=["T0", "T1", "T2", "T3", "T4"], default="T0", help="Assurance tier required for the claim.")
     create.add_argument("--kind", required=True, help="Operator-defined claim category.")
     create.add_argument("--description", default="", help="What the claim asserts and why it matters.")
+    create.add_argument("--body", default=None, help="Optional longer-form narrative for the claim.")
+    create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the claim body.")
     create.add_argument("--feature-ids", nargs="*", default=[], help="Feature ids the claim is about.")
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids that support the claim.")
     create.add_argument("--evidence-ids", nargs="*", default=[], help="Evidence ids that substantiate the claim.")
@@ -61,6 +63,8 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--title", default=None, help="Replacement claim title.")
     update.add_argument("--kind", default=None, help="Updated claim category.")
     update.add_argument("--description", default=None, help="Replacement claim description.")
+    update.add_argument("--body", default=None, help="Replacement longer-form claim narrative.")
+    update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement claim body.")
     update.set_defaults(func=run_update)
 
     delete = claim_sub.add_parser("delete", help="Delete a claim.", description="Remove a claim record from the registry.")
@@ -110,6 +114,7 @@ def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="claim")
     row = {
         "id": args.id,
         "title": args.title,
@@ -117,6 +122,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "tier": args.tier,
         "kind": args.kind,
         "description": args.description,
+        "body": body,
         "feature_ids": args.feature_ids,
         "test_ids": args.test_ids,
         "evidence_ids": args.evidence_ids,
@@ -133,7 +139,8 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
-    changes = compact_dict({"title": args.title, "kind": args.kind, "description": args.description})
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="claim")
+    changes = compact_dict({"title": args.title, "kind": args.kind, "description": args.description, "body": body})
     if not changes:
         raise ValueError("At least one update field is required")
     return update_entity(args.path, "claims", args.id, changes)

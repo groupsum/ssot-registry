@@ -6,6 +6,7 @@ from typing import TypedDict
 class BoundaryRow(TypedDict, total=False):
     id: str
     title: str
+    body: str
     status: str
     frozen: bool
     feature_ids: list[str]

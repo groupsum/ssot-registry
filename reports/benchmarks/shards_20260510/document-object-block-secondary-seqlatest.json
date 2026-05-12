@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-05-11T00:30:35.057326",
+  "cwd": "E:\\swarmauri_github\\ssot-registry",
+  "repeats": 1,
+  "workload": {
+    "total_instances": 100,
+    "feature_count": 25,
+    "claim_count": 25,
+    "test_count": 25,
+    "evidence_count": 25
+  },
+  "rows": [
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "17.156437",
+      "median_ms_per_op": "686.257",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "0.000102",
+      "median_ms_per_op": "0.004",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "17.857306",
+      "median_ms_per_op": "714.292",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.447923",
+      "median_ms_per_op": "447.923",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "0.000379",
+      "median_ms_per_op": "0.015",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "0.000330",
+      "median_ms_per_op": "0.013",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000022",
+      "median_ms_per_op": "0.022",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    }
+  ]
+}

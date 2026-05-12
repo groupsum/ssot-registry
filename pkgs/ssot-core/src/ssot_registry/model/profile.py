@@ -7,6 +7,7 @@ class ProfileRow(TypedDict, total=False):
     id: str
     title: str
     description: str
+    body: str
     status: str
     kind: str
     feature_ids: list[str]

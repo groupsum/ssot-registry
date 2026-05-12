@@ -14,3 +14,7 @@ build/
 .tmp*
 node_modules/
 desired-state/
+/.pip-cache
+/.tigrstore_site/tigrbl_engine_tigrstore-0.1.0.dist-info
+/.tigrstore_site/bin
+/.tigrstore_site

@@ -6,6 +6,7 @@ from typing import TypedDict
 class EvidenceRow(TypedDict, total=False):
     id: str
     title: str
+    body: str
     status: str
     kind: str
     tier: str

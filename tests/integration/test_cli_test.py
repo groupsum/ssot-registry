@@ -14,6 +14,10 @@ class CliTestSurfaceTests(unittest.TestCase):
         repo = Path(temp_dir.name) / "repo"
         generated_path = repo / "tests" / "test_cli_generated_surface.py"
         generated_path.write_text("def test_generated_surface():\n    assert True\n", encoding="utf-8")
+        create_body = repo / "test-body.txt"
+        create_body.write_text("generated test body from file", encoding="utf-8")
+        update_body = repo / "test-body-update.txt"
+        update_body.write_text("updated test body from file", encoding="utf-8")
 
         create = run_cli(
             "test",
@@ -23,6 +27,8 @@ class CliTestSurfaceTests(unittest.TestCase):
             "tst:pytest.cli.generated-surface",
             "--title",
             "CLI generated test",
+            "--body-file",
+            str(create_body),
             "--status",
             "passing",
             "--kind",
@@ -53,6 +59,7 @@ class CliTestSurfaceTests(unittest.TestCase):
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
         get_payload = json.loads(get_result.stdout)
         self.assertEqual(get_payload["kind"], "pytest")
+        self.assertEqual(get_payload["body"], "generated test body from file")
         self.assertEqual(get_payload["execution"]["mode"], "command")
 
         list_result = run_cli("test", "list", str(repo))
@@ -70,8 +77,11 @@ class CliTestSurfaceTests(unittest.TestCase):
             "tst:pytest.cli.generated-surface",
             "--title",
             "CLI generated test updated",
+            "--body-file",
+            str(update_body),
         )
         self.assertEqual(update.returncode, 0, update.stderr)
+        self.assertEqual(json.loads(update.stdout)["entity"]["body"], "updated test body from file")
 
         unlink = run_cli(
             "test",

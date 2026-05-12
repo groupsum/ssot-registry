@@ -12,7 +12,7 @@ from ssot_registry.api import (
     unlink_entities,
     update_entity,
 )
-from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
 
 _LINK_MAPPING = {
     "feature_ids": "feature_ids",
@@ -33,6 +33,8 @@ def register_profile(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--id", required=True, help="Normalized profile id to create.")
     create.add_argument("--title", required=True, help="Human-readable profile title.")
     create.add_argument("--description", default="", help="Operator-facing summary of the profile's scope.")
+    create.add_argument("--body", default=None, help="Optional longer-form narrative for the profile.")
+    create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the profile body.")
     create.add_argument("--status", choices=["draft", "active", "retired"], default="draft", help="Current lifecycle state of the profile.")
     create.add_argument("--kind", choices=["capability", "certification", "deployment", "interoperability"], default="capability", help="Why the profile exists operationally.")
     create.add_argument("--feature-ids", nargs="*", default=[], help="Feature ids directly included in the profile.")
@@ -61,6 +63,8 @@ def register_profile(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--id", required=True, help="Profile id to update.")
     update.add_argument("--title", default=None, help="Replacement profile title.")
     update.add_argument("--description", default=None, help="Replacement profile description.")
+    update.add_argument("--body", default=None, help="Replacement longer-form profile narrative.")
+    update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement profile body.")
     update.add_argument("--status", choices=["draft", "active", "retired"], default=None, help="New lifecycle state.")
     update.add_argument("--kind", choices=["capability", "certification", "deployment", "interoperability"], default=None, help="New operational role for the profile.")
     update.add_argument("--claim-tier", choices=["T0", "T1", "T2", "T3", "T4"], default=None, help="Updated default claim tier for evaluation.")
@@ -104,6 +108,7 @@ def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="profile")
     return create_entity(
         args.path,
         "profiles",
@@ -111,6 +116,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
             "id": args.id,
             "title": args.title,
             "description": args.description,
+            "body": body,
             "status": args.status,
             "kind": args.kind,
             "feature_ids": args.feature_ids,
@@ -133,10 +139,12 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="profile")
     changes = compact_dict(
         {
             "title": args.title,
             "description": args.description,
+            "body": body,
             "status": args.status,
             "kind": args.kind,
             "claim_tier": args.claim_tier,

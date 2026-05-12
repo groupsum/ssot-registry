@@ -12,7 +12,7 @@ from ssot_registry.api import (
     update_entity,
     verify_evidence_rows,
 )
-from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
 
 
 _LINK_MAPPING = {
@@ -36,6 +36,8 @@ def register_evidence(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--status", choices=["planned", "collected", "passed", "failed", "stale"], default="planned", help="Current freshness or outcome state of the evidence artifact.")
     create.add_argument("--kind", required=True, help="Operator-defined evidence category such as report, bundle, or log.")
     create.add_argument("--tier", choices=["T0", "T1", "T2", "T3", "T4"], default="T0", help="Assurance tier the evidence contributes toward.")
+    create.add_argument("--body", default=None, help="Optional longer-form narrative for the evidence row.")
+    create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the evidence body.")
     create.add_argument("--evidence-path", dest="evidence_path", required=True, help="Repository-relative location of the evidence artifact.")
     create.add_argument("--claim-ids", nargs="*", default=[], help="Claim ids supported by the evidence.")
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids associated with the evidence.")
@@ -58,6 +60,8 @@ def register_evidence(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--status", choices=["planned", "collected", "passed", "failed", "stale"], default=None, help="Updated freshness or outcome state.")
     update.add_argument("--kind", default=None, help="Updated evidence category.")
     update.add_argument("--tier", choices=["T0", "T1", "T2", "T3", "T4"], default=None, help="Updated assurance tier contribution.")
+    update.add_argument("--body", default=None, help="Replacement longer-form evidence narrative.")
+    update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement evidence body.")
     update.add_argument("--evidence-path", dest="evidence_path", default=None, help="Updated repository-relative path to the artifact.")
     update.set_defaults(func=run_update)
 
@@ -94,12 +98,14 @@ def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="evidence")
     row = {
         "id": args.id,
         "title": args.title,
         "status": args.status,
         "kind": args.kind,
         "tier": args.tier,
+        "body": body,
         "path": args.evidence_path,
         "claim_ids": args.claim_ids,
         "test_ids": args.test_ids,
@@ -116,12 +122,14 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="evidence")
     changes = compact_dict(
         {
             "title": args.title,
             "status": args.status,
             "kind": args.kind,
             "tier": args.tier,
+            "body": body,
             "path": args.evidence_path,
         }
     )

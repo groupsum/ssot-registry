@@ -19,7 +19,7 @@ from ssot_registry.api import (
     revoke_release,
     update_entity,
 )
-from ssot_cli.common import add_ids_argument, add_path_argument, compact_dict
+from ssot_cli.common import add_ids_argument, add_path_argument, compact_dict, load_text_argument
 
 
 def register_release(subparsers: argparse._SubParsersAction) -> None:
@@ -33,6 +33,8 @@ def register_release(subparsers: argparse._SubParsersAction) -> None:
     create = release_sub.add_parser("create", help="Create a release candidate.", description="Create a release record tied to a frozen boundary and optional supporting claims and evidence.")
     add_path_argument(create)
     create.add_argument("--id", required=True, help="Normalized release id to create.")
+    create.add_argument("--body", default=None, help="Optional longer-form narrative for the release.")
+    create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the release body.")
     create.add_argument("--version", required=True, help="Semantic or operator-defined version string for the release.")
     create.add_argument("--status", choices=["draft", "candidate", "certified", "promoted", "published", "revoked"], default="draft", help="Current publication stage of the release.")
     create.add_argument("--boundary-id", required=True, help="Primary frozen boundary id that defines the release scope.")
@@ -54,6 +56,8 @@ def register_release(subparsers: argparse._SubParsersAction) -> None:
     update = release_sub.add_parser("update", help="Edit release metadata.", description="Update mutable release fields without changing its claim or evidence membership lists.")
     add_path_argument(update)
     update.add_argument("--id", required=True, help="Release id to update.")
+    update.add_argument("--body", default=None, help="Replacement longer-form release narrative.")
+    update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement release body.")
     update.add_argument("--version", default=None, help="Replacement release version string.")
     update.add_argument("--status", choices=["draft", "candidate", "certified", "promoted", "published", "revoked"], default=None, help="Updated publication stage.")
     update.add_argument("--boundary-id", default=None, help="Replacement primary boundary id that defines the release scope.")
@@ -125,10 +129,12 @@ def register_release(subparsers: argparse._SubParsersAction) -> None:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="release")
     boundary_ids = [args.boundary_id, *(args.boundary_ids or [])]
     boundary_ids = list(dict.fromkeys(boundary_ids))
     row = {
         "id": args.id,
+        "body": body,
         "version": args.version,
         "status": args.status,
         "boundary_id": args.boundary_id,
@@ -148,6 +154,7 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="release")
     boundary_ids = args.boundary_ids
     if boundary_ids is not None:
         boundary_ids = list(dict.fromkeys(([args.boundary_id] if args.boundary_id else []) + boundary_ids))
@@ -156,6 +163,7 @@ def run_update(args: argparse.Namespace) -> dict[str, object]:
     elif args.boundary_id is not None:
         boundary_ids = [args.boundary_id]
     changes = compact_dict({
+        "body": body,
         "version": args.version,
         "status": args.status,
         "boundary_id": args.boundary_id or (boundary_ids[0] if boundary_ids else None),

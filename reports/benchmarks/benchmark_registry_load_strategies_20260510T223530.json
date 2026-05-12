@@ -1,0 +1,240 @@
+{
+  "generated_at": "2026-05-10T22:35:30.757992",
+  "cwd": "E:/swarmauri_github/ssot-registry",
+  "entity_count_per_family": 20,
+  "sample_count": 5,
+  "repeats": 1,
+  "initial_registry_bytes": 30892,
+  "strategies": {
+    "single-json-current": {
+      "file_count": 1,
+      "cumulative_bytes": 31002
+    },
+    "sharded-index-recommended": {
+      "file_count": 82,
+      "cumulative_bytes": 85145
+    },
+    "cached-sharded-index-recommended": {
+      "file_count": 82,
+      "cumulative_bytes": 85145
+    }
+  },
+  "rows": [
+    {
+      "strategy": "cached-sharded-index-recommended",
+      "phase": "create",
+      "operations": 1,
+      "median_seconds": 0.013117499998770654,
+      "median_ms_per_op": 13.117499998770654,
+      "min_seconds": 0.013117499998770654,
+      "max_seconds": 0.013117499998770654
+    },
+    {
+      "strategy": "cached-sharded-index-recommended",
+      "phase": "delete",
+      "operations": 1,
+      "median_seconds": 0.0017816999461501837,
+      "median_ms_per_op": 1.7816999461501837,
+      "min_seconds": 0.0017816999461501837,
+      "max_seconds": 0.0017816999461501837
+    },
+    {
+      "strategy": "cached-sharded-index-recommended",
+      "phase": "list",
+      "operations": 1,
+      "median_seconds": 1.3599987141788006e-05,
+      "median_ms_per_op": 0.013599987141788006,
+      "min_seconds": 1.3599987141788006e-05,
+      "max_seconds": 1.3599987141788006e-05
+    },
+    {
+      "strategy": "cached-sharded-index-recommended",
+      "phase": "read",
+      "operations": 5,
+      "median_seconds": 0.007551299990154803,
+      "median_ms_per_op": 1.5102599980309606,
+      "min_seconds": 0.007551299990154803,
+      "max_seconds": 0.007551299990154803
+    },
+    {
+      "strategy": "cached-sharded-index-recommended",
+      "phase": "search",
+      "operations": 1,
+      "median_seconds": 5.599926225841045e-06,
+      "median_ms_per_op": 0.005599926225841045,
+      "min_seconds": 5.599926225841045e-06,
+      "max_seconds": 5.599926225841045e-06
+    },
+    {
+      "strategy": "cached-sharded-index-recommended",
+      "phase": "traverse_children",
+      "operations": 5,
+      "median_seconds": 0.02157199999783188,
+      "median_ms_per_op": 4.314399999566376,
+      "min_seconds": 0.02157199999783188,
+      "max_seconds": 0.02157199999783188
+    },
+    {
+      "strategy": "cached-sharded-index-recommended",
+      "phase": "traverse_parents",
+      "operations": 5,
+      "median_seconds": 6.46000262349844e-05,
+      "median_ms_per_op": 0.01292000524699688,
+      "min_seconds": 6.46000262349844e-05,
+      "max_seconds": 6.46000262349844e-05
+    },
+    {
+      "strategy": "cached-sharded-index-recommended",
+      "phase": "update",
+      "operations": 5,
+      "median_seconds": 0.010958900093100965,
+      "median_ms_per_op": 2.191780018620193,
+      "min_seconds": 0.010958900093100965,
+      "max_seconds": 0.010958900093100965
+    },
+    {
+      "strategy": "sharded-index-recommended",
+      "phase": "create",
+      "operations": 1,
+      "median_seconds": 0.015024400083348155,
+      "median_ms_per_op": 15.024400083348155,
+      "min_seconds": 0.015024400083348155,
+      "max_seconds": 0.015024400083348155
+    },
+    {
+      "strategy": "sharded-index-recommended",
+      "phase": "delete",
+      "operations": 1,
+      "median_seconds": 0.011361100012436509,
+      "median_ms_per_op": 11.36110001243651,
+      "min_seconds": 0.011361100012436509,
+      "max_seconds": 0.011361100012436509
+    },
+    {
+      "strategy": "sharded-index-recommended",
+      "phase": "list",
+      "operations": 1,
+      "median_seconds": 0.01044380001258105,
+      "median_ms_per_op": 10.44380001258105,
+      "min_seconds": 0.01044380001258105,
+      "max_seconds": 0.01044380001258105
+    },
+    {
+      "strategy": "sharded-index-recommended",
+      "phase": "read",
+      "operations": 5,
+      "median_seconds": 0.019635100034065545,
+      "median_ms_per_op": 3.927020006813109,
+      "min_seconds": 0.019635100034065545,
+      "max_seconds": 0.019635100034065545
+    },
+    {
+      "strategy": "sharded-index-recommended",
+      "phase": "search",
+      "operations": 1,
+      "median_seconds": 0.00019599997904151678,
+      "median_ms_per_op": 0.19599997904151678,
+      "min_seconds": 0.00019599997904151678,
+      "max_seconds": 0.00019599997904151678
+    },
+    {
+      "strategy": "sharded-index-recommended",
+      "phase": "traverse_children",
+      "operations": 5,
+      "median_seconds": 0.04936399997677654,
+      "median_ms_per_op": 9.872799995355308,
+      "min_seconds": 0.04936399997677654,
+      "max_seconds": 0.04936399997677654
+    },
+    {
+      "strategy": "sharded-index-recommended",
+      "phase": "traverse_parents",
+      "operations": 5,
+      "median_seconds": 0.004035599995404482,
+      "median_ms_per_op": 0.8071199990808964,
+      "min_seconds": 0.004035599995404482,
+      "max_seconds": 0.004035599995404482
+    },
+    {
+      "strategy": "sharded-index-recommended",
+      "phase": "update",
+      "operations": 5,
+      "median_seconds": 0.057122400030493736,
+      "median_ms_per_op": 11.424480006098747,
+      "min_seconds": 0.057122400030493736,
+      "max_seconds": 0.057122400030493736
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "create",
+      "operations": 1,
+      "median_seconds": 0.013105400023050606,
+      "median_ms_per_op": 13.105400023050606,
+      "min_seconds": 0.013105400023050606,
+      "max_seconds": 0.013105400023050606
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "delete",
+      "operations": 1,
+      "median_seconds": 0.01459809998050332,
+      "median_ms_per_op": 14.59809998050332,
+      "min_seconds": 0.01459809998050332,
+      "max_seconds": 0.01459809998050332
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "list",
+      "operations": 1,
+      "median_seconds": 0.011800700100138783,
+      "median_ms_per_op": 11.800700100138783,
+      "min_seconds": 0.011800700100138783,
+      "max_seconds": 0.011800700100138783
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "read",
+      "operations": 5,
+      "median_seconds": 0.013435700093396008,
+      "median_ms_per_op": 2.6871400186792016,
+      "min_seconds": 0.013435700093396008,
+      "max_seconds": 0.013435700093396008
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "search",
+      "operations": 1,
+      "median_seconds": 0.0007157999789342284,
+      "median_ms_per_op": 0.7157999789342284,
+      "min_seconds": 0.0007157999789342284,
+      "max_seconds": 0.0007157999789342284
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "traverse_children",
+      "operations": 5,
+      "median_seconds": 0.002341599902138114,
+      "median_ms_per_op": 0.4683199804276228,
+      "min_seconds": 0.002341599902138114,
+      "max_seconds": 0.002341599902138114
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "traverse_parents",
+      "operations": 5,
+      "median_seconds": 0.0026939999079331756,
+      "median_ms_per_op": 0.5387999815866351,
+      "min_seconds": 0.0026939999079331756,
+      "max_seconds": 0.0026939999079331756
+    },
+    {
+      "strategy": "single-json-current",
+      "phase": "update",
+      "operations": 5,
+      "median_seconds": 0.048826799960806966,
+      "median_ms_per_op": 9.765359992161393,
+      "min_seconds": 0.048826799960806966,
+      "max_seconds": 0.048826799960806966
+    }
+  ]
+}

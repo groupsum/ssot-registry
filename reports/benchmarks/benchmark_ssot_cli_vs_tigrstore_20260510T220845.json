@@ -1,0 +1,707 @@
+{
+  "generated_at": "2026-05-10T22:08:45.596687",
+  "cwd": "E:\\swarmauri_github\\ssot-registry",
+  "repeats": 1,
+  "workload": {
+    "total_instances": 100,
+    "feature_count": 25,
+    "claim_count": 25,
+    "test_count": 25,
+    "evidence_count": 25
+  },
+  "rows": [
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "7.917305",
+      "median_ms_per_op": "316.692",
+      "file_count": 57,
+      "cumulative_bytes": 64993
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "6.283794",
+      "median_ms_per_op": "251.352",
+      "file_count": 57,
+      "cumulative_bytes": 64993
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "7.470864",
+      "median_ms_per_op": "298.835",
+      "file_count": 57,
+      "cumulative_bytes": 64993
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.248800",
+      "median_ms_per_op": "248.800",
+      "file_count": 57,
+      "cumulative_bytes": 64993
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "24.798993",
+      "median_ms_per_op": "991.960",
+      "file_count": 57,
+      "cumulative_bytes": 64993
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "23.266556",
+      "median_ms_per_op": "930.662",
+      "file_count": 57,
+      "cumulative_bytes": 64993
+    },
+    {
+      "contender": "ssot-cli-current-json",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.244359",
+      "median_ms_per_op": "244.359",
+      "file_count": 57,
+      "cumulative_bytes": 64993
+    },
+    {
+      "contender": "filelsm-based",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "19.965247",
+      "median_ms_per_op": "798.610",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "filelsm-based",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "11.364737",
+      "median_ms_per_op": "454.589",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "filelsm-based",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "16.804501",
+      "median_ms_per_op": "672.180",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "filelsm-based",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.496365",
+      "median_ms_per_op": "496.365",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "filelsm-based",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "46.728993",
+      "median_ms_per_op": "1869.160",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "filelsm-based",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "47.589345",
+      "median_ms_per_op": "1903.574",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "filelsm-based",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000023",
+      "median_ms_per_op": "0.023",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-based",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "19.360036",
+      "median_ms_per_op": "774.401",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-based",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "11.701849",
+      "median_ms_per_op": "468.074",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-based",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "27.941744",
+      "median_ms_per_op": "1117.670",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-based",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.478442",
+      "median_ms_per_op": "478.442",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-based",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "45.015400",
+      "median_ms_per_op": "1800.616",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-based",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "46.070743",
+      "median_ms_per_op": "1842.830",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "blocklsm-based",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000029",
+      "median_ms_per_op": "0.029",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "17.038787",
+      "median_ms_per_op": "681.551",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "12.351202",
+      "median_ms_per_op": "494.048",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "17.621701",
+      "median_ms_per_op": "704.868",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.452603",
+      "median_ms_per_op": "452.603",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "43.483251",
+      "median_ms_per_op": "1739.330",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "42.795171",
+      "median_ms_per_op": "1711.807",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000018",
+      "median_ms_per_op": "0.018",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "14.608237",
+      "median_ms_per_op": "584.329",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "10.706485",
+      "median_ms_per_op": "428.259",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "16.878670",
+      "median_ms_per_op": "675.147",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.421840",
+      "median_ms_per_op": "421.840",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "43.678465",
+      "median_ms_per_op": "1747.139",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "42.076939",
+      "median_ms_per_op": "1683.078",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000013",
+      "median_ms_per_op": "0.013",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "15.684298",
+      "median_ms_per_op": "627.372",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "10.954887",
+      "median_ms_per_op": "438.195",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "16.885698",
+      "median_ms_per_op": "675.428",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.454687",
+      "median_ms_per_op": "454.687",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "44.799300",
+      "median_ms_per_op": "1791.972",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "43.572860",
+      "median_ms_per_op": "1742.914",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000014",
+      "median_ms_per_op": "0.014",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "15.768129",
+      "median_ms_per_op": "630.725",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "10.701779",
+      "median_ms_per_op": "428.071",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "16.805727",
+      "median_ms_per_op": "672.229",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.452517",
+      "median_ms_per_op": "452.517",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "42.120754",
+      "median_ms_per_op": "1684.830",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "42.383885",
+      "median_ms_per_op": "1695.355",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000013",
+      "median_ms_per_op": "0.013",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple-prefix-seqlatest",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "15.836765",
+      "median_ms_per_op": "633.471",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple-prefix-seqlatest",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "0.000090",
+      "median_ms_per_op": "0.004",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple-prefix-seqlatest",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "16.683976",
+      "median_ms_per_op": "667.359",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple-prefix-seqlatest",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.435992",
+      "median_ms_per_op": "435.992",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple-prefix-seqlatest",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "0.000384",
+      "median_ms_per_op": "0.015",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple-prefix-seqlatest",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "0.000328",
+      "median_ms_per_op": "0.013",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-simple-prefix-seqlatest",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000028",
+      "median_ms_per_op": "0.028",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "15.456558",
+      "median_ms_per_op": "618.262",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "0.000104",
+      "median_ms_per_op": "0.004",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "15.994353",
+      "median_ms_per_op": "639.774",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.398580",
+      "median_ms_per_op": "398.580",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "0.000381",
+      "median_ms_per_op": "0.015",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "0.000320",
+      "median_ms_per_op": "0.013",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "document-object-block-secondary-seqlatest",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000016",
+      "median_ms_per_op": "0.016",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple-prefix-mvcc",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "15.385881",
+      "median_ms_per_op": "615.435",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple-prefix-mvcc",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "0.000182",
+      "median_ms_per_op": "0.007",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple-prefix-mvcc",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "16.220403",
+      "median_ms_per_op": "648.816",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple-prefix-mvcc",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.413759",
+      "median_ms_per_op": "413.759",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple-prefix-mvcc",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "0.000546",
+      "median_ms_per_op": "0.022",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple-prefix-mvcc",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "0.000507",
+      "median_ms_per_op": "0.020",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-simple-prefix-mvcc",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000028",
+      "median_ms_per_op": "0.028",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block-secondary-mvcc",
+      "phase": "create",
+      "ops": 25,
+      "median_s": "17.224923",
+      "median_ms_per_op": "688.997",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block-secondary-mvcc",
+      "phase": "read",
+      "ops": 25,
+      "median_s": "0.000150",
+      "median_ms_per_op": "0.006",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block-secondary-mvcc",
+      "phase": "update",
+      "ops": 25,
+      "median_s": "17.559059",
+      "median_ms_per_op": "702.362",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block-secondary-mvcc",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "0.479245",
+      "median_ms_per_op": "479.245",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block-secondary-mvcc",
+      "phase": "traverse_children",
+      "ops": 25,
+      "median_s": "0.000550",
+      "median_ms_per_op": "0.022",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block-secondary-mvcc",
+      "phase": "traverse_parents",
+      "ops": 25,
+      "median_s": "0.000477",
+      "median_ms_per_op": "0.019",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    },
+    {
+      "contender": "metadata-config-block-secondary-mvcc",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000014",
+      "median_ms_per_op": "0.014",
+      "file_count": 2,
+      "cumulative_bytes": 109636
+    }
+  ]
+}

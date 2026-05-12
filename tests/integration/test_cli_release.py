@@ -12,6 +12,10 @@ class CliReleaseSurfaceTests(unittest.TestCase):
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)
         repo = Path(temp_dir.name) / "repo"
+        create_body = repo / "release-body.txt"
+        create_body.write_text("generated release body from file", encoding="utf-8")
+        update_body = repo / "release-body-update.txt"
+        update_body.write_text("updated release body from file", encoding="utf-8")
 
         create_boundary = run_cli(
             "boundary",
@@ -40,6 +44,8 @@ class CliReleaseSurfaceTests(unittest.TestCase):
             str(repo),
             "--id",
             "rel:9.9.9",
+            "--body-file",
+            str(create_body),
             "--version",
             "9.9.9",
             "--boundary-id",
@@ -53,6 +59,7 @@ class CliReleaseSurfaceTests(unittest.TestCase):
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
         release_payload = json.loads(get_result.stdout)
         self.assertEqual(release_payload["version"], "9.9.9")
+        self.assertEqual(release_payload["body"], "generated release body from file")
         self.assertEqual(release_payload["boundary_id"], "bnd:cli.release")
         self.assertEqual(release_payload["boundary_ids"], ["bnd:cli.release", "bnd:cli.release.extra"])
 
@@ -69,10 +76,13 @@ class CliReleaseSurfaceTests(unittest.TestCase):
             str(repo),
             "--id",
             "rel:9.9.9",
+            "--body-file",
+            str(update_body),
             "--status",
             "candidate",
         )
         self.assertEqual(update.returncode, 0, update.stderr)
+        self.assertEqual(json.loads(update.stdout)["entity"]["body"], "updated release body from file")
 
         add_claim = run_cli(
             "release",

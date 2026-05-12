@@ -68,3 +68,18 @@ def load_json_object_argument(
     if not isinstance(payload, dict):
         raise ValueError(f"{label} must decode to a JSON object")
     return payload
+
+
+def load_text_argument(
+    *,
+    inline_value: str | None,
+    file_value: str | None,
+    label: str,
+) -> str | None:
+    if inline_value is None and file_value is None:
+        return None
+    if inline_value is not None and file_value is not None:
+        raise ValueError(f"{label} accepts only one of body or body_file")
+    if file_value is not None:
+        return Path(file_value).read_text(encoding="utf-8")
+    return inline_value

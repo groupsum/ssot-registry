@@ -37,6 +37,9 @@ def _dict_of_strings(value: Any) -> bool:
 
 def _validate_feature(feature: dict[str, Any], failures: list[str]) -> None:
     entity_id = feature.get("id", "<missing>")
+    body = feature.get("body")
+    if body is not None and not isinstance(body, str):
+        failures.append(f"features.{entity_id}.body must be a string when present")
     if feature.get("implementation_status") not in FEATURE_IMPLEMENTATION_STATUSES:
         failures.append(
             f"features.{entity_id}.implementation_status must be one of {sorted(FEATURE_IMPLEMENTATION_STATUSES)}"
@@ -101,6 +104,9 @@ def _validate_feature(feature: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_test(test: dict[str, Any], failures: list[str]) -> None:
     entity_id = test.get("id", "<missing>")
+    body = test.get("body")
+    if body is not None and not isinstance(body, str):
+        failures.append(f"tests.{entity_id}.body must be a string when present")
     if test.get("status") not in TEST_STATUSES:
         failures.append(f"tests.{entity_id}.status must be one of {sorted(TEST_STATUSES)}")
     if not isinstance(test.get("kind"), str) or not test["kind"].strip():
@@ -143,6 +149,9 @@ def _validate_test(test: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_profile(profile: dict[str, Any], failures: list[str]) -> None:
     entity_id = profile.get("id", "<missing>")
+    body = profile.get("body")
+    if body is not None and not isinstance(body, str):
+        failures.append(f"profiles.{entity_id}.body must be a string when present")
     if profile.get("status") not in PROFILE_STATUSES:
         failures.append(f"profiles.{entity_id}.status must be one of {sorted(PROFILE_STATUSES)}")
     if profile.get("kind") not in PROFILE_KINDS:
@@ -172,6 +181,9 @@ def _validate_profile(profile: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_claim(claim: dict[str, Any], failures: list[str]) -> None:
     entity_id = claim.get("id", "<missing>")
+    body = claim.get("body")
+    if body is not None and not isinstance(body, str):
+        failures.append(f"claims.{entity_id}.body must be a string when present")
     if claim.get("status") not in CLAIM_STATUSES:
         failures.append(f"claims.{entity_id}.status must be one of {sorted(CLAIM_STATUSES)}")
     if claim.get("tier") not in CLAIM_TIERS:
@@ -187,6 +199,9 @@ def _validate_claim(claim: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_evidence(evidence: dict[str, Any], failures: list[str]) -> None:
     entity_id = evidence.get("id", "<missing>")
+    body = evidence.get("body")
+    if body is not None and not isinstance(body, str):
+        failures.append(f"evidence.{entity_id}.body must be a string when present")
     if evidence.get("status") not in EVIDENCE_STATUSES:
         failures.append(f"evidence.{entity_id}.status must be one of {sorted(EVIDENCE_STATUSES)}")
     if evidence.get("tier") not in CLAIM_TIERS:
@@ -202,6 +217,9 @@ def _validate_evidence(evidence: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_issue(issue: dict[str, Any], failures: list[str]) -> None:
     entity_id = issue.get("id", "<missing>")
+    body = issue.get("body")
+    if body is not None and not isinstance(body, str):
+        failures.append(f"issues.{entity_id}.body must be a string when present")
     if issue.get("status") not in ISSUE_STATUSES:
         failures.append(f"issues.{entity_id}.status must be one of {sorted(ISSUE_STATUSES)}")
     if issue.get("severity") not in SEVERITIES:
@@ -229,6 +247,9 @@ def _validate_issue(issue: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_risk(risk: dict[str, Any], failures: list[str]) -> None:
     entity_id = risk.get("id", "<missing>")
+    body = risk.get("body")
+    if body is not None and not isinstance(body, str):
+        failures.append(f"risks.{entity_id}.body must be a string when present")
     if risk.get("status") not in RISK_STATUSES:
         failures.append(f"risks.{entity_id}.status must be one of {sorted(RISK_STATUSES)}")
     if risk.get("severity") not in SEVERITIES:
@@ -244,6 +265,9 @@ def _validate_risk(risk: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_boundary(boundary: dict[str, Any], failures: list[str]) -> None:
     entity_id = boundary.get("id", "<missing>")
+    body = boundary.get("body")
+    if body is not None and not isinstance(body, str):
+        failures.append(f"boundaries.{entity_id}.body must be a string when present")
     if boundary.get("status") not in BOUNDARY_STATUSES:
         failures.append(f"boundaries.{entity_id}.status must be one of {sorted(BOUNDARY_STATUSES)}")
     if not isinstance(boundary.get("frozen"), bool):
@@ -256,6 +280,9 @@ def _validate_boundary(boundary: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_release(release: dict[str, Any], failures: list[str]) -> None:
     entity_id = release.get("id", "<missing>")
+    body = release.get("body")
+    if body is not None and not isinstance(body, str):
+        failures.append(f"releases.{entity_id}.body must be a string when present")
     if release.get("status") not in RELEASE_STATUSES:
         failures.append(f"releases.{entity_id}.status must be one of {sorted(RELEASE_STATUSES)}")
     if not isinstance(release.get("version"), str) or not release["version"].strip():

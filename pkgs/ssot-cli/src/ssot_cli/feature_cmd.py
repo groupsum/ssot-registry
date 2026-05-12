@@ -20,7 +20,7 @@ from ssot_registry.api import (
     unlink_entities,
     update_entity,
 )
-from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict
+from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
 
 
 _LINK_MAPPING = {
@@ -48,6 +48,8 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--id", required=True, help="Normalized feature id to create.")
     create.add_argument("--title", required=True, help="Human-readable feature title.")
     create.add_argument("--description", default="", help="Operator-facing summary of the feature's purpose.")
+    create.add_argument("--body", default=None, help="Optional longer-form narrative for the feature.")
+    create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the feature body.")
     create.add_argument("--implementation-status", choices=sorted(FEATURE_IMPLEMENTATION_STATUSES), default="absent", help="Current implementation state in the codebase.")
     create.add_argument("--lifecycle-stage", choices=sorted(FEATURE_LIFECYCLE_STAGES), default="active", help="Actual lifecycle state of the feature today.")
     create.add_argument("--replacement-feature-id", nargs="*", default=[], help="Replacement feature ids if this feature is being deprecated or removed.")
@@ -78,6 +80,8 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--id", required=True, help="Feature id to update.")
     update.add_argument("--title", default=None, help="Replacement feature title.")
     update.add_argument("--description", default=None, help="Replacement feature description.")
+    update.add_argument("--body", default=None, help="Replacement longer-form feature narrative.")
+    update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement feature body.")
     update.add_argument("--implementation-status", choices=sorted(FEATURE_IMPLEMENTATION_STATUSES), default=None, help="Updated implementation state in the codebase.")
     update.set_defaults(func=run_update)
 
@@ -149,6 +153,7 @@ def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
 
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="feature")
     plan = {
         "horizon": args.horizon,
         "slot": args.slot,
@@ -162,6 +167,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "id": args.id,
         "title": args.title,
         "description": args.description,
+        "body": body,
         "implementation_status": args.implementation_status,
         "lifecycle": {
             "stage": args.lifecycle_stage,
@@ -186,10 +192,12 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
+    body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="feature")
     changes = compact_dict(
         {
             "title": args.title,
             "description": args.description,
+            "body": body,
             "implementation_status": args.implementation_status,
         }
     )
