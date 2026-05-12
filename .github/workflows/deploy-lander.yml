@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       manage_public_proxy:
+        description: "Allow the public lander endpoint admin flow."
+        required: false
+        default: false
+        type: boolean
+      rotate_certificate:
         description: "Allow DNS, reverse proxy, and certificate mutation for the public lander endpoints."
         required: false
         default: false
@@ -33,8 +38,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate workflow inputs
+        if: ${{ inputs.rotate_certificate }}
+        shell: bash
+        run: |
+          if [ "${{ inputs.manage_public_proxy }}" != "true" ]; then
+            echo "rotate_certificate=true requires manage_public_proxy=true"
+            exit 1
+          fi
+
       - name: Verify required secrets
-        if: ${{ inputs.manage_public_proxy }}
+        if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         shell: bash
         run: |
           missing=0
@@ -75,41 +89,41 @@ jobs:
           exit 1
 
       - name: Setup uv
-        if: ${{ inputs.manage_public_proxy }}
+        if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         uses: astral-sh/setup-uv@v5
         with:
           version: "latest"
 
       - name: Create uv virtualenv
-        if: ${{ inputs.manage_public_proxy }}
+        if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         run: |
           uv python install 3.12
           uv venv --python 3.12 .venv
 
       - name: Install npmctl and Namecheap DNS provider with uv
-        if: ${{ inputs.manage_public_proxy }}
+        if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         run: uv pip install "npmctl==0.3.2" "npmctl-namecheap==0.3.2"
 
       - name: Verify npmctl Namecheap provider
-        if: ${{ inputs.manage_public_proxy }}
+        if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         run: |
           uv run npmctl dns providers
           uv run npmctl dns doctor --provider namecheap
 
       - name: Configure Namecheap DNS records
-        if: ${{ inputs.manage_public_proxy }}
+        if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         run: uv run python scripts/namecheap_dns.py
 
       - name: Write npmctl desired state
-        if: ${{ inputs.manage_public_proxy }}
+        if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         run: uv run python scripts/write_npmctl_state.py
 
       - name: Validate npmctl desired state
-        if: ${{ inputs.manage_public_proxy }}
+        if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         run: uv run npmctl validate desired-state
 
       - name: Plan NPM changes
-        if: ${{ inputs.manage_public_proxy }}
+        if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         shell: bash
         run: |
           set +e
@@ -135,7 +149,7 @@ jobs:
           exit "$status"
 
       - name: Apply NPM reverse proxy and SSL
-        if: ${{ inputs.manage_public_proxy }}
+        if: ${{ inputs.manage_public_proxy && inputs.rotate_certificate }}
         shell: bash
         run: |
           if [ "${NPMCTL_SKIP_APPLY:-false}" = "true" ]; then
@@ -169,6 +183,10 @@ jobs:
         if: ${{ inputs.manage_public_proxy }}
         shell: bash
         run: |
+          if [ "${{ inputs.rotate_certificate }}" != "true" ]; then
+            echo "::notice::Skipping public proxy mutation because rotate_certificate was not enabled; verifying the existing public endpoints only."
+          fi
+
           if [ "${NPMCTL_SKIP_APPLY:-false}" = "true" ]; then
             echo "::warning::Skipping public endpoint verification because the live proxy host is unmanaged and this workflow intentionally did not mutate it."
             exit 0
