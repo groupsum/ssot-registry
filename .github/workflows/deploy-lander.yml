@@ -154,6 +154,11 @@ jobs:
       - name: Verify public endpoints
         shell: bash
         run: |
+          if [ "${NPMCTL_SKIP_APPLY:-false}" = "true" ]; then
+            echo "::warning::Skipping public endpoint verification because the live proxy host is unmanaged and this workflow intentionally did not mutate it."
+            exit 0
+          fi
+
           for url in "https://${DOMAIN_NAME}" "https://www.${DOMAIN_NAME}"; do
             for attempt in {1..40}; do
               if curl --fail --silent --show-error "$url" | grep -q "Hello, world."; then
