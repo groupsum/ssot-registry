@@ -40,7 +40,7 @@ schema_version: "0.2.0"
 slug: "out-of-bounds-implementation-disposition"
 status: "accepted"
 status_notes: []
-summary: "Non-absent out-of-bounds features must explicitly declare whether partial implementation is tolerated or prohibited."
+summary: "Feature implementation state, planning horizon, and lifecycle state are separate axes. That separation is useful, but it leaves an ambiguous case: a feature can be `out_of_bounds` while still being `partial` or `implemented` in the codebase."
 superseded_by: []
 supersedes: []
 tags: []

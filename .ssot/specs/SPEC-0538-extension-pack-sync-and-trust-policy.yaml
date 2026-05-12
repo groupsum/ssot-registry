@@ -1,50 +1,50 @@
-﻿adr_ids:
+adr_ids:
   - "adr:0535"
   - "adr:0536"
 body: |-
   ## Scope
-
+  
   This is an `ssot-core` maintainer specification for the upstream `ssot-registry`
   repository.
-
+  
   This phase governs downstream sync and validation rules for packaged
   `extension-pack` ADR/SPEC catalogs only.
-
+  
   ## Trust Policy
-
+  
   - Downstream sync of `extension-pack` catalogs SHALL be opt-in.
   - Untrusted extension-pack catalogs SHALL fail closed during packaged document sync.
   - Trusted built-in `ssot-origin` catalogs remain allowed by default.
-
+  
   ## Sync Rules
-
+  
   When trust policy allows an extension-pack catalog:
-
+  
   - packaged ADR/SPEC rows SHALL sync into downstream repositories as managed and immutable
   - synced rows SHALL preserve their `origin: extension-pack`
   - synced rows SHALL preserve catalog-owned numbering and target paths
   - downstream local edits to synced packaged docs SHALL be treated as drift and SHALL be overwritten by sync
-
+  
   ## Conflict Handling
-
+  
   Conflicts across trusted packaged catalogs SHALL fail closed unless explicitly
   resolved by policy.
-
+  
   At minimum, the sync process SHALL reject:
-
+  
   - duplicate document ids across catalogs
   - duplicate reserved numbers across catalogs
   - duplicate target paths across catalogs
   - packaged manifest entries whose declared origin does not match the catalog authority
-
+  
   ## Deferred Surfaces
-
+  
   This specification does not yet define:
-
+  
   - operator-facing config UX for catalog allowlisting
   - extension-pack support for features, tests, claims, evidence, issues, risks, boundaries, or releases
   - conformance-template ownership outside `ssot-origin`
-summary: "Extension-pack document sync is opt-in, trust-gated, and fail-closed on conflicts."
+summary: "This is an `ssot-core` maintainer specification for the upstream `ssot-registry`"
 decision_date: null
 id: "spc:0538"
 kind: "spec"

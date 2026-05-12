@@ -25,7 +25,7 @@
     "title": "CLI",
     "filename": "SPEC-0601-cli.yaml",
     "target_path": ".ssot/specs/SPEC-0601-cli.yaml",
-    "sha256": "142e35b826e816444e66de9138c6b1d5f48a31adecaa4f7acf2976ac133f10e3",
+    "sha256": "fe66e8d8d135809cd0c47c1fed6f54c6ef3163af1a373096ba0e0092804821b8",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -272,7 +272,7 @@
     "title": "Profile evaluation and boundary resolution",
     "filename": "SPEC-0614-profile-evaluation-and-boundary-resolution.yaml",
     "target_path": ".ssot/specs/SPEC-0614-profile-evaluation-and-boundary-resolution.yaml",
-    "sha256": "9c93a24990fa47b09f83d785e23d4bdc6e3d5171879f4767bd37185042b4a05a",
+    "sha256": "fe904a2070a985106181482cf4c611d7e5252594452e8c8c55764f5efc01e4af",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -313,7 +313,7 @@
     "title": "Out-of-bounds implementation disposition",
     "filename": "SPEC-0616-out-of-bounds-implementation-disposition.yaml",
     "target_path": ".ssot/specs/SPEC-0616-out-of-bounds-implementation-disposition.yaml",
-    "sha256": "1c407446259df1859561344407aa4ed4a5d02d15d1e66d3419839e40a73af37e",
+    "sha256": "77e6f0ad1482ee0eacdaad716ff6949fc1a69c38265699318ce1d535649bd838",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -335,7 +335,7 @@
     "title": "Feature implementation claim ceilings",
     "filename": "SPEC-0617-feature-implementation-claim-ceilings.yaml",
     "target_path": ".ssot/specs/SPEC-0617-feature-implementation-claim-ceilings.yaml",
-    "sha256": "059fb567584a9ec0e05ef23cbf0affd61d7d86faa1fe0958f82b15119ab91b6f",
+    "sha256": "ebceff937a7719cf5a168314e92427b7c56f08710ceef5b7154e667ceb5d1b8e",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -348,6 +348,195 @@
     "kind": "normative",
     "adr_ids": [
       "adr:0617"
+    ]
+  },
+  {
+    "id": "spc:0618",
+    "number": 618,
+    "slug": "local-release-assurance-candidate-scope",
+    "title": "Local Release Assurance Candidate Scope",
+    "filename": "SPEC-0618-local-release-assurance-candidate-scope.yaml",
+    "target_path": ".ssot/specs/SPEC-0618-local-release-assurance-candidate-scope.yaml",
+    "sha256": "b9855e1fbbf660411e68b5414394e4fc05f85e3cf4ca1d8cd6d5a695790b2654",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.4.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-08T07:34:02Z",
+        "note": "Tentative local release assurance proposal; not accepted or implementation-bound.",
+        "status": "draft"
+      }
+    ],
+    "kind": "governance",
+    "adr_ids": [
+      "adr:0618"
+    ]
+  },
+  {
+    "id": "spc:0619",
+    "number": 619,
+    "slug": "governed-source-snapshot-contract",
+    "title": "Governed Source Snapshot Contract",
+    "filename": "SPEC-0619-governed-source-snapshot-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0619-governed-source-snapshot-contract.yaml",
+    "sha256": "e589af8b850db5d8d5b787780cf8a0a3dac6cc3fd5061329d40c4fd86d6b91d6",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.4.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-08T07:34:03Z",
+        "note": "Tentative local release assurance proposal; not accepted or implementation-bound.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0618",
+      "adr:0619"
+    ]
+  },
+  {
+    "id": "spc:0620",
+    "number": 620,
+    "slug": "local-evidence-bundle-contract",
+    "title": "Local Evidence Bundle Contract",
+    "filename": "SPEC-0620-local-evidence-bundle-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0620-local-evidence-bundle-contract.yaml",
+    "sha256": "74d1b09dcbb95f13204eac5e04e286f1398b21eb790e6d1337f5fbc466b59b8a",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.4.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-08T07:34:03Z",
+        "note": "Tentative local release assurance proposal; not accepted or implementation-bound.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0618",
+      "adr:0620"
+    ]
+  },
+  {
+    "id": "spc:0621",
+    "number": 621,
+    "slug": "output-artifact-manifest-contract",
+    "title": "Output Artifact Manifest Contract",
+    "filename": "SPEC-0621-output-artifact-manifest-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0621-output-artifact-manifest-contract.yaml",
+    "sha256": "ab096e70cfed368342e59ff722696fabca1cb22f64dd810d91c6ce131f515ce9",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.4.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-08T07:34:03Z",
+        "note": "Tentative local release assurance proposal; not accepted or implementation-bound.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0618",
+      "adr:0620"
+    ]
+  },
+  {
+    "id": "spc:0622",
+    "number": 622,
+    "slug": "local-release-verification-and-gate-contract",
+    "title": "Local Release Verification And Gate Contract",
+    "filename": "SPEC-0622-local-release-verification-and-gate-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0622-local-release-verification-and-gate-contract.yaml",
+    "sha256": "a676807168ee50049db1ea1ffea6151043b2d7b469d0ad6b8cc7760e443c1a0e",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.4.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-08T07:34:03Z",
+        "note": "Tentative local release assurance proposal; not accepted or implementation-bound.",
+        "status": "draft"
+      }
+    ],
+    "kind": "governance",
+    "adr_ids": [
+      "adr:0618",
+      "adr:0619",
+      "adr:0620"
+    ]
+  },
+  {
+    "id": "spc:0623",
+    "number": 623,
+    "slug": "general-rules-of-interpretation",
+    "title": "General rules of interpretation",
+    "filename": "SPEC-0623-general-rules-of-interpretation.yaml",
+    "target_path": ".ssot/specs/SPEC-0623-general-rules-of-interpretation.yaml",
+    "sha256": "43f1fef9b66314ec0189ee86f8586dd99bf94e0bb1ded18f5e9b0779ebcdfc66",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.4.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [],
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0621"
+    ]
+  },
+  {
+    "id": "spc:0624",
+    "number": 624,
+    "slug": "ssot-definitions",
+    "title": "SSOT definitions",
+    "filename": "SPEC-0624-ssot-definitions.yaml",
+    "target_path": ".ssot/specs/SPEC-0624-ssot-definitions.yaml",
+    "sha256": "8e59bcbf8ec27d88b89bac5268526e03e8600c311e55d45c4054324f123a76a1",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.4.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [],
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0622"
     ]
   }
 ]

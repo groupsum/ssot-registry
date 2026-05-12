@@ -24,7 +24,7 @@ class CliClaimSurfaceTests(unittest.TestCase):
             "--status",
             "asserted",
             "--tier",
-            "T1",
+            "T3",
             "--kind",
             "conformance",
             "--description",
@@ -40,7 +40,7 @@ class CliClaimSurfaceTests(unittest.TestCase):
 
         get_result = run_cli("claim", "get", str(repo), "--id", "clm:cli.generated.t1")
         self.assertEqual(get_result.returncode, 0, get_result.stderr)
-        self.assertEqual(json.loads(get_result.stdout)["tier"], "T1")
+        self.assertEqual(json.loads(get_result.stdout)["tier"], "T3")
 
         list_result = run_cli("claim", "list", str(repo))
         self.assertEqual(list_result.returncode, 0, list_result.stderr)

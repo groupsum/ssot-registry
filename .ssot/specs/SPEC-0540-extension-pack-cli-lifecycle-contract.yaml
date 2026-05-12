@@ -1,4 +1,4 @@
-﻿schema_version: "0.3.0"
+schema_version: "0.3.0"
 kind: "spec"
 id: "spc:0540"
 number: 540
@@ -15,17 +15,17 @@ status_notes: []
 references: []
 body: |-
   ## Scope
-
+  
   This specification defines the required CLI lifecycle for external document packs.
-
+  
   ## Pack Command Family
-
+  
   The CLI SHALL expose a top-level pack command family.
-
+  
   The pack command family itself SHALL NOT introduce pack-specific top-level flags beyond global SSOT CLI flags. Operator intent belongs on subcommands.
-
+  
   ## Required Subcommands
-
+  
   The CLI SHALL support catalog-oriented subcommands for:
   - dd
   - list
@@ -39,19 +39,19 @@ body: |-
   -
   emove
   - prune
-
+  
   ## Subcommand Inputs
-
+  
   - dd SHALL accept a package reference and derive catalog metadata from the package.
   - show, 	rust, untrust,
   alidate, sync, upgrade,
   emove, and prune SHALL accept a catalog selector.
   - Commands SHALL operate on catalog identities rather than on ad hoc document subsets.
-
+  
   ## Allowed Subcommand Flags
-
+  
   Subcommand flags SHALL stay minimal and operator-intent-oriented.
-
+  
   Allowed pack subcommand flags include:
   - --trust
   - --no-sync
@@ -67,9 +67,9 @@ body: |-
   - --prune-stale
   - --target-version
   - --yes
-
+  
   ## Rules
-
+  
   - CLI output SHALL expose trust, pin, reservation, package-reference, and resolution state.
   - Catalog sync SHALL preserve managed immutable document semantics in downstream repositories.
   - Flags SHALL NOT require operators to restate catalog identity or reservation metadata already present in the package.

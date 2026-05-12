@@ -1,4 +1,4 @@
-﻿schema_version: "0.3.0"
+schema_version: "0.3.0"
 kind: "adr"
 id: "adr:0537"
 number: 537
@@ -15,17 +15,17 @@ status_notes: []
 references: []
 body: |-
   ## Decision
-
+  
   Installed and registered external document catalogs SHALL be represented in repo-local SSOT state.
-
+  
   ## Rules
-
+  
   - Catalog identity, trust state, version policy, and reservation ownership SHALL be persisted in repository truth.
   - Runtime provider discovery alone SHALL NOT be treated as authoritative operator state.
   - Repo-local SSOT state SHALL be sufficient to explain which external catalogs are intended, trusted, and pinned.
   - External catalog state in this phase applies to ADR and SPEC document packs only.
-
+  
   ## Consequences
-
+  
   - Operator repositories gain auditable catalog intent independent of local Python environment details.
   - Trust and version drift can be validated from repo truth.

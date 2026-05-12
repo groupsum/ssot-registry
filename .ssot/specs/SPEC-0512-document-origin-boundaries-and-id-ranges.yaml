@@ -37,7 +37,7 @@ slug: "document-origin-boundaries-and-id-ranges"
 spec_kind: "governance"
 status: "draft"
 status_notes: []
-summary: "This is an `ssot-core` maintainer specification for upstream document-origin boundaries, including extension-pack catalogs."
+summary: "This is an `ssot-core` maintainer specification for the upstream `ssot-registry` repository."
 superseded_by: []
 supersedes: []
 tags: []

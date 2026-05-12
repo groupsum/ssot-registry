@@ -1,4 +1,4 @@
-﻿schema_version: "0.3.0"
+schema_version: "0.3.0"
 kind: "spec"
 id: "spc:0539"
 number: 539
@@ -15,11 +15,11 @@ status_notes: []
 references: []
 body: |-
   ## Scope
-
+  
   This specification defines the repo-local SSOT state for registered external ADR and SPEC catalogs.
-
+  
   ## Required Catalog Fields
-
+  
   Each registered extension-pack catalog SHALL carry:
   - a stable catalog_id
   - publisher identity
@@ -29,9 +29,9 @@ body: |-
   - desired version or pin policy
   - owned ADR/SPEC reservation ranges
   - references to the packaged catalog metadata used for ingest
-
+  
   ## Rules
-
+  
   - Repo-local catalog state SHALL be authoritative for operator intent.
   - Catalog metadata SHALL be inspectable without resolving package artifacts.
   - Package-self-describing ingest metadata SHALL be imported rather than redundantly re-entered through CLI flags.

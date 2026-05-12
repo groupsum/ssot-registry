@@ -1,4 +1,4 @@
-﻿schema_version: "0.3.0"
+schema_version: "0.3.0"
 kind: "spec"
 id: "spc:0543"
 number: 543
@@ -15,11 +15,11 @@ status_notes: []
 references: []
 body: |-
   ## Scope
-
+  
   This specification defines how external catalogs are removed from downstream repositories.
-
+  
   ## Rules
-
+  
   - Unregister, detach, and prune SHALL be distinct operator actions.
   - Removal SHALL NOT silently delete synchronized documents.
   - Detached extension-pack rows SHALL remain auditable until explicitly pruned.

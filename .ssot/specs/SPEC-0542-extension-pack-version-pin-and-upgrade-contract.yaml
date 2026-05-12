@@ -1,4 +1,4 @@
-﻿schema_version: "0.3.0"
+schema_version: "0.3.0"
 kind: "spec"
 id: "spc:0542"
 number: 542
@@ -15,11 +15,11 @@ status_notes: []
 references: []
 body: |-
   ## Scope
-
+  
   This specification defines version pinning, resolved artifact tracking, and upgrade planning for external packs.
-
+  
   ## Rules
-
+  
   - Repo-local state SHALL distinguish desired version policy from currently resolved artifact state.
   - Pinned catalogs SHALL validate against the declared pin.
   - Drift between desired and resolved versions SHALL be detectable.

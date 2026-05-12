@@ -1,4 +1,4 @@
-﻿schema_version: "0.3.0"
+schema_version: "0.3.0"
 kind: "spec"
 id: "spc:0544"
 number: 544
@@ -15,11 +15,11 @@ status_notes: []
 references: []
 body: |-
   ## Scope
-
+  
   This specification defines how catalog-owned ADR and SPEC number bands are represented and validated.
-
+  
   ## Rules
-
+  
   - External catalog reservations SHALL be tracked separately from repo-local assignable reservations.
   - Reservation ownership SHALL identify the external catalog, not just the generic origin type.
   - Validation SHALL reject reuse of repo-local reservations for extension-pack numbering.

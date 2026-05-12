@@ -1,4 +1,4 @@
-﻿schema_version: "0.3.0"
+schema_version: "0.3.0"
 kind: "adr"
 id: "adr:0535"
 number: 535
@@ -11,52 +11,52 @@ tags:
   - "origin"
   - "distribution"
   - "extension-pack"
-summary: "Document authority and distribution channel are separate concepts. A packaged third-party SSOT pack is not `ssot-origin` merely because it is delivered as an installable artifact."
+summary: "The current SSOT document model treats packaged upstream documents as"
 supersedes: []
 superseded_by: []
 status_notes: []
 references: []
 body: |-
   ## Context
-
+  
   The current SSOT document model treats packaged upstream documents as
   equivalent to `ssot-origin` ownership. That worked while `ssot-registry`
   only shipped one packaged downstream catalog through `ssot-contracts`.
-
+  
   That assumption breaks once external SSOT document packs exist. A PyPI
   package, wheel, sdist, or other installable distribution is only a delivery
   mechanism. It does not by itself establish that the content is owned by
   `ssot-origin`.
-
+  
   Without an explicit separation between document authority and distribution,
   SSOT cannot represent third-party or extension truth packs without either
   mislabeling them as `ssot-origin` or flattening them into `repo-local`.
-
+  
   ## Decision
-
+  
   SSOT shall treat origin authority and distribution channel as separate
   concepts.
-
+  
   Origin authority answers who governs the truth represented by a document or
   packaged catalog. Distribution answers how that governed content is delivered
   to a consumer.
-
+  
   The origin model shall be extended beyond:
-
+  
   - `ssot-core`
   - `ssot-origin`
   - `repo-local`
-
+  
   to include a first-class external packaged authority class:
-
+  
   - `extension-pack`
-
+  
   An `extension-pack` origin represents governed SSOT content distributed by a
   third party or external publisher. It is not repo-authored local content, and
   it is not official `ssot-origin` content.
-
+  
   ## Consequences
-
+  
   - SSOT must stop assuming that all packaged ADR and SPEC catalogs are
     `ssot-origin`.
   - Repository and document metadata must distinguish authority from package

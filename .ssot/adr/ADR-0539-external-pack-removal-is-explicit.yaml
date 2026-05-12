@@ -1,4 +1,4 @@
-﻿schema_version: "0.3.0"
+schema_version: "0.3.0"
 kind: "adr"
 id: "adr:0539"
 number: 539
@@ -15,16 +15,16 @@ status_notes: []
 references: []
 body: |-
   ## Decision
-
+  
   Removing an external pack SHALL be an explicit governed action.
-
+  
   ## Rules
-
+  
   - Catalog unregister, detach, and prune semantics SHALL be distinguished.
   - Removal SHALL NOT silently destroy synced documents as a side effect of losing package resolution.
   - Downstream operators SHALL make an explicit choice when removing synchronized extension-pack documents.
-
+  
   ## Consequences
-
+  
   - Pack removal becomes auditable.
   - Repositories avoid accidental loss of governed document surfaces.

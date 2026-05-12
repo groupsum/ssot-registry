@@ -15,14 +15,14 @@ status_notes: []
 references: []
 body: |-
   CLI metadata SHALL describe:
-
+  
   - output formats
   - entity families
   - root metadata flags
   - future command / flag metadata
-
+  
   `ssot-cli` SHALL consume generated CLI metadata where practical.
-
+  
   Root version metadata SHALL be sourced from installed Python package metadata for `ssot-cli`. Root `--version` handling SHALL be represented as CLI metadata distinct from command-specific semantic version fields such as `init --version` or `release create --version`.
 spec_kind: "governance"
 adr_ids: []

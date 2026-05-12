@@ -1,0 +1,140 @@
+{
+  "generated_at": "2026-05-12T06:28:35.429739",
+  "cwd": "E:\\swarmauri_github\\ssot-registry",
+  "repeats": 1,
+  "workload": {
+    "total_instances": 10,
+    "feature_count": 3,
+    "claim_count": 3,
+    "test_count": 2,
+    "evidence_count": 2
+  },
+  "rows": [
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "create",
+      "ops": 3,
+      "median_s": "4.081878",
+      "median_ms_per_op": "1360.626",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "read",
+      "ops": 3,
+      "median_s": "3.518459",
+      "median_ms_per_op": "1172.820",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "update",
+      "ops": 3,
+      "median_s": "6.211323",
+      "median_ms_per_op": "2070.441",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "1.140976",
+      "median_ms_per_op": "1140.976",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "traverse_children",
+      "ops": 3,
+      "median_s": "9.406267",
+      "median_ms_per_op": "3135.422",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "traverse_parents",
+      "ops": 2,
+      "median_s": "7.825639",
+      "median_ms_per_op": "3912.819",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "blocklsm-segmentedwal-segmentgc",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000020",
+      "median_ms_per_op": "0.020",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "metadata-config-block-wal-segmentgc",
+      "phase": "create",
+      "ops": 3,
+      "median_s": "3.787213",
+      "median_ms_per_op": "1262.404",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "metadata-config-block-wal-segmentgc",
+      "phase": "read",
+      "ops": 3,
+      "median_s": "0.000034",
+      "median_ms_per_op": "0.011",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "metadata-config-block-wal-segmentgc",
+      "phase": "update",
+      "ops": 3,
+      "median_s": "5.624675",
+      "median_ms_per_op": "1874.892",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "metadata-config-block-wal-segmentgc",
+      "phase": "list",
+      "ops": 1,
+      "median_s": "1.162997",
+      "median_ms_per_op": "1162.997",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "metadata-config-block-wal-segmentgc",
+      "phase": "traverse_children",
+      "ops": 3,
+      "median_s": "0.000055",
+      "median_ms_per_op": "0.018",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "metadata-config-block-wal-segmentgc",
+      "phase": "traverse_parents",
+      "ops": 2,
+      "median_s": "0.000029",
+      "median_ms_per_op": "0.014",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    },
+    {
+      "contender": "metadata-config-block-wal-segmentgc",
+      "phase": "search",
+      "ops": 1,
+      "median_s": "0.000012",
+      "median_ms_per_op": "0.012",
+      "file_count": 4,
+      "cumulative_bytes": 3220
+    }
+  ]
+}

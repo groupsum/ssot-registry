@@ -1,4 +1,4 @@
-﻿schema_version: "0.3.0"
+schema_version: "0.3.0"
 kind: "adr"
 id: "adr:0540"
 number: 540
@@ -15,16 +15,16 @@ status_notes: []
 references: []
 body: |-
   ## Decision
-
+  
   Registering an external pack in repo truth and resolving an installable package artifact SHALL be separate operations.
-
+  
   ## Rules
-
+  
   - Repo-local catalog registration captures desired identity, trust, and version policy.
   - Package resolution captures the currently available artifact used for validation or sync.
   - Operators SHALL be able to inspect desired state independently from resolved state.
-
+  
   ## Consequences
-
+  
   - Repositories remain auditable even when a package is not yet installed or temporarily unavailable.
   - Validation can distinguish declaration failures from resolution failures.

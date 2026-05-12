@@ -44,7 +44,7 @@ slug: "out-of-bounds-implementation-disposition"
 spec_kind: "normative"
 status: "accepted"
 status_notes: []
-summary: "Feature plans support explicit disposition for non-absent out-of-bounds implementation."
+summary: "Feature `plan` MAY include:"
 superseded_by: []
 supersedes: []
 tags: []
