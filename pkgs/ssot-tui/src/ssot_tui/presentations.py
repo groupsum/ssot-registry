@@ -181,7 +181,7 @@ def _escape_backticks(value: str) -> str:
 
 def _preferred_primary_fields(section: str) -> tuple[str, ...]:
     defaults = {
-        "features": ("id", "title", "implementation_status", "summary"),
+        "features": ("id", "title", "effective_status", "implementation_status", "horizon"),
         "profiles": ("id", "title", "status", "claim_tier"),
         "tests": ("id", "title", "status", "path"),
         "claims": ("id", "title", "status", "tier"),

@@ -4,7 +4,7 @@ from ssot_contracts.contract_data import CONTRACT_DATA
 
 ENTITY_SECTIONS = tuple((section["key"], section["label"]) for section in CONTRACT_DATA["entity_sections"])
 ENTITY_VIEW_SECTIONS = {
-    "features": ("id", "title", "implementation_status", "horizon"),
+    "features": ("id", "title", "effective_status", "implementation_status", "horizon"),
     "profiles": ("id", "title", "status"),
     "tests": ("id", "title", "status"),
     "claims": ("id", "title", "status"),

@@ -55,5 +55,16 @@ body: |-
   - create and update commands SHALL reject requests that provide both `--body` and `--body-file`
 
   CLI body flags SHALL map directly onto the corresponding runtime document mutation inputs.
+
+  Entity create and update commands for `feature`, `test`, `issue`, `boundary`, `profile`, `claim`, `evidence`, `risk`, and `release` SHALL also support two body source flags:
+  - `--body`
+  - `--body-file`
+
+  Entity CLI source-selection rules:
+  - entity `create` commands MAY omit both `--body` and `--body-file`
+  - entity `update` commands MAY omit both `--body` and `--body-file`
+  - entity `create` and `update` commands SHALL reject requests that provide both `--body` and `--body-file`
+  - when `--body` is provided, the entity row `body` field SHALL be set from the inline UTF-8 text
+  - when `--body-file` is provided, the entity row `body` field SHALL be set from the referenced UTF-8 text file
 spec_kind: "operational"
 adr_ids: []

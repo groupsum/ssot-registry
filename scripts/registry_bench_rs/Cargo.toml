@@ -1,0 +1,13 @@
+[package]
+name = "registry_bench_rs"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "registry_bench_rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.22.6", features = ["extension-module"] }
+pythonize = "0.22.0"
+serde_json = "1.0.145"

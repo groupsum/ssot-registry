@@ -9,6 +9,34 @@ from ssot_registry.api import create_entity, delete_entity, list_entities, load_
 from ssot_registry.api.documents import list_documents, load_document_payload_for_row
 
 
+FEATURE_EFFECTIVE_STATUSES = (
+    "absent",
+    "partial",
+    "implemented",
+    "out_of_bounds",
+    "deprecated",
+    "obsolete",
+    "removed",
+)
+
+
+def effective_feature_status(row: dict[str, Any]) -> str:
+    plan = row.get("plan")
+    if isinstance(plan, dict) and plan.get("horizon") == "out_of_bounds":
+        return "out_of_bounds"
+
+    lifecycle = row.get("lifecycle")
+    if isinstance(lifecycle, dict):
+        stage = lifecycle.get("stage")
+        if stage in {"deprecated", "obsolete", "removed"}:
+            return str(stage)
+
+    implementation_status = row.get("implementation_status")
+    if isinstance(implementation_status, str) and implementation_status:
+        return implementation_status
+    return "unknown"
+
+
 @dataclass(slots=True)
 class RegistryWorkspace:
     root_path: str
@@ -53,6 +81,8 @@ class RegistryWorkspaceService:
             projected.setdefault("slot", plan.get("slot"))
             projected.setdefault("target_claim_tier", plan.get("target_claim_tier"))
             projected.setdefault("target_lifecycle_stage", plan.get("target_lifecycle_stage"))
+        if "implementation_status" in projected:
+            projected.setdefault("effective_status", effective_feature_status(projected))
         return projected
 
     def create(self, path: str | Path, section: str, payload: dict[str, Any]) -> dict[str, Any]:

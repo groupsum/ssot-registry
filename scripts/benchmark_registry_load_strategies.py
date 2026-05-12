@@ -4,6 +4,7 @@ import argparse
 import json
 import shutil
 import statistics
+import sys
 import tempfile
 import time
 from dataclasses import dataclass
@@ -11,10 +12,18 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TEMP_ROOT = REPO_ROOT / ".tmp_test_runs"
 REPORT_ROOT = REPO_ROOT / "reports" / "benchmarks"
+LOCAL_ORJSON_ROOT = REPO_ROOT / ".tmp_pydeps" / "orjson"
+
+if str(LOCAL_ORJSON_ROOT) not in sys.path and LOCAL_ORJSON_ROOT.exists():
+    sys.path.insert(0, str(LOCAL_ORJSON_ROOT))
+
+try:
+    import orjson
+except ImportError:
+    orjson = None
 
 SECTIONS = ("features", "claims", "tests", "evidence")
 
@@ -50,6 +59,23 @@ def _write_json(path: Path, data: Any) -> None:
 
 def _read_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _stable_orjson_bytes(data: Any) -> bytes:
+    if orjson is None:
+        raise RuntimeError("orjson is not installed")
+    return orjson.dumps(data, option=orjson.OPT_SORT_KEYS | orjson.OPT_APPEND_NEWLINE)
+
+
+def _write_orjson(path: Path, data: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(_stable_orjson_bytes(data))
+
+
+def _read_orjson(path: Path) -> Any:
+    if orjson is None:
+        raise RuntimeError("orjson is not installed")
+    return orjson.loads(path.read_bytes())
 
 
 def _safe_id(entity_id: str) -> str:
@@ -278,6 +304,19 @@ class SingleJsonStrategy:
             or query_lower in row["description"].lower()
             or query_lower == row["implementation_status"].lower()
         ]
+
+
+class OrjsonSingleJsonStrategy(SingleJsonStrategy):
+    name = "single-json-orjson"
+
+    def initialize(self, registry: dict[str, Any]) -> None:
+        _write_orjson(self.registry_path, registry)
+
+    def _load(self) -> dict[str, Any]:
+        return _read_orjson(self.registry_path)
+
+    def _save(self, registry: dict[str, Any]) -> None:
+        _write_orjson(self.registry_path, registry)
 
 
 class ShardedIndexStrategy:
@@ -577,6 +616,7 @@ def _write_report(
         "sample_count": sample_count,
         "repeats": repeats,
         "initial_registry_bytes": registry_bytes,
+        "orjson_available": orjson is not None,
         "strategies": {
             name: {"file_count": fp.file_count, "cumulative_bytes": fp.cumulative_bytes}
             for name, fp in footprints.items()
@@ -596,6 +636,7 @@ def main() -> int:
     parser.add_argument("--samples", type=int, default=50, help="Rows touched by read/update/traversal phases.")
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--json-report", type=Path, default=None)
+    parser.add_argument("--strategy", action="append", default=None)
     args = parser.parse_args()
 
     if args.entities < 2:
@@ -605,6 +646,15 @@ def main() -> int:
 
     registry = build_registry(args.entities)
     registry_bytes = len(_stable_json(registry).encode("utf-8"))
+    strategy_types = [SingleJsonStrategy]
+    if orjson is not None:
+        strategy_types.append(OrjsonSingleJsonStrategy)
+    strategy_types.extend([ShardedIndexStrategy, CachedShardedIndexStrategy])
+    if args.strategy:
+        allowed = set(args.strategy)
+        strategy_types = [strategy_type for strategy_type in strategy_types if strategy_type.name in allowed]
+        if not strategy_types:
+            raise ValueError(f"no strategies matched --strategy values: {sorted(allowed)!r}")
 
     all_runs: list[list[PhaseResult]] = []
     footprint_runs: dict[str, list[Footprint]] = {}
@@ -612,7 +662,7 @@ def main() -> int:
         TEMP_ROOT.mkdir(parents=True, exist_ok=True)
         temp_dir = Path(tempfile.mkdtemp(dir=TEMP_ROOT))
         try:
-            for strategy_type in (SingleJsonStrategy, ShardedIndexStrategy, CachedShardedIndexStrategy):
+            for strategy_type in strategy_types:
                 root = temp_dir / strategy_type.name
                 strategy = strategy_type(root)
                 strategy.initialize(registry)

@@ -21,7 +21,7 @@ from ssot_tui.presentations import (
     build_section_specs,
 )
 from ssot_tui.providers import BridgeActionProvider, WorkspaceProvider
-from ssot_tui.services import ENTITY_SECTIONS, RegistryWorkspace, RegistryWorkspaceService
+from ssot_tui.services import ENTITY_SECTIONS, FEATURE_EFFECTIVE_STATUSES, RegistryWorkspace, RegistryWorkspaceService
 from ssot_tui.state import AppState, AppStateStore, ValidationSummary
 from ssot_tui.widgets import CommandPaletteScreen, EntityDetailPane, EntityTable, HelpScreen, SectionNavigation, StatusCenter
 
@@ -204,6 +204,10 @@ class BrowserScreen(Screen[None]):
         needle = filter_text.strip().lower()
         if not needle:
             return rows
+        if self.active_section == "features":
+            normalized = needle.replace("-", "_").replace(" ", "_")
+            if normalized in FEATURE_EFFECTIVE_STATUSES:
+                return [row for row in rows if str(row.get("effective_status", "")).lower() == normalized]
         return [row for row in rows if needle in json.dumps(row, sort_keys=True).lower()]
 
     def _entity_index(self) -> dict[str, tuple[str, dict[str, Any]]]:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
@@ -10,7 +11,7 @@ from ssot_tui.actions import ActionDefinition, ActionRegistry
 from ssot_tui.persistence import SessionStore
 from ssot_tui.presentations import build_detail_view_model, build_section_specs, render_structured_detail
 from ssot_tui.providers import BridgeActionProvider, WorkspaceProvider
-from ssot_tui.services import ENTITY_SECTIONS, RegistryWorkspaceService
+from ssot_tui.services import ENTITY_SECTIONS, RegistryWorkspaceService, effective_feature_status
 from ssot_tui.state import SessionState
 from tests.helpers import temp_repo_from_fixture
 
@@ -188,6 +189,51 @@ class TuiOverhaulUnitTests(unittest.TestCase):
         self.assertRegex(workspace.registry_version, r"^0\.2\.\d+")
         self.assertEqual(workspace.registry_schema_version, "0.3.0")
 
+    def test_effective_feature_status_prefers_out_of_bounds_then_lifecycle_then_implementation(self) -> None:
+        out_of_bounds = effective_feature_status(
+            {
+                "implementation_status": "absent",
+                "lifecycle": {"stage": "active"},
+                "plan": {"horizon": "out_of_bounds"},
+            }
+        )
+        deprecated = effective_feature_status(
+            {
+                "implementation_status": "implemented",
+                "lifecycle": {"stage": "deprecated"},
+                "plan": {"horizon": "current"},
+            }
+        )
+        plain = effective_feature_status(
+            {
+                "implementation_status": "partial",
+                "lifecycle": {"stage": "active"},
+                "plan": {"horizon": "current"},
+            }
+        )
+
+        self.assertEqual(out_of_bounds, "out_of_bounds")
+        self.assertEqual(deprecated, "deprecated")
+        self.assertEqual(plain, "partial")
+
+    def test_workspace_service_projects_effective_feature_status(self) -> None:
+        row = {
+            "id": "feat:demo.out-of-bounds",
+            "title": "Demo",
+            "description": "demo",
+            "implementation_status": "absent",
+            "lifecycle": {"stage": "active"},
+            "plan": {"horizon": "out_of_bounds", "slot": None, "target_claim_tier": None, "target_lifecycle_stage": "active"},
+            "spec_ids": [],
+            "claim_ids": [],
+            "test_ids": [],
+        }
+
+        projected = RegistryWorkspaceService()._project_display_fields(row)
+
+        self.assertEqual(projected["effective_status"], "out_of_bounds")
+        self.assertEqual(projected["horizon"], "out_of_bounds")
+
 
     def test_bridge_preview_cli_get_for_document_returns_row_only(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
@@ -299,6 +345,104 @@ class TuiOverhaulInteractionTests(unittest.IsolatedAsyncioTestCase):
                 await pilot.pause()
                 self.assertLess(table.row_count, starting_rows)
                 self.assertEqual(screen.state_store.state.session.filter_text, "definitely-no-match")
+        finally:
+            temp_dir.cleanup()
+
+    async def test_feature_filter_uses_effective_status_for_absent_and_out_of_bounds(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        repo = Path(temp_dir.name) / "repo"
+        session_root = Path(temp_dir.name) / "session"
+
+        registry_path = repo / ".ssot" / "registry.json"
+        payload = json.loads(registry_path.read_text(encoding="utf-8"))
+        payload["features"].extend(
+            [
+                {
+                    "id": "feat:demo.absent",
+                    "title": "Absent feature",
+                    "description": "absent current feature",
+                    "implementation_status": "absent",
+                    "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": None},
+                    "plan": {"horizon": "backlog", "slot": None, "target_claim_tier": None, "target_lifecycle_stage": "active"},
+                    "spec_ids": [],
+                    "claim_ids": [],
+                    "test_ids": [],
+                    "requires": [],
+                },
+                {
+                    "id": "feat:demo.oob",
+                    "title": "Out of bounds feature",
+                    "description": "absent but out of bounds",
+                    "implementation_status": "absent",
+                    "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": "not targeted"},
+                    "plan": {
+                        "horizon": "out_of_bounds",
+                        "slot": None,
+                        "target_claim_tier": None,
+                        "target_lifecycle_stage": "active",
+                    },
+                    "spec_ids": [],
+                    "claim_ids": [],
+                    "test_ids": [],
+                    "requires": [],
+                },
+                {
+                    "id": "feat:demo.deprecated",
+                    "title": "Deprecated feature",
+                    "description": "implemented but deprecated",
+                    "implementation_status": "implemented",
+                    "lifecycle": {"stage": "deprecated", "replacement_feature_ids": [], "note": "superseded"},
+                    "plan": {"horizon": "current", "slot": None, "target_claim_tier": None, "target_lifecycle_stage": "deprecated"},
+                    "spec_ids": [],
+                    "claim_ids": [],
+                    "test_ids": [],
+                    "requires": [],
+                },
+            ]
+        )
+        registry_path.write_text(json.dumps(payload, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+
+        class TestApp(App[None]):
+            def on_mount(self) -> None:
+                self.push_screen(BrowserScreen(initial_path=repo, session_store=SessionStore(session_root)))
+
+        try:
+            app = TestApp()
+            async with app.run_test() as pilot:
+                await pilot.pause()
+                screen = app.screen
+                await _wait_for_workspace_load(screen, pilot)
+                table = screen.query_one(EntityTable)
+                filter_input = screen.query_one("#filter_input")
+
+                filter_input.value = "absent"
+                await pilot.pause()
+                absent_ids = {
+                    table.entity_for_row_index(index)["id"]
+                    for index in range(table.row_count)
+                    if table.entity_for_row_index(index) is not None
+                }
+                self.assertIn("feat:demo.absent", absent_ids)
+                self.assertNotIn("feat:demo.oob", absent_ids)
+                self.assertNotIn("feat:demo.deprecated", absent_ids)
+
+                filter_input.value = "out_of_bounds"
+                await pilot.pause()
+                out_of_bounds_ids = {
+                    table.entity_for_row_index(index)["id"]
+                    for index in range(table.row_count)
+                    if table.entity_for_row_index(index) is not None
+                }
+                self.assertEqual(out_of_bounds_ids, {"feat:demo.oob"})
+
+                filter_input.value = "deprecated"
+                await pilot.pause()
+                deprecated_ids = {
+                    table.entity_for_row_index(index)["id"]
+                    for index in range(table.row_count)
+                    if table.entity_for_row_index(index) is not None
+                }
+                self.assertEqual(deprecated_ids, {"feat:demo.deprecated"})
         finally:
             temp_dir.cleanup()
 
