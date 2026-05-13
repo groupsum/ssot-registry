@@ -30,12 +30,13 @@ def _next_minor_upper_bound(version: str) -> str:
 
 
 class PyprojectMetadataTests(unittest.TestCase):
-    def test_all_publishable_packages_declare_python_3_10_through_3_13_support(self) -> None:
+    def test_all_publishable_packages_declare_python_3_10_through_3_14_support(self) -> None:
         expected_classifiers = {
             "Programming Language :: Python :: 3.10",
             "Programming Language :: Python :: 3.11",
             "Programming Language :: Python :: 3.12",
             "Programming Language :: Python :: 3.13",
+            "Programming Language :: Python :: 3.14",
         }
         for path in (
             "pkgs/ssot-contracts/pyproject.toml",
@@ -47,7 +48,7 @@ class PyprojectMetadataTests(unittest.TestCase):
             "pkgs/ssot-tui/pyproject.toml",
         ):
             project = _load_toml(path)["project"]
-            self.assertEqual(project["requires-python"], ">=3.10,<3.14")
+            self.assertEqual(project["requires-python"], ">=3.10,<3.15")
             self.assertTrue(expected_classifiers.issubset(set(project["classifiers"])), path)
 
     def test_workspace_root_defines_dev_dependency_group(self) -> None:

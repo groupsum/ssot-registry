@@ -21,7 +21,7 @@ class ConformancePackageLayoutTests(unittest.TestCase):
     def test_conformance_package_declares_pytest_plugin_entrypoint(self) -> None:
         data = tomllib.loads((REPO_ROOT / "pkgs" / "ssot-conformance" / "pyproject.toml").read_text(encoding="utf-8"))
         self.assertEqual(data["project"]["readme"], "README.md")
-        self.assertEqual(data["project"]["requires-python"], ">=3.10,<3.14")
+        self.assertEqual(data["project"]["requires-python"], ">=3.10,<3.15")
         self.assertEqual(data["project"]["entry-points"]["pytest11"]["ssot-conformance"], "ssot_conformance.plugin")
 
     def test_conformance_package_files_exist(self) -> None:

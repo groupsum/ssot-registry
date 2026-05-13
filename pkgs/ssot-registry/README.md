@@ -8,7 +8,13 @@
   <a href="https://pypi.org/project/ssot-registry/"><img src="https://img.shields.io/pypi/pyversions/ssot-registry?label=Python" alt="Supported Python versions" /></a>
   <a href="https://pepy.tech/project/ssot-registry"><img src="https://static.pepy.tech/badge/ssot-registry" alt="Downloads" /></a>
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Hits" /></a>
+<!-- ssot-schema-badges:start -->
+  <img src="https://img.shields.io/badge/schema_version-0.4.0-blue" alt="schema_version 0.4.0" />
+  <img src="https://img.shields.io/badge/migration%20coverage-11%2F11-brightgreen" alt="Migration coverage 11/11" />
+<!-- ssot-schema-badges:end -->
 </div>
+
+![ssot-registry technical marketing graphic](https://raw.githubusercontent.com/groupsum/ssot-registry/master/assets/ssot-registry-technical-marketing.png)
 
 `ssot-registry` is the umbrella distribution for SSOT.
 

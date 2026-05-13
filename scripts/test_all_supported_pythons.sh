@@ -11,7 +11,7 @@ if ! command -v uv >/dev/null 2>&1; then
   exit 1
 fi
 
-SUPPORTED_PYTHON_VERSIONS=("3.10" "3.11" "3.12" "3.13")
+SUPPORTED_PYTHON_VERSIONS=("3.10" "3.11" "3.12" "3.13" "3.14")
 
 mapfile -t RESOLVED_PYTHON_VERSIONS < <(
   python - <<'PY'
@@ -30,7 +30,7 @@ match = re.fullmatch(r">=3\.(\d+),<3\.(\d+)", constraint)
 if not match:
     raise SystemExit(
         f"Unsupported supported-python format: {constraint!r}. "
-        "Expected format like '>=3.10,<3.14'."
+        "Expected format like '>=3.10,<3.15'."
     )
 start_minor = int(match.group(1))
 end_minor_exclusive = int(match.group(2))
@@ -119,4 +119,4 @@ for py_version in "${SUPPORTED_PYTHON_VERSIONS[@]}"; do
 
 done
 
-echo "All package unittests passed for Python 3.10, 3.11, 3.12, and 3.13."
+echo "All package unittests passed for Python 3.10, 3.11, 3.12, 3.13, and 3.14."

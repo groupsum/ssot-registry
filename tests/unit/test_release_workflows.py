@@ -61,7 +61,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
 
     def test_ci_workflow_covers_each_package_across_supported_python_versions(self) -> None:
         workflow = _read(".github/workflows/ci.yml")
-        self.assertIn('python_version: ["3.10", "3.11", "3.12", "3.13"]', workflow)
+        self.assertIn('python_version: ["3.10", "3.11", "3.12", "3.13", "3.14"]', workflow)
         for package_name in (
             "ssot-contracts",
             "ssot-views",

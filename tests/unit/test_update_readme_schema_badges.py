@@ -59,6 +59,34 @@ class UpdateReadmeSchemaBadgesTests(unittest.TestCase):
 
             self.assertFalse(update_readme_schema_badges.update_readme(readme_path))
 
+    def test_update_readme_can_rewrite_badges_without_version_reference_block(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            readme_path = Path(temp_dir) / "README.md"
+            readme_path.write_text(
+                "\n".join(
+                    [
+                        "<div>",
+                        update_readme_schema_badges.BADGES_START,
+                        "old badges",
+                        update_readme_schema_badges.BADGES_END,
+                        "</div>",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.object(update_readme_schema_badges, "SCHEMA_VERSION", "9.9.9"):
+                changed = update_readme_schema_badges.update_readme(
+                    readme_path,
+                    include_version_reference=False,
+                )
+
+            updated = readme_path.read_text(encoding="utf-8")
+            self.assertTrue(changed)
+            self.assertIn("schema_version-9.9.9-blue", updated)
+            self.assertNotIn(update_readme_schema_badges.VERSION_START, updated)
+
 
 if __name__ == "__main__":
     unittest.main()

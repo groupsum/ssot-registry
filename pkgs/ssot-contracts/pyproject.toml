@@ -7,7 +7,7 @@ name = "ssot-contracts"
 version = "0.2.17"
 description = "Canonical schemas, templates, manifests, and generated Python contract artifacts for SSOT."
 readme = "README.md"
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10,<3.15"
 license = "Apache-2.0"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = ["tomli>=2.0.1; python_version < '3.11'"]
@@ -24,6 +24,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: File Formats :: JSON",
   "Topic :: File Formats :: JSON :: JSON Schema",
   "Topic :: Software Development :: Documentation",
