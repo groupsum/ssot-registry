@@ -126,7 +126,12 @@ def _validate_and_save(registry_path: Path, repo_root: Path, registry: dict[str,
         detail = "; ".join(report["failures"])
         raise ValidationError(f"Registry validation failed after {action}: {detail}")
     save_registry(registry_path, registry)
-    return report
+    from .config import run_repo_automation
+
+    return {
+        "validation": report,
+        "automation": run_repo_automation(repo_root),
+    }
 
 
 def _rewrite_references_for_renamed_id(
@@ -173,12 +178,13 @@ def create_entity(path: str | Path, section: str, row: dict[str, Any]) -> dict[s
             candidate[field_name] = _dedupe_preserve(candidate[field_name])
     registry[section].append(candidate)
     _sync_reciprocals_for_row(registry, section, candidate)
-    _validate_and_save(registry_path, repo_root, registry, f"creating {SECTION_LABELS[section]} {entity_id}")
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"creating {SECTION_LABELS[section]} {entity_id}")
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section,
         "entity": candidate,
+        **mutation,
     }
 
 
@@ -216,12 +222,13 @@ def update_entity(path: str | Path, section: str, entity_id: str, changes: dict[
         action = f"renaming {SECTION_LABELS[section]} {entity_id} to {next_id}"
     else:
         action = f"updating {SECTION_LABELS[section]} {entity_id}"
-    _validate_and_save(registry_path, repo_root, registry, action)
+    mutation = _validate_and_save(registry_path, repo_root, registry, action)
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section,
         "entity": deepcopy(row),
+        **mutation,
     }
 
 
@@ -269,12 +276,13 @@ def delete_entity(path: str | Path, section: str, entity_id: str) -> dict[str, A
 
     rows = registry.get(section, [])
     registry[section] = [row for row in rows if row.get("id") != entity_id]
-    _validate_and_save(registry_path, repo_root, registry, f"deleting {SECTION_LABELS[section]} {entity_id}")
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"deleting {SECTION_LABELS[section]} {entity_id}")
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section,
         "deleted_id": entity_id,
+        **mutation,
     }
 
 
@@ -290,12 +298,13 @@ def link_entities(path: str | Path, section: str, entity_id: str, links: dict[st
                 values.append(target_id)
                 _apply_reciprocal_add(registry, section, field_name, entity_id, target_id)
         row[field_name] = _dedupe_preserve(values)
-    _validate_and_save(registry_path, repo_root, registry, f"linking {SECTION_LABELS[section]} {entity_id}")
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"linking {SECTION_LABELS[section]} {entity_id}")
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section,
         "entity": deepcopy(row),
+        **mutation,
     }
 
 
@@ -311,12 +320,13 @@ def unlink_entities(path: str | Path, section: str, entity_id: str, links: dict[
                 values.remove(target_id)
             _apply_reciprocal_remove(registry, section, field_name, entity_id, target_id)
         row[field_name] = _dedupe_preserve(values)
-    _validate_and_save(registry_path, repo_root, registry, f"unlinking {SECTION_LABELS[section]} {entity_id}")
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"unlinking {SECTION_LABELS[section]} {entity_id}")
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section,
         "entity": deepcopy(row),
+        **mutation,
     }
 
 

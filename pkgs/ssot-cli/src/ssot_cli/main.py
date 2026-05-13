@@ -15,6 +15,7 @@ from .adr_cmd import register_adr
 from .boundary_cmd import register_boundary
 from .claim_cmd import register_claim
 from .conformance_cmd import register_conformance
+from .config_cmd import register_config
 from .evidence_cmd import register_evidence
 from .feature_cmd import register_feature
 from .graph_cmd import register_graph
@@ -105,6 +106,7 @@ def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
     register_init(subparsers)
     register_validate(subparsers)
     register_upgrade(subparsers)
+    register_config(subparsers)
     register_adr(subparsers)
     register_spec(subparsers)
     register_feature(subparsers)

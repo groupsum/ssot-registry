@@ -57,10 +57,13 @@ def set_feature_lifecycle(
         raise ValidationError("Registry validation failed after lifecycle transition")
 
     save_registry(registry_path, registry)
+    from .config import run_repo_automation
+
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "updated_ids": ids,
         "guard_reports": guard_reports,
         "validation": report,
+        "automation": run_repo_automation(repo_root),
     }

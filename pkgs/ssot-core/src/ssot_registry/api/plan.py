@@ -46,11 +46,14 @@ def plan_features(
 
     report = _validate_candidate(registry, registry_path, repo_root)
     save_registry(registry_path, registry)
+    from .config import run_repo_automation
+
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "updated_ids": ids,
         "validation": report,
+        "automation": run_repo_automation(repo_root),
     }
 
 
@@ -69,9 +72,12 @@ def plan_issues(path: str | Path, ids: list[str], horizon: str, slot: str | None
 
     report = _validate_candidate(registry, registry_path, repo_root)
     save_registry(registry_path, registry)
+    from .config import run_repo_automation
+
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "updated_ids": ids,
         "validation": report,
+        "automation": run_repo_automation(repo_root),
     }

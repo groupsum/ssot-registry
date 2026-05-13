@@ -6,6 +6,7 @@ from ssot_contracts.schema import list_schema_names, load_schema_text
 from ssot_registry.api.documents import sync_all_documents
 from ssot_registry.model.registry import build_minimal_registry, default_paths
 from ssot_registry.util.errors import RegistryError
+from .config import ensure_repo_config
 from .save import save_registry
 from .validate import validate_registry
 
@@ -39,6 +40,7 @@ def initialize_repo(
     save_registry(registry_path, registry)
 
     _copy_schema_tree(repo_root / paths["schema_root"])
+    config_result = ensure_repo_config(repo_root)
     sync_all_documents(registry_path)
 
     report = validate_registry(registry_path)
@@ -49,4 +51,5 @@ def initialize_repo(
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "repo_root": repo_root.as_posix(),
+        "config_path": config_result["config_path"],
     }

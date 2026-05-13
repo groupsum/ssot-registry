@@ -323,7 +323,12 @@ def _validate_and_save(registry_path: Path, repo_root: Path, registry: dict[str,
         detail = "; ".join(report["failures"])
         raise ValidationError(f"Registry validation failed after {action}: {detail}")
     save_registry(registry_path, registry)
-    return report
+    from .config import run_repo_automation
+
+    return {
+        "validation": report,
+        "automation": run_repo_automation(repo_root),
+    }
 
 
 def load_document_payload_for_row(repo_root: Path, row: dict[str, Any], kind: str) -> dict[str, Any]:
@@ -448,12 +453,13 @@ def create_document(
     section = section_for_document_kind(kind)
     registry[section].append(row)
     _sort_document_rows(registry, kind)
-    _validate_and_save(registry_path, repo_root, registry, f"creating {kind} {row['id']}")
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"creating {kind} {row['id']}")
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section,
         "document": deepcopy(row),
+        **mutation,
     }
 
 
@@ -512,12 +518,13 @@ def update_document(
     row["content_sha256"] = _write_document(repo_root, row, authored_payload, kind)
     row["package_version"] = registry.get("tooling", {}).get("ssot_registry_version", __version__)
     _sort_document_rows(registry, kind)
-    _validate_and_save(registry_path, repo_root, registry, f"updating {kind} {document_id}")
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"updating {kind} {document_id}")
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section_for_document_kind(kind),
         "document": deepcopy(row),
+        **mutation,
     }
 
 
@@ -539,12 +546,13 @@ def add_spec_adr_links(path: str | Path, spec_id: str, adr_ids: list[str]) -> di
     row["content_sha256"] = _write_document(repo_root, row, payload, "spec")
     row["package_version"] = registry.get("tooling", {}).get("ssot_registry_version", __version__)
     _sort_document_rows(registry, "spec")
-    _validate_and_save(registry_path, repo_root, registry, f"linking spec {spec_id}")
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"linking spec {spec_id}")
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section_for_document_kind("spec"),
         "document": deepcopy(row),
+        **mutation,
     }
 
 
@@ -562,12 +570,13 @@ def remove_spec_adr_links(path: str | Path, spec_id: str, adr_ids: list[str]) ->
     row["content_sha256"] = _write_document(repo_root, row, payload, "spec")
     row["package_version"] = registry.get("tooling", {}).get("ssot_registry_version", __version__)
     _sort_document_rows(registry, "spec")
-    _validate_and_save(registry_path, repo_root, registry, f"unlinking spec {spec_id}")
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"unlinking spec {spec_id}")
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section_for_document_kind("spec"),
         "document": deepcopy(row),
+        **mutation,
     }
 
 
@@ -597,11 +606,14 @@ def delete_document(path: str | Path, kind: str, document_id: str) -> dict[str, 
 
     registry[section] = candidate[section]
     save_registry(registry_path, registry)
+    from .config import run_repo_automation
+
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section,
         "deleted_id": document_id,
+        "automation": run_repo_automation(repo_root),
     }
 
 
@@ -632,12 +644,13 @@ def supersede_documents(
         rows[document_id]["content_sha256"] = _rewrite_document_from_existing_payload(repo_root, rows[document_id], kind)
         rows[document_id]["package_version"] = registry.get("tooling", {}).get("ssot_registry_version", __version__)
     _sort_document_rows(registry, kind)
-    _validate_and_save(registry_path, repo_root, registry, f"superseding {kind} {source_id}")
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"superseding {kind} {source_id}")
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "section": section,
         "document": deepcopy(rows[source_id]),
+        **mutation,
     }
 
 
@@ -777,12 +790,13 @@ def create_document_reservation(path: str | Path, kind: str, *, name: str, start
         "assignable_by_repo": True,
     }
     registry["document_id_reservations"][reservation_kind_key(kind)].append(row)
-    _validate_and_save(registry_path, repo_root, registry, f"creating {kind} reservation {name}")
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"creating {kind} reservation {name}")
     return {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "kind": kind,
         "reservation": deepcopy(row),
+        **mutation,
     }
 
 
