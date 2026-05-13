@@ -26,7 +26,7 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10 fallback
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CORE_PACKAGES = ("ssot-contracts", "ssot-pack-contracts", "ssot-views", "ssot-codegen", "ssot-core")
+CORE_PACKAGES = ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core")
 RELEASE_ORDER = (
     "ssot-contracts",
     "ssot-pack-contracts",
@@ -147,6 +147,7 @@ def _next_minor_upper_bound(version: str) -> str:
 
 def expected_dependency_specs(core_version: str, cli_version: str | None = None) -> dict[str, dict[str, str]]:
     compatible_core_range = f">={core_version},<{_next_minor_upper_bound(core_version)}"
+    compatible_pack_contracts_range = ">=0.2.17,<0.3.0"
     cli_version = cli_version or _load_pyproject("ssot-cli")["project"]["version"]
     compatible_cli_range = f">={cli_version},<{_next_minor_upper_bound(cli_version)}"
     return {
@@ -158,7 +159,7 @@ def expected_dependency_specs(core_version: str, cli_version: str | None = None)
         },
         "ssot-core": {
             "ssot-contracts": f"ssot-contracts=={core_version}",
-            "ssot-pack-contracts": f"ssot-pack-contracts=={core_version}",
+            "ssot-pack-contracts": f"ssot-pack-contracts{compatible_pack_contracts_range}",
             "ssot-views": f"ssot-views=={core_version}",
         },
         "ssot-conformance": {
@@ -167,7 +168,7 @@ def expected_dependency_specs(core_version: str, cli_version: str | None = None)
         },
         "ssot-registry": {
             "ssot-contracts": f"ssot-contracts=={core_version}",
-            "ssot-pack-contracts": f"ssot-pack-contracts=={core_version}",
+            "ssot-pack-contracts": f"ssot-pack-contracts{compatible_pack_contracts_range}",
             "ssot-core": f"ssot-core=={core_version}",
             "ssot-cli": f"ssot-cli{compatible_cli_range}",
         },
