@@ -1,0 +1,111 @@
+schema_version: "0.4.0"
+kind: "spec"
+id: "spc:0548"
+number: 548
+slug: "governance-pack-metadata-schema"
+title: "Governance-pack metadata schema"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines the metadata schema that self-describing SSOT governance packs SHALL package."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  This specification defines the metadata schema that self-describing SSOT governance packs SHALL package.
+  
+  ## Required Metadata Object
+  
+  A governance pack SHALL package metadata equivalent to:
+  
+  ```json
+  {
+    "schema_version": "1.0.0",
+    "origin": {
+      "id": "pack:example-governance",
+      "package_name": "example-governance-pack",
+      "import_name": "example_governance_pack",
+      "kind": "governance-pack",
+      "title": "Example Governance Pack",
+      "description": "Installable SSOT governance pack.",
+      "homepage": "https://example.invalid/example-governance-pack",
+      "repository": "https://example.invalid/example-governance-pack"
+    },
+    "compatibility": {
+      "python": ">=3.10,<3.15",
+      "ssot_registry_schema": ">=0.4.0",
+      "ssot_pack_contract": ">=1.0.0"
+    },
+    "trust": {
+      "trusted_by_default": false,
+      "origin": "extension-pack",
+      "reservation_owner": "extension-pack:example-governance-pack"
+    },
+    "documents": {
+      "adr": {
+        "manifest_path": "templates/adr/manifest.json"
+      },
+      "spec": {
+        "manifest_path": "templates/specs/manifest.json"
+      }
+    }
+  }
+  ```
+  
+  ## Required Fields
+  
+  - `schema_version` SHALL identify the pack metadata schema version.
+  - `schema_version` SHALL be required for every governance-pack metadata file.
+  - `schema_version` SHALL be exposed by `ssot-pack-contracts` through `load_pack_schema_version`.
+  - `origin.id` SHALL be a normalized pack identifier.
+  - `origin.package_name` SHALL match the Python distribution name.
+  - `origin.import_name` SHALL identify the importable Python package.
+  - `origin.kind` SHALL be `governance-pack`.
+  - `compatibility.python` SHALL declare supported Python versions.
+  - `compatibility.ssot_registry_schema` SHALL declare compatible SSOT registry schema versions.
+  - `compatibility.ssot_pack_contract` SHALL declare compatible pack-contract versions.
+  - `trust.trusted_by_default` SHALL declare whether the pack is trusted by default.
+  - `trust.origin` SHALL be `extension-pack` for external governance packs.
+  - `trust.reservation_owner` SHALL identify the catalog-specific reservation owner.
+  - `documents` SHALL declare all supported document-kind manifest paths.
+  
+  ## Document Manifest Entry Rules
+  
+  Every packaged ADR/SPEC manifest entry SHALL include:
+  
+  - `id`
+  - `number`
+  - `slug`
+  - `title`
+  - `filename`
+  - `target_path`
+  - `sha256`
+  - `origin`
+  - `reservation_owner`
+  - `immutable`
+  - `minimum_schema_version`
+  - `introduced_in`
+  - `status`
+  - `supersedes`
+  - `superseded_by`
+  - `status_notes`
+  
+  SPEC entries SHALL also include `kind`.
+  
+  ## Version Source
+  
+  Pack version SHALL be loaded from `project.version` in `pyproject.toml`.
+  Governance-pack metadata SHALL NOT duplicate the version field.
+  If a metadata view includes a version for display or API convenience, that value SHALL be hydrated from `pyproject.toml` at load time and SHALL NOT be treated as authored pack metadata.
+  
+  ## Validation
+  
+  Metadata validation SHALL fail closed when metadata schema version, pack identity, import identity, pyproject-derived version, origin class, reservation owner, manifest path, manifest row, packaged file existence, or packaged file hash does not match the declared metadata.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0541"
+  - "adr:0542"

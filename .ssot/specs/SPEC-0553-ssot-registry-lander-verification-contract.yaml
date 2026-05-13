@@ -1,0 +1,47 @@
+schema_version: "0.4.0"
+kind: "spec"
+id: "spc:0553"
+number: 553
+slug: "ssot-registry-lander-verification-contract"
+title: "SSOT Registry Lander Verification Contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This SPEC defines verification requirements for the SSOT Registry documentation lander, site content pack, and generated discovery artifacts."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to define SSOT Registry lander verification requirements."
+    at: "2026-05-13T14:39:10Z"
+references: []
+body: |-
+  # SPEC-0553: SSOT Registry Lander Verification Contract
+  
+  ## Scope
+  
+  This SPEC defines verification requirements for the SSOT Registry documentation lander, site content pack, and generated discovery artifacts.
+  
+  ## Requirements
+  
+  1. Verification shall compile the documentation lander from governed source content and registry-derived projections.
+  2. Verification shall validate route coverage for required documentation families.
+  3. Verification shall validate package page coverage against the governed workspace package DAG.
+  4. Verification shall validate CLI page coverage against the installed CLI command surface.
+  5. Verification shall validate ADR and SPEC page coverage against the live registry.
+  6. Verification shall validate feature, profile, claim, test, evidence, boundary, and release projections against the live registry.
+  7. Verification shall validate sitemap, robots, LLM files, content index, semantic index, content registry, JSON-LD graph, and cache manifest outputs.
+  8. Verification shall detect generated artifact drift between the host build and the site content pack mirror.
+  9. Verification shall fail when generated documentation claims contradict live registry entity status or proof-chain status.
+  10. Verification evidence shall record the command, generated output root, checked artifact families, and registry snapshot or content hash used for the run.
+  
+  ## Acceptance
+  
+  Feature, test, claim, and evidence rows shall cover compile checks, route taxonomy checks, package and CLI coverage checks, SSOT entity projection checks, discovery artifact checks, content-pack mirror checks, contradiction checks, and evidence artifact recording.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0543"
+  - "adr:0544"
+  - "adr:0545"

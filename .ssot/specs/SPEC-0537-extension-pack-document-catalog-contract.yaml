@@ -20,13 +20,17 @@ body: |-
   
   An extension-pack document catalog SHALL expose, at minimum:
   
-  - `catalog_id`
+  - pack identity through the governance-pack metadata schema
+  - package identity through the packaged metadata file
+  - package version through `__version__`
   - `origin: extension-pack`
-  - `publisher`
+  - catalog-specific `reservation_owner`
   - delivery metadata sufficient to identify the distribution channel and package
   - deterministic ADR/SPEC manifest rows
   
   The catalog identifier SHALL be stable across releases of the same catalog.
+  The catalog identifier SHALL NOT be inferred solely from import module names
+  when package metadata declares a stronger identity.
   
   ## Manifest Rules
   
@@ -35,6 +39,8 @@ body: |-
   - use deterministic ids, numbers, slugs, titles, and target paths
   - carry content hashes for the packaged document body
   - be immutable for a given published package artifact
+  - preserve `origin: extension-pack` for external governance-pack documents
+  - carry the catalog-specific `reservation_owner`
   - describe only ADR/SPEC documents in this phase
   
   ## Number Ownership

@@ -1,0 +1,41 @@
+schema_version: "0.4.0"
+kind: "adr"
+id: "adr:0545"
+number: 545
+slug: "ssot-registry-documentation-lander-governed-ssot-surface"
+title: "SSOT Registry Documentation Lander Is Governed as an SSOT Surface"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "SSOT Registry documentation lander pages, generated discovery artifacts, and verification gates shall be governed as SSOT-tracked surfaces."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to govern documentation lander pages and artifacts as SSOT-tracked surfaces."
+    at: "2026-05-13T14:38:35Z"
+references: []
+body: |-
+  # ADR-0545: SSOT Registry Documentation Lander Is Governed as an SSOT Surface
+  
+  ## Decision
+  
+  SSOT Registry documentation lander pages, generated discovery artifacts, and verification gates shall be governed as SSOT-tracked surfaces.
+  
+  Public documentation routes shall link back to the relevant ADRs, SPECs, features, claims, tests, evidence, boundaries, profiles, and releases where those entities are the source of truth. Generated lander artifacts shall be treated as derived projections and shall not supersede `.ssot/registry.json` or authored SSOT documents.
+  
+  ## Rationale
+  
+  This repository exists to make governance traceable. Its own documentation lander must demonstrate that model instead of becoming ungoverned marketing copy. The public docs should be readable by people and machines, but the governing truth remains the SSOT registry and authored documents.
+  
+  Treating the documentation lander as an SSOT surface gives us durable feature rows, tests, evidence, and release gates for route coverage, traceability, generated artifact parity, and no-drift checks.
+  
+  ## Consequences
+  
+  1. Documentation lander scope shall be represented by targetable features and linked tests.
+  2. Generated sitemap, robots, LLM, content index, semantic index, content registry, JSON-LD graph, and cache manifest artifacts shall be evidence-bearing derived outputs.
+  3. Documentation pages shall avoid claims that are not supported by linked SSOT entities or package behavior.
+  4. Verification shall fail closed when docs routes drift from authoritative SSOT entities.
+  5. Release certification may include documentation lander evidence when the release boundary includes public docs behavior.

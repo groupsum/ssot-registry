@@ -1,0 +1,47 @@
+schema_version: "0.4.0"
+kind: "spec"
+id: "spc:0551"
+number: 551
+slug: "ssot-registry-discovery-artifact-requirements"
+title: "SSOT Registry Discovery Artifact Requirements"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This SPEC defines SSOT Registry requirements for generated documentation discovery artifacts."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to define SSOT Registry generated discovery artifact requirements."
+    at: "2026-05-13T14:38:53Z"
+references: []
+body: |-
+  # SPEC-0551: SSOT Registry Discovery Artifact Requirements
+  
+  ## Scope
+  
+  This SPEC defines SSOT Registry requirements for generated documentation discovery artifacts.
+  
+  ## Requirements
+  
+  1. `sitemap.xml` shall include indexable documentation routes and shall exclude noindex pages.
+  2. `robots.txt` shall include the public sitemap URL and configured crawler policy without localhost, loopback, or development port leakage.
+  3. `llms.txt` shall provide a concise machine-readable overview of SSOT Registry, command families, package families, governance lifecycle, and key documentation routes.
+  4. `llms-full.txt` shall include canonical URLs and rendered text for indexable pages.
+  5. `content-index.json` shall expose route, title, description, canonical URL, page family, source entity IDs when applicable, language, and summary text.
+  6. `semantic-index.json` shall expose retrieval-oriented topic clusters for CLI, ADR, SPEC, features, claims, tests, evidence, boundaries, releases, conformance, and packages.
+  7. `content-registry.json` shall record page source, canonical URL, robots disposition, sitemap inclusion, generated artifact membership, source entity IDs, and content hash.
+  8. `jsonld-graph.json` shall emit deterministic structured data for the WebSite, documentation pages, package pages, software/source code pages, breadcrumbs, FAQ pages, and article-like pages when content supports those claims.
+  9. Cache manifest output shall classify stable discovery artifact URLs as mutable-revalidate unless a fingerprinted profile is governed.
+  10. Generated artifacts shall be derived and non-canonical relative to authored SSOT registry documents.
+  
+  ## Acceptance
+  
+  Feature, test, claim, and evidence rows shall cover every generated artifact family, deterministic serialization, SSOT entity identifier preservation, JSON-LD graph coverage, and cache classification.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0543"
+  - "adr:0544"
+  - "adr:0545"

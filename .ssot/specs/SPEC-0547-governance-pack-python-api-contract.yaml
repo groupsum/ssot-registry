@@ -1,0 +1,65 @@
+schema_version: "0.4.0"
+kind: "spec"
+id: "spc:0547"
+number: 547
+slug: "governance-pack-python-api-contract"
+title: "Governance-pack Python API contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines the Python API every external SSOT governance pack SHALL expose."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  This specification defines the Python API every external SSOT governance pack SHALL expose.
+  
+  ## Root Attributes
+  
+  A governance pack import package MAY expose:
+  
+  - `__version__`
+  
+  `__version__`, when exposed, SHALL be loaded from `pyproject.toml` and SHALL NOT be hand-authored independently.
+  The package name SHALL be resolved from the packaged metadata file, not from a required root Python constant.
+  
+  ## Required Root Functions
+  
+  A governance pack import package SHALL expose:
+  
+  - `load_pack_metadata() -> dict`
+  - `load_pack_schema_version() -> str`
+  - `load_pack_manifest() -> dict`
+  - `load_document_manifest(kind: str) -> list[dict]`
+  - `read_packaged_document_bytes(kind: str, filename: str) -> bytes`
+  - `read_packaged_document_text(kind: str, filename: str) -> str`
+  
+  ## Recommended Root Functions
+  
+  A governance pack SHOULD expose:
+  
+  - `list_packaged_document_ids(kind: str | None = None) -> list[str]`
+  - `get_packaged_document_entry(document_id: str) -> dict`
+  
+  ## Behavior
+  
+  - Document kind inputs SHALL normalize `adr`, `adrs`, `spec`, and `specs`.
+  - Unsupported document kinds SHALL fail closed.
+  - Document readers SHALL only read packaged resources declared by the pack.
+  - Manifest loaders SHALL return JSON-compatible dictionaries and lists.
+  - `load_pack_schema_version()` SHALL return the same value as `load_pack_metadata()["schema_version"]`.
+  - Pack APIs SHALL be deterministic for a given installed package artifact.
+  - Pack APIs SHALL NOT require network access, repo-local configuration, or mutable filesystem state to inspect packaged metadata and packaged documents.
+  - Version resolution SHALL read `project.version` from `pyproject.toml`.
+  
+  ## Compatibility
+  
+  External governance packs SHOULD depend on `ssot-pack-contracts` and MAY delegate validation and resource loading to it.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0541"
+  - "adr:0542"

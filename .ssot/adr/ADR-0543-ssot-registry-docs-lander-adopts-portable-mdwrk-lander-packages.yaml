@@ -1,0 +1,41 @@
+schema_version: "0.4.0"
+kind: "adr"
+id: "adr:0543"
+number: 543
+slug: "ssot-registry-docs-lander-adopts-portable-mdwrk-lander-packages"
+title: "SSOT Registry Documentation Lander Adopts Portable MdWrk Lander Packages"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "The SSOT Registry documentation lander shall consume portable MdWrk lander packages for product-site compilation, rendering, SEO/AEO/AiEO discovery artifacts, and static documentation delivery."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to govern SSOT Registry documentation lander adoption of reusable MdWrk lander packages."
+    at: "2026-05-13T14:38:24Z"
+references: []
+body: |-
+  # ADR-0543: SSOT Registry Documentation Lander Adopts Portable MdWrk Lander Packages
+  
+  ## Decision
+  
+  The SSOT Registry documentation lander shall consume portable MdWrk lander packages for product-site compilation, rendering, SEO/AEO/AiEO discovery artifacts, and static documentation delivery.
+  
+  The repository shall not copy MdWrk app-specific lander code as the long-term implementation boundary. It may use temporary local adapter code while the reusable MdWrk package surface is being completed, but the durable dependency direction is from SSOT Registry documentation into reusable lander packages.
+  
+  ## Rationale
+  
+  SSOT Registry already has a React/Vite lander target, but its public documentation surface should not become a separate bespoke docs framework if the MdWrk lander family is intended to be reusable. Reusing the portable packages keeps documentation rendering, metadata, structured data, LLM-facing discovery files, and validation behavior aligned with an externally governed package boundary.
+  
+  The SSOT Registry documentation surface has repo-specific truth: CLI behavior, package contracts, ADR/SPEC rows, features, claims, tests, evidence, boundaries, releases, and conformance examples. Those facts remain owned by this repository even when the rendering and discovery pipeline is reused.
+  
+  ## Consequences
+  
+  1. SSOT Registry documentation lander code shall depend on reusable lander package APIs instead of MdWrk app internals.
+  2. App-local lander code in this repository shall be treated as host integration code, not as the generic discovery or rendering owner.
+  3. The documentation lander shall preserve SSOT-specific content ownership, traceability, and generated artifact verification.
+  4. Package adoption shall be tracked through SSOT features, tests, claims, and evidence before being represented as complete.
+  5. Any fallback local implementation shall have an explicit migration path to reusable package APIs.

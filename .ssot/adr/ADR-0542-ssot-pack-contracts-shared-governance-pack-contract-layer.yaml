@@ -1,0 +1,38 @@
+schema_version: "0.4.0"
+kind: "adr"
+id: "adr:0542"
+number: 542
+slug: "ssot-pack-contracts-shared-governance-pack-contract-layer"
+title: "ssot-pack-contracts is the shared governance-pack contract layer"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "`ssot-registry` now supports external governance packs, and the first packs expose a common minimal Python document surface. That common surface is not yet governed as a reusable package contract, and external packs do not yet have a required metadata schema or parsing contract."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Context
+  
+  `ssot-registry` now supports external governance packs, and the first packs expose a common minimal Python document surface. That common surface is not yet governed as a reusable package contract, and external packs do not yet have a required metadata schema or parsing contract.
+  
+  `ssot-contracts` remains the canonical package for built-in schemas, templates, generated contract metadata, and `ssot-origin` documents. Reusing it as the generic dependency for every external governance pack would blur official origin authority with third-party pack interoperability.
+  
+  ## Decision
+  
+  `ssot-registry` SHALL add a new workspace package named `ssot-pack-contracts`, importable as `ssot_pack_contracts`, to carry the shared runtime contracts that all governance packs use.
+  
+  The new package SHALL define the common governance-pack metadata model, document-entry model, pyproject-backed version loading, metadata loading helpers, document manifest helpers, document byte/text readers, normalization helpers, and validation errors used by pack producers and pack consumers.
+  
+  `ssot-contracts` SHALL continue to own official `ssot-origin` schemas and built-in packaged documents, but it SHALL conform to the shared governance-pack contracts where it exposes pack-like document APIs.
+  
+  External governance packs SHALL be self-describing through packaged metadata and root-level APIs. Operators SHALL provide package references and policy choices; they SHALL NOT be required to restate pack identity, reservation ownership, origin class, or manifest paths already packaged by the pack.
+  
+  ## Consequences
+  
+  - External governance packs receive one stable dependency for pack metadata and packaged document contracts.
+  - The official `ssot-origin` catalog remains distinct from extension-pack distribution.
+  - `ssot-core` can validate and ingest packs through a single contract surface.
+  - CLI pack lifecycle flows can derive identity and manifests from package-owned metadata before applying repo-local trust and sync policy.

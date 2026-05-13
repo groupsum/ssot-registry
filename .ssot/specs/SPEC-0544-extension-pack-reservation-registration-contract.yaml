@@ -22,9 +22,12 @@ body: |-
   
   - External catalog reservations SHALL be tracked separately from repo-local assignable reservations.
   - Reservation ownership SHALL identify the external catalog, not just the generic origin type.
+  - Reservation ownership for external governance packs SHALL use the form `extension-pack:<pack-name-or-catalog-id>`.
+  - Pack metadata SHALL declare the reservation owner used by every packaged ADR/SPEC manifest row.
   - Validation SHALL reject reuse of repo-local reservations for extension-pack numbering.
   - Reservation import and registration SHALL preserve catalog identity and range boundaries.
 spec_kind: "governance"
 adr_ids:
   - "adr:0537"
   - "adr:0540"
+  - "adr:0542"

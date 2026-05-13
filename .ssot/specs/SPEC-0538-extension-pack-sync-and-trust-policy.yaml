@@ -15,6 +15,8 @@ body: |-
   - Downstream sync of `extension-pack` catalogs SHALL be opt-in.
   - Untrusted extension-pack catalogs SHALL fail closed during packaged document sync.
   - Trusted built-in `ssot-origin` catalogs remain allowed by default.
+  - External governance packs SHALL pass metadata validation before a repository may mark them trusted.
+  - Trust policy SHALL be applied after package metadata, package manifest, document manifest, file existence, and hash checks pass.
   
   ## Sync Rules
   
@@ -36,6 +38,8 @@ body: |-
   - duplicate reserved numbers across catalogs
   - duplicate target paths across catalogs
   - packaged manifest entries whose declared origin does not match the catalog authority
+  - packaged manifest entries whose reservation owner does not match the pack metadata
+  - packaged document files whose SHA-256 digest does not match the manifest row
   
   ## Deferred Surfaces
   

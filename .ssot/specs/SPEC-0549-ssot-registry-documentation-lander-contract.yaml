@@ -1,0 +1,46 @@
+schema_version: "0.4.0"
+kind: "spec"
+id: "spc:0549"
+number: 549
+slug: "ssot-registry-documentation-lander-contract"
+title: "SSOT Registry Documentation Lander Contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This SPEC defines the route taxonomy, content families, and host responsibilities for the SSOT Registry documentation lander."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to define the SSOT Registry documentation lander route and host contract."
+    at: "2026-05-13T14:38:42Z"
+references: []
+body: |-
+  # SPEC-0549: SSOT Registry Documentation Lander Contract
+  
+  ## Scope
+  
+  This SPEC defines the route taxonomy, content families, and host responsibilities for the SSOT Registry documentation lander.
+  
+  ## Requirements
+  
+  1. The documentation lander shall expose a crawlable homepage that identifies SSOT Registry, its CLI, package family, governance lifecycle, and certification/conformance purpose.
+  2. The route taxonomy shall include CLI documentation, package documentation, ADR documentation, SPEC documentation, feature and profile documentation, claim/test/evidence documentation, boundary/release documentation, examples, and conformance guidance.
+  3. Package pages shall distinguish `ssot-core`, `ssot-cli`, `ssot-registry`, `ssot-contracts`, `ssot-views`, `ssot-codegen`, `ssot-tui`, and any governed future package nodes.
+  4. CLI pages shall describe command families from the current CLI surface and shall not claim command support that is absent from the installed package.
+  5. ADR and SPEC pages shall present authored document metadata and link to governing registry entities.
+  6. Feature, profile, claim, test, evidence, boundary, and release pages shall present registry-derived summaries as derived projections.
+  7. The lander host may be a Vite/React application, but authored documentation truth shall come from governed source content and SSOT entities.
+  8. The host shall consume reusable lander package APIs for compilation, rendering, metadata, structured data, and discovery artifact generation when those APIs are available.
+  9. The host shall keep generated outputs deterministic for a given source registry and content pack.
+  10. The host shall not make `.ssot/registry.json` a browser runtime dependency for normal static page viewing.
+  
+  ## Acceptance
+  
+  Feature, test, claim, and evidence rows shall cover route taxonomy, package page coverage, CLI command coverage, SSOT entity links, reusable package adoption, deterministic builds, and generated static output.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0543"
+  - "adr:0545"

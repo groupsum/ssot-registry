@@ -1,0 +1,45 @@
+schema_version: "0.4.0"
+kind: "spec"
+id: "spc:0550"
+number: 550
+slug: "ssot-registry-site-content-pack-contract"
+title: "SSOT Registry Site Content Pack Contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This SPEC defines the SSOT Registry site content pack boundary for public documentation content and generated discovery artifact mirrors."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to define the SSOT Registry site content pack contract."
+    at: "2026-05-13T14:38:47Z"
+references: []
+body: |-
+  # SPEC-0550: SSOT Registry Site Content Pack Contract
+  
+  ## Scope
+  
+  This SPEC defines the SSOT Registry site content pack boundary for public documentation content and generated discovery artifact mirrors.
+  
+  ## Requirements
+  
+  1. The content pack shall own authored SSOT Registry public documentation content, route metadata, navigation data, public assets, and source references.
+  2. The content pack shall expose package metadata identifying the content pack name, version, repository, content roots, generated artifact roots, and compatibility with the reusable lander package surface.
+  3. The content pack shall distinguish authored source content from generated artifacts.
+  4. The content pack shall include or reference generated `sitemap.xml`, `robots.txt`, `llms.txt`, `llms-full.txt`, `content-index.json`, `semantic-index.json`, `content-registry.json`, `jsonld-graph.json`, and cache manifest artifacts when the lander build emits them.
+  5. The content pack shall expose deterministic resource resolution for content, public assets, and generated artifacts.
+  6. The content pack shall include smoke tests proving exported package metadata, content roots, generated artifact manifests, and mirrored artifact bytes remain aligned with the host build.
+  7. The content pack shall not own React implementations, route rendering components, or generic discovery artifact algorithms.
+  8. The content pack shall preserve SSOT entity identifiers when pages derive from ADRs, SPECs, features, claims, tests, evidence, boundaries, profiles, or releases.
+  9. Publishable content-pack placement shall comply with the governed package topology and workspace DAG.
+  
+  ## Acceptance
+  
+  Feature, test, claim, and evidence rows shall cover content pack metadata, exported content paths, generated artifact mirrors, no React implementation ownership, SSOT entity identifier preservation, and workspace package topology alignment.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0544"
+  - "adr:0545"

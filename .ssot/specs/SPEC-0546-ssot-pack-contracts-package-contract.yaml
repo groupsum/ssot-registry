@@ -1,0 +1,63 @@
+schema_version: "0.4.0"
+kind: "spec"
+id: "spc:0546"
+number: 546
+slug: "ssot-pack-contracts-package-contract"
+title: "ssot-pack-contracts package contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines the package-level contract for the `ssot-pack-contracts` workspace package."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  ## Scope
+  
+  This specification defines the package-level contract for the `ssot-pack-contracts` workspace package.
+  
+  ## Package Identity
+  
+  - The distribution name SHALL be `ssot-pack-contracts`.
+  - The import package name SHALL be `ssot_pack_contracts`.
+  - The package SHALL be a low-level contract dependency suitable for external governance packs.
+  - The package SHALL NOT depend on `ssot-core`, `ssot-cli`, `ssot-registry`, or other runtime mutation packages.
+  
+  ## Required Public API
+  
+  `ssot_pack_contracts` SHALL expose:
+  
+  - `PackMetadata`
+  - `PackDocumentEntry`
+  - `PackContractError`
+  - `UnsupportedDocumentKindError`
+  - `InvalidPackMetadataError`
+  - `InvalidPackManifestError`
+  - `load_pack_metadata`
+  - `load_pack_schema_version`
+  - `load_pack_manifest`
+  - `load_document_manifest`
+  - `read_packaged_document_bytes`
+  - `read_packaged_document_text`
+  - `validate_pack_metadata`
+  - `validate_pack_document_entry`
+  - `normalize_document_kind`
+  
+  ## Behavior
+  
+  - `normalize_document_kind` SHALL accept `adr`, `adrs`, `spec`, and `specs`, and SHALL return only `adr` or `spec`.
+  - `load_pack_metadata` SHALL return validated pack metadata from a package or module that implements the governance-pack contract.
+  - `load_pack_schema_version` SHALL return the authored `schema_version` from packaged governance-pack metadata without requiring callers to inspect the full metadata object.
+  - `load_pack_manifest` SHALL return the combined, validated pack manifest.
+  - `load_document_manifest` SHALL return only entries for the requested normalized document kind.
+  - `read_packaged_document_bytes` and `read_packaged_document_text` SHALL read packaged resources without assuming filesystem paths.
+  - Validation helpers SHALL fail closed with typed exceptions when required metadata, metadata schema version, manifest rows, document files, or hashes are invalid.
+  
+  ## Package Boundaries
+  
+  The package owns shared contract shapes and validation helpers only. Pack installation, trust decisions, repository registration, document sync, registry mutation, and CLI workflows remain owned by higher-level packages.
+spec_kind: "governance"
+adr_ids:
+  - "adr:0542"

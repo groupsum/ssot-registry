@@ -1,4 +1,4 @@
-schema_version: "0.3.0"
+schema_version: "0.4.0"
 kind: "adr"
 id: "adr:0541"
 number: 541
@@ -22,6 +22,9 @@ body: |-
   
   - Operators SHALL provide a package reference, not restate catalog metadata already carried by the package.
   - ssot pack add SHALL derive catalog identity, publisher identity, origin type, reservations, and manifest metadata from the packaged catalog description.
+  - Package self-description SHALL be implemented through the shared `ssot-pack-contracts` metadata schema and required governance-pack Python APIs.
+  - External governance packs SHALL expose `load_pack_metadata`, `load_pack_manifest`, `load_document_manifest`, `read_packaged_document_bytes`, and `read_packaged_document_text` at package root.
+  - External governance pack package names SHALL be resolved from the packaged metadata file, and versions SHALL be resolved from `pyproject.toml`.
   - CLI flags SHALL be limited to operator intent overrides such as trust, pinning, sync behavior, or forceful conflict handling.
   - Package registration and package resolution remain separate, but the package artifact remains authoritative for ingest metadata.
   

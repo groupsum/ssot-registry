@@ -1,0 +1,41 @@
+schema_version: "0.4.0"
+kind: "adr"
+id: "adr:0544"
+number: 544
+slug: "ssot-registry-site-content-pack-owns-documentation-content"
+title: "SSOT Registry Site Content Pack Owns Documentation Content"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "SSOT Registry shall introduce a repository-owned site content pack as the durable boundary for public documentation content, static assets, content metadata, and mirrored generated discovery artifacts."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to govern SSOT Registry site content pack ownership."
+    at: "2026-05-13T14:38:29Z"
+references: []
+body: |-
+  # ADR-0544: SSOT Registry Site Content Pack Owns Documentation Content
+  
+  ## Decision
+  
+  SSOT Registry shall introduce a repository-owned site content pack as the durable boundary for public documentation content, static assets, content metadata, and mirrored generated discovery artifacts.
+  
+  The content pack may be implemented as a workspace package under `pkgs/` or as an equivalent governed package surface if the workspace topology is updated. It shall own SSOT Registry page prose, docs taxonomy, source references, package documentation projections, examples, generated artifact mirrors, and content-pack smoke checks.
+  
+  ## Rationale
+  
+  Reusing MdWrk lander packages does not mean reusing MdWrk product content. SSOT Registry needs an authoritative content boundary for its own documentation, including CLI flows, governance lifecycle concepts, package contracts, conformance surfaces, and release/certification evidence.
+  
+  A content pack makes the product docs reusable and inspectable without making the Vite host, generated `dist`, or app shell the source of truth.
+  
+  ## Consequences
+  
+  1. SSOT Registry documentation content shall be package-owned rather than embedded only in the Vite host.
+  2. Generated discovery artifacts may be mirrored into the content pack, but authored content and generated artifacts shall remain clearly distinguished.
+  3. The content pack shall expose deterministic package metadata and resource paths for docs consumers.
+  4. Content-pack smoke tests shall prove source content, generated artifacts, and package exports remain aligned.
+  5. Workspace DAG and package-topology governance shall be updated before adding a publishable package node.

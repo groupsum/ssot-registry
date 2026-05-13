@@ -1,0 +1,45 @@
+schema_version: "0.4.0"
+kind: "spec"
+id: "spc:0552"
+number: 552
+slug: "ssot-registry-docs-to-ssot-traceability-contract"
+title: "SSOT Registry Docs-to-SSOT Traceability Contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This SPEC defines how SSOT Registry public documentation pages shall link to and derive from governed SSOT entities."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to define documentation-to-SSOT traceability requirements."
+    at: "2026-05-13T14:39:01Z"
+references: []
+body: |-
+  # SPEC-0552: SSOT Registry Docs-to-SSOT Traceability Contract
+  
+  ## Scope
+  
+  This SPEC defines how SSOT Registry public documentation pages shall link to and derive from governed SSOT entities.
+  
+  ## Requirements
+  
+  1. Documentation pages that describe decisions shall link to ADR entities.
+  2. Documentation pages that describe contracts shall link to SPEC entities.
+  3. Documentation pages that describe planned or implemented behavior shall link to feature entities.
+  4. Documentation pages that claim proof, certification, conformance, or assurance shall link to claim, test, and evidence entities.
+  5. Documentation pages that describe delivery scope shall link to boundary and release entities when applicable.
+  6. Documentation pages that describe reusable bundles shall link to profile entities when applicable.
+  7. Generated documentation projections shall preserve normalized prefixed IDs rather than inventing display-only identifiers.
+  8. Traceability metadata shall be available to generated content indexes and structured data when the target page derives from SSOT entities.
+  9. Documentation shall not upgrade entity status, claim tier, or implementation state beyond the live registry truth.
+  10. No documentation page shall claim a feature is certified unless the associated claims, tests, evidence, and release status support that statement.
+  
+  ## Acceptance
+  
+  Feature, test, claim, and evidence rows shall cover ADR page links, SPEC page links, feature page links, proof-chain links, boundary/release links, profile links, status fidelity, and generated metadata preservation.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0545"

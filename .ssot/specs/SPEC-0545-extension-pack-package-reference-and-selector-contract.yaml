@@ -23,6 +23,8 @@ body: |-
   - ssot pack add SHALL accept a package reference as the normal operator input.
   - A package reference MAY include a pinned version.
   - The package reference SHALL be sufficient to locate package-self-describing ingest metadata.
+  - Package references SHALL resolve to governance-pack metadata through `load_pack_metadata()` and document inventory through `load_pack_manifest()` before repo-local registration is mutated.
+  - A package that cannot expose the governance-pack root API SHALL fail preflight before trust, reservation, or sync policy is evaluated.
   
   ## Selector Rules
   
@@ -37,3 +39,4 @@ spec_kind: "normative"
 adr_ids:
   - "adr:0540"
   - "adr:0541"
+  - "adr:0542"
