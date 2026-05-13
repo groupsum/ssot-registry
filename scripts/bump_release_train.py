@@ -101,6 +101,7 @@ def main() -> int:
             "core",
             "all",
             "ssot-contracts",
+            "ssot-pack-contracts",
             "ssot-views",
             "ssot-codegen",
             "ssot-core",

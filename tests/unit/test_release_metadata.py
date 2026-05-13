@@ -25,7 +25,7 @@ class ReleaseMetadataTests(unittest.TestCase):
         payload = json.loads(_run_release_metadata("show").stdout)
         core_versions = [
             payload["packages"][name]["version"]
-            for name in ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core")
+            for name in ("ssot-contracts", "ssot-pack-contracts", "ssot-views", "ssot-codegen", "ssot-core")
         ]
         self.assertEqual(len(set(core_versions)), 1)
 
@@ -36,7 +36,7 @@ class ReleaseMetadataTests(unittest.TestCase):
 
     def test_validate_core_train_enforces_lockstep_group(self) -> None:
         payload = json.loads(_run_release_metadata("validate-train", "--train", "core").stdout)
-        self.assertEqual(payload["targets"], ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core"])
+        self.assertEqual(payload["targets"], ["ssot-contracts", "ssot-pack-contracts", "ssot-views", "ssot-codegen", "ssot-core"])
         show_payload = json.loads(_run_release_metadata("show").stdout)
         self.assertEqual(payload["core_version"], show_payload["packages"]["ssot-contracts"]["version"])
 
@@ -44,14 +44,34 @@ class ReleaseMetadataTests(unittest.TestCase):
         payload = json.loads(_run_release_metadata("validate-train", "--train", "all").stdout)
         self.assertEqual(
             payload["targets"],
-            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-conformance", "ssot-cli", "ssot-tui", "ssot-registry"],
+            [
+                "ssot-contracts",
+                "ssot-pack-contracts",
+                "ssot-views",
+                "ssot-codegen",
+                "ssot-core",
+                "ssot-conformance",
+                "ssot-cli",
+                "ssot-tui",
+                "ssot-registry",
+            ],
         )
 
     def test_all_train_resolves_to_canonical_release_order(self) -> None:
         payload = json.loads(_run_release_metadata("targets", "--train", "all").stdout)
         self.assertEqual(
             payload,
-            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-conformance", "ssot-cli", "ssot-tui", "ssot-registry"],
+            [
+                "ssot-contracts",
+                "ssot-pack-contracts",
+                "ssot-views",
+                "ssot-codegen",
+                "ssot-core",
+                "ssot-conformance",
+                "ssot-cli",
+                "ssot-tui",
+                "ssot-registry",
+            ],
         )
 
     def test_selected_targets_follow_release_order(self) -> None:
@@ -63,6 +83,7 @@ class ReleaseMetadataTests(unittest.TestCase):
     def test_each_package_has_a_direct_release_train(self) -> None:
         for package_name in (
             "ssot-contracts",
+            "ssot-pack-contracts",
             "ssot-views",
             "ssot-codegen",
             "ssot-core",

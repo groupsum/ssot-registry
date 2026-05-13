@@ -3,27 +3,20 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ssot-cli"
-version = "0.1.11"
-description = "Primary CLI distribution for ssot-registry."
+name = "ssot-pack-contracts"
+version = "0.2.17"
+description = "Shared governance-pack metadata, manifest, and packaged document contracts for SSOT."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
 license = "Apache-2.0"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = [
-  "ssot-contracts>=0.2.17,<0.3.0",
-  "ssot-core>=0.2.17,<0.3.0",
-  "ssot-conformance>=0.2.17,<0.3.0",
-  "ssot-pack-contracts>=0.2.17,<0.3.0",
   "tomli>=2.0.1; python_version < '3.11'",
 ]
-keywords = ["ssot", "cli", "registry", "governance", "release-management", "validation", "developer-tools"]
+keywords = ["ssot", "governance", "packs", "contracts", "metadata", "manifest"]
 classifiers = [
   "Development Status :: 3 - Alpha",
-  "Environment :: Console",
   "Intended Audience :: Developers",
-  "Intended Audience :: Information Technology",
-  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
@@ -31,23 +24,19 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
-  "Topic :: Software Development :: Documentation",
-  "Topic :: Software Development :: Quality Assurance",
-  "Topic :: Utilities",
+  "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
 [project.urls]
-Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-cli"
-Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-cli"
+Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-pack-contracts"
+Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-pack-contracts"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
-
-[project.scripts]
-ssot = "ssot_cli.main:main"
-ssot-cli = "ssot_cli.main:main"
-ssot-registry = "ssot_cli.main:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"ssot_pack_contracts" = ["py.typed"]

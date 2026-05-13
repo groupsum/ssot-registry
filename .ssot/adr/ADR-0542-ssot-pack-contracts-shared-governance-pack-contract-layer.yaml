@@ -24,7 +24,7 @@ body: |-
   
   `ssot-registry` SHALL add a new workspace package named `ssot-pack-contracts`, importable as `ssot_pack_contracts`, to carry the shared runtime contracts that all governance packs use.
   
-  The new package SHALL define the common governance-pack metadata model, document-entry model, pyproject-backed version loading, metadata loading helpers, document manifest helpers, document byte/text readers, normalization helpers, and validation errors used by pack producers and pack consumers.
+  The new package SHALL define the common governance-pack metadata model, document-entry model, distribution-metadata-backed PyPI identity and version loading, metadata loading helpers, document manifest helpers, document byte/text readers, normalization helpers, and validation errors used by pack producers and pack consumers.
   
   `ssot-contracts` SHALL continue to own official `ssot-origin` schemas and built-in packaged documents, but it SHALL conform to the shared governance-pack contracts where it exposes pack-like document APIs.
   

@@ -240,6 +240,8 @@ def validate_document_rows(
             if repo_kind == "repo-local" and origin in {"ssot-origin", "extension-pack"}:
                 manifest_entry = manifest_lookup[section].get(entity_id)
                 if manifest_entry is None:
+                    if origin == "extension-pack":
+                        continue
                     failures.append(f"{prefix} is packaged and managed but not present in the packaged manifest")
                     continue
                 if manifest_entry.get("origin") != origin:

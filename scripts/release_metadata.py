@@ -26,9 +26,10 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10 fallback
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CORE_PACKAGES = ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core")
+CORE_PACKAGES = ("ssot-contracts", "ssot-pack-contracts", "ssot-views", "ssot-codegen", "ssot-core")
 RELEASE_ORDER = (
     "ssot-contracts",
+    "ssot-pack-contracts",
     "ssot-views",
     "ssot-codegen",
     "ssot-core",
@@ -58,6 +59,12 @@ PACKAGE_INFOS: dict[str, PackageInfo] = {
         project_path="pkgs/ssot-contracts",
         workflow="publish-ssot-contracts.yml",
         pypi_url="https://pypi.org/p/ssot-contracts",
+    ),
+    "ssot-pack-contracts": PackageInfo(
+        name="ssot-pack-contracts",
+        project_path="pkgs/ssot-pack-contracts",
+        workflow="publish-ssot-pack-contracts.yml",
+        pypi_url="https://pypi.org/p/ssot-pack-contracts",
     ),
     "ssot-views": PackageInfo(
         name="ssot-views",
@@ -143,6 +150,7 @@ def expected_dependency_specs(core_version: str, cli_version: str | None = None)
     cli_version = cli_version or _load_pyproject("ssot-cli")["project"]["version"]
     compatible_cli_range = f">={cli_version},<{_next_minor_upper_bound(cli_version)}"
     return {
+        "ssot-pack-contracts": {},
         "ssot-views": {"ssot-contracts": f"ssot-contracts=={core_version}"},
         "ssot-codegen": {
             "ssot-contracts": f"ssot-contracts=={core_version}",
@@ -150,6 +158,7 @@ def expected_dependency_specs(core_version: str, cli_version: str | None = None)
         },
         "ssot-core": {
             "ssot-contracts": f"ssot-contracts=={core_version}",
+            "ssot-pack-contracts": f"ssot-pack-contracts=={core_version}",
             "ssot-views": f"ssot-views=={core_version}",
         },
         "ssot-conformance": {
@@ -158,11 +167,13 @@ def expected_dependency_specs(core_version: str, cli_version: str | None = None)
         },
         "ssot-registry": {
             "ssot-contracts": f"ssot-contracts=={core_version}",
+            "ssot-pack-contracts": f"ssot-pack-contracts=={core_version}",
             "ssot-core": f"ssot-core=={core_version}",
             "ssot-cli": f"ssot-cli{compatible_cli_range}",
         },
         "ssot-cli": {
             "ssot-contracts": f"ssot-contracts{compatible_core_range}",
+            "ssot-pack-contracts": f"ssot-pack-contracts{compatible_core_range}",
             "ssot-core": f"ssot-core{compatible_core_range}",
             "ssot-conformance": f"ssot-conformance{compatible_core_range}",
         },
@@ -254,7 +265,11 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
     for package_name in ("ssot-cli", "ssot-tui"):
         actual_dependencies = packages[package_name]["dependencies"]  # type: ignore[index]
         assert isinstance(actual_dependencies, dict)
-        dependency_names = ("ssot-contracts", "ssot-core", "ssot-conformance") if package_name == "ssot-cli" else ("ssot-contracts", "ssot-core")
+        dependency_names = (
+            ("ssot-contracts", "ssot-pack-contracts", "ssot-core", "ssot-conformance")
+            if package_name == "ssot-cli"
+            else ("ssot-contracts", "ssot-core")
+        )
         for dependency_name in dependency_names:
             actual_value = actual_dependencies.get(dependency_name, "")
             expected_value = dependency_specs[package_name][dependency_name]

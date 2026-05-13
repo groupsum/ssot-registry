@@ -25,6 +25,7 @@ body: |-
   ```json
   {
     "schema_version": "1.0.0",
+    "ssot_package_name": "example-governance-pack",
     "origin": {
       "id": "pack:example-governance",
       "package_name": "example-governance-pack",
@@ -61,8 +62,9 @@ body: |-
   - `schema_version` SHALL identify the pack metadata schema version.
   - `schema_version` SHALL be required for every governance-pack metadata file.
   - `schema_version` SHALL be exposed by `ssot-pack-contracts` through `load_pack_schema_version`.
+  - `ssot_package_name` SHALL identify the SSOT governance-pack package name used by pack APIs and catalogs.
   - `origin.id` SHALL be a normalized pack identifier.
-  - `origin.package_name` SHALL match the Python distribution name.
+  - `origin.package_name` SHALL match `ssot_package_name`.
   - `origin.import_name` SHALL identify the importable Python package.
   - `origin.kind` SHALL be `governance-pack`.
   - `compatibility.python` SHALL declare supported Python versions.
@@ -96,15 +98,18 @@ body: |-
   
   SPEC entries SHALL also include `kind`.
   
-  ## Version Source
+  ## Distribution Identity Source
   
-  Pack version SHALL be loaded from `project.version` in `pyproject.toml`.
+  Pack version SHALL be loaded from installed distribution metadata.
+  PyPI package name SHALL be loaded from installed distribution metadata.
   Governance-pack metadata SHALL NOT duplicate the version field.
-  If a metadata view includes a version for display or API convenience, that value SHALL be hydrated from `pyproject.toml` at load time and SHALL NOT be treated as authored pack metadata.
+  Governance-pack metadata SHALL NOT duplicate the PyPI package-name field.
+  If a metadata view includes a version for display or API convenience, that value SHALL be hydrated from installed distribution metadata at load time and SHALL NOT be treated as authored pack metadata.
+  If a metadata view includes a PyPI package name for display or API convenience, that value SHALL be hydrated from installed distribution metadata at load time and SHALL NOT be treated as authored pack metadata.
   
   ## Validation
   
-  Metadata validation SHALL fail closed when metadata schema version, pack identity, import identity, pyproject-derived version, origin class, reservation owner, manifest path, manifest row, packaged file existence, or packaged file hash does not match the declared metadata.
+  Metadata validation SHALL fail closed when metadata schema version, pack identity, import identity, distribution-derived identity, distribution-derived version, origin class, reservation owner, manifest path, manifest row, packaged file existence, or packaged file hash does not match the declared metadata.
 spec_kind: "governance"
 adr_ids:
   - "adr:0541"

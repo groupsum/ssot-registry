@@ -37,6 +37,7 @@ on:
           - core
           - all
           - ssot-contracts
+          - ssot-pack-contracts
           - ssot-views
           - ssot-codegen
           - ssot-core
@@ -133,7 +134,7 @@ jobs:
           )
           package_meta = metadata["packages"]
           layers = [
-              ("publish_layer_1", ["ssot-contracts"]),
+              ("publish_layer_1", ["ssot-contracts", "ssot-pack-contracts"]),
               ("publish_layer_2", ["ssot-views"]),
               ("publish_layer_3", ["ssot-codegen", "ssot-core"]),
               ("publish_layer_4", ["ssot-conformance"]),

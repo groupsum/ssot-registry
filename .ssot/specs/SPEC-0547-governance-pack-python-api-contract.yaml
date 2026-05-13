@@ -23,9 +23,13 @@ body: |-
   A governance pack import package MAY expose:
   
   - `__version__`
+  - `__ssot_package_name__`
+  - `__pypi_package_name__`
   
-  `__version__`, when exposed, SHALL be loaded from `pyproject.toml` and SHALL NOT be hand-authored independently.
-  The package name SHALL be resolved from the packaged metadata file, not from a required root Python constant.
+  `__version__`, when exposed, SHALL be loaded from installed distribution metadata and SHALL NOT be hand-authored independently.
+  `__ssot_package_name__`, when exposed, SHALL be loaded from the packaged metadata file and SHALL NOT be hand-authored independently.
+  `__pypi_package_name__`, when exposed, SHALL be loaded from installed distribution metadata and SHALL NOT be hand-authored independently.
+  Package names SHALL be resolved from packaged metadata and installed distribution metadata, not from required root Python constants.
   
   ## Required Root Functions
   
@@ -54,11 +58,12 @@ body: |-
   - `load_pack_schema_version()` SHALL return the same value as `load_pack_metadata()["schema_version"]`.
   - Pack APIs SHALL be deterministic for a given installed package artifact.
   - Pack APIs SHALL NOT require network access, repo-local configuration, or mutable filesystem state to inspect packaged metadata and packaged documents.
-  - Version resolution SHALL read `project.version` from `pyproject.toml`.
+  - Version resolution SHALL read installed distribution metadata through `importlib.metadata.version`.
   
   ## Compatibility
   
-  External governance packs SHOULD depend on `ssot-pack-contracts` and MAY delegate validation and resource loading to it.
+  External governance packs SHOULD depend on `ssot-pack-contracts` and SHOULD expose their root API by merging `ssot_pack_contracts.bind_pack_contract(__name__)` into their module globals.
+  External governance packs SHOULD NOT hand-author root wrapper functions when the shared contract binding can provide them.
 spec_kind: "governance"
 adr_ids:
   - "adr:0541"

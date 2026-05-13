@@ -37,6 +37,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("release_train", workflow)
         self.assertIn("- all", workflow)
         self.assertIn("- ssot-contracts", workflow)
+        self.assertIn("- ssot-pack-contracts", workflow)
         self.assertIn("- ssot-views", workflow)
         self.assertIn("- ssot-codegen", workflow)
         self.assertIn("- ssot-core", workflow)
@@ -64,6 +65,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn('python_version: ["3.10", "3.11", "3.12", "3.13", "3.14"]', workflow)
         for package_name in (
             "ssot-contracts",
+            "ssot-pack-contracts",
             "ssot-views",
             "ssot-codegen",
             "ssot-core",
@@ -78,6 +80,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
     def test_publish_workflows_exist_for_all_packages(self) -> None:
         for filename in (
             ".github/workflows/publish-ssot-contracts.yml",
+            ".github/workflows/publish-ssot-pack-contracts.yml",
             ".github/workflows/publish-ssot-views.yml",
             ".github/workflows/publish-ssot-codegen.yml",
             ".github/workflows/publish-ssot-core.yml",
@@ -103,6 +106,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
     def test_prepare_release_uses_package_aware_bump_script(self) -> None:
         workflow = _read(".github/workflows/prepare-release.yml")
         self.assertIn("- all", workflow)
+        self.assertIn("- ssot-pack-contracts", workflow)
         self.assertIn("- ssot-conformance", workflow)
         self.assertIn("scripts/bump_release_train.py", workflow)
         self.assertNotIn("scripts/release_metadata.py validate-train", workflow)

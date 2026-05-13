@@ -12,6 +12,7 @@ for path in (
     REPO_ROOT / "pkgs" / "ssot-codegen" / "src",
     REPO_ROOT / "pkgs" / "ssot-views" / "src",
     REPO_ROOT / "pkgs" / "ssot-contracts" / "src",
+    REPO_ROOT / "pkgs" / "ssot-pack-contracts" / "src",
     REPO_ROOT / "pkgs" / "ssot-tui" / "src",
     REPO_ROOT / "pkgs" / "ssot-cli" / "src",
 ):

@@ -16,6 +16,7 @@ dependencies = [
   "ssot-core==0.2.17",
   "ssot-cli>=0.1.11,<0.2.0",
   "ssot-contracts==0.2.17",
+  "ssot-pack-contracts==0.2.17",
   "tomli>=2.0.1; python_version < '3.11'",
 ]
 keywords = ["ssot", "bundle", "registry", "cli", "governance", "release-management", "developer-tools"]

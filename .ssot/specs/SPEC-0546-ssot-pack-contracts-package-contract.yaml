@@ -35,6 +35,7 @@ body: |-
   - `UnsupportedDocumentKindError`
   - `InvalidPackMetadataError`
   - `InvalidPackManifestError`
+  - `bind_pack_contract`
   - `load_pack_metadata`
   - `load_pack_schema_version`
   - `load_pack_manifest`
@@ -44,9 +45,14 @@ body: |-
   - `validate_pack_metadata`
   - `validate_pack_document_entry`
   - `normalize_document_kind`
+  - `list_packaged_document_ids`
+  - `get_packaged_document_entry`
   
   ## Behavior
   
+  - `bind_pack_contract` SHALL return a dictionary suitable for a governance pack root package to merge into `globals()` so packs do not hand-author wrapper functions.
+  - `bind_pack_contract` SHALL expose zero-argument pack APIs bound to the importing governance pack package.
+  - Bound exports SHALL include `__ssot_package_name__` from packaged metadata, `__pypi_package_name__` from installed distribution metadata, and `__version__` from installed distribution metadata.
   - `normalize_document_kind` SHALL accept `adr`, `adrs`, `spec`, and `specs`, and SHALL return only `adr` or `spec`.
   - `load_pack_metadata` SHALL return validated pack metadata from a package or module that implements the governance-pack contract.
   - `load_pack_schema_version` SHALL return the authored `schema_version` from packaged governance-pack metadata without requiring callers to inspect the full metadata object.

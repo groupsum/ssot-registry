@@ -26,6 +26,7 @@ class WorkspacePackageDagTests(unittest.TestCase):
             root["tool"]["uv"]["workspace"]["members"],
             [
                 "pkgs/ssot-contracts",
+                "pkgs/ssot-pack-contracts",
                 "pkgs/ssot-views",
                 "pkgs/ssot-codegen",
                 "pkgs/ssot-core",
@@ -39,6 +40,7 @@ class WorkspacePackageDagTests(unittest.TestCase):
     def test_workspace_package_dependency_edges_match_governed_dag(self) -> None:
         packages = {
             "ssot-contracts": "pkgs/ssot-contracts/pyproject.toml",
+            "ssot-pack-contracts": "pkgs/ssot-pack-contracts/pyproject.toml",
             "ssot-views": "pkgs/ssot-views/pyproject.toml",
             "ssot-codegen": "pkgs/ssot-codegen/pyproject.toml",
             "ssot-core": "pkgs/ssot-core/pyproject.toml",
@@ -62,15 +64,18 @@ class WorkspacePackageDagTests(unittest.TestCase):
                 ("ssot-codegen", "ssot-contracts"),
                 ("ssot-codegen", "ssot-views"),
                 ("ssot-core", "ssot-contracts"),
+                ("ssot-core", "ssot-pack-contracts"),
                 ("ssot-core", "ssot-views"),
                 ("ssot-conformance", "ssot-contracts"),
                 ("ssot-conformance", "ssot-core"),
                 ("ssot-cli", "ssot-contracts"),
+                ("ssot-cli", "ssot-pack-contracts"),
                 ("ssot-cli", "ssot-conformance"),
                 ("ssot-cli", "ssot-core"),
                 ("ssot-tui", "ssot-contracts"),
                 ("ssot-tui", "ssot-core"),
                 ("ssot-registry", "ssot-contracts"),
+                ("ssot-registry", "ssot-pack-contracts"),
                 ("ssot-registry", "ssot-core"),
                 ("ssot-registry", "ssot-cli"),
             },
@@ -86,5 +91,15 @@ class WorkspacePackageDagTests(unittest.TestCase):
         )
         self.assertEqual(
             json.loads(payload.stdout),
-            ["ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-conformance", "ssot-cli", "ssot-tui", "ssot-registry"],
+            [
+                "ssot-contracts",
+                "ssot-pack-contracts",
+                "ssot-views",
+                "ssot-codegen",
+                "ssot-core",
+                "ssot-conformance",
+                "ssot-cli",
+                "ssot-tui",
+                "ssot-registry",
+            ],
         )

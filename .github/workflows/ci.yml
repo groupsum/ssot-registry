@@ -22,6 +22,7 @@ jobs:
       matrix:
         package_name:
           - ssot-contracts
+          - ssot-pack-contracts
           - ssot-views
           - ssot-codegen
           - ssot-core
@@ -36,6 +37,11 @@ jobs:
             compile_paths: pkgs/ssot-contracts/src
             test_command: python -c "import ssot_contracts"
             verify_packaged_docs: true
+          - package_name: ssot-pack-contracts
+            project_path: pkgs/ssot-pack-contracts
+            compile_paths: pkgs/ssot-pack-contracts/src
+            test_command: python -c "import ssot_pack_contracts"
+            verify_packaged_docs: false
           - package_name: ssot-views
             project_path: pkgs/ssot-views
             compile_paths: pkgs/ssot-views/src
@@ -127,6 +133,7 @@ jobs:
       - name: Build all packages from package roots
         run: |
           uv build --project pkgs/ssot-contracts --out-dir pkgs/ssot-contracts/dist
+          uv build --project pkgs/ssot-pack-contracts --out-dir pkgs/ssot-pack-contracts/dist
           uv build --project pkgs/ssot-views --out-dir pkgs/ssot-views/dist
           uv build --project pkgs/ssot-codegen --out-dir pkgs/ssot-codegen/dist
           uv build --project pkgs/ssot-core --out-dir pkgs/ssot-core/dist
@@ -141,6 +148,7 @@ jobs:
           . .venv-release-smoke/bin/activate
           python -m pip install --upgrade pip
           python -m pip install pkgs/ssot-contracts/dist/*.whl
+          python -m pip install pkgs/ssot-pack-contracts/dist/*.whl
           python -m pip install pkgs/ssot-views/dist/*.whl
           python -m pip install pkgs/ssot-codegen/dist/*.whl
           python -m pip install pkgs/ssot-core/dist/*.whl

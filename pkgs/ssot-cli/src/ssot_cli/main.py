@@ -21,6 +21,7 @@ from .feature_cmd import register_feature
 from .graph_cmd import register_graph
 from .init_cmd import register_init
 from .issue_cmd import register_issue
+from .pack_cmd import register_pack
 from .profile_cmd import register_profile
 from .registry_cmd import register_registry
 from .release_cmd import register_release
@@ -113,6 +114,7 @@ def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
     register_profile(subparsers)
     register_test(subparsers)
     register_issue(subparsers)
+    register_pack(subparsers)
     register_claim(subparsers)
     register_conformance(subparsers)
     register_evidence(subparsers)
