@@ -73,7 +73,10 @@ jobs:
           fi
 
       - name: Deploy Docker container
-        run: $COMPOSE_CMD up -d --build --remove-orphans
+        shell: bash
+        run: |
+          docker rm -f ssot-registry_lander >/dev/null 2>&1 || true
+          $COMPOSE_CMD up -d --build --remove-orphans
 
       - name: Wait for local health check
         shell: bash
