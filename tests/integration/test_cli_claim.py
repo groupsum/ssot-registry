@@ -70,6 +70,13 @@ class CliClaimSurfaceTests(unittest.TestCase):
         self.assertEqual(evaluate.returncode, 0, evaluate.stderr)
         self.assertTrue(json.loads(evaluate.stdout)["passed"])
 
+        evaluate_gate = run_cli("claim", "evaluate", str(repo), "--claim-id", "clm:cli.generated.t1", "--include-tier-gate")
+        self.assertEqual(evaluate_gate.returncode, 0, evaluate_gate.stderr)
+        gate_payload = json.loads(evaluate_gate.stdout)
+        self.assertTrue(gate_payload["passed"])
+        self.assertEqual(gate_payload["claims"][0]["tier_gate"]["requested_tier"], "T3")
+        self.assertEqual(gate_payload["claims"][0]["tier_gate"]["approved_tier"], "T3")
+
         unlink = run_cli("claim", "unlink", str(repo), "--id", "clm:cli.generated.t1", "--feature-ids", "feat:rfc.9000.connection-migration")
         self.assertEqual(unlink.returncode, 0, unlink.stderr)
 

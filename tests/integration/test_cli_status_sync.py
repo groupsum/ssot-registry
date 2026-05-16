@@ -68,18 +68,20 @@ class CliStatusSyncTests(unittest.TestCase):
                 "evidence_ids": [evidence_id],
             }
         )
-        registry["evidence"].append(
-            {
-                "id": evidence_id,
-                "title": "Feature claim ceiling evidence",
-                "status": "collected",
-                "kind": "report",
-                "tier": max(claim_tiers),
-                "path": evidence_path,
-                "claim_ids": claim_ids,
-                "test_ids": [test_id],
-            }
-        )
+        evidence_row = {
+            "id": evidence_id,
+            "title": "Feature claim ceiling evidence",
+            "status": "collected",
+            "kind": "report",
+            "tier": max(claim_tiers),
+            "path": evidence_path,
+            "claim_ids": claim_ids,
+            "test_ids": [test_id],
+        }
+        if max(claim_tiers) >= "T2":
+            evidence_row["robustness_dimensions"] = ["negative_cases"]
+            evidence_row["source_evidence_ids"] = ["evd:source.t1"]
+        registry["evidence"].append(evidence_row)
 
     def test_registry_sync_statuses_updates_all_automated_entity_sections(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
@@ -266,6 +268,35 @@ class CliStatusSyncTests(unittest.TestCase):
         passing_feature = next(row for row in updated["features"] if row["id"] == passing_feature_id)
         self.assertEqual(capped_feature["implementation_status"], "partial")
         self.assertEqual(passing_feature["implementation_status"], "implemented")
+
+    def test_registry_sync_statuses_blocks_label_only_t2_promotion(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+        registry_path = repo / ".ssot" / "registry.json"
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+
+        feature_id = "feat:claim-tier-gates.label-only-t2"
+        self._append_feature_claim_ceiling_rows(repo, registry, feature_id=feature_id, claim_tiers=["T2"], target_tier="T2")
+        evidence = next(row for row in registry["evidence"] if row["id"] == "evd:claim-tier-gates.label-only-t2")
+        evidence.pop("robustness_dimensions")
+        evidence.pop("source_evidence_ids")
+        claim = next(row for row in registry["claims"] if row["id"] == "clm:claim-tier-gates.label-only-t2.t2.1")
+        claim["status"] = "evidenced"
+        registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
+
+        result = run_cli("registry", "sync-statuses", str(repo), "--dry-run")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        payload = json.loads(result.stdout)
+        claim_change = next(
+            change
+            for change in payload["changes"]
+            if change["section"] == "claims" and change["id"] == "clm:claim-tier-gates.label-only-t2.t2.1"
+        )
+        self.assertEqual(claim_change["after"], "asserted")
+        self.assertEqual(claim_change["requested_tier"], "T2")
+        self.assertEqual(claim_change["approved_tier"], "T1")
+        self.assertTrue(any("robustness dimensions" in failure for failure in claim_change["gate_failures"]))
 
 
 if __name__ == "__main__":

@@ -26,6 +26,22 @@ from ssot_registry.model.enums import (
 )
 from ssot_registry.model.registry import REPO_KINDS, REPO_KIND_ALIASES, legacy_repo_kinds_allowed
 
+EXTERNAL_VALIDATION_MODES = {
+    "external-authored-internal-run",
+    "external-run",
+    "independent-review",
+    "third-party-certification",
+    "external-attestation",
+}
+
+INTERNAL_AUTHORSHIP_CLASSIFICATIONS = {
+    "internal",
+    "self",
+    "self-authored",
+    "project-controlled",
+    "project_owned",
+}
+
 
 def _list_of_strings(value: Any) -> bool:
     return isinstance(value, list) and all(isinstance(item, str) for item in value)
@@ -213,6 +229,28 @@ def _validate_evidence(evidence: dict[str, Any], failures: list[str]) -> None:
     for field_name in ("claim_ids", "test_ids"):
         if not _list_of_strings(evidence.get(field_name)):
             failures.append(f"evidence.{entity_id}.{field_name} must be a list of strings")
+    if evidence.get("tier") == "T4":
+        external_source = evidence.get("external_source")
+        if not isinstance(external_source, dict):
+            failures.append(f"evidence.{entity_id}.external_source must be an object for T4 evidence")
+            external_source = {}
+        source_has_identity = bool(external_source.get("name")) and bool(
+            external_source.get("version")
+            or external_source.get("artifact_id")
+            or external_source.get("report_id")
+            or external_source.get("commit")
+        )
+        if not source_has_identity:
+            failures.append(f"evidence.{entity_id}.external_source must include name and version/artifact/report/commit for T4 evidence")
+        authorship_control = str(external_source.get("authorship_control", "")).strip().lower()
+        if not authorship_control or authorship_control in INTERNAL_AUTHORSHIP_CLASSIFICATIONS:
+            failures.append(f"evidence.{entity_id}.external_source.authorship_control must identify external authority for T4 evidence")
+        if evidence.get("validation_mode") not in EXTERNAL_VALIDATION_MODES:
+            failures.append(f"evidence.{entity_id}.validation_mode must be one of {sorted(EXTERNAL_VALIDATION_MODES)} for T4 evidence")
+        if not evidence.get("validation_scope"):
+            failures.append(f"evidence.{entity_id}.validation_scope must be present for T4 evidence")
+        if evidence.get("result") not in {"passed", "accepted", "attested", "certified"}:
+            failures.append(f"evidence.{entity_id}.result must be passed, accepted, attested, or certified for T4 evidence")
 
 
 def _validate_issue(issue: dict[str, Any], failures: list[str]) -> None:

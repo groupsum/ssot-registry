@@ -40,6 +40,10 @@ class ReleaseMetadataTests(unittest.TestCase):
         show_payload = json.loads(_run_release_metadata("show").stdout)
         self.assertEqual(payload["core_version"], show_payload["packages"]["ssot-contracts"]["version"])
 
+    def test_validate_pack_contracts_train_is_not_core_lockstep_bound(self) -> None:
+        payload = json.loads(_run_release_metadata("validate-train", "--train", "ssot-pack-contracts").stdout)
+        self.assertEqual(payload["targets"], ["ssot-pack-contracts"])
+
     def test_validate_all_train_confirms_local_dependency_versions_are_satisfiable(self) -> None:
         payload = json.loads(_run_release_metadata("validate-train", "--train", "all").stdout)
         self.assertEqual(

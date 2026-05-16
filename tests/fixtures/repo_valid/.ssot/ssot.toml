@@ -1,0 +1,24 @@
+[policy]
+interactive = false
+fail_closed = true
+
+[sync]
+docs = "manual"
+templates = "manual"
+upstream_packages = "manual"
+
+[validate]
+after_registry_change = "automatic"
+
+[generation]
+mode = "manual"
+formats = ["json"]
+
+[generation.targets]
+graphs = false
+
+[generation.graphs]
+mode = "manual"
+formats = ["json"]
+output_dir = ".ssot/graphs"
+basename = "registry.graph"

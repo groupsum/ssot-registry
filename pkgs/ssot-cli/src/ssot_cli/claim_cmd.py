@@ -91,6 +91,7 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
     evaluate = claim_sub.add_parser("evaluate", help="Evaluate claim support.", description="Recompute claim support and readiness for one claim or the entire registry.")
     add_path_argument(evaluate)
     evaluate.add_argument("--claim-id", default=None, help="Claim id to evaluate. Omit to evaluate every claim in the registry.")
+    evaluate.add_argument("--include-tier-gate", action="store_true", help="Include machine-actionable claim tier gate evaluation.")
     evaluate.set_defaults(func=run_evaluate)
 
     set_status = claim_sub.add_parser("set-status", help="Advance or revise claim status.", description="Change the lifecycle status of a claim without editing other fields.")
@@ -159,7 +160,7 @@ def run_unlink(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_evaluate(args: argparse.Namespace) -> dict[str, object]:
-    return evaluate_claims(path=args.path, claim_id=args.claim_id)
+    return evaluate_claims(path=args.path, claim_id=args.claim_id, include_tier_gate=args.include_tier_gate)
 
 
 def run_set_status(args: argparse.Namespace) -> dict[str, object]:
