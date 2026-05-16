@@ -1,11 +1,34 @@
-adr_ids: []
+adr_ids:
+  - "adr:0605"
+  - "adr:0625"
 body: |-
-  Supported tiers:
-  - `T0` declared intent or inventory-level
-  - `T1` maintainer-asserted with local evidence
-  - `T2` reproducible project-controlled verification
-  - `T3` release-grade certified claim
-  - `T4` independently reviewed or externally attested claim
+  ## Overview
+  
+  Claim tiers describe assurance strength. They do not describe lifecycle status. Claim lifecycle status remains governed by claim statuses; tier promotion is governed by the tier semantics below and by the claim tier gates defined in `SPEC-0625`.
+  
+  ## Supported Tiers
+  
+  - `T0` Declared / Inventory: the claim is tracked, intended, planned, scoped, or inventoried. It does not assert working behavior.
+  - `T1` Project Verified: the claim's direct expected behavior is implemented and verified by repeatable project-controlled tests and evidence.
+  - `T2` Robustly Project Verified: the claim satisfies `T1` and is additionally verified across declared robustness dimensions such as negative cases, edge cases, state variation, concurrency, compatibility, security abuse cases, failure recovery, property or fuzz checks, performance envelopes, or regression corpora.
+  - `T3` Release Certified: the claim satisfies the configured lower-tier requirements and is certified inside a governed release, frozen boundary, or profile scope.
+  - `T4` Externally Certified: the claim is validated by an external, independent, or third-party authority. External dependency usage alone is not `T4`.
+  
+  ## Difference Ladder
+  
+  - `T0`: tracked.
+  - `T1`: directly works.
+  - `T2`: robustly works.
+  - `T3`: release certified.
+  - `T4`: externally certified.
+  
+  ## Non-Overlap Rules
+  
+  - `T0` SHALL NOT satisfy implementation.
+  - `T1` SHALL NOT be described as robust verification.
+  - `T2` SHALL NOT be described as release certification.
+  - `T3` SHALL NOT be described as external certification.
+  - `T4` SHALL require external validation authority, not only internally authored self-attestation.
 decision_date: null
 id: "spc:0605"
 kind: "spec"
@@ -17,7 +40,7 @@ slug: "claim-tiers"
 spec_kind: "normative"
 status: "draft"
 status_notes: []
-summary: "Supported tiers:"
+summary: "Claim tiers define the assurance ladder from declared inventory through direct project verification, robust project verification, release certification, and external certification."
 superseded_by: []
 supersedes: []
 tags: []

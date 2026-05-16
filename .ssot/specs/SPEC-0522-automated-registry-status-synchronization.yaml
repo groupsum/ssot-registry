@@ -1,5 +1,6 @@
 adr_ids:
   - "adr:0522"
+  - "adr:0625"
 body: |-
   ## Overview
   
@@ -25,6 +26,12 @@ body: |-
   Feature implementation status is derived from passing tests, satisfying claims, and required-feature readiness.
   Profile status is derived from profile evaluation; retired profiles remain retired.
   
+  Automated status synchronization MAY derive lifecycle status, but it SHALL NOT treat a claim as valid at a requested higher assurance tier unless the applicable claim tier gate passes.
+  
+  Evidence tier labels alone SHALL NOT promote a claim. A `T2`, `T3`, or `T4` evidence label is only an input to the tier gate; it is not sufficient by itself.
+  
+  If claim closure passes but the applicable tier gate fails, the synchronization report SHALL expose the tier gate failures and SHALL preserve or derive the highest valid status/tier interpretation rather than inflating the claim.
+  
   ## Release Closure
   
   Automated status synchronization is a pre-closure normalization step.
@@ -44,7 +51,7 @@ status_notes:
     at: "2026-04-22T06:13:11Z"
     note: "Accepted with automated status sync implementation"
     status: "accepted"
-summary: "The registry exposes an automated status synchronization operation for the core assurance entities:"
+summary: "The registry exposes automated status synchronization for assurance entities while preserving claim tier gate semantics."
 superseded_by: []
 supersedes: []
 tags: []

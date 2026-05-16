@@ -101,7 +101,7 @@
     "title": "Claim tiers",
     "filename": "SPEC-0605-claim-tiers.yaml",
     "target_path": ".ssot/specs/SPEC-0605-claim-tiers.yaml",
-    "sha256": "4afc1823c5edb9919a491db9bf7b191c50c0cfdbbd12ffd4d79b95cb1ba10b75",
+    "sha256": "688ce09e6a5efe25732119d8c9a3ceb1f7e9f17f4f72b03e7ff104f75088d9ee",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -111,7 +111,11 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative"
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0605",
+      "adr:0625"
+    ]
   },
   {
     "id": "spc:0606",
@@ -158,7 +162,7 @@
     "title": "Gates and fences",
     "filename": "SPEC-0608-gates-and-fences.yaml",
     "target_path": ".ssot/specs/SPEC-0608-gates-and-fences.yaml",
-    "sha256": "740f1758b246cef021934bd5be3ba2dff51dbf6adbea8b3a333cc38ede902054",
+    "sha256": "d93c5b0ea88dc78c7164eaa549eb13019b86abd833c69a73ec1b6f3585239de8",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -168,7 +172,11 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": [],
-    "kind": "normative"
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0608",
+      "adr:0625"
+    ]
   },
   {
     "id": "spc:0609",
@@ -335,7 +343,7 @@
     "title": "Feature implementation claim ceilings",
     "filename": "SPEC-0617-feature-implementation-claim-ceilings.yaml",
     "target_path": ".ssot/specs/SPEC-0617-feature-implementation-claim-ceilings.yaml",
-    "sha256": "ebceff937a7719cf5a168314e92427b7c56f08710ceef5b7154e667ceb5d1b8e",
+    "sha256": "d7086a2eff213382e2a2065c468aff07e6ef588c9c4a5f89e38ca71981cb96c4",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -347,7 +355,8 @@
     "status_notes": [],
     "kind": "normative",
     "adr_ids": [
-      "adr:0617"
+      "adr:0617",
+      "adr:0625"
     ]
   },
   {
@@ -357,7 +366,7 @@
     "title": "Local Release Assurance Candidate Scope",
     "filename": "SPEC-0618-local-release-assurance-candidate-scope.yaml",
     "target_path": ".ssot/specs/SPEC-0618-local-release-assurance-candidate-scope.yaml",
-    "sha256": "b9855e1fbbf660411e68b5414394e4fc05f85e3cf4ca1d8cd6d5a695790b2654",
+    "sha256": "b7e4f08cbe2ddaf893b28c7dfb3231c5e9eda8060eb256a17a664c7ea8298eb9",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -375,7 +384,8 @@
     ],
     "kind": "governance",
     "adr_ids": [
-      "adr:0618"
+      "adr:0618",
+      "adr:0625"
     ]
   },
   {
@@ -472,7 +482,7 @@
     "title": "Local Release Verification And Gate Contract",
     "filename": "SPEC-0622-local-release-verification-and-gate-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0622-local-release-verification-and-gate-contract.yaml",
-    "sha256": "a676807168ee50049db1ea1ffea6151043b2d7b469d0ad6b8cc7760e443c1a0e",
+    "sha256": "ab70fbcda76ada3f3c697dacbd2669d5a9d4f78d9e8fdd972ce9216b22361a10",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -492,7 +502,8 @@
     "adr_ids": [
       "adr:0618",
       "adr:0619",
-      "adr:0620"
+      "adr:0620",
+      "adr:0625"
     ]
   },
   {
@@ -537,6 +548,51 @@
     "kind": "normative",
     "adr_ids": [
       "adr:0622"
+    ]
+  },
+  {
+    "id": "spc:0625",
+    "number": 625,
+    "slug": "claim-tier-gates",
+    "title": "Claim Tier Gates",
+    "filename": "SPEC-0625-claim-tier-gates.yaml",
+    "target_path": ".ssot/specs/SPEC-0625-claim-tier-gates.yaml",
+    "sha256": "ac97733093661d1d76f574db623c79abb4eacd5d7844548b78cd327c7533d150",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.4.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [],
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0625",
+      "adr:0626"
+    ]
+  },
+  {
+    "id": "spc:0626",
+    "number": 626,
+    "slug": "external-validation-evidence",
+    "title": "External Validation Evidence",
+    "filename": "SPEC-0626-external-validation-evidence.yaml",
+    "target_path": ".ssot/specs/SPEC-0626-external-validation-evidence.yaml",
+    "sha256": "08a106d145fbdd821dcf14970d717de73fc081ccea8a1ca42d1b1ce1f142830a",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.4.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [],
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0626"
     ]
   }
 ]

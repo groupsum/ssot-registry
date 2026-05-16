@@ -1,5 +1,6 @@
 adr_ids:
   - "adr:0617"
+  - "adr:0625"
 body: |-
   ## Overview
   
@@ -26,6 +27,16 @@ body: |-
   
   If a feature has mixed active required claims and any one of them fails the closure requirements, the feature SHALL NOT be synchronized to `implemented`.
   
+  ## Tier Targets
+  
+  `T1` claims can satisfy direct implementation targets when their direct project verification gates pass.
+  
+  `T2` claims can satisfy robust implementation targets, including security-sensitive, compatibility-sensitive, concurrency-sensitive, or failure-mode-sensitive features, when their robustness gates pass.
+  
+  `T3` and `T4` normally represent certification or validation maturity above implementation status. They SHALL be required for implementation only when the feature explicitly sets `plan.target_claim_tier` to `T3` or `T4`.
+  
+  A feature may be implemented at `T1` or `T2` and later gain `T3` or `T4` assurance through release certification or external validation without changing the meaning of implementation status.
+  
   ## Validation
   
   Registry validation SHALL reject a feature with `implementation_status: implemented` when any active required linked claim is `T0` or below the feature's target claim tier.
@@ -46,7 +57,7 @@ slug: "feature-implementation-claim-ceilings"
 spec_kind: "normative"
 status: "accepted"
 status_notes: []
-summary: "Feature implementation status SHALL be derived and validated through active required claim ceilings."
+summary: "Feature implementation status SHALL be derived and validated through active required claim ceilings and applicable tier gates."
 superseded_by: []
 supersedes: []
 tags: []

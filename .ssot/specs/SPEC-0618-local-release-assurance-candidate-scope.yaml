@@ -8,7 +8,7 @@ status: "draft"
 origin: "ssot-origin"
 decision_date: null
 tags: []
-summary: "Draft candidate scope."
+summary: "Draft candidate scope for local release assurance artifacts, including their use as T3 release-certification inputs."
 supersedes: []
 superseded_by: []
 status_notes:
@@ -26,6 +26,8 @@ body: |-
   
   This SPEC defines the exploratory local release assurance scope. The candidate surface includes governed source snapshots, deterministic root hashes, local evidence bundles, output artifact manifests, local verification reports, tamper detection, and release gate integration.
   
+  Local release assurance artifacts MAY be configured as `T3` release-certification inputs. A `T3` claim is not merely `T2` evidence attached to a release id; it must be covered by release, boundary, or profile certification scope and pass the configured release certification guard.
+  
   ## Out Of Scope
   
   Mandatory CUE, Bazel, Nix, Sigstore, Cosign, Rekor, Docker-only artifact handling, network services, and required external build systems are out of scope. Optional adapters may be proposed separately later.
@@ -36,3 +38,4 @@ body: |-
 spec_kind: "governance"
 adr_ids:
   - "adr:0618"
+  - "adr:0625"
