@@ -30,6 +30,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   build-and-publish:
@@ -68,8 +69,8 @@ jobs:
           TAG: ${{ steps.release_meta.outputs.tag }}
         run: |
           if git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "Tag $TAG already exists."
-            exit 1
+            echo "Tag $TAG already exists; continuing."
+            exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -107,18 +108,31 @@ jobs:
 
       - name: Create GitHub Release
         if: ${{ inputs.create_github_release }}
-        uses: softprops/action-gh-release@v2.5.0
-        with:
-          tag_name: ${{ steps.release_meta.outputs.tag }}
-          target_commitish: ${{ inputs.ref_name }}
-          name: ${{ steps.release_meta.outputs.tag }}
-          files: ${{ inputs.project_path }}/dist/*
-          generate_release_notes: true
-          draft: false
-          prerelease: ${{ contains(steps.release_meta.outputs.version, '.dev') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release_meta.outputs.tag }}
+          VERSION: ${{ steps.release_meta.outputs.version }}
+          REF_NAME: ${{ inputs.ref_name }}
+          PROJECT_PATH: ${{ inputs.project_path }}
+        run: |
+          ARGS=(
+            "$TAG"
+            "$PROJECT_PATH"/dist/*
+            --target "$REF_NAME"
+            --title "$TAG"
+            --generate-notes
+          )
+          if [[ "$VERSION" == *".dev"* ]]; then
+            ARGS+=(--prerelease)
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "GitHub Release $TAG already exists; continuing."
+            exit 0
+          fi
+          gh release create "${ARGS[@]}"
 
       - name: Publish package distributions to PyPI
         if: ${{ inputs.publish_to_pypi }}
         env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: uv publish ${{ inputs.project_path }}/dist/*
+          PROJECT_PATH: ${{ inputs.project_path }}
+        run: uv publish --trusted-publishing always --check-url https://pypi.org/simple/ "$PROJECT_PATH"/dist/*

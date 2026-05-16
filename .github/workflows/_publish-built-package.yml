@@ -124,4 +124,4 @@ jobs:
         if: ${{ inputs.publish_to_pypi }}
         env:
           PACKAGE_NAME: ${{ inputs.package_name }}
-        run: uv publish --trusted-publishing always release-dist/$PACKAGE_NAME/*.whl release-dist/$PACKAGE_NAME/*.tar.gz
+        run: uv publish --trusted-publishing always --check-url https://pypi.org/simple/ release-dist/$PACKAGE_NAME/*.whl release-dist/$PACKAGE_NAME/*.tar.gz
