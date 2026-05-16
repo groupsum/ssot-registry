@@ -72,8 +72,8 @@ jobs:
           TAG: ${{ inputs.package_tag }}
         run: |
           if git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "Tag $TAG already exists."
-            exit 1
+            echo "Tag $TAG already exists; continuing."
+            exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -112,6 +112,10 @@ jobs:
           )
           if [[ "$VERSION" == *".dev"* ]]; then
             ARGS+=(--prerelease)
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "GitHub Release $TAG already exists; continuing."
+            exit 0
           fi
           gh release create "${ARGS[@]}"
 
