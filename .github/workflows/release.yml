@@ -258,6 +258,9 @@ jobs:
       fail-fast: false
       matrix:
         package: ${{ fromJSON(needs.validate.outputs.publish_layer_1) }}
+    permissions:
+      contents: write
+      id-token: write
     uses: ./.github/workflows/_publish-built-package.yml
     with:
       package_name: ${{ matrix.package.name }}
@@ -278,6 +281,9 @@ jobs:
       fail-fast: false
       matrix:
         package: ${{ fromJSON(needs.validate.outputs.publish_layer_2) }}
+    permissions:
+      contents: write
+      id-token: write
     uses: ./.github/workflows/_publish-built-package.yml
     with:
       package_name: ${{ matrix.package.name }}
@@ -298,6 +304,9 @@ jobs:
       fail-fast: false
       matrix:
         package: ${{ fromJSON(needs.validate.outputs.publish_layer_3) }}
+    permissions:
+      contents: write
+      id-token: write
     uses: ./.github/workflows/_publish-built-package.yml
     with:
       package_name: ${{ matrix.package.name }}
@@ -318,6 +327,9 @@ jobs:
       fail-fast: false
       matrix:
         package: ${{ fromJSON(needs.validate.outputs.publish_layer_4) }}
+    permissions:
+      contents: write
+      id-token: write
     uses: ./.github/workflows/_publish-built-package.yml
     with:
       package_name: ${{ matrix.package.name }}
@@ -338,6 +350,9 @@ jobs:
       fail-fast: false
       matrix:
         package: ${{ fromJSON(needs.validate.outputs.publish_layer_5) }}
+    permissions:
+      contents: write
+      id-token: write
     uses: ./.github/workflows/_publish-built-package.yml
     with:
       package_name: ${{ matrix.package.name }}
@@ -358,6 +373,9 @@ jobs:
       fail-fast: false
       matrix:
         package: ${{ fromJSON(needs.validate.outputs.publish_layer_6) }}
+    permissions:
+      contents: write
+      id-token: write
     uses: ./.github/workflows/_publish-built-package.yml
     with:
       package_name: ${{ matrix.package.name }}
