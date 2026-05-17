@@ -1,3 +1,18 @@
+schema_version: "0.5.0"
+kind: "adr"
+id: "adr:0617"
+number: 617
+slug: "feature-implementation-claim-ceilings"
+title: "Feature implementation is capped by active required claims"
+status: "accepted"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "Feature implementation status, claim lifecycle status, and claim assurance tier are separate fields. That separation is useful, but it can overstate implementation when a feature has multiple active linked claims and only one of them satisfies the target tier."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
 body: |-
   ## Context
   
@@ -31,18 +46,3 @@ body: |-
   Validation must reject manually edited registries that mark a feature `implemented` while an active required linked claim is `T0` or below the feature target tier.
   
   Registries that need non-blocking explanatory claims must model that as a later governed schema capability. Until that exists, active linked claims are required closure inputs.
-decision_date: null
-id: "adr:0617"
-kind: "adr"
-number: 617
-origin: "ssot-origin"
-references: []
-schema_version: "0.2.0"
-slug: "feature-implementation-claim-ceilings"
-status: "accepted"
-status_notes: []
-summary: "Feature implementation status is capped by active required claims, while certification and external validation maturity remain distinct assurance layers."
-superseded_by: []
-supersedes: []
-tags: []
-title: "Feature implementation is capped by active required claims"

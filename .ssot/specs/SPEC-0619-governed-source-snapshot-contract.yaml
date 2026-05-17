@@ -1,4 +1,4 @@
-schema_version: "0.3.0"
+schema_version: "0.5.0"
 kind: "spec"
 id: "spc:0619"
 number: 619
@@ -13,9 +13,9 @@ supersedes: []
 superseded_by: []
 status_notes:
   -
-    status: "draft"
-    note: "Tentative local release assurance proposal; not accepted or implementation-bound."
     at: "2026-05-08T07:34:03Z"
+    note: "Tentative local release assurance proposal; not accepted or implementation-bound."
+    status: "draft"
 references: []
 body: |-
   ## Status

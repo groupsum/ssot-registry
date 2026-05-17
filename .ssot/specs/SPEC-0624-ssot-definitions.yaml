@@ -1,5 +1,18 @@
-adr_ids:
-  - "adr:0622"
+schema_version: "0.5.0"
+kind: "spec"
+id: "spc:0624"
+number: 624
+slug: "ssot-definitions"
+title: "SSOT definitions"
+status: "draft"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "This SPEC defines baseline SSOT vocabulary for authored documents, registry entities, generated projections, CLI output, evidence artifacts, release gates, and downstream conformance work."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
 body: |-
   ## Purpose
   
@@ -114,19 +127,6 @@ body: |-
   `Extension Pack` means a package or catalog source that contributes governed documents, templates, entities, or policy surfaces to an SSOT repository.
   
   `Local Policy` means repository-specific governance that may narrow or strengthen baseline SSOT behavior without weakening upstream requirements.
-decision_date: null
-id: "spc:0624"
-kind: "spec"
-number: 624
-origin: "ssot-origin"
-references: []
-schema_version: "0.2.0"
-slug: "ssot-definitions"
 spec_kind: "normative"
-status: "draft"
-status_notes: []
-summary: "This SPEC defines baseline SSOT vocabulary for authored documents, registry entities, generated projections, CLI output, evidence artifacts, release gates, and downstream conformance work."
-superseded_by: []
-supersedes: []
-tags: []
-title: "SSOT definitions"
+adr_ids:
+  - "adr:0622"

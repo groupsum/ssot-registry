@@ -44,6 +44,20 @@ def register_conformance(subparsers: argparse._SubParsersAction) -> None:
     run.add_argument("--evidence-output", default=None, help="Optional JSON output path for machine-readable evidence.")
     run.set_defaults(func=run_run)
 
+    origin = conformance_sub.add_parser(
+        "origin",
+        help="Generate downstream ssot-origin compliance tests.",
+        description="Plan or apply generated downstream conformance tests and SSOT rows for synchronized ssot-origin ADR and SPEC obligations.",
+    )
+    add_path_argument(origin)
+    origin.add_argument("--kinds", nargs="*", choices=["adr", "spec"], default=None, help="Limit generation to ADR or SPEC origin obligations.")
+    origin.add_argument("--apply", action="store_true", help="Write generated tests and registry rows instead of only reporting the plan.")
+    origin.add_argument("--include-claims", action="store_true", help="Generate claim rows and links.")
+    origin.add_argument("--include-evidence", action="store_true", help="Generate evidence rows and a machine-readable report.")
+    origin.add_argument("--overwrite", action="store_true", help="Allow replacing previously generated files.")
+    origin.add_argument("--report-output", default=None, help="Optional output path for the generated origin conformance report.")
+    origin.set_defaults(func=run_origin)
+
 
 def run_profile_list(args: argparse.Namespace) -> dict[str, object]:
     from ssot_conformance import list_profiles
@@ -85,4 +99,24 @@ def run_run(args: argparse.Namespace) -> dict[str, object]:
         tests=list(catalog["tests"]),
         evidence_output=args.evidence_output,
         dry_run=args.dry_run,
+    )
+
+
+def run_origin(args: argparse.Namespace) -> dict[str, object]:
+    from ssot_conformance import apply_origin_conformance, plan_origin_conformance
+
+    if args.apply:
+        return apply_origin_conformance(
+            args.path,
+            kinds=args.kinds,
+            include_claims=args.include_claims,
+            include_evidence=args.include_evidence,
+            overwrite=args.overwrite,
+            report_output=args.report_output,
+        )
+    return plan_origin_conformance(
+        args.path,
+        kinds=args.kinds,
+        include_claims=args.include_claims,
+        include_evidence=args.include_evidence,
     )
