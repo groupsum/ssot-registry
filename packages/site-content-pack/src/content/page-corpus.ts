@@ -65,7 +65,7 @@ function sectionsForPlan(plan: PlannedPage): SectionSpec[] {
       subtitle: plan.summary,
       primaryCta: {
         label: plan.primaryCta,
-        href: "/docs/",
+        href: `/content/${slugify(plan.section)}/`,
       },
     },
     {
@@ -113,7 +113,7 @@ function sectionsForPlan(plan: PlannedPage): SectionSpec[] {
       packages: plan.relatedPackages.map((name, index) => ({
         name,
         description: `Related SSOT Registry package surface for ${plan.subjectArea}.`,
-        href: "/docs/",
+        href: `/content/${slugify(plan.section)}/`,
         api: [plan.relatedApis[index % plan.relatedApis.length] ?? plan.relatedApis[0] ?? "ssot validate"],
       })),
     },

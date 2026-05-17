@@ -52,8 +52,8 @@ export const ssotRegistryHomePage = {
       subtitle:
         "Model ADRs, specs, features, claims, tests, evidence, boundaries, and releases as one validated source of truth.",
       primaryCta: {
-        label: "Read the Docs",
-        href: "/docs/",
+        label: "Browse Content",
+        href: "/content/",
       },
       secondaryCta: {
         label: "View GitHub",
@@ -69,16 +69,19 @@ export const ssotRegistryHomePage = {
           title: "Governed entity model",
           description:
             "Track ADRs, specs, features, issues, risks, profiles, tests, claims, evidence, boundaries, and releases with stable IDs.",
+          href: "/content/features/",
         },
         {
           title: "Proof-linked claims",
           description:
             "Connect claims to required features, test rows, and evidence artifacts so certification can fail closed.",
+          href: "/content/proofs/",
         },
         {
           title: "Boundary-driven release closure",
           description:
             "Freeze release scope, execute verification, certify claims, promote releases, and publish closure snapshots.",
+          href: "/content/workflows/",
         },
       ],
     },
@@ -116,19 +119,19 @@ export const ssotRegistryHomePage = {
           claim: "Registry validation",
           status: "verified",
           evidence: "The CLI validates registry structure, links, status, and release readiness.",
-          href: "/docs/",
+          href: "/content/proofs/",
         },
         {
           claim: "Release boundaries",
           status: "supported",
           evidence: "Frozen boundary snapshots preserve feature and profile scope for release review.",
-          href: "/docs/",
+          href: "/content/workflows/",
         },
         {
           claim: "Evidence traceability",
           status: "supported",
           evidence: "Evidence rows point at concrete artifacts and link back to claims and tests.",
-          href: "/docs/",
+          href: "/content/proofs/",
         },
       ],
     },
@@ -147,7 +150,7 @@ export const ssotRegistryHomePage = {
         {
           name: "ssot-cli skills",
           description: "Operator workflows for ADRs, specs, features, tests, evidence, and releases.",
-          href: "/docs/",
+          href: "/content/workflows/",
         },
       ],
     },
@@ -210,10 +213,10 @@ export const ssotRegistrySite = {
   },
   nav: {
     primary: [
-      { label: "Features", href: "#features" },
-      { label: "Proof", href: "#proof" },
-      { label: "Packages", href: "#packages" },
-      { label: "FAQ", href: "#faq" },
+      { label: "Features", href: "/content/features/" },
+      { label: "Proof", href: "/content/proofs/" },
+      { label: "Packages", href: "/content/packages/" },
+      { label: "FAQ", href: "/content/faq-qa/" },
     ],
     cta: {
       label: "View GitHub",
@@ -223,7 +226,7 @@ export const ssotRegistrySite = {
   },
   footer: {
     links: [
-      { label: "Documentation", href: "/docs/" },
+      { label: "Documentation", href: "/content/" },
       { label: "GitHub", href: "https://github.com/groupsum/ssot-registry" },
       { label: "PyPI", href: "https://pypi.org/project/ssot-registry/" },
     ],
