@@ -1,6 +1,7 @@
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
+COPY packages/site-content-pack ./packages/site-content-pack
 RUN npm install
 COPY index.html tsconfig.json vite.config.ts ./
 COPY src ./src
