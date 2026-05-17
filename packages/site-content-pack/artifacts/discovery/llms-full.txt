@@ -4,7 +4,85 @@
 URL: https://ssot-registry.swarmauri.com/
 Description: A governed single source of truth for ADRs, specs, features, claims, tests, evidence, boundaries, and releases.
 Schema: WebPage, WebSite, Organization, SoftwareApplication, SoftwareSourceCode, FAQPage
-Components: page_shell, breadcrumbs, hero, feature_grid, proof_matrix, package_grid, markdown, faq, structured_data_graph
+Components: page_shell, breadcrumbs, hero, feature_grid, feature_grid, proof_matrix, package_grid, markdown, faq, structured_data_graph
+
+## SSOT Registry Content Corpus
+URL: https://ssot-registry.swarmauri.com/content/
+Description: Index of the generated SSOT Registry content corpus across all section families.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, feature_grid, package_grid, structured_data_graph, page_shell, package_grid, structured_data_graph
+
+## Features Content Index
+URL: https://ssot-registry.swarmauri.com/content/features/
+Description: Index of 320 generated SSOT Registry Features pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## Proofs Content Index
+URL: https://ssot-registry.swarmauri.com/content/proofs/
+Description: Index of 320 generated SSOT Registry Proofs pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## Packages Content Index
+URL: https://ssot-registry.swarmauri.com/content/packages/
+Description: Index of 320 generated SSOT Registry Packages pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## Packs Content Index
+URL: https://ssot-registry.swarmauri.com/content/packs/
+Description: Index of 320 generated SSOT Registry Packs pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## FAQ / QA Content Index
+URL: https://ssot-registry.swarmauri.com/content/faq-qa/
+Description: Index of 320 generated SSOT Registry FAQ / QA pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## Courses Content Index
+URL: https://ssot-registry.swarmauri.com/content/courses/
+Description: Index of 320 generated SSOT Registry Courses pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## Lessons Content Index
+URL: https://ssot-registry.swarmauri.com/content/lessons/
+Description: Index of 320 generated SSOT Registry Lessons pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## Certifications Content Index
+URL: https://ssot-registry.swarmauri.com/content/certifications/
+Description: Index of 320 generated SSOT Registry Certifications pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## API Reference Content Index
+URL: https://ssot-registry.swarmauri.com/content/api-reference/
+Description: Index of 320 generated SSOT Registry API Reference pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## Workflows Content Index
+URL: https://ssot-registry.swarmauri.com/content/workflows/
+Description: Index of 320 generated SSOT Registry Workflows pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## Comparisons Content Index
+URL: https://ssot-registry.swarmauri.com/content/comparisons/
+Description: Index of 320 generated SSOT Registry Comparisons pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
+
+## Glossary Content Index
+URL: https://ssot-registry.swarmauri.com/content/glossary/
+Description: Index of 320 generated SSOT Registry Glossary pages.
+Schema: WebPage, ItemList, BreadcrumbList
+Components: page_shell, breadcrumbs, package_grid, structured_data_graph, page_shell, package_grid, structured_data_node
 
 ## ADRs what is for Developers
 URL: https://ssot-registry.swarmauri.com/features/developer/adrs/what-is/

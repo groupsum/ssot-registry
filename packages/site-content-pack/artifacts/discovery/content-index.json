@@ -1,6 +1,6 @@
 {
   "product": "SSOT Registry",
-  "pageCount": 3841,
+  "pageCount": 3854,
   "pages": [
     {
       "path": "/",
@@ -10,10 +10,129 @@
       "sectionIds": [
         "hero",
         "features",
+        "content-corpus",
         "proof",
         "packages",
         "workflow",
         "faq"
+      ]
+    },
+    {
+      "path": "/content/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/",
+      "title": "SSOT Registry Content Corpus",
+      "description": "Index of the generated SSOT Registry content corpus across all section families.",
+      "sectionIds": [
+        "corpus-summary",
+        "section-indexes"
+      ]
+    },
+    {
+      "path": "/content/features/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/features/",
+      "title": "Features Content Index",
+      "description": "Index of 320 generated SSOT Registry Features pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/proofs/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/proofs/",
+      "title": "Proofs Content Index",
+      "description": "Index of 320 generated SSOT Registry Proofs pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/packages/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/packages/",
+      "title": "Packages Content Index",
+      "description": "Index of 320 generated SSOT Registry Packages pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/packs/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/packs/",
+      "title": "Packs Content Index",
+      "description": "Index of 320 generated SSOT Registry Packs pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/faq-qa/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/faq-qa/",
+      "title": "FAQ / QA Content Index",
+      "description": "Index of 320 generated SSOT Registry FAQ / QA pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/courses/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/courses/",
+      "title": "Courses Content Index",
+      "description": "Index of 320 generated SSOT Registry Courses pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/lessons/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/lessons/",
+      "title": "Lessons Content Index",
+      "description": "Index of 320 generated SSOT Registry Lessons pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/certifications/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/certifications/",
+      "title": "Certifications Content Index",
+      "description": "Index of 320 generated SSOT Registry Certifications pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/api-reference/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/api-reference/",
+      "title": "API Reference Content Index",
+      "description": "Index of 320 generated SSOT Registry API Reference pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/workflows/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/workflows/",
+      "title": "Workflows Content Index",
+      "description": "Index of 320 generated SSOT Registry Workflows pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/comparisons/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/comparisons/",
+      "title": "Comparisons Content Index",
+      "description": "Index of 320 generated SSOT Registry Comparisons pages.",
+      "sectionIds": [
+        "page-links"
+      ]
+    },
+    {
+      "path": "/content/glossary/",
+      "canonicalUrl": "https://ssot-registry.swarmauri.com/content/glossary/",
+      "title": "Glossary Content Index",
+      "description": "Index of 320 generated SSOT Registry Glossary pages.",
+      "sectionIds": [
+        "page-links"
       ]
     },
     {

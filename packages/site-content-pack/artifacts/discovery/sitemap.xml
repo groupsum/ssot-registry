@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://ssot-registry.swarmauri.com/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/features/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/proofs/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/packages/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/packs/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/faq-qa/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/courses/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/lessons/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/certifications/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/api-reference/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/workflows/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/comparisons/</loc></url>
+  <url><loc>https://ssot-registry.swarmauri.com/content/glossary/</loc></url>
   <url><loc>https://ssot-registry.swarmauri.com/features/developer/adrs/what-is/</loc></url>
   <url><loc>https://ssot-registry.swarmauri.com/features/architect/adrs/what-is/</loc></url>
   <url><loc>https://ssot-registry.swarmauri.com/features/release-manager/adrs/what-is/</loc></url>

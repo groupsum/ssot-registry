@@ -1,5 +1,5 @@
 import type { LanderSite } from "@mdwrk/lander-content-contract";
-import { generatedCorpusPages } from "./content/page-corpus.js";
+import { generatedContentIndexPage, generatedCorpusPages, generatedSectionIndexPages } from "./content/page-corpus.js";
 
 export * from "./content/apis.js";
 export * from "./content/audiences.js";
@@ -79,6 +79,31 @@ export const ssotRegistryHomePage = {
           title: "Boundary-driven release closure",
           description:
             "Freeze release scope, execute verification, certify claims, promote releases, and publish closure snapshots.",
+        },
+      ],
+    },
+    {
+      id: "content-corpus",
+      kind: "feature_grid",
+      title: "3,840 generated content pages",
+      items: [
+        {
+          title: "Visible corpus index",
+          description:
+            "Browse the generated SSOT Registry content plan from the content index and section indexes.",
+          href: "/content/",
+        },
+        {
+          title: "AEO, SEO, and AiEO coverage",
+          description:
+            "Every generated page carries answer goals, search targets, agent facts, breadcrumbs, schema intents, and component intents.",
+          href: "/content/",
+        },
+        {
+          title: "Discovery artifacts",
+          description:
+            "The corpus publishes sitemap, robots, llms, full llms, content index, semantic index, and structured-data graph artifacts.",
+          href: "/sitemap.xml",
         },
       ],
     },
@@ -231,5 +256,5 @@ export const ssotRegistrySite = {
       "--lander-panel-muted": "#eef6ff",
     },
   },
-  pages: [ssotRegistryHomePage, ...generatedCorpusPages],
+  pages: [ssotRegistryHomePage, generatedContentIndexPage, ...generatedSectionIndexPages, ...generatedCorpusPages],
 } satisfies LanderSite;

@@ -4,6 +4,7 @@ COPY package*.json ./
 COPY packages/site-content-pack ./packages/site-content-pack
 RUN npm install
 COPY index.html tsconfig.json vite.config.ts ./
+COPY scripts ./scripts
 COPY src ./src
 RUN npm run build
 

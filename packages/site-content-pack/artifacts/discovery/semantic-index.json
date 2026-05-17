@@ -1,6 +1,6 @@
 {
   "product": "SSOT Registry",
-  "pageCount": 3841,
+  "pageCount": 3854,
   "terms": [
     {
       "path": "/",
@@ -21,13 +21,326 @@
         "breadcrumbs",
         "hero",
         "feature_grid",
+        "feature_grid",
         "proof_matrix",
         "package_grid",
         "markdown",
         "faq",
         "structured_data_graph"
       ],
-      "wordCount": 364
+      "wordCount": 425
+    },
+    {
+      "path": "/content/",
+      "title": "SSOT Registry Content Corpus",
+      "breadcrumbs": [
+        "Home",
+        "SSOT Registry content corpus"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "feature_grid",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_graph"
+      ],
+      "wordCount": 301
+    },
+    {
+      "path": "/content/features/",
+      "title": "Features Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "Features content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 8907
+    },
+    {
+      "path": "/content/proofs/",
+      "title": "Proofs Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "Proofs content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 8827
+    },
+    {
+      "path": "/content/packages/",
+      "title": "Packages Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "Packages content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 8827
+    },
+    {
+      "path": "/content/packs/",
+      "title": "Packs Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "Packs content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 8827
+    },
+    {
+      "path": "/content/faq-qa/",
+      "title": "FAQ / QA Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "FAQ / QA content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 9152
+    },
+    {
+      "path": "/content/courses/",
+      "title": "Courses Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "Courses content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 8827
+    },
+    {
+      "path": "/content/lessons/",
+      "title": "Lessons Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "Lessons content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 8667
+    },
+    {
+      "path": "/content/certifications/",
+      "title": "Certifications Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "Certifications content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 8827
+    },
+    {
+      "path": "/content/api-reference/",
+      "title": "API Reference Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "API Reference content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 9152
+    },
+    {
+      "path": "/content/workflows/",
+      "title": "Workflows Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "Workflows content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 9147
+    },
+    {
+      "path": "/content/comparisons/",
+      "title": "Comparisons Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "Comparisons content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 8987
+    },
+    {
+      "path": "/content/glossary/",
+      "title": "Glossary Content Index",
+      "breadcrumbs": [
+        "Home",
+        "Content",
+        "Glossary content index"
+      ],
+      "schemaTypes": [
+        "WebPage",
+        "ItemList",
+        "BreadcrumbList"
+      ],
+      "componentKinds": [
+        "page_shell",
+        "breadcrumbs",
+        "package_grid",
+        "structured_data_graph",
+        "page_shell",
+        "package_grid",
+        "structured_data_node"
+      ],
+      "wordCount": 8747
     },
     {
       "path": "/features/developer/adrs/what-is/",

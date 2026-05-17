@@ -1,14 +1,17 @@
 import assert from "node:assert/strict";
 import { compileLanderSite } from "@mdwrk/lander-core";
-import { generatedPagePlans, ssotRegistrySite } from "../dist/index.js";
+import { generatedContentIndexPage, generatedCorpusPages, generatedPagePlans, generatedSectionIndexPages, ssotRegistrySite } from "../dist/index.js";
 
 const compiled = compileLanderSite(ssotRegistrySite);
-const generatedPages = ssotRegistrySite.pages.filter((page) => page.slug !== "/");
+const generatedPages = generatedCorpusPages;
 const slugs = new Set(ssotRegistrySite.pages.map((page) => page.slug));
 const planIds = new Set(generatedPagePlans.map((plan) => plan.pageId));
 
 assert.ok(ssotRegistrySite.pages.length >= 2500);
 assert.equal(generatedPages.length, 3840);
+assert.equal(generatedSectionIndexPages.length, 12);
+assert.equal(generatedContentIndexPage.slug, "/content/");
+assert.ok(ssotRegistrySite.pages.some((page) => page.slug === "/content/features/"));
 assert.equal(slugs.size, ssotRegistrySite.pages.length);
 assert.equal(compiled.pages.length, ssotRegistrySite.pages.length);
 
