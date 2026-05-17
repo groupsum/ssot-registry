@@ -10,7 +10,7 @@
     "build": "npm run build:site-content && npm run build:discovery && tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "npm run build:site-content && tsc --noEmit",
-    "test": "npm --prefix packages/site-content-pack run test && npm run build && tsx tests/site-render-smoke.tsx"
+    "test": "npm --prefix packages/site-content-pack run test && npm run build && tsx tests/site-render-smoke.tsx && tsx tests/site-discovery-smoke.mjs"
   },
   "dependencies": {
     "@mdwrk/lander-core": "^0.1.2",

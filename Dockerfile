@@ -6,6 +6,7 @@ RUN npm install
 COPY index.html tsconfig.json vite.config.ts ./
 COPY scripts ./scripts
 COPY src ./src
+COPY public ./public
 RUN npm run build
 
 FROM nginx:1.27-alpine

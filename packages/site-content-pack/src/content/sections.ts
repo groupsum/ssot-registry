@@ -34,14 +34,14 @@ export const sectionBlueprints = [
   {
     id: "Packs",
     label: "Packs",
-    intents: ["content-pack", "site-pack", "semantic-pack", "discovery-pack"],
+    intents: ["contract-pack", "document-pack", "reserved-range-pack", "immutable-pack"],
     components: ["RelatedPackagesBlock", "DatasetIndexBlock", "TechArticleBlock", "Breadcrumbs"],
     structuredDataTypes: ["Dataset", "Article", "SoftwareSourceCode", "BreadcrumbList"],
   },
   {
     id: "FAQ_QA",
     label: "FAQ / QA",
-    intents: ["faq-answer", "qa-answer", "snippet-answer", "agent-answer"],
+    intents: ["faq-answer", "qa-answer", "operator-answer", "reviewer-answer"],
     components: ["FAQPageBlock", "QAPageBlock", "Breadcrumbs", "RelatedApisBlock"],
     structuredDataTypes: ["FAQPage", "QAPage", "WebPage", "BreadcrumbList"],
   },
@@ -90,7 +90,7 @@ export const sectionBlueprints = [
   {
     id: "Glossary",
     label: "Glossary",
-    intents: ["definition", "term-context", "related-terms", "agent-vocabulary"],
+    intents: ["definition", "term-context", "related-terms", "operator-vocabulary"],
     components: ["DefinedTermSetBlock", "QAPageBlock", "Breadcrumbs", "RelatedApisBlock"],
     structuredDataTypes: ["DefinedTerm", "DefinedTermSet", "QAPage", "BreadcrumbList"],
   },

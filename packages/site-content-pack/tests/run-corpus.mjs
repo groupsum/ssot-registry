@@ -6,6 +6,18 @@ const compiled = compileLanderSite(ssotRegistrySite);
 const generatedPages = generatedCorpusPages;
 const slugs = new Set(ssotRegistrySite.pages.map((page) => page.slug));
 const planIds = new Set(generatedPagePlans.map((plan) => plan.pageId));
+const nonCopyKeys = new Set([
+  "api",
+  "componentIntents",
+  "href",
+  "id",
+  "kind",
+  "keywords",
+  "pageId",
+  "planId",
+  "schema",
+  "slug",
+]);
 
 assert.ok(ssotRegistrySite.pages.length >= 2500);
 assert.equal(generatedPages.length, 3840);
@@ -29,4 +41,108 @@ for (const page of generatedPages) {
   assert.ok(renderedText.includes("SSOT Registry explains"), `${page.slug} must use reader-facing explanatory language`);
   assert.equal(renderedText.includes("agent discovery"), false, `${page.slug} must not expose discovery mechanics`);
   assert.equal(renderedText.includes("page has"), false, `${page.slug} must not expose generation mechanics`);
+}
+
+const apiReferenceIndex = generatedSectionIndexPages.find((page) => page.slug === "/content/api-reference/");
+assert.ok(apiReferenceIndex, "API Reference index must exist");
+const apiCards = apiReferenceIndex.sections
+  .find((section) => section.id === "page-links")
+  ?.packages ?? [];
+assert.ok(apiCards.length > 0, "API Reference index must include guide cards");
+const firstNineCards = apiCards.slice(0, 9);
+assert.ok(
+  new Set(firstNineCards.map((card) => card.name)).size > 3,
+  "API Reference index card titles must vary beyond repeated page titles",
+);
+assert.ok(
+  new Set(firstNineCards.map((card) => card.description)).size > 3,
+  "API Reference index card descriptions must vary beyond repeated page summaries",
+);
+assert.ok(
+  firstNineCards.some((card) => card.description.includes("command output supports validation")),
+  "API Reference cards must describe practical command usage",
+);
+
+const faqIndex = generatedSectionIndexPages.find((page) => page.slug === "/content/faq-qa/");
+assert.ok(faqIndex, "FAQ / QA index must exist");
+const faqIndexCopy = [
+  faqIndex.title,
+  faqIndex.description,
+  faqIndex.h1,
+  faqIndex.intro,
+  JSON.stringify(faqIndex.sections),
+].join("\n");
+assert.equal(faqIndexCopy.includes("faq / qa"), false, "FAQ / QA copy must not use lowercase faq / qa");
+assert.match(faqIndexCopy, /FAQ \/ QA/, "FAQ / QA copy must preserve uppercase acronyms");
+
+const qaAnswerPage = generatedPages.find((page) => page.slug === "/faq-qa/developer/adrs/qa-answer/");
+assert.ok(qaAnswerPage, "sample QA answer page must exist");
+const qaAnswerCopy = visibleCopy(qaAnswerPage);
+assert.equal(qaAnswerCopy.includes("qa answer"), false, "QA answer copy must not use lowercase qa");
+
+const faqAnswerPage = generatedPages.find((page) => page.slug === "/faq-qa/developer/adrs/faq-answer/");
+assert.ok(faqAnswerPage, "sample FAQ answer page must exist");
+const faqAnswerCopy = visibleCopy(faqAnswerPage);
+assert.equal(faqAnswerCopy.includes("faq answer"), false, "FAQ answer copy must not use lowercase faq");
+
+for (const page of ssotRegistrySite.pages) {
+  const copy = visibleCopy(page);
+  assert.equal(/\bfaq\b/.test(copy), false, `${page.slug} visible copy must uppercase FAQ`);
+  assert.equal(/\bqa\b/.test(copy), false, `${page.slug} visible copy must uppercase QA`);
+  assert.equal(copy.includes("FAQ_QA"), false, `${page.slug} visible copy must not expose FAQ_QA internals`);
+}
+
+const coursePage = generatedPages.find((page) => page.slug === "/courses/developer/adrs/course-overview/");
+assert.ok(coursePage, "sample course page must exist");
+assert.ok(
+  coursePage.schema.some((schema) => schema.kind === "Course"),
+  "course pages must declare Course structured data",
+);
+assert.ok(
+  coursePage.schema.some((schema) => schema.kind === "CourseInstance"),
+  "course pages must declare CourseInstance structured data",
+);
+assert.ok(
+  coursePage.schema.some((schema) => schema.kind === "QAPage") || coursePage.schema.some((schema) => schema.kind === "FAQPage"),
+  "course pages must declare quiz-oriented structured data",
+);
+assert.ok(
+  coursePage.componentIntents.some((intent) => JSON.stringify(intent).includes("CourseBlock")),
+  "course pages must include a CourseBlock component intent",
+);
+assert.ok(
+  coursePage.componentIntents.some((intent) => JSON.stringify(intent).includes("LessonListBlock")),
+  "course pages must include a LessonListBlock component intent",
+);
+assert.ok(
+  coursePage.sections.some((section) => section.id === "course-metadata"),
+  "course pages must render course metadata",
+);
+assert.ok(
+  coursePage.sections.some((section) => section.id === "course-overview"),
+  "course pages must render course content",
+);
+assert.ok(
+  coursePage.sections.some((section) => section.id === "course-lessons"),
+  "course pages must render lesson follow-up links",
+);
+assert.ok(
+  coursePage.sections.some((section) => section.id === "course-quiz" && section.kind === "faq" && section.items.length >= 3),
+  "course pages must render follow-up course quizzes",
+);
+assert.equal(
+  coursePage.sections[0].primaryCta.href,
+  "#course-overview",
+  "Start course CTA must jump to the course content on the course page",
+);
+
+function visibleCopy(value, key = "") {
+  if (typeof value === "string") return nonCopyKeys.has(key) ? "" : value;
+  if (Array.isArray(value)) return value.map((item) => visibleCopy(item, key)).filter(Boolean).join("\n");
+  if (!value || typeof value !== "object") return "";
+  return Object.entries(value)
+    .filter(([entryKey]) => !nonCopyKeys.has(entryKey))
+    .map(([entryKey, entryValue]) => visibleCopy(entryValue, entryKey))
+    .filter(Boolean)
+    .join("\n");
 }

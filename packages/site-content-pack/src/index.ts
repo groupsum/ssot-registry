@@ -88,25 +88,25 @@ export const ssotRegistryHomePage = {
     {
       id: "content-corpus",
       kind: "feature_grid",
-      title: "SSOT Registry learning paths",
+      title: "Learn SSOT Registry by the work you need to do",
       items: [
         {
           title: "Start from the content hub",
           description:
-            "Browse SSOT Registry by features, proof, packages, and direct answers, then drill into focused guides.",
+            "Browse SSOT Registry by features, proof, packages, and direct answers, then drill into the guide that matches your next operation.",
           href: "/content/",
         },
         {
           title: "Answer real implementation questions",
           description:
-            "Every guide answers a real reader question, explains the SSOT Registry concept, and points to practical next steps.",
+            "Every guide answers what, why, how, and when questions about the registry model, then points to practical CLI-backed next steps.",
           href: "/content/",
         },
         {
-          title: "Discovery artifacts",
+          title: "Queryable registry exports",
           description:
-            "The site publishes sitemap, robots, llms, full llms, content index, semantic index, and structured-data graph artifacts.",
-          href: "/sitemap.xml",
+            "Use registry export, graph export, validation reports, and conformance output when a reviewer needs machine-readable proof.",
+          href: "/content/api-reference/",
         },
       ],
     },
@@ -157,9 +157,9 @@ export const ssotRegistryHomePage = {
     {
       id: "workflow",
       kind: "markdown",
-      title: "How the website is assembled",
+      title: "How SSOT Registry work moves",
       body:
-        "The SSOT Registry website teaches the registry from the reader's point of view: what each governed entity does, why it matters, how to use the CLI, and how proof carries through release work.",
+        "A typical SSOT Registry workflow starts with ADRs and specs, targets features, links claims to tests and evidence, freezes a boundary, runs verification, certifies the release, promotes it, and publishes the final state.",
     },
     {
       id: "faq",
@@ -177,9 +177,9 @@ export const ssotRegistryHomePage = {
             "Boundaries freeze the target set so certification evaluates the intended scope instead of whatever changed later.",
         },
         {
-          question: "Why a content pack?",
+          question: "How do I start using SSOT Registry in a repo?",
           answer:
-            "The content pack makes the product site portable while keeping the website host thin and reusable.",
+            "Install the package, run `ssot init .`, add or sync ADRs and specs, create feature rows for targetable work, link tests and evidence, then run `ssot validate .` before relying on the registry.",
         },
       ],
     },
@@ -191,9 +191,9 @@ export const ssotRegistryHomePage = {
         "Yes. Release rows can include claim and evidence membership, certification reports, promotion snapshots, and publication snapshots.",
     },
     {
-      question: "What does the SSOT Registry content pack provide?",
+      question: "What can a release reviewer inspect?",
       answer:
-        "It provides product pages, learning guides, proof workflow pages, package references, direct answers, and discovery artifacts for the SSOT Registry website.",
+        "A release reviewer can inspect the frozen boundary, feature targets, claim tiers, linked tests, evidence rows, certification report, promotion state, publication state, and any blocking issues or risks.",
     },
   ],
 } satisfies LanderSite["pages"][number];
@@ -230,7 +230,7 @@ export const ssotRegistrySite = {
       { label: "GitHub", href: "https://github.com/groupsum/ssot-registry" },
       { label: "PyPI", href: "https://pypi.org/project/ssot-registry/" },
     ],
-    note: "SSOT Registry content is packaged separately from the website host.",
+    note: "Copyright 2026 Groupsum. SSOT Registry keeps software decisions, scope, proof, and release state inspectable.",
   },
   seo: {
     defaultTitle: "SSOT Registry",

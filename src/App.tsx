@@ -61,22 +61,33 @@ function wordCount(value: string) {
 export function App() {
   const page = currentPage();
   return (
-    <div className="site-shell" data-lander-theme={ssotRegistrySite.theme?.mode === "dark" ? "lander-dark" : "lander-light"}>
-      <header className="site-nav">
-        <a className="site-brand" href="/" aria-label="SSOT Registry home">
-          <span className="site-brand-mark">SR</span>
-          <span>{ssotRegistrySite.product.name}</span>
-        </a>
-        <nav className="site-nav-links" aria-label="Primary navigation">
-          {ssotRegistrySite.nav?.primary.map((item) => (
-            <a key={item.href} href={item.href}>{item.label}</a>
-          ))}
-        </nav>
-        {ssotRegistrySite.nav?.cta ? (
-          <a className="site-nav-cta" href={ssotRegistrySite.nav.cta.href}>
-            {ssotRegistrySite.nav.cta.label}
+    <div
+      className="site-shell"
+      data-page-path={page.path}
+      data-lander-theme={ssotRegistrySite.theme?.mode === "dark" ? "lander-dark" : "lander-light"}
+    >
+      <header className="site-header">
+        <div className="site-nav">
+          <a className="site-brand" href="/" aria-label="SSOT Registry home">
+            <span className="site-brand-mark">
+              <img src="/favicon-32.png" alt="" width="24" height="24" />
+            </span>
+            <span className="site-brand-text">
+              <span className="site-brand-name">{ssotRegistrySite.product.name}</span>
+              <span className="site-brand-tagline">{ssotRegistrySite.product.tagline}</span>
+            </span>
           </a>
-        ) : null}
+          <nav className="site-nav-links" aria-label="Primary navigation">
+            {ssotRegistrySite.nav?.primary.map((item) => (
+              <a key={item.href} href={item.href}>{item.label}</a>
+            ))}
+          </nav>
+          {ssotRegistrySite.nav?.cta ? (
+            <a className="site-nav-cta" href={ssotRegistrySite.nav.cta.href}>
+              {ssotRegistrySite.nav.cta.label}
+            </a>
+          ) : null}
+        </div>
       </header>
       <LanderPage site={compiledSite as any} page={page as any} />
       <footer className="site-footer">

@@ -16,8 +16,8 @@ export const subjectAreas = [
   "CLI workflows",
   "Registry schemas",
   "Conformance",
-  "Content packs",
-  "Site packages",
+  "ADR and SPEC sync",
+  "Graph exports",
   "Operator guides",
 ] as const;
 
