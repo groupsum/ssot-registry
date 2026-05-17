@@ -1,15 +1,24 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { buildLlmsTxt, buildRobotsTxt, compileLanderSite } from "@mdwrk/lander-core";
-import { ssotRegistrySite } from "../src/index.ts";
+import { sitemapTreeJson, sitemapTreePaths, ssotRegistrySite } from "../src/index.ts";
 
 const outputDir = resolve("artifacts/discovery");
 const compiled = compileLanderSite(ssotRegistrySite);
 const pages = compiled.pages;
+const pageByPath = new Map(pages.map((page) => [page.path, page]));
+const treeOrderedPages = sitemapTreePaths.map((path) => {
+  const page = pageByPath.get(path);
+  if (!page) {
+    throw new Error(`Sitemap tree path is not routable: ${path}`);
+  }
+  return page;
+});
 
 mkdirSync(outputDir, { recursive: true });
 
-writeFileSync(resolve(outputDir, "sitemap.xml"), sitemapXml(pages), "utf8");
+writeFileSync(resolve(outputDir, "sitemap.xml"), sitemapXml(treeOrderedPages), "utf8");
+writeFileSync(resolve(outputDir, "sitemap-tree.json"), `${JSON.stringify(sitemapTreeJson(), null, 2)}\n`, "utf8");
 writeFileSync(resolve(outputDir, "robots.txt"), buildRobotsTxt(compiled), "utf8");
 writeFileSync(resolve(outputDir, "llms.txt"), buildLlmsTxt(compiled), "utf8");
 writeFileSync(resolve(outputDir, "llms-full.txt"), llmsFullTxt(pages), "utf8");

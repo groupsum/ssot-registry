@@ -8,6 +8,7 @@ const artifactsDir = resolve("packages/site-content-pack/artifacts/discovery");
 const publicDir = resolve("public");
 const requiredArtifacts = [
   "sitemap.xml",
+  "sitemap-tree.json",
   "robots.txt",
   "llms.txt",
   "llms-full.txt",
@@ -28,6 +29,7 @@ for (const artifact of requiredArtifacts) {
 }
 
 const sitemap = readFileSync(resolve(publicDir, "sitemap.xml"), "utf8");
+const sitemapTree = JSON.parse(readFileSync(resolve(publicDir, "sitemap-tree.json"), "utf8"));
 const robots = readFileSync(resolve(publicDir, "robots.txt"), "utf8");
 const llms = readFileSync(resolve(publicDir, "llms.txt"), "utf8");
 const llmsFull = readFileSync(resolve(publicDir, "llms-full.txt"), "utf8");
@@ -37,6 +39,13 @@ const structuredDataGraph = JSON.parse(readFileSync(resolve(publicDir, "structur
 const sitemapUrls = sitemap.match(/<url>/g) ?? [];
 
 assert.equal(sitemapUrls.length, expectedPageCount);
+assert.equal(sitemapTree.product, "SSOT Registry");
+assert.equal(sitemapTree.pageCount, expectedPageCount);
+assert.deepEqual(
+  sitemapTree.tree.children[0].children.map((node) => node.path),
+  ["/content/features/", "/content/proofs/", "/content/packages/", "/content/faq-qa/"],
+);
+assert.equal(flattenTree(sitemapTree.tree).length, expectedPageCount);
 assert.ok(expectedPageCount >= 2500);
 assert.match(sitemap, /https:\/\/ssot-registry\.com\//);
 assert.match(sitemap, /https:\/\/ssot-registry\.com\/content\/features\//);
@@ -64,4 +73,8 @@ assert.ok(structuredDataGraph.nodes.every((node) => node.canonicalUrl.startsWith
 
 function sha256(path) {
   return createHash("sha256").update(readFileSync(path)).digest("hex");
+}
+
+function flattenTree(node) {
+  return [node, ...node.children.flatMap(flattenTree)];
 }

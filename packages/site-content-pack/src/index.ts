@@ -8,6 +8,7 @@ export * from "./content/packages.js";
 export * from "./content/page-corpus.js";
 export * from "./content/page-plan.js";
 export * from "./content/sections.js";
+export * from "./content/sitemap-tree.js";
 export * from "./content/structured-data.js";
 export * from "./content/subjects.js";
 

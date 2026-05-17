@@ -6,6 +6,7 @@ const publicDir = resolve("public");
 
 mkdirSync(publicDir, { recursive: true });
 cpSync(resolve(source, "sitemap.xml"), resolve(publicDir, "sitemap.xml"));
+cpSync(resolve(source, "sitemap-tree.json"), resolve(publicDir, "sitemap-tree.json"));
 cpSync(resolve(source, "robots.txt"), resolve(publicDir, "robots.txt"));
 cpSync(resolve(source, "llms.txt"), resolve(publicDir, "llms.txt"));
 cpSync(resolve(source, "llms-full.txt"), resolve(publicDir, "llms-full.txt"));

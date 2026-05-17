@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import { compileLanderSite } from "@mdwrk/lander-core";
-import { generatedContentIndexPage, generatedCorpusPages, generatedPagePlans, generatedSectionIndexPages, ssotRegistrySite } from "../dist/index.js";
+import {
+  flattenSitemapTree,
+  generatedContentIndexPage,
+  generatedCorpusPages,
+  generatedPagePlans,
+  generatedSectionIndexPages,
+  primarySitemapSections,
+  ssotRegistrySite,
+  ssotRegistrySitemapTree,
+} from "../dist/index.js";
 
 const compiled = compileLanderSite(ssotRegistrySite);
 const generatedPages = generatedCorpusPages;
@@ -26,6 +35,24 @@ assert.equal(generatedContentIndexPage.slug, "/content/");
 assert.ok(ssotRegistrySite.pages.some((page) => page.slug === "/content/features/"));
 assert.equal(slugs.size, ssotRegistrySite.pages.length);
 assert.equal(compiled.pages.length, ssotRegistrySite.pages.length);
+
+const sitemapNodes = flattenSitemapTree(ssotRegistrySitemapTree);
+const sitemapPaths = new Set(sitemapNodes.map((node) => node.path));
+assert.equal(ssotRegistrySitemapTree.pageCount, ssotRegistrySite.pages.length);
+assert.equal(sitemapNodes.length, ssotRegistrySite.pages.length);
+assert.equal(sitemapPaths.size, ssotRegistrySite.pages.length);
+for (const page of ssotRegistrySite.pages) {
+  assert.ok(sitemapPaths.has(page.slug), `${page.slug} must be represented in the formal sitemap tree`);
+}
+assert.deepEqual(
+  ssotRegistrySitemapTree.children[0]?.children.map((node) => node.path),
+  primarySitemapSections.map((section) => section.path),
+  "formal sitemap tree must start from the four primary header sections",
+);
+for (const primary of ssotRegistrySitemapTree.children[0]?.children ?? []) {
+  assert.equal(primary.kind, "primary-section");
+  assert.ok(primary.pageCount > 1, `${primary.path} must own subsection or detail descendants`);
+}
 
 for (const page of generatedPages) {
   assert.ok(page.planId, `${page.slug} must map back to a plan`);

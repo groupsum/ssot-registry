@@ -6,6 +6,7 @@ import { ssotRegistrySite } from "../dist/index.js";
 const discoveryDir = resolve("artifacts/discovery");
 const required = [
   "sitemap.xml",
+  "sitemap-tree.json",
   "robots.txt",
   "llms.txt",
   "llms-full.txt",
@@ -21,6 +22,7 @@ for (const file of required) {
 }
 
 const sitemap = readFileSync(resolve(discoveryDir, "sitemap.xml"), "utf8");
+const sitemapTree = JSON.parse(readFileSync(resolve(discoveryDir, "sitemap-tree.json"), "utf8"));
 const robots = readFileSync(resolve(discoveryDir, "robots.txt"), "utf8");
 const llms = readFileSync(resolve(discoveryDir, "llms.txt"), "utf8");
 const llmsFull = readFileSync(resolve(discoveryDir, "llms-full.txt"), "utf8");
@@ -32,6 +34,15 @@ const sitemapUrls = sitemap.match(/<url>/g) ?? [];
 
 assert.equal(sitemapUrls.length, expectedPageCount);
 assert.ok(sitemapUrls.length >= 2500);
+assert.equal(sitemapTree.product, "SSOT Registry");
+assert.equal(sitemapTree.pageCount, expectedPageCount);
+assert.equal(sitemapTree.tree.path, "/");
+assert.deepEqual(
+  sitemapTree.tree.children[0].children.map((node) => node.path),
+  ["/content/features/", "/content/proofs/", "/content/packages/", "/content/faq-qa/"],
+);
+assert.equal(flattenTree(sitemapTree.tree).length, expectedPageCount);
+assert.equal(new Set(flattenTree(sitemapTree.tree).map((node) => node.path)).size, expectedPageCount);
 assert.match(sitemap, /https:\/\/ssot-registry\.com\/content\//);
 assert.match(sitemap, /https:\/\/ssot-registry\.com\/content\/features\//);
 assert.match(sitemap, /https:\/\/ssot-registry\.com\/features\/developer\/adrs\/what-is\//);
@@ -62,3 +73,7 @@ assert.ok(semanticIndex.terms.some((entry) => JSON.stringify(entry).match(/autho
 assert.equal(graph.product, "SSOT Registry");
 assert.ok(graph.nodes.length > contentIndex.pageCount);
 assert.ok(graph.nodes.every((node) => node.canonicalUrl.startsWith("https://ssot-registry.com/")));
+
+function flattenTree(node) {
+  return [node, ...node.children.flatMap(flattenTree)];
+}
