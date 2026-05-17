@@ -79,11 +79,11 @@ export function pageSpecFromPlan(plan: PlannedPage): GeneratedCorpusPage {
     sections: sectionsForPlan(plan),
     faq: [
       {
-        question: `What should ${plan.audience.toLowerCase()}s know about ${plan.subjectArea} ${plan.intent.replace(/-/g, " ")}?`,
+        question: `What should ${plan.audience.toLowerCase()}s know about ${plan.subjectArea} in SSOT Registry?`,
         answer: plan.aeoGoal,
       },
       {
-        question: `How does this page help agent discovery?`,
+        question: `How should ${plan.audience.toLowerCase()}s use this guidance?`,
         answer: plan.aieoAgentFact,
       },
     ],
@@ -106,26 +106,36 @@ function sectionsForPlan(plan: PlannedPage): SectionSpec[] {
     {
       id: "answer",
       kind: "feature_grid",
-      title: "What this explains",
+      title: "What, why, how, and when",
       items: [
         {
-          title: "What it means",
+          title: `What are ${plan.subjectArea}?`,
           description: plan.aeoGoal,
         },
         {
-          title: "Question this answers",
+          title: "Why it matters",
           description: plan.seoQueryTarget,
         },
         {
-          title: "How to apply it",
+          title: "How to use it",
           description: plan.aieoAgentFact,
+        },
+        {
+          title: "When to use it",
+          description: whenToUse(plan),
         },
       ],
     },
     {
+      id: "usage",
+      kind: "feature_grid",
+      title: "Install, use, and operate SSOT Registry",
+      items: usageSteps(plan),
+    },
+    {
       id: "structured-data",
       kind: "comparison",
-      title: "How SSOT Registry keeps this governed",
+      title: "How SSOT Registry explains the governed record",
       columns: [
         { id: "schema", label: "Registry concern" },
         { id: "component", label: "How it is used" },
@@ -200,6 +210,47 @@ function registryConcern(schemaType: string): string {
     DefinedTermSet: "Glossary group",
   };
   return labels[schemaType] ?? schemaType.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
+function whenToUse(plan: PlannedPage): string {
+  if (plan.section === "Packages" || plan.section === "API_Reference") {
+    return `Use this when you need to install SSOT Registry, find the right command, or understand how ${plan.subjectArea.toLowerCase()} fit into daily operation.`;
+  }
+  if (plan.section === "Proofs" || plan.section === "Certifications") {
+    return `Use this before certification, release review, or any decision that depends on traceable ${plan.subjectArea.toLowerCase()}.`;
+  }
+  if (plan.section === "FAQ_QA" || plan.section === "Glossary") {
+    return `Use this when a teammate, reviewer, or automation needs a clear explanation of ${plan.subjectArea.toLowerCase()} without losing registry context.`;
+  }
+  return `Use this when ${plan.audience.toLowerCase()}s need to understand, update, validate, or explain ${plan.subjectArea.toLowerCase()} in SSOT Registry.`;
+}
+
+function usageSteps(plan: PlannedPage): Array<Record<string, unknown>> {
+  const firstApi = plan.relatedApis[0] ?? "ssot validate";
+  const secondApi = plan.relatedApis[1] ?? "ssot feature list";
+  const thirdApi = plan.relatedApis[2] ?? "ssot release certify";
+  return [
+    {
+      title: "Install",
+      description: "Install SSOT Registry with `uv add ssot-registry` or run it in a project-local uv environment before changing registry state.",
+      href: "/content/packages/",
+    },
+    {
+      title: "Inspect",
+      description: `Run ${firstApi} to inspect the current registry view before changing ${plan.subjectArea.toLowerCase()}.`,
+      href: `/content/${slugify(plan.section)}/`,
+    },
+    {
+      title: "Use",
+      description: `Run ${secondApi} when you need to create, list, link, or explain ${plan.subjectArea.toLowerCase()} as part of an SSOT Registry workflow.`,
+      href: `/content/${slugify(plan.section)}/`,
+    },
+    {
+      title: "Operate",
+      description: `Run ${thirdApi} or validate the registry before promotion, publication, certification, or release closure depends on this work.`,
+      href: "/content/workflows/",
+    },
+  ];
 }
 
 function registryUsage(plan: PlannedPage, index: number): string {

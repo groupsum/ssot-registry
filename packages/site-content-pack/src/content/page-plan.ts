@@ -92,15 +92,15 @@ function titleForPlan(subjectArea: SubjectArea, intent: string, audience: Audien
 function directAnswer(subjectArea: SubjectArea, intent: string, audience: Audience): string {
   const role = audience.toLowerCase();
   if (intent.includes("what") || intent.includes("definition")) {
-    return `${subjectArea} in SSOT Registry give ${role}s a governed way to name, inspect, and connect software assurance work without relying on scattered notes.`;
+    return `SSOT Registry explains ${subjectArea} as governed records that give ${role}s a dependable way to name, inspect, and connect software assurance work without relying on scattered notes.`;
   }
   if (intent.includes("how") || intent.includes("guide") || intent.includes("workflow")) {
-    return `${role}s use SSOT Registry to create or inspect ${subjectArea}, link them to related registry entities, and validate the result before release decisions depend on it.`;
+    return `SSOT Registry explains how ${role}s create or inspect ${subjectArea}, link them to related registry entities, and validate the result before release decisions depend on it.`;
   }
   if (intent.includes("readiness") || intent.includes("proof") || intent.includes("certification")) {
-    return `${subjectArea} help ${role}s prove readiness by connecting scope, claims, tests, and evidence into a reviewable registry trail.`;
+    return `SSOT Registry explains how ${subjectArea} help ${role}s prove readiness by connecting scope, claims, tests, and evidence into a reviewable registry trail.`;
   }
-  return `${subjectArea} help ${role}s understand what changed, why it matters, how it is verified, and where to continue the SSOT Registry workflow.`;
+  return `SSOT Registry explains how ${subjectArea} help ${role}s understand what changed, why it matters, how it is verified, and where to continue the workflow.`;
 }
 
 function usageQuestion(subjectArea: SubjectArea, intent: string, audience: Audience): string {
@@ -115,12 +115,12 @@ function usageQuestion(subjectArea: SubjectArea, intent: string, audience: Audie
 function operationalGuidance(subjectArea: SubjectArea, intent: string, audience: Audience): string {
   const role = audience.toLowerCase();
   if (intent.includes("install") || intent.includes("command") || intent.includes("api")) {
-    return `Install the CLI, run the relevant ssot command, inspect the registry output, and keep ${subjectArea} linked to the work they support.`;
+    return `Install SSOT Registry with uv, run the relevant ssot command, inspect the registry output, and keep ${subjectArea} linked to the work they support.`;
   }
   if (intent.includes("workflow") || intent.includes("scope") || intent.includes("publish")) {
-    return `Use this guidance when ${role}s need a repeatable path from planning through validation, proof review, and release closure.`;
+    return `Use this guidance when ${role}s need a repeatable operating path from planning through validation, proof review, and release closure.`;
   }
-  return `Use this page to explain ${subjectArea}, choose the next SSOT Registry action, and keep decisions traceable for future reviewers.`;
+  return `Use this page to explain ${subjectArea}, choose the next SSOT Registry command or workflow, and keep decisions traceable for future reviewers.`;
 }
 
 function summaryForPlan(sectionLabel: string, subjectArea: SubjectArea, intent: string, audience: Audience): string {

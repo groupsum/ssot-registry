@@ -23,4 +23,10 @@ for (const page of generatedPages) {
   assert.ok(page.sections.length >= 4, `${page.slug} must use at least four section types`);
   assert.notDeepEqual([...new Set(page.sections.map((section) => section.kind))], ["markdown"]);
   assert.ok(compiled.pageByPath.has(page.slug), `${page.slug} must be routable after compile`);
+  const renderedText = JSON.stringify(page);
+  assert.ok(renderedText.includes("What, why, how, and when"), `${page.slug} must answer reader question types`);
+  assert.ok(renderedText.includes("Install, use, and operate SSOT Registry"), `${page.slug} must teach install/use/operation`);
+  assert.ok(renderedText.includes("SSOT Registry explains"), `${page.slug} must use reader-facing explanatory language`);
+  assert.equal(renderedText.includes("agent discovery"), false, `${page.slug} must not expose discovery mechanics`);
+  assert.equal(renderedText.includes("page has"), false, `${page.slug} must not expose generation mechanics`);
 }
