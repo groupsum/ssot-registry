@@ -77,8 +77,17 @@
       }
 
       .app-boot-mark {
+        display: grid;
+        place-items: center;
         width: 2.5rem;
         height: 2.5rem;
+        background: #0b1f3a;
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 900;
+        letter-spacing: 0;
+        line-height: 1;
+        animation: none;
       }
 
       .app-boot-main {
@@ -147,7 +156,7 @@
     <div id="root" class="app-boot-shell" aria-busy="true">
       <span class="app-boot-sr">Loading SSOT Registry</span>
       <div class="app-boot-nav" aria-hidden="true">
-        <div class="app-boot-mark"></div>
+        <div class="app-boot-mark">SR</div>
       </div>
       <main class="app-boot-main" aria-hidden="true">
         <div class="app-boot-line"></div>

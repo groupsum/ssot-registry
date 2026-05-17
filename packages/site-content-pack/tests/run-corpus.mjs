@@ -34,6 +34,7 @@ for (const page of generatedPages) {
   assert.ok(page.componentIntents?.length > 0, `${page.slug} must declare component intents`);
   assert.ok(page.sections.length >= 4, `${page.slug} must use at least four section types`);
   assert.notDeepEqual([...new Set(page.sections.map((section) => section.kind))], ["markdown"]);
+  assert.equal(page.sections[0]?.eyebrow, undefined, `${page.slug} must not render generated intro badge copy`);
   assert.ok(compiled.pageByPath.has(page.slug), `${page.slug} must be routable after compile`);
   const renderedText = JSON.stringify(page);
   assert.ok(renderedText.includes("What, why, how, and when"), `${page.slug} must answer reader question types`);

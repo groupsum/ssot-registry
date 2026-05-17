@@ -89,7 +89,6 @@ function sectionsForPlan(plan: PlannedPage): SectionSpec[] {
     {
       id: "overview",
       kind: "hero",
-      eyebrow: `${formatSectionLabel(plan.section)} / ${plan.audience}`,
       title: plan.title,
       subtitle: plan.summary,
       primaryCta: {
@@ -186,7 +185,6 @@ function courseSectionsForPlan(plan: PlannedPage): SectionSpec[] {
     {
       id: "overview",
       kind: "hero",
-      eyebrow: `Course / ${plan.audience}`,
       title: plan.title,
       subtitle: `${plan.summary} Start with the course overview, then work through lessons and the follow-up quiz.`,
       primaryCta: {
@@ -656,11 +654,6 @@ function indexCardActions(page: GeneratedCorpusPage): string[] {
 
 function intentLabel(intent: string): string {
   return formatCopyAcronyms(intent.replace(/-/g, " "));
-}
-
-function formatSectionLabel(sectionId: string): string {
-  const section = sectionBlueprints.find((blueprint) => blueprint.id === sectionId);
-  return section?.label ?? formatCopyAcronyms(sectionId.replace(/_/g, " "));
 }
 
 function subsectionDescription(sectionId: string, sectionLabel: string): string {

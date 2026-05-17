@@ -62,19 +62,18 @@ a {
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--lander-accent) 20%, var(--lander-border));
-  border-radius: 0.55rem;
-  background: #06163d;
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--lander-accent) 18%, transparent);
-}
-
-.site-brand-mark img {
-  display: block;
-  width: 1.75rem;
-  height: 1.75rem;
+  border: 1px solid color-mix(in srgb, var(--lander-accent) 26%, var(--lander-border));
+  border-radius: 0.5rem;
+  background: #0b1f3a;
+  color: #ffffff;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--lander-accent) 16%, transparent);
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
 }
 
 .site-brand-text {
@@ -157,6 +156,36 @@ a {
 .site-nav-cta:focus-visible {
   transform: translateY(-1px);
   box-shadow: 0 18px 34px color-mix(in srgb, var(--lander-accent) 28%, transparent);
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero {
+  padding: 3.25rem 0 2.75rem;
+  background: transparent;
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero .lander-page__inner {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero .lander-page__eyebrow {
+  display: none;
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero .lander-page__title {
+  max-width: 24ch;
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.05;
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero .lander-page__intro {
+  max-width: 58rem;
+  margin: 0;
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero .lander-page__button-row {
+  margin-top: 0.2rem;
 }
 
 .lander-page__inner > nav[aria-label="Breadcrumb"],

@@ -69,9 +69,7 @@ export function App() {
       <header className="site-header">
         <div className="site-nav">
           <a className="site-brand" href="/" aria-label="SSOT Registry home">
-            <span className="site-brand-mark">
-              <img src="/favicon-32.png" alt="" width="24" height="24" />
-            </span>
+            <span className="site-brand-mark" aria-hidden="true">SR</span>
             <span className="site-brand-text">
               <span className="site-brand-name">{ssotRegistrySite.product.name}</span>
               <span className="site-brand-tagline">{ssotRegistrySite.product.tagline}</span>
