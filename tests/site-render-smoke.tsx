@@ -7,6 +7,8 @@ import { App } from "../src/App";
 
 const markup = renderToStaticMarkup(<App />);
 const styles = readFileSync("src/styles.css", "utf8");
+const htmlShell = readFileSync("index.html", "utf8");
+const nginxConfig = readFileSync("nginx/default.conf", "utf8");
 
 assert.ok(markup.includes("SSOT Registry"));
 assert.ok(!markup.includes("Hello, world."));
@@ -32,6 +34,11 @@ assert.ok(!markup.includes('href="#proof"'));
 assert.ok(styles.includes('.lander-page__inner > nav[aria-label="Breadcrumb"]'));
 assert.ok(styles.includes(".lander-breadcrumbs"));
 assert.ok(styles.includes('[data-lander-theme="lander-dark"] .lander-breadcrumbs'));
+assert.ok(!htmlShell.includes("<h1>SSOT Registry</h1>"));
+assert.ok(htmlShell.includes("app-boot-shell"));
+assert.ok(htmlShell.includes("app-boot-sr"));
+assert.ok(nginxConfig.includes('Cache-Control "public, max-age=31536000, immutable"'));
+assert.ok(nginxConfig.includes('Cache-Control "no-cache, must-revalidate"'));
 assert.ok(ssotRegistrySite.pages.length >= 2500);
 assert.equal(generatedCorpusPages.length, 3840);
 assert.equal(ssotRegistrySite.pages[0]?.slug, "/");
