@@ -572,6 +572,8 @@ def migrate_v0_4_0_to_v0_5_0(
     _ = repo_root, previous_version, target_version
     migrated = deepcopy(registry)
     migrated["schema_version"] = SCHEMA_VERSION
+    sync_documents_in_memory(migrated, repo_root, "adr")
+    sync_documents_in_memory(migrated, repo_root, "spec")
     default_origin = _default_assurance_origin(migrated)
     for section in ASSURANCE_ENTITY_SECTIONS:
         for row in migrated.get(section, []):
