@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from ssot_registry.model.enums import (
+    ASSURANCE_ORIGINS,
     BOUNDARY_STATUSES,
     CLAIM_STATUSES,
     CLAIM_TIERS,
@@ -51,8 +52,15 @@ def _dict_of_strings(value: Any) -> bool:
     return isinstance(value, dict) and all(isinstance(key, str) and isinstance(item, str) for key, item in value.items())
 
 
+def _validate_assurance_origin(section: str, row: dict[str, Any], failures: list[str]) -> None:
+    entity_id = row.get("id", "<missing>")
+    if row.get("origin") not in ASSURANCE_ORIGINS:
+        failures.append(f"{section}.{entity_id}.origin must be one of {sorted(ASSURANCE_ORIGINS)}")
+
+
 def _validate_feature(feature: dict[str, Any], failures: list[str]) -> None:
     entity_id = feature.get("id", "<missing>")
+    _validate_assurance_origin("features", feature, failures)
     body = feature.get("body")
     if body is not None and not isinstance(body, str):
         failures.append(f"features.{entity_id}.body must be a string when present")
@@ -120,6 +128,7 @@ def _validate_feature(feature: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_test(test: dict[str, Any], failures: list[str]) -> None:
     entity_id = test.get("id", "<missing>")
+    _validate_assurance_origin("tests", test, failures)
     body = test.get("body")
     if body is not None and not isinstance(body, str):
         failures.append(f"tests.{entity_id}.body must be a string when present")
@@ -197,6 +206,7 @@ def _validate_profile(profile: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_claim(claim: dict[str, Any], failures: list[str]) -> None:
     entity_id = claim.get("id", "<missing>")
+    _validate_assurance_origin("claims", claim, failures)
     body = claim.get("body")
     if body is not None and not isinstance(body, str):
         failures.append(f"claims.{entity_id}.body must be a string when present")
@@ -215,6 +225,7 @@ def _validate_claim(claim: dict[str, Any], failures: list[str]) -> None:
 
 def _validate_evidence(evidence: dict[str, Any], failures: list[str]) -> None:
     entity_id = evidence.get("id", "<missing>")
+    _validate_assurance_origin("evidence", evidence, failures)
     body = evidence.get("body")
     if body is not None and not isinstance(body, str):
         failures.append(f"evidence.{entity_id}.body must be a string when present")

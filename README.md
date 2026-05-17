@@ -9,8 +9,8 @@
   <a href="https://pepy.tech/project/ssot-registry"><img src="https://static.pepy.tech/badge/ssot-registry" alt="Downloads" /></a>
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Hits" /></a>
 <!-- ssot-schema-badges:start -->
-  <img src="https://img.shields.io/badge/schema_version-0.2.0-blue" alt="schema_version 0.2.0" />
-  <img src="https://img.shields.io/badge/migration%20coverage-9%2F9-brightgreen" alt="Migration coverage 9/9" />
+  <img src="https://img.shields.io/badge/schema_version-0.5.0-blue" alt="schema_version 0.5.0" />
+  <img src="https://img.shields.io/badge/migration%20coverage-12%2F12-brightgreen" alt="Migration coverage 12/12" />
 <!-- ssot-schema-badges:end -->
 </div>
 
@@ -42,7 +42,7 @@ The canonical machine-readable artifact is:
 Everything else is derived from it.
 
 <!-- ssot-schema-version:start -->
-Current registry `schema_version`: `0.2.0`.
+Current registry `schema_version`: `0.5.0`.
 <!-- ssot-schema-version:end -->
 
 ## Core model

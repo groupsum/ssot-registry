@@ -2,6 +2,7 @@
 
 import argparse
 
+from ssot_contracts.generated.python.enums import ASSURANCE_ORIGINS
 from ssot_registry.api import (
     create_entity,
     delete_entity,
@@ -12,7 +13,7 @@ from ssot_registry.api import (
     update_entity,
     verify_evidence_rows,
 )
-from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
+from ssot_cli.common import add_ids_argument, add_origin_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
 
 
 _LINK_MAPPING = {
@@ -38,6 +39,7 @@ def register_evidence(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--tier", choices=["T0", "T1", "T2", "T3", "T4"], default="T0", help="Assurance tier the evidence contributes toward.")
     create.add_argument("--body", default=None, help="Optional longer-form narrative for the evidence row.")
     create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the evidence body.")
+    add_origin_argument(create, choices=sorted(ASSURANCE_ORIGINS), default="repo-local")
     create.add_argument("--evidence-path", dest="evidence_path", required=True, help="Repository-relative location of the evidence artifact.")
     create.add_argument("--claim-ids", nargs="*", default=[], help="Claim ids supported by the evidence.")
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids associated with the evidence.")
@@ -51,6 +53,7 @@ def register_evidence(subparsers: argparse._SubParsersAction) -> None:
     list_cmd = evidence_sub.add_parser("list", help="List evidence rows.", description="List evidence artifacts currently known to the registry.")
     add_path_argument(list_cmd)
     add_ids_argument(list_cmd, help_text="Evidence ids to include in the list output.")
+    add_origin_argument(list_cmd, choices=sorted(ASSURANCE_ORIGINS), default=None)
     list_cmd.set_defaults(func=run_list)
 
     update = evidence_sub.add_parser("update", help="Edit evidence metadata.", description="Update mutable evidence fields without changing its link graph.")
@@ -62,6 +65,7 @@ def register_evidence(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--tier", choices=["T0", "T1", "T2", "T3", "T4"], default=None, help="Updated assurance tier contribution.")
     update.add_argument("--body", default=None, help="Replacement longer-form evidence narrative.")
     update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement evidence body.")
+    add_origin_argument(update, choices=sorted(ASSURANCE_ORIGINS), default=None)
     update.add_argument("--evidence-path", dest="evidence_path", default=None, help="Updated repository-relative path to the artifact.")
     update.set_defaults(func=run_update)
 
@@ -106,6 +110,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "kind": args.kind,
         "tier": args.tier,
         "body": body,
+        "origin": args.origin,
         "path": args.evidence_path,
         "claim_ids": args.claim_ids,
         "test_ids": args.test_ids,
@@ -118,7 +123,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "evidence", ids=args.ids)
+    return list_entities(args.path, "evidence", ids=args.ids, origin=args.origin)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
@@ -130,6 +135,7 @@ def run_update(args: argparse.Namespace) -> dict[str, object]:
             "kind": args.kind,
             "tier": args.tier,
             "body": body,
+            "origin": args.origin,
             "path": args.evidence_path,
         }
     )

@@ -2,6 +2,7 @@
 
 import argparse
 
+from ssot_contracts.generated.python.enums import ASSURANCE_ORIGINS
 from ssot_registry.api import (
     create_entity,
     delete_entity,
@@ -14,7 +15,7 @@ from ssot_registry.api import (
     unlink_entities,
     update_entity,
 )
-from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
+from ssot_cli.common import add_ids_argument, add_origin_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
 
 
 _LINK_MAPPING = {
@@ -42,6 +43,7 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--description", default="", help="What the claim asserts and why it matters.")
     create.add_argument("--body", default=None, help="Optional longer-form narrative for the claim.")
     create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the claim body.")
+    add_origin_argument(create, choices=sorted(ASSURANCE_ORIGINS), default="repo-local")
     create.add_argument("--feature-ids", nargs="*", default=[], help="Feature ids the claim is about.")
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids that support the claim.")
     create.add_argument("--evidence-ids", nargs="*", default=[], help="Evidence ids that substantiate the claim.")
@@ -55,6 +57,7 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
     list_cmd = claim_sub.add_parser("list", help="List claims.", description="List claim records currently known to the registry.")
     add_path_argument(list_cmd)
     add_ids_argument(list_cmd, help_text="Claim ids to include in the list output.")
+    add_origin_argument(list_cmd, choices=sorted(ASSURANCE_ORIGINS), default=None)
     list_cmd.set_defaults(func=run_list)
 
     update = claim_sub.add_parser("update", help="Edit claim metadata.", description="Update mutable claim fields without changing its linked support graph.")
@@ -65,6 +68,7 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--description", default=None, help="Replacement claim description.")
     update.add_argument("--body", default=None, help="Replacement longer-form claim narrative.")
     update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement claim body.")
+    add_origin_argument(update, choices=sorted(ASSURANCE_ORIGINS), default=None)
     update.set_defaults(func=run_update)
 
     delete = claim_sub.add_parser("delete", help="Delete a claim.", description="Remove a claim record from the registry.")
@@ -124,6 +128,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "kind": args.kind,
         "description": args.description,
         "body": body,
+        "origin": args.origin,
         "feature_ids": args.feature_ids,
         "test_ids": args.test_ids,
         "evidence_ids": args.evidence_ids,
@@ -136,12 +141,12 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "claims", ids=args.ids)
+    return list_entities(args.path, "claims", ids=args.ids, origin=args.origin)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
     body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="claim")
-    changes = compact_dict({"title": args.title, "kind": args.kind, "description": args.description, "body": body})
+    changes = compact_dict({"title": args.title, "kind": args.kind, "description": args.description, "body": body, "origin": args.origin})
     if not changes:
         raise ValueError("At least one update field is required")
     return update_entity(args.path, "claims", args.id, changes)

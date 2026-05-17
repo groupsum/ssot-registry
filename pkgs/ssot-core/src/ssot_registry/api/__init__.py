@@ -47,6 +47,7 @@ from .lifecycle import set_feature_lifecycle
 from .load import load_registry
 from .plan import plan_features, plan_issues
 from .packs import inspect_pack, preflight_pack, sync_pack
+from .origin import sync_origin_assurance_rows
 from .registry import export_registry
 from .release import certify_release, promote_release, publish_release, revoke_release
 from .save import save_registry
@@ -103,6 +104,7 @@ __all__ = [
     "inspect_pack",
     "preflight_pack",
     "sync_pack",
+    "sync_origin_assurance_rows",
     "set_feature_lifecycle",
     "evaluate_claims",
     "evaluate_feature_passing",

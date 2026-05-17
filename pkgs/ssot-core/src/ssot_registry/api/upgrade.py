@@ -12,7 +12,7 @@ from ssot_registry.model.document import (
     normalize_document_id,
     parse_document_filename,
 )
-from ssot_registry.model.enums import SCHEMA_VERSION
+from ssot_registry.model.enums import ASSURANCE_ENTITY_SECTIONS, SCHEMA_VERSION
 from ssot_registry.model.registry import normalize_repo_kind
 from ssot_registry.util.document_io import (
     build_document_payload,
@@ -38,6 +38,7 @@ SSOT_ORIGIN_V8_OFFSET = 599
 SCHEMA_V0_1_0 = "0.1.0"
 SCHEMA_V0_2_0 = "0.2.0"
 SCHEMA_V0_3_0 = "0.3.0"
+SCHEMA_V0_4_0 = "0.4.0"
 MIGRATION_RELEASE_WINDOWS = {
     (3, 4): "0.1.x->0.2.1",
     (4, 5): "0.2.1->0.2.2",
@@ -49,7 +50,8 @@ MIGRATION_RELEASE_WINDOWS = {
     (10, SCHEMA_V0_1_0): "0.2.7->0.2.7",
     (SCHEMA_V0_1_0, SCHEMA_V0_2_0): "0.2.10->0.2.10",
     (SCHEMA_V0_2_0, SCHEMA_V0_3_0): "0.2.10->0.3.0",
-    (SCHEMA_V0_3_0, SCHEMA_VERSION): "0.2.10->0.4.0",
+    (SCHEMA_V0_3_0, SCHEMA_V0_4_0): "0.2.10->0.4.0",
+    (SCHEMA_V0_4_0, SCHEMA_VERSION): "0.4.0->0.5.0",
 }
 
 MIGRATION_PATHS = (
@@ -63,7 +65,8 @@ MIGRATION_PATHS = (
     (10, SCHEMA_V0_1_0, "migrate_v10_to_v0_1_0"),
     (SCHEMA_V0_1_0, SCHEMA_V0_2_0, "migrate_v0_1_0_to_v0_2_0"),
     (SCHEMA_V0_2_0, SCHEMA_V0_3_0, "migrate_v0_2_0_to_v0_3_0"),
-    (SCHEMA_V0_3_0, SCHEMA_VERSION, "migrate_v0_3_0_to_v0_4_0"),
+    (SCHEMA_V0_3_0, SCHEMA_V0_4_0, "migrate_v0_3_0_to_v0_4_0"),
+    (SCHEMA_V0_4_0, SCHEMA_VERSION, "migrate_v0_4_0_to_v0_5_0"),
 )
 
 
@@ -546,7 +549,34 @@ def migrate_v0_3_0_to_v0_4_0(
 ) -> dict[str, Any]:
     _ = repo_root, previous_version, target_version
     migrated = deepcopy(registry)
+    migrated["schema_version"] = SCHEMA_V0_4_0
+    return migrated
+
+
+def _default_assurance_origin(registry: dict[str, Any]) -> str:
+    repo = registry.get("repo")
+    if isinstance(repo, dict):
+        repo_kind = normalize_repo_kind(repo.get("kind"))
+        if repo_kind in {"ssot-core", "ssot-origin", "extension-pack"}:
+            return repo_kind
+    return "repo-local"
+
+
+def migrate_v0_4_0_to_v0_5_0(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    _ = repo_root, previous_version, target_version
+    migrated = deepcopy(registry)
     migrated["schema_version"] = SCHEMA_VERSION
+    default_origin = _default_assurance_origin(migrated)
+    for section in ASSURANCE_ENTITY_SECTIONS:
+        for row in migrated.get(section, []):
+            if isinstance(row, dict):
+                row.setdefault("origin", default_origin)
     return migrated
 
 
@@ -696,11 +726,21 @@ def upgrade_registry(
             target_version=target_version,
         )
         schema_migrations.append("migrate_v0_3_0_to_v0_4_0")
-        migrations.append(_migration_window_label(SCHEMA_V0_3_0, SCHEMA_VERSION))
+        migrations.append(_migration_window_label(SCHEMA_V0_3_0, SCHEMA_V0_4_0))
+        source_schema = SCHEMA_V0_4_0
+    if source_schema == SCHEMA_V0_4_0:
+        working = migrate_v0_4_0_to_v0_5_0(
+            working,
+            repo_root,
+            previous_version=source_tooling_version,
+            target_version=target_version,
+        )
+        schema_migrations.append("migrate_v0_4_0_to_v0_5_0")
+        migrations.append(_migration_window_label(SCHEMA_V0_4_0, SCHEMA_VERSION))
         source_schema = SCHEMA_VERSION
     elif source_schema != SCHEMA_VERSION:
         raise RegistryError(
-            f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10, 0.1.0, 0.2.0, 0.3.0 or {SCHEMA_VERSION}"
+            f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10, 0.1.0, 0.2.0, 0.3.0, 0.4.0 or {SCHEMA_VERSION}"
         )
 
     normalized_current = _normalize_current_registry(working)

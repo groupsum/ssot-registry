@@ -15,6 +15,7 @@ def _out_of_bounds_feature(**overrides: object) -> dict[str, object]:
         "id": "feat:out-of-bounds.partial",
         "title": "Out-of-bounds partial feature",
         "description": "Feature used to exercise out-of-bounds disposition validation.",
+        "origin": "repo-local",
         "implementation_status": "partial",
         "lifecycle": {
             "stage": "active",

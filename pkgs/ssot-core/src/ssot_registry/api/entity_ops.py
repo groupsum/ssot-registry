@@ -4,7 +4,8 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
-from ssot_registry.model.enums import REF_FIELD_TARGETS
+from ssot_registry.model.enums import ASSURANCE_ENTITY_SECTIONS, ASSURANCE_ORIGINS, REF_FIELD_TARGETS
+from ssot_registry.model.registry import normalize_repo_kind
 from ssot_registry.util.errors import ValidationError
 
 from .load import load_registry
@@ -73,6 +74,50 @@ def _dedupe_preserve(values: list[str]) -> list[str]:
             seen.add(value)
             ordered.append(value)
     return ordered
+
+
+def _repo_kind(registry: dict[str, Any]) -> str:
+    repo = registry.get("repo")
+    if isinstance(repo, dict):
+        return normalize_repo_kind(repo.get("kind"))
+    return "repo-local"
+
+
+def _validate_assurance_origin_mutation(
+    registry: dict[str, Any],
+    section: str,
+    row: dict[str, Any],
+    *,
+    current: dict[str, Any] | None = None,
+) -> None:
+    if section not in ASSURANCE_ENTITY_SECTIONS:
+        return
+    entity_id = row.get("id", current.get("id") if current else "<missing>")
+    next_origin = row.get("origin", current.get("origin") if current else None)
+    if next_origin not in ASSURANCE_ORIGINS:
+        raise ValidationError(f"{SECTION_LABELS[section].title()} {entity_id} origin must be one of {sorted(ASSURANCE_ORIGINS)}")
+    if _repo_kind(registry) == "repo-local" and next_origin == "ssot-core":
+        raise ValidationError(
+            f"{SECTION_LABELS[section].title()} {entity_id} cannot use origin ssot-core in a repo-local registry"
+        )
+    if current is not None:
+        current_origin = current.get("origin")
+        if current_origin in {"ssot-core", "ssot-origin", "extension-pack"} and next_origin != current_origin:
+            raise ValidationError(
+                f"{SECTION_LABELS[section].title()} {entity_id} origin cannot change from {current_origin} to {next_origin}"
+            )
+
+
+def _default_assurance_origin(registry: dict[str, Any]) -> str:
+    repo_kind = _repo_kind(registry)
+    if repo_kind in {"ssot-core", "ssot-origin", "extension-pack"}:
+        return repo_kind
+    return "repo-local"
+
+
+def _ensure_assurance_origin(registry: dict[str, Any], section: str, row: dict[str, Any]) -> None:
+    if section in ASSURANCE_ENTITY_SECTIONS:
+        row.setdefault("origin", _default_assurance_origin(registry))
 
 
 def _ensure_list_field(row: dict[str, Any], field_name: str) -> list[str]:
@@ -173,6 +218,8 @@ def create_entity(path: str | Path, section: str, row: dict[str, Any]) -> dict[s
         raise ValueError(f"{SECTION_LABELS[section].title()} already exists: {entity_id}")
 
     candidate = deepcopy(row)
+    _ensure_assurance_origin(registry, section, candidate)
+    _validate_assurance_origin_mutation(registry, section, candidate)
     for field_name in LINKABLE_FIELDS[section]:
         if field_name in candidate and isinstance(candidate[field_name], list):
             candidate[field_name] = _dedupe_preserve(candidate[field_name])
@@ -193,10 +240,17 @@ def get_entity(path: str | Path, section: str, entity_id: str) -> dict[str, Any]
     return deepcopy(_entity_row(registry, section, entity_id))
 
 
-def list_entities(path: str | Path, section: str, ids: list[str] | None = None) -> list[dict[str, Any]]:
+def list_entities(path: str | Path, section: str, ids: list[str] | None = None, origin: str | None = None) -> list[dict[str, Any]]:
     _registry_path, _repo_root, registry = load_registry(path)
+    if origin is not None and section not in ASSURANCE_ENTITY_SECTIONS:
+        raise ValueError(f"Origin filtering is not supported for {SECTION_LABELS.get(section, section)} rows")
+    if origin is not None and origin not in ASSURANCE_ORIGINS:
+        raise ValueError(f"origin must be one of {', '.join(sorted(ASSURANCE_ORIGINS))}")
     if ids is None:
-        return sorted((deepcopy(row) for row in registry.get(section, [])), key=lambda row: row["id"])
+        rows = [deepcopy(row) for row in registry.get(section, [])]
+        if origin is not None:
+            rows = [row for row in rows if row.get("origin") == origin]
+        return sorted(rows, key=lambda row: row["id"])
 
     lookup = _row_lookup(registry, section)
     requested_ids = _dedupe_preserve(ids)
@@ -204,12 +258,16 @@ def list_entities(path: str | Path, section: str, ids: list[str] | None = None) 
     if missing:
         label = SECTION_LABELS.get(section, section.rstrip("s"))
         raise ValueError(f"Unknown {label} ids: {', '.join(missing)}")
-    return sorted((deepcopy(lookup[entity_id]) for entity_id in requested_ids), key=lambda row: row["id"])
+    rows = [deepcopy(lookup[entity_id]) for entity_id in requested_ids]
+    if origin is not None:
+        rows = [row for row in rows if row.get("origin") == origin]
+    return sorted(rows, key=lambda row: row["id"])
 
 
 def update_entity(path: str | Path, section: str, entity_id: str, changes: dict[str, Any]) -> dict[str, Any]:
     registry_path, repo_root, registry = load_registry(path)
     row = _entity_row(registry, section, entity_id)
+    current_row = deepcopy(row)
     next_id = changes.get("id")
     if isinstance(next_id, str) and next_id != entity_id and next_id in _row_lookup(registry, section):
         raise ValueError(f"{SECTION_LABELS[section].title()} already exists: {next_id}")
@@ -217,6 +275,7 @@ def update_entity(path: str | Path, section: str, entity_id: str, changes: dict[
         if value is None:
             continue
         row[field_name] = deepcopy(value)
+    _validate_assurance_origin_mutation(registry, section, row, current=current_row)
     if isinstance(next_id, str) and next_id != entity_id:
         _rewrite_references_for_renamed_id(registry, target_section=section, old_id=entity_id, new_id=next_id)
         action = f"renaming {SECTION_LABELS[section]} {entity_id} to {next_id}"

@@ -21,6 +21,7 @@ class TestRow(TypedDict, total=False):
     id: str
     title: str
     body: str
+    origin: str
     status: str
     kind: str
     path: str

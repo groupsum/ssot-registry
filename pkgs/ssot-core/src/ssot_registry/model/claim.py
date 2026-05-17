@@ -7,6 +7,7 @@ class ClaimRow(TypedDict, total=False):
     id: str
     title: str
     body: str
+    origin: str
     status: str
     tier: str
     kind: str

@@ -2,8 +2,9 @@
 
 import argparse
 
+from ssot_contracts.generated.python.enums import ASSURANCE_ORIGINS
 from ssot_registry.api import create_entity, delete_entity, get_entity, link_entities, list_entities, run_tests, unlink_entities, update_entity
-from ssot_cli.common import add_ids_argument, add_path_argument, collect_list_fields, compact_dict, load_json_object_argument, load_text_argument
+from ssot_cli.common import add_ids_argument, add_origin_argument, add_path_argument, collect_list_fields, compact_dict, load_json_object_argument, load_text_argument
 
 
 _LINK_MAPPING = {
@@ -27,6 +28,7 @@ def register_test(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--title", required=True, help="Human-readable test title.")
     create.add_argument("--body", default=None, help="Optional longer-form narrative for the test.")
     create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the test body.")
+    add_origin_argument(create, choices=sorted(ASSURANCE_ORIGINS), default="repo-local")
     create.add_argument("--status", choices=["planned", "passing", "failing", "blocked", "skipped"], default="planned", help="Current execution or readiness state of the test.")
     create.add_argument("--kind", required=True, help="Operator-defined test category such as unit, integration, or manual.")
     create.add_argument("--test-path", dest="test_path", required=True, help="Repository-relative location of the executable test or test specification.")
@@ -45,6 +47,7 @@ def register_test(subparsers: argparse._SubParsersAction) -> None:
     list_cmd = test_sub.add_parser("list", help="List tests.", description="List test records currently known to the registry.")
     add_path_argument(list_cmd)
     add_ids_argument(list_cmd, help_text="Test ids to include in the list output.")
+    add_origin_argument(list_cmd, choices=sorted(ASSURANCE_ORIGINS), default=None)
     list_cmd.set_defaults(func=run_list)
 
     update = test_sub.add_parser("update", help="Edit test metadata.", description="Update mutable test fields without changing link relationships.")
@@ -53,6 +56,7 @@ def register_test(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--title", default=None, help="Replacement test title.")
     update.add_argument("--body", default=None, help="Replacement longer-form test narrative.")
     update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement test body.")
+    add_origin_argument(update, choices=sorted(ASSURANCE_ORIGINS), default=None)
     update.add_argument("--status", choices=["planned", "passing", "failing", "blocked", "skipped"], default=None, help="Updated execution or readiness state.")
     update.add_argument("--kind", default=None, help="Updated test category.")
     update.add_argument("--test-path", dest="test_path", default=None, help="Updated repository-relative path to the test or procedure.")
@@ -113,6 +117,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "id": args.id,
         "title": args.title,
         "body": body,
+        "origin": args.origin,
         "status": args.status,
         "kind": args.kind,
         "path": args.test_path,
@@ -129,7 +134,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "tests", ids=args.ids)
+    return list_entities(args.path, "tests", ids=args.ids, origin=args.origin)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
@@ -143,6 +148,7 @@ def run_update(args: argparse.Namespace) -> dict[str, object]:
         {
             "title": args.title,
             "body": body,
+            "origin": args.origin,
             "status": args.status,
             "kind": args.kind,
             "path": args.test_path,

@@ -7,6 +7,7 @@ class EvidenceRow(TypedDict, total=False):
     id: str
     title: str
     body: str
+    origin: str
     status: str
     kind: str
     tier: str

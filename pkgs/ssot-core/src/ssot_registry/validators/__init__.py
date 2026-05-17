@@ -9,6 +9,7 @@ from .lifecycle import validate_lifecycle_semantics
 from .bounds import validate_out_of_bounds_disposition
 from .filesystem import validate_filesystem_paths
 from .reservations import validate_document_reservations
+from .origin import validate_assurance_origins
 
 __all__ = [
     "build_index",
@@ -19,6 +20,7 @@ __all__ = [
     "validate_coverage",
     "validate_document_rows",
     "validate_document_reservations",
+    "validate_assurance_origins",
     "validate_tiers",
     "validate_lifecycle_semantics",
     "validate_out_of_bounds_disposition",

@@ -33,6 +33,7 @@ class CliStatusSyncTests(unittest.TestCase):
                 "id": feature_id,
                 "title": "Feature claim ceiling fixture",
                 "description": "Feature used to verify claim ceilings during status sync.",
+                "origin": "repo-local",
                 "implementation_status": "absent",
                 "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": None},
                 "plan": {"horizon": "current", "slot": None, "target_claim_tier": target_tier, "target_lifecycle_stage": "active"},
@@ -47,6 +48,7 @@ class CliStatusSyncTests(unittest.TestCase):
                 {
                     "id": claim_id,
                     "title": "Feature claim ceiling claim",
+                    "origin": "repo-local",
                     "status": "asserted",
                     "tier": tier,
                     "kind": "conformance",
@@ -59,8 +61,9 @@ class CliStatusSyncTests(unittest.TestCase):
         registry["tests"].append(
             {
                 "id": test_id,
-                "title": "Feature claim ceiling test",
-                "status": "planned",
+            "title": "Feature claim ceiling test",
+            "origin": "repo-local",
+            "status": "planned",
                 "kind": "conformance",
                 "path": test_path,
                 "feature_ids": [feature_id],
@@ -71,6 +74,7 @@ class CliStatusSyncTests(unittest.TestCase):
         evidence_row = {
             "id": evidence_id,
             "title": "Feature claim ceiling evidence",
+            "origin": "repo-local",
             "status": "collected",
             "kind": "report",
             "tier": max(claim_tiers),
@@ -156,6 +160,7 @@ class CliStatusSyncTests(unittest.TestCase):
                 "id": feature_id,
                 "title": "Planned placeholder feature",
                 "description": "Feature with planned placeholder support.",
+                "origin": "repo-local",
                 "implementation_status": "absent",
                 "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": None},
                 "plan": {"horizon": "next", "slot": None, "target_claim_tier": "T1", "target_lifecycle_stage": "active"},
@@ -169,6 +174,7 @@ class CliStatusSyncTests(unittest.TestCase):
             {
                 "id": claim_id,
                 "title": "Planned placeholder claim",
+                "origin": "repo-local",
                 "status": "proposed",
                 "tier": "T1",
                 "kind": "conformance",
@@ -182,6 +188,7 @@ class CliStatusSyncTests(unittest.TestCase):
             {
                 "id": test_id,
                 "title": "Planned placeholder test",
+                "origin": "repo-local",
                 "status": "planned",
                 "kind": "conformance",
                 "path": "tests/planned/test_placeholder.py",
@@ -194,6 +201,7 @@ class CliStatusSyncTests(unittest.TestCase):
             {
                 "id": evidence_id,
                 "title": "Planned placeholder evidence",
+                "origin": "repo-local",
                 "status": "planned",
                 "kind": "report",
                 "tier": "T1",

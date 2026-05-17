@@ -23,6 +23,16 @@ def add_ids_argument(parser: argparse.ArgumentParser, flag: str = "--ids", *, de
     parser.add_argument(flag, dest=dest, nargs="+", default=None, help=help_text)
 
 
+def add_origin_argument(parser: argparse.ArgumentParser, *, choices: list[str], required: bool = False, default: str | None = None) -> None:
+    parser.add_argument(
+        "--origin",
+        choices=choices,
+        required=required,
+        default=default,
+        help="Assurance row origin owner.",
+    )
+
+
 def add_optional_bool_argument(
     parser: argparse.ArgumentParser,
     name: str,

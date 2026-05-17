@@ -4,6 +4,7 @@ from ssot_contracts.generated.python.enums import (
     BOUNDARY_STATUSES,
     CLAIM_STATUSES,
     CLAIM_TIERS,
+    ASSURANCE_ORIGINS,
     DOCUMENT_STATUSES,
     ENTITY_PREFIXES,
     EVIDENCE_STATUSES,
@@ -66,16 +67,18 @@ CLAIM_STATUS_RANK = {
 REQUIRED_TOP_LEVEL_KEYS = set(TOP_LEVEL_SECTIONS)
 
 REQUIRED_ENTITY_FIELDS = {
-    "features": {"id", "title", "description", "implementation_status", "lifecycle", "plan", "spec_ids", "claim_ids", "test_ids"},
+    "features": {"id", "title", "description", "origin", "implementation_status", "lifecycle", "plan", "spec_ids", "claim_ids", "test_ids"},
     "profiles": {"id", "title", "description", "status", "kind", "feature_ids", "profile_ids", "claim_tier", "evaluation"},
-    "tests": {"id", "title", "status", "kind", "path", "feature_ids", "claim_ids", "evidence_ids"},
-    "claims": {"id", "title", "status", "tier", "kind", "description", "feature_ids", "test_ids", "evidence_ids"},
-    "evidence": {"id", "title", "status", "kind", "tier", "path", "claim_ids", "test_ids"},
+    "tests": {"id", "title", "origin", "status", "kind", "path", "feature_ids", "claim_ids", "evidence_ids"},
+    "claims": {"id", "title", "origin", "status", "tier", "kind", "description", "feature_ids", "test_ids", "evidence_ids"},
+    "evidence": {"id", "title", "origin", "status", "kind", "tier", "path", "claim_ids", "test_ids"},
     "issues": {"id", "title", "status", "severity", "description", "plan", "feature_ids", "claim_ids", "test_ids", "evidence_ids", "risk_ids", "release_blocking"},
     "risks": {"id", "title", "status", "severity", "description", "feature_ids", "claim_ids", "test_ids", "evidence_ids", "issue_ids", "release_blocking"},
     "boundaries": {"id", "title", "status", "frozen", "feature_ids", "profile_ids"},
     "releases": {"id", "version", "status", "boundary_id", "boundary_ids", "claim_ids", "evidence_ids"},
 }
+
+ASSURANCE_ENTITY_SECTIONS = ("features", "tests", "claims", "evidence")
 
 REF_FIELD_TARGETS = {
     ("tests", "feature_ids"): "features",

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 CONTRACT_DATA = {
-    "schema_version": "0.4.0",
+    "schema_version": "0.5.0",
     "output_formats": ["json", "csv", "df", "yaml", "toml"],
     "entity_sections": [
         {"key": "features", "label": "Features"},
@@ -72,6 +72,7 @@ CONTRACT_DATA = {
         "severities": ["low", "medium", "high", "critical"],
         "document_statuses": ["draft", "in_review", "accepted", "rejected", "superseded", "withdrawn", "retired"],
         "spec_kinds": ["normative", "operational", "governance", "local-policy"],
+        "assurance_origins": ["ssot-core", "ssot-origin", "extension-pack", "repo-local"],
     },
     "document_contract": {
         "kinds": ["adr", "spec"],

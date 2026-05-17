@@ -3,6 +3,7 @@
 import argparse
 
 from ssot_contracts.generated.python.enums import (
+    ASSURANCE_ORIGINS,
     CLAIM_TIERS,
     FEATURE_IMPLEMENTATION_STATUSES,
     FEATURE_LIFECYCLE_STAGES,
@@ -20,7 +21,7 @@ from ssot_registry.api import (
     unlink_entities,
     update_entity,
 )
-from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
+from ssot_cli.common import add_ids_argument, add_optional_bool_argument, add_origin_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
 
 
 _LINK_MAPPING = {
@@ -50,6 +51,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--description", default="", help="Operator-facing summary of the feature's purpose.")
     create.add_argument("--body", default=None, help="Optional longer-form narrative for the feature.")
     create.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the feature body.")
+    add_origin_argument(create, choices=sorted(ASSURANCE_ORIGINS), default="repo-local")
     create.add_argument("--implementation-status", choices=sorted(FEATURE_IMPLEMENTATION_STATUSES), default="absent", help="Current implementation state in the codebase.")
     create.add_argument("--lifecycle-stage", choices=sorted(FEATURE_LIFECYCLE_STAGES), default="active", help="Actual lifecycle state of the feature today.")
     create.add_argument("--replacement-feature-id", nargs="*", default=[], help="Replacement feature ids if this feature is being deprecated or removed.")
@@ -73,6 +75,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     list_cmd = feature_sub.add_parser("list", help="List features.", description="List feature records currently known to the registry.")
     add_path_argument(list_cmd)
     add_ids_argument(list_cmd, help_text="Feature ids to include in the list output.")
+    add_origin_argument(list_cmd, choices=sorted(ASSURANCE_ORIGINS), default=None)
     list_cmd.set_defaults(func=run_list)
 
     update = feature_sub.add_parser("update", help="Edit feature metadata.", description="Update mutable feature fields without changing links or planning state.")
@@ -82,6 +85,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--description", default=None, help="Replacement feature description.")
     update.add_argument("--body", default=None, help="Replacement longer-form feature narrative.")
     update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement feature body.")
+    add_origin_argument(update, choices=sorted(ASSURANCE_ORIGINS), default=None)
     update.add_argument("--implementation-status", choices=sorted(FEATURE_IMPLEMENTATION_STATUSES), default=None, help="Updated implementation state in the codebase.")
     update.set_defaults(func=run_update)
 
@@ -168,6 +172,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "title": args.title,
         "description": args.description,
         "body": body,
+        "origin": args.origin,
         "implementation_status": args.implementation_status,
         "lifecycle": {
             "stage": args.lifecycle_stage,
@@ -188,7 +193,7 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
-    return list_entities(args.path, "features", ids=args.ids)
+    return list_entities(args.path, "features", ids=args.ids, origin=args.origin)
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
@@ -198,6 +203,7 @@ def run_update(args: argparse.Namespace) -> dict[str, object]:
             "title": args.title,
             "description": args.description,
             "body": body,
+            "origin": args.origin,
             "implementation_status": args.implementation_status,
         }
     )

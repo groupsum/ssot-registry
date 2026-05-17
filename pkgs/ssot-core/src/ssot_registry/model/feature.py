@@ -8,6 +8,7 @@ class FeatureRow(TypedDict, total=False):
     title: str
     description: str
     body: str
+    origin: str
     implementation_status: str
     lifecycle: dict[str, object]
     plan: dict[str, object]

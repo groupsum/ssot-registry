@@ -187,7 +187,7 @@ class TuiOverhaulUnitTests(unittest.TestCase):
             temp_dir.cleanup()
 
         self.assertRegex(workspace.registry_version, r"^0\.2\.\d+")
-        self.assertEqual(workspace.registry_schema_version, "0.4.0")
+        self.assertEqual(workspace.registry_schema_version, "0.5.0")
 
     def test_effective_feature_status_prefers_out_of_bounds_then_lifecycle_then_implementation(self) -> None:
         out_of_bounds = effective_feature_status(
