@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { generatedCorpusPages, ssotRegistrySite } from "@ssot-registry/site-content-pack";
 import { App } from "../src/App";
 
 const markup = renderToStaticMarkup(<App />);
+const styles = readFileSync("src/styles.css", "utf8");
 
 assert.ok(markup.includes("SSOT Registry"));
 assert.ok(!markup.includes("Hello, world."));
@@ -22,6 +24,9 @@ assert.ok(markup.includes('href="/content/packages/"'));
 assert.ok(markup.includes('href="/content/faq-qa/"'));
 assert.ok(!markup.includes('href="#features"'));
 assert.ok(!markup.includes('href="#proof"'));
+assert.ok(styles.includes('.lander-page__inner > nav[aria-label="Breadcrumb"]'));
+assert.ok(styles.includes(".lander-breadcrumbs"));
+assert.ok(styles.includes('[data-lander-theme="lander-dark"] .lander-breadcrumbs'));
 assert.ok(ssotRegistrySite.pages.length >= 2500);
 assert.equal(generatedCorpusPages.length, 3840);
 assert.equal(ssotRegistrySite.pages[0]?.slug, "/");
