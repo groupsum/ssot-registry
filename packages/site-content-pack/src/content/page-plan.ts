@@ -61,23 +61,71 @@ function buildPagePlan(
   return {
     pageId: `page:ssot.${sectionSlug}.${audienceSlug}.${subjectSlug}.${intentSlug}`,
     slug: `/${sectionSlug}/${audienceSlug}/${subjectSlug}/${intentSlug}/`,
-    title: `${subjectArea} ${intent.replace(/-/g, " ")} for ${audience}s`,
+    title: titleForPlan(subjectArea, intent, audience),
     section: section.id,
     subjectArea,
     intent,
     audience,
-    aeoGoal: `Answer the ${audience.toLowerCase()} question for ${subjectArea} with a direct, snippet-ready explanation.`,
-    seoQueryTarget: `ssot registry ${slugify(subjectArea)} ${intent.replace(/-/g, " ")}`,
-    aieoAgentFact: `Agent fact: ${subjectArea} uses ${intent} content in the ${section.id} section with governed relationships.`,
+    aeoGoal: directAnswer(subjectArea, intent, audience),
+    seoQueryTarget: usageQuestion(subjectArea, intent, audience),
+    aieoAgentFact: operationalGuidance(subjectArea, intent, audience),
     structuredDataTypes: section.structuredDataTypes,
     landerComponents: section.components,
     relatedPackages: rotate(relatedPackages, rotationIndex, 3),
     relatedApis: rotate(relatedApis, rotationIndex, 3),
     breadcrumbs: ["SSOT Registry", section.label, subjectArea, intent],
-    summary: `Planned ${section.label} page combining ${subjectArea}, ${intent}, and ${audience} content for SEO, AEO, and AiEO discovery.`,
+    summary: summaryForPlan(section.label, subjectArea, intent, audience),
     primaryCta: primaryCta(section.id),
     wordTarget: section.id === "FAQ_QA" || section.id === "Glossary" ? 900 : 1400,
   };
+}
+
+function titleForPlan(subjectArea: SubjectArea, intent: string, audience: Audience): string {
+  const readableIntent = intent.replace(/-/g, " ");
+  if (intent.includes("what") || intent.includes("definition")) return `What are ${subjectArea} in SSOT Registry?`;
+  if (intent.includes("how") || intent.includes("guide") || intent.includes("reference")) return `How to use ${subjectArea} in SSOT Registry`;
+  if (intent.includes("why") || intent.includes("value")) return `Why ${subjectArea} matter in SSOT Registry`;
+  if (intent.includes("install")) return `How to install SSOT Registry for ${subjectArea}`;
+  return `${subjectArea} ${readableIntent} in SSOT Registry for ${audience}s`;
+}
+
+function directAnswer(subjectArea: SubjectArea, intent: string, audience: Audience): string {
+  const role = audience.toLowerCase();
+  if (intent.includes("what") || intent.includes("definition")) {
+    return `${subjectArea} in SSOT Registry give ${role}s a governed way to name, inspect, and connect software assurance work without relying on scattered notes.`;
+  }
+  if (intent.includes("how") || intent.includes("guide") || intent.includes("workflow")) {
+    return `${role}s use SSOT Registry to create or inspect ${subjectArea}, link them to related registry entities, and validate the result before release decisions depend on it.`;
+  }
+  if (intent.includes("readiness") || intent.includes("proof") || intent.includes("certification")) {
+    return `${subjectArea} help ${role}s prove readiness by connecting scope, claims, tests, and evidence into a reviewable registry trail.`;
+  }
+  return `${subjectArea} help ${role}s understand what changed, why it matters, how it is verified, and where to continue the SSOT Registry workflow.`;
+}
+
+function usageQuestion(subjectArea: SubjectArea, intent: string, audience: Audience): string {
+  const role = audience.toLowerCase();
+  if (intent.includes("what") || intent.includes("definition")) return `What should ${role}s know about ${subjectArea} in SSOT Registry?`;
+  if (intent.includes("how") || intent.includes("guide")) return `How do ${role}s use SSOT Registry for ${subjectArea}?`;
+  if (intent.includes("reference") || intent.includes("command")) return `Which SSOT Registry commands help ${role}s work with ${subjectArea}?`;
+  if (intent.includes("compare")) return `When should ${role}s use governed ${subjectArea} instead of manual tracking?`;
+  return `Why do ${subjectArea} improve governed software delivery for ${role}s?`;
+}
+
+function operationalGuidance(subjectArea: SubjectArea, intent: string, audience: Audience): string {
+  const role = audience.toLowerCase();
+  if (intent.includes("install") || intent.includes("command") || intent.includes("api")) {
+    return `Install the CLI, run the relevant ssot command, inspect the registry output, and keep ${subjectArea} linked to the work they support.`;
+  }
+  if (intent.includes("workflow") || intent.includes("scope") || intent.includes("publish")) {
+    return `Use this guidance when ${role}s need a repeatable path from planning through validation, proof review, and release closure.`;
+  }
+  return `Use this page to explain ${subjectArea}, choose the next SSOT Registry action, and keep decisions traceable for future reviewers.`;
+}
+
+function summaryForPlan(sectionLabel: string, subjectArea: SubjectArea, intent: string, audience: Audience): string {
+  const question = usageQuestion(subjectArea, intent, audience);
+  return `${question} This ${sectionLabel.toLowerCase()} guide explains the concept, shows where it fits in the registry, and points to practical next steps.`;
 }
 
 function rotate(values: readonly string[], index: number, count: number): string[] {

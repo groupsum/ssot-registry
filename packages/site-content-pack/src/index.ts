@@ -88,24 +88,24 @@ export const ssotRegistryHomePage = {
     {
       id: "content-corpus",
       kind: "feature_grid",
-      title: "3,840 generated content pages",
+      title: "SSOT Registry learning paths",
       items: [
         {
-          title: "Visible corpus index",
+          title: "Start from the content hub",
           description:
-            "Browse the generated SSOT Registry content plan from the content index and section indexes.",
+            "Browse SSOT Registry by features, proof, packages, and direct answers, then drill into focused guides.",
           href: "/content/",
         },
         {
-          title: "AEO, SEO, and AiEO coverage",
+          title: "Answer real implementation questions",
           description:
-            "Every generated page carries answer goals, search targets, agent facts, breadcrumbs, schema intents, and component intents.",
+            "Every guide answers a real reader question, explains the SSOT Registry concept, and points to practical next steps.",
           href: "/content/",
         },
         {
           title: "Discovery artifacts",
           description:
-            "The corpus publishes sitemap, robots, llms, full llms, content index, semantic index, and structured-data graph artifacts.",
+            "The site publishes sitemap, robots, llms, full llms, content index, semantic index, and structured-data graph artifacts.",
           href: "/sitemap.xml",
         },
       ],
@@ -159,7 +159,7 @@ export const ssotRegistryHomePage = {
       kind: "markdown",
       title: "How the website is assembled",
       body:
-        "The SSOT Registry website host imports this content pack and renders it through reusable lander packages. Product copy, page structure, FAQ, proof claims, and structured-data intents live in the content pack rather than in the React host.",
+        "The SSOT Registry website teaches the registry from the reader's point of view: what each governed entity does, why it matters, how to use the CLI, and how proof carries through release work.",
     },
     {
       id: "faq",
@@ -193,7 +193,7 @@ export const ssotRegistryHomePage = {
     {
       question: "What does the SSOT Registry content pack provide?",
       answer:
-        "It provides product pages, generated corpus pages, structured-data intents, proof surfaces, related package and API metadata, and discovery artifacts.",
+        "It provides product pages, learning guides, proof workflow pages, package references, direct answers, and discovery artifacts for the SSOT Registry website.",
     },
   ],
 } satisfies LanderSite["pages"][number];
