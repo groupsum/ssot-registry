@@ -1,0 +1,27 @@
+export const structuredDataTypes = [
+  "WebPage",
+  "WebSite",
+  "Organization",
+  "SoftwareApplication",
+  "SoftwareSourceCode",
+  "FAQPage",
+  "QAPage",
+  "HowTo",
+  "TechArticle",
+  "Article",
+  "Course",
+  "CourseInstance",
+  "Dataset",
+  "ItemList",
+  "BreadcrumbList",
+  "ClaimReview",
+  "Product",
+  "ProductGroup",
+  "DefinedTerm",
+  "DefinedTermSet",
+  "LearningResource",
+  "EducationalOccupationalCredential",
+  "Code",
+] as const;
+
+export type StructuredDataType = (typeof structuredDataTypes)[number];

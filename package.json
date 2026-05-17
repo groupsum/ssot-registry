@@ -5,11 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc --noEmit && vite build",
+    "build:site-content": "npm --prefix packages/site-content-pack run build",
+    "build": "npm run build:site-content && tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "npm run build:site-content && tsc --noEmit",
+    "test": "npm --prefix packages/site-content-pack run test && npm run build && tsx tests/site-render-smoke.tsx"
   },
   "dependencies": {
+    "@mdwrk/lander-core": "^0.1.2",
+    "@mdwrk/lander-react": "^0.1.2",
+    "@mdwrk/lander-theme": "^0.1.4",
+    "@ssot-registry/site-content-pack": "file:packages/site-content-pack",
     "@vitejs/plugin-react": "^5.0.0",
     "vite": "^7.0.0",
     "react": "^19.0.0",
@@ -18,6 +24,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0"
+    "@types/react-dom": "^19.0.0",
+    "tsx": "^4.19.0"
   }
 }
