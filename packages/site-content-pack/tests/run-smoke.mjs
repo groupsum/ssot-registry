@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { compileLanderSite, buildLlmsTxt, buildRobotsTxt, buildSitemap } from "@mdwrk/lander-core";
-import { ssotRegistryHomePage, ssotRegistrySite } from "../dist/index.js";
+import {
+  canonicalVsDerivedCopy,
+  relatedApiDetails,
+  relatedPackageDetails,
+  ssotRegistryAuthorityPrinciples,
+  ssotRegistryHomePage,
+  ssotRegistryImageAssetPlan,
+  ssotRegistrySite,
+} from "../dist/index.js";
 
 const compiled = compileLanderSite(ssotRegistrySite);
 const errors = compiled.diagnostics.filter((item) => item.level === "error");
@@ -17,6 +25,18 @@ assert.ok(home?.componentIntents.some((intent) => intent.kind === "hero"));
 assert.ok(home?.schemaIntents.some((intent) => intent.kind === "WebPage"));
 assert.ok(home?.schemaIntents.some((intent) => intent.kind === "SoftwareApplication"));
 assert.ok(home?.schemaIntents.some((intent) => intent.kind === "SoftwareSourceCode"));
+assert.ok(ssotRegistryHomePage.intro.includes(".ssot/registry.json"));
+assert.ok(JSON.stringify(ssotRegistryHomePage.sections).includes(canonicalVsDerivedCopy));
+assert.ok(JSON.stringify(ssotRegistryHomePage.sections).includes("Frozen scope is not the same thing as shipment"));
+assert.ok(ssotRegistryAuthorityPrinciples.some((principle) => principle.id === "boundary-release-split"));
+assert.ok(ssotRegistryAuthorityPrinciples.some((principle) => principle.guidance.includes("claims, tests, and evidence")));
+assert.equal(ssotRegistryImageAssetPlan.length, 8);
+assert.ok(ssotRegistryImageAssetPlan.every((asset) => asset.path.startsWith("/content/images/")));
+assert.ok(ssotRegistryImageAssetPlan.every((asset) => asset.alt.includes("SSOT Registry")));
+assert.ok(ssotRegistryImageAssetPlan.some((asset) => asset.id === "hero-canonical-flow" && asset.ratio === "16:9"));
+assert.ok(relatedApiDetails.some((detail) => detail.command === "ssot pack preflight"));
+assert.ok(relatedApiDetails.some((detail) => detail.command === "ssot profile list"));
+assert.ok(relatedPackageDetails.some((detail) => detail.name === "ssot-tui" && detail.role.includes("terminal browser")));
 for (const stylePath of [
   "styles/base.css",
   "styles/shell.css",

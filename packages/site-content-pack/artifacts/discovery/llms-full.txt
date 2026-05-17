@@ -4,7 +4,7 @@
 URL: https://ssot-registry.com/
 Description: A governed SSOT and single source of truth for ADRs, specs, features, claims, tests, evidence, boundaries, authority, and releases.
 Schema: WebPage, WebSite, Organization, SoftwareApplication, SoftwareSourceCode, FAQPage
-Components: page_shell, breadcrumbs, hero, feature_grid, feature_grid, proof_matrix, package_grid, markdown, faq, structured_data_graph
+Components: page_shell, breadcrumbs, hero, feature_grid, comparison, markdown, feature_grid, proof_matrix, package_grid, markdown, markdown, faq, structured_data_graph
 
 ## SSOT Registry Learning and Reference Hub
 URL: https://ssot-registry.com/content/

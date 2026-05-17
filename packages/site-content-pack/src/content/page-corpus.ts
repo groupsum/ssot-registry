@@ -1,5 +1,7 @@
 import type { PageSpec, SchemaSpec, SectionSpec } from "@mdwrk/lander-content-contract";
+import { relatedApiDetails } from "./apis.js";
 import { generatePagePlans, slugify, type PlannedPage } from "./page-plan.js";
+import { relatedPackageDetails } from "./packages.js";
 import { sectionBlueprints } from "./sections.js";
 
 export interface GeneratedCorpusPage extends PageSpec {
@@ -155,7 +157,7 @@ function sectionsForPlan(plan: PlannedPage): SectionSpec[] {
       title: "Commands and next steps",
       packages: plan.relatedPackages.map((name, index) => ({
         name,
-        description: nextStepDescription(plan, index),
+        description: packageNextStepDescription(plan, name, index),
         href: `/content/${slugify(plan.section)}/`,
         api: [plan.relatedApis[index % plan.relatedApis.length] ?? plan.relatedApis[0] ?? "ssot validate"],
       })),
@@ -402,6 +404,9 @@ function usageSteps(plan: PlannedPage): Array<Record<string, unknown>> {
   const firstApi = plan.relatedApis[0] ?? "ssot validate";
   const secondApi = plan.relatedApis[1] ?? "ssot feature list";
   const thirdApi = plan.relatedApis[2] ?? "ssot release certify";
+  const firstApiDetail = relatedApiDetails.find((detail) => detail.command === firstApi)?.description;
+  const secondApiDetail = relatedApiDetails.find((detail) => detail.command === secondApi)?.description;
+  const thirdApiDetail = relatedApiDetails.find((detail) => detail.command === thirdApi)?.description;
   return [
     {
       title: "Install",
@@ -410,17 +415,17 @@ function usageSteps(plan: PlannedPage): Array<Record<string, unknown>> {
     },
     {
       title: "Inspect",
-      description: `Run ${firstApi} to inspect .ssot/registry.json and its derived views before changing ${plan.subjectArea.toLowerCase()} in the single source of truth.`,
+      description: `Run ${firstApi} to inspect .ssot/registry.json and its derived views before changing ${plan.subjectArea.toLowerCase()} in the single source of truth.${firstApiDetail ? ` ${firstApiDetail}` : ""}`,
       href: `/content/${slugify(plan.section)}/`,
     },
     {
       title: "Use",
-      description: `Run ${secondApi} when you need to create, list, link, execute, export, or explain ${plan.subjectArea.toLowerCase()} as part of an SSOT Registry authority workflow.`,
+      description: `Run ${secondApi} when you need to create, list, link, execute, export, or explain ${plan.subjectArea.toLowerCase()} as part of an SSOT Registry authority workflow.${secondApiDetail ? ` ${secondApiDetail}` : ""}`,
       href: `/content/${slugify(plan.section)}/`,
     },
     {
       title: "Operate",
-      description: `Run ${thirdApi} or validate the registry before certification, promotion, publication, or release closure depends on this work.`,
+      description: `Run ${thirdApi} or validate the registry before certification, promotion, publication, or release closure depends on this work.${thirdApiDetail ? ` ${thirdApiDetail}` : ""}`,
       href: "/content/workflows/",
     },
   ];
@@ -440,9 +445,17 @@ function registryBenefit(plan: PlannedPage): string {
 
 function nextStepDescription(plan: PlannedPage, index: number): string {
   const api = plan.relatedApis[index % plan.relatedApis.length] ?? "ssot validate";
+  const apiDetail = relatedApiDetails.find((detail) => detail.command === api)?.description;
   if (index === 0) return `Start by running ${api} and reading the registry output for the relevant ${plan.subjectArea.toLowerCase()} records in the SSOT canon.`;
-  if (index === 1) return `Use ${api} to connect this guidance to adjacent SSOT Registry entities instead of tracking it in prose alone.`;
+  if (index === 1) return `Use ${api} to connect this guidance to adjacent SSOT Registry entities instead of tracking it in prose alone.${apiDetail ? ` ${apiDetail}` : ""}`;
   return `Finish by validating the registry so ${plan.subjectArea.toLowerCase()} remain ready for review, automation, authority checks, and release work.`;
+}
+
+function packageNextStepDescription(plan: PlannedPage, packageName: string, index: number): string {
+  const packageDetail = relatedPackageDetails.find((detail) => detail.name === packageName);
+  const base = nextStepDescription(plan, index);
+  if (!packageDetail) return base;
+  return `${packageDetail.role} ${base}`;
 }
 
 function schemaForPlan(plan: PlannedPage): SchemaSpec[] {

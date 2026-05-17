@@ -1,9 +1,16 @@
 import type { LanderSite } from "@mdwrk/lander-content-contract";
+import {
+  boundaryVsReleaseCopy,
+  canonicalVsDerivedCopy,
+  packageChooserCopy,
+} from "./content/editorial-guidance.js";
 import { generatedContentIndexPage, generatedCorpusPages, generatedSectionIndexPages } from "./content/page-corpus.js";
+import { relatedPackageDetails } from "./content/packages.js";
 
 export * from "./content/apis.js";
 export * from "./content/audiences.js";
 export * from "./content/components.js";
+export * from "./content/editorial-guidance.js";
 export * from "./content/packages.js";
 export * from "./content/page-corpus.js";
 export * from "./content/page-plan.js";
@@ -20,7 +27,7 @@ export const ssotRegistryHomePage = {
     "A governed SSOT and single source of truth for ADRs, specs, features, claims, tests, evidence, boundaries, authority, and releases.",
   h1: "Govern software truth from decision to release.",
   intro:
-    "SSOT Registry turns architecture, scope, proof, canon, authority, and release state into durable registry entities that can be validated, queried, and certified.",
+    "SSOT Registry makes .ssot/registry.json the governed authority for delivery work: decisions, specifications, targetable features, tests, claims, evidence, risks, frozen boundaries, and releases.",
   seo: {
     keywords: ["ssot", "single source of truth", "canonical registry", "canon", "software authority", "software assurance", "adr", "release certification", "evidence registry"],
   },
@@ -51,7 +58,7 @@ export const ssotRegistryHomePage = {
       eyebrow: "SSOT Registry",
       title: "Govern software truth from decision to release.",
       subtitle:
-        "Model ADRs, specs, features, claims, tests, evidence, boundaries, and releases as one validated canonical source of truth.",
+        "Answer one release-review question clearly: what was intended, what changed, what proves it, and which canonical record says so.",
       primaryCta: {
         label: "Browse Content",
         href: "/content/",
@@ -85,6 +92,51 @@ export const ssotRegistryHomePage = {
           href: "/content/workflows/",
         },
       ],
+    },
+    {
+      id: "canonical-authority",
+      kind: "comparison",
+      title: "Canonical records and derived projections stay separate",
+      columns: [
+        { id: "concern", label: "Concern" },
+        { id: "authority", label: "Authority rule" },
+        { id: "operator", label: "Operator takeaway" },
+      ],
+      rows: [
+        {
+          id: "registry",
+          label: "Registry",
+          cells: {
+            concern: ".ssot/registry.json",
+            authority: "Canonical machine-readable source for governed software assurance entities.",
+            operator: "Change registry state through SSOT workflows, then validate before review.",
+          },
+        },
+        {
+          id: "documents",
+          label: "ADRs and SPECs",
+          cells: {
+            concern: "Canonical companion documents",
+            authority: "ADR and SPEC JSON documents carry governed decision and requirement detail.",
+            operator: "Sync companion documents so document metadata and registry links agree.",
+          },
+        },
+        {
+          id: "projections",
+          label: "Reports and site pages",
+          cells: {
+            concern: "Derived projections",
+            authority: canonicalVsDerivedCopy,
+            operator: "Regenerate projections from registry truth instead of editing them as competing authority.",
+          },
+        },
+      ],
+    },
+    {
+      id: "boundary-release",
+      kind: "markdown",
+      title: "Frozen scope is not the same thing as shipment",
+      body: boundaryVsReleaseCopy,
     },
     {
       id: "content-corpus",
@@ -139,21 +191,20 @@ export const ssotRegistryHomePage = {
     {
       id: "packages",
       kind: "package_grid",
-      title: "Primary package surfaces",
-      packages: [
-        {
-          name: "ssot-registry",
-          description: "CLI and registry APIs for governed SSOT, canonical registry, and authority workflows.",
-          install: "uv add ssot-registry",
-          href: "https://pypi.org/project/ssot-registry/",
-          api: ["ssot validate", "ssot feature list", "ssot release certify"],
-        },
-        {
-          name: "ssot-cli skills",
-          description: "Operator workflows for ADRs, specs, features, tests, evidence, and releases.",
-          href: "/content/workflows/",
-        },
-      ],
+      title: "Choose the package for the job",
+      packages: relatedPackageDetails.map((detail) => ({
+        name: detail.name,
+        description: detail.role,
+        install: detail.install,
+        href: detail.name === "ssot-registry" ? "https://pypi.org/project/ssot-registry/" : "/content/packages/",
+        api: detail.name === "ssot-cli" ? ["ssot validate", "ssot boundary freeze", "ssot release certify"] : undefined,
+      })),
+    },
+    {
+      id: "package-chooser",
+      kind: "markdown",
+      title: "Package chooser",
+      body: packageChooserCopy,
     },
     {
       id: "workflow",

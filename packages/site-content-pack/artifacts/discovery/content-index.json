@@ -10,9 +10,12 @@
       "sectionIds": [
         "hero",
         "features",
+        "canonical-authority",
+        "boundary-release",
         "content-corpus",
         "proof",
         "packages",
+        "package-chooser",
         "workflow",
         "faq"
       ]
