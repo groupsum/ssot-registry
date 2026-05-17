@@ -19,6 +19,7 @@ const nginxConfig = readFileSync("nginx/default.conf", "utf8");
 assert.ok(markup.includes("SSOT Registry"));
 assert.ok(!markup.includes("Hello, world."));
 assert.ok(markup.includes('class="site-header"'));
+assert.ok(markup.includes('<main id="main-content" class="site-main">'));
 assert.ok(markup.includes('class="site-brand-tagline"'));
 assert.ok(markup.includes('class="site-brand-mark"'));
 assert.ok(markup.includes(">SR</span>"));
@@ -55,6 +56,11 @@ assert.ok(styles.includes('[data-lander-theme="lander-dark"] .lander-breadcrumbs
 assert.ok(styles.includes(".site-header"));
 assert.ok(styles.includes("backdrop-filter: blur(18px)"));
 assert.ok(styles.includes(".site-brand-tagline"));
+assert.ok(!styles.includes(".site-nav-links {\n  display: none;\n  align-items: center;\n  gap: 0.2rem;\n  border: 1px"));
+assert.ok(styles.includes(".site-shell .lander-page"));
+assert.ok(styles.includes("display: flow-root"));
+assert.ok(styles.includes("content-visibility: auto"));
+assert.ok(styles.includes("contain-intrinsic-size: 1px 520px"));
 assert.ok(styles.includes('.site-shell:not([data-page-path="/"]) .lander-page__hero'));
 assert.ok(styles.includes(".lander-page__hero .lander-page__eyebrow"));
 assert.ok(styles.includes('.site-shell[data-page-path="/"] .lander-page__inner > nav[aria-label="Breadcrumb"]'));
@@ -100,6 +106,39 @@ assert.equal(ssotRegistrySite.pages[0]?.slug, "/");
 assert.ok(ssotRegistrySite.pages.some((page) => page.slug === "/content/"));
 assert.ok(ssotRegistrySite.pages.some((page) => page.slug === "/content/features/"));
 assert.ok(ssotRegistrySite.pages.some((page) => page.slug === "/features/developer/adrs/what-is/"));
+assert.ok(!readFileSync("src/App.tsx", "utf8").includes("ssotRegistrySite.pages.map((page)"));
+
+const packagesIndex = ssotRegistrySite.pages.find((page) => page.slug === "/content/packages/");
+const packagesPageLinks = packagesIndex?.sections.find((section) => section.id === "page-links");
+assert.ok(packagesPageLinks, "packages index must include representative page links");
+assert.ok((packagesPageLinks?.packages?.length ?? 0) <= 48, "section indexes must avoid rendering hundreds of cards on initial load");
+
+const featuresIndex = ssotRegistrySite.pages.find((page) => page.slug === "/content/features/");
+const featuresSubsections = featuresIndex?.sections.find((section) => section.id === "subsections");
+assert.ok(featuresSubsections, "primary section index must include child subsection navigation");
+assert.deepEqual(
+  featuresSubsections?.packages?.map((entry) => entry.href),
+  ["/content/features/", "/content/workflows/", "/content/comparisons/"],
+);
+
+const workflowsIndex = ssotRegistrySite.pages.find((page) => page.slug === "/content/workflows/");
+assert.ok(workflowsIndex, "workflows index must exist");
+assert.equal(
+  workflowsIndex?.sections.some((section) => section.id === "subsections"),
+  false,
+  "subsection pages must not render sibling areas as child subsections",
+);
+assert.deepEqual(
+  workflowsIndex?.sections.map((section) => section.id),
+  ["page-links", "related-areas"],
+  "subsection pages should list own pages first and related areas last",
+);
+const workflowsRelatedAreas = workflowsIndex?.sections.find((section) => section.id === "related-areas");
+assert.ok(workflowsRelatedAreas, "subsection pages should expose adjacent areas as related links");
+assert.deepEqual(
+  workflowsRelatedAreas?.packages?.map((entry) => entry.href),
+  ["/content/features/", "/content/comparisons/"],
+);
 
 function pngSize(path: string) {
   const bytes = readFileSync(path);

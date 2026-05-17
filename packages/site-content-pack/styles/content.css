@@ -1,3 +1,13 @@
+.site-shell .lander-page {
+  display: flow-root;
+  background: var(--lander-app-bg);
+}
+
+.site-shell .lander-page__section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 520px;
+}
+
 .site-shell:not([data-page-path="/"]) .lander-page__hero {
   padding: 3.25rem 0 2.75rem;
   background: transparent;

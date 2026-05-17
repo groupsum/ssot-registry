@@ -39,6 +39,8 @@ const primaryContentSections = [
   },
 ] as const;
 
+const SECTION_INDEX_LINK_LIMIT = 48;
+
 export const generatedPagePlans = generatePagePlans();
 export const generatedCorpusPages = generatedPagePlans.map(pageSpecFromPlan);
 export const generatedSectionIndexPages = sectionBlueprints.map((section) =>
@@ -576,6 +578,7 @@ function contentIndexPage(sectionPages: GeneratedCorpusPage[]): GeneratedCorpusP
 function sectionIndexPage(sectionId: string, sectionLabel: string, pages: GeneratedCorpusPage[]): GeneratedCorpusPage {
   const slug = `/content/${slugify(sectionId)}/`;
   const primarySection = primaryContentSections.find((section) => (section.subsections as readonly string[]).includes(sectionId));
+  const isPrimarySectionIndex = primarySection?.subsections[0] === sectionId;
   const subsectionPages = primarySection?.subsections
     .map((subsectionId) => sectionBlueprints.find((section) => section.id === subsectionId))
     .filter((section): section is NonNullable<typeof section> => Boolean(section))
@@ -585,6 +588,22 @@ function sectionIndexPage(sectionId: string, sectionLabel: string, pages: Genera
       href: `/content/${slugify(section.id)}/`,
       api: ["subsection index"],
     })) ?? [];
+  const relatedAreas = primarySection && !isPrimarySectionIndex
+    ? [
+        {
+          name: `${primarySection.label} overview`,
+          description: primarySection.description,
+          href: primarySection.href,
+          api: ["primary section"],
+        },
+        ...subsectionPages
+          .filter((page) => page.href !== slug && page.href !== primarySection.href)
+          .map((page) => ({
+            ...page,
+            api: ["related area"],
+          })),
+      ]
+    : [];
   return {
     planId: `page:ssot.content.${slugify(sectionId)}.index`,
     kind: sectionId === "Packages" ? "package" : "docs_bridge",
@@ -604,7 +623,7 @@ function sectionIndexPage(sectionId: string, sectionLabel: string, pages: Genera
       { id: `page:ssot.content.${slugify(sectionId)}.component.3`, kind: "structured_data_node" },
     ],
     sections: [
-      ...(subsectionPages.length > 1 ? [{
+      ...(isPrimarySectionIndex && subsectionPages.length > 1 ? [{
         id: "subsections",
         kind: "package_grid" as const,
         title: `${primarySection?.label ?? sectionLabel} subsections`,
@@ -613,14 +632,20 @@ function sectionIndexPage(sectionId: string, sectionLabel: string, pages: Genera
       {
         id: "page-links",
         kind: "package_grid",
-        title: `${sectionLabel} questions and guides`,
-        packages: pages.map((page) => ({
+        title: `${sectionLabel} representative questions and guides`,
+        packages: pages.slice(0, SECTION_INDEX_LINK_LIMIT).map((page) => ({
           name: indexCardTitle(page),
           description: indexCardDescription(page),
           href: page.slug,
           api: indexCardActions(page),
         })),
       },
+      ...(relatedAreas.length ? [{
+        id: "related-areas",
+        kind: "package_grid" as const,
+        title: `Related ${primarySection?.label ?? "SSOT Registry"} areas`,
+        packages: relatedAreas,
+      }] : []),
     ],
   };
 }

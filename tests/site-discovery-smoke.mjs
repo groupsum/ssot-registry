@@ -6,6 +6,7 @@ import { ssotRegistrySite } from "@ssot-registry/site-content-pack";
 
 const artifactsDir = resolve("packages/site-content-pack/artifacts/discovery");
 const publicDir = resolve("public");
+const distDir = resolve("dist");
 const requiredArtifacts = [
   "sitemap.xml",
   "sitemap-tree.json",
@@ -21,13 +22,19 @@ const expectedPageCount = ssotRegistrySite.pages.length;
 for (const artifact of requiredArtifacts) {
   const packagePath = resolve(artifactsDir, artifact);
   const publicPath = resolve(publicDir, artifact);
+  const distPath = resolve(distDir, artifact);
   assert.ok(existsSync(packagePath), `${artifact} must exist in the site content pack artifacts`);
   assert.ok(existsSync(publicPath), `${artifact} must exist in public/`);
+  assert.ok(existsSync(distPath), `${artifact} must exist in dist/ for production serving`);
   assert.ok(statSync(packagePath).size > 0, `${artifact} package artifact must be non-empty`);
   assert.ok(statSync(publicPath).size > 0, `${artifact} public artifact must be non-empty`);
+  assert.ok(statSync(distPath).size > 0, `${artifact} dist artifact must be non-empty`);
   assert.equal(sha256(packagePath), sha256(publicPath), `${artifact} in public/ must match the generated package artifact`);
+  assert.equal(sha256(packagePath), sha256(distPath), `${artifact} in dist/ must match the generated package artifact`);
 }
 
+const indexHtml = readFileSync(resolve(distDir, "index.html"), "utf8");
+const nginxConfig = readFileSync(resolve("nginx/default.conf"), "utf8");
 const sitemap = readFileSync(resolve(publicDir, "sitemap.xml"), "utf8");
 const sitemapTree = JSON.parse(readFileSync(resolve(publicDir, "sitemap-tree.json"), "utf8"));
 const robots = readFileSync(resolve(publicDir, "robots.txt"), "utf8");
@@ -60,6 +67,12 @@ assert.match(robots, /User-agent: \*/);
 assert.match(robots, /Sitemap: https:\/\/ssot-registry\.com\/sitemap\.xml/);
 assert.match(llms, /SSOT Registry/);
 assert.match(llmsFull, /SSOT Registry Full Content Index/);
+assert.match(indexHtml, /href="\/sitemap\.xml"/);
+assert.match(indexHtml, /href="\/llms\.txt"/);
+assert.match(indexHtml, /href="\/llms-full\.txt"/);
+assert.match(nginxConfig, /robots\\\.txt/);
+assert.match(nginxConfig, /llms\\\.txt/);
+assert.match(nginxConfig, /llms-full\\\.txt/);
 
 assert.equal(contentIndex.product, "SSOT Registry");
 assert.equal(contentIndex.pageCount, expectedPageCount);

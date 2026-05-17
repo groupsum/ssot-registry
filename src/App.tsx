@@ -8,7 +8,7 @@ const normalizePath = (value: string) => {
   return `/${path.replace(/^\/+|\/+$/g, "")}/`;
 };
 
-const compiledPages = ssotRegistrySite.pages.map((page) => {
+function compilePage(page: (typeof ssotRegistrySite.pages)[number]) {
   const path = normalizePath(page.slug);
   return {
     ...page,
@@ -20,23 +20,25 @@ const compiledPages = ssotRegistrySite.pages.map((page) => {
     componentIntents: [],
     schemaIntents: [],
   };
-});
-
-const compiledSite = {
-  ...ssotRegistrySite,
-  pages: compiledPages,
-  pageByPath: new Map(compiledPages.map((page) => [page.path, page])),
-  diagnostics: [],
-};
+}
 
 function currentPage() {
   const browserPath = typeof window === "undefined" ? "/" : window.location.pathname;
   const path = normalizePath(browserPath);
-  const page = compiledSite.pageByPath.get(path) ?? compiledSite.pageByPath.get("/");
+  const page = ssotRegistrySite.pages.find((candidate) => normalizePath(candidate.slug) === path) ?? ssotRegistrySite.pages[0];
   if (!page) {
     throw new Error("SSOT Registry content pack did not define a routable page.");
   }
-  return page;
+  return compilePage(page);
+}
+
+function siteForPage(page: ReturnType<typeof compilePage>) {
+  return {
+    ...ssotRegistrySite,
+    pages: [page],
+    pageByPath: new Map([[page.path, page]]),
+    diagnostics: [],
+  };
 }
 
 function breadcrumbItems(slug: string) {
@@ -60,6 +62,7 @@ function wordCount(value: string) {
 
 export function App() {
   const page = currentPage();
+  const compiledSite = siteForPage(page);
   return (
     <div
       className="site-shell"
@@ -87,7 +90,9 @@ export function App() {
           ) : null}
         </div>
       </header>
-      <LanderPage site={compiledSite as any} page={page as any} />
+      <main id="main-content" className="site-main">
+        <LanderPage site={compiledSite as any} page={page as any} />
+      </main>
       <footer className="site-footer">
         <p>{ssotRegistrySite.footer?.note}</p>
         <nav aria-label="Footer links">
