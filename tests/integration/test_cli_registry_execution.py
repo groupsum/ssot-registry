@@ -47,6 +47,25 @@ class RegistryExecutionCliTests(unittest.TestCase):
         self.assertEqual(evidence["resolved_test_ids"], ["tst:pytest.rfc.9000.connection-migration"])
         self.assertEqual(evidence["cases"][0]["command"][1:3], ["-m", "pytest"])
 
+    def test_test_run_accepts_dot_repo_path_from_repo_root(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+
+        result = run_cli(
+            "test",
+            "run",
+            ".",
+            "--id",
+            "tst:pytest.rfc.9000.connection-migration",
+            "--dry-run",
+            cwd=repo,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertTrue(payload["passed"], payload)
+        self.assertEqual(payload["target"]["ids"], ["tst:pytest.rfc.9000.connection-migration"])
+
     def test_test_run_dry_run_resolves_without_execution(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)

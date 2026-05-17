@@ -61,6 +61,7 @@ def _validate_execution_contract(test: dict[str, Any]) -> dict[str, Any]:
 
 
 def _resolve_command_cwd(repo_root: Path, cwd: str, *, test_id: str) -> Path:
+    repo_root = repo_root.resolve()
     relative = Path(cwd)
     if relative.is_absolute():
         raise ValueError(f"Test {test_id} execution.cwd must be repo-relative")
