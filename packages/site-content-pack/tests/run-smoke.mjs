@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
 import { compileLanderSite, buildLlmsTxt, buildRobotsTxt, buildSitemap } from "@mdwrk/lander-core";
 import { ssotRegistryHomePage, ssotRegistrySite } from "../dist/index.js";
 
@@ -16,6 +17,16 @@ assert.ok(home?.componentIntents.some((intent) => intent.kind === "hero"));
 assert.ok(home?.schemaIntents.some((intent) => intent.kind === "WebPage"));
 assert.ok(home?.schemaIntents.some((intent) => intent.kind === "SoftwareApplication"));
 assert.ok(home?.schemaIntents.some((intent) => intent.kind === "SoftwareSourceCode"));
+for (const stylePath of [
+  "styles/base.css",
+  "styles/shell.css",
+  "styles/content.css",
+  "styles/breadcrumbs.css",
+  "styles/index.css",
+]) {
+  assert.ok(existsSync(stylePath), `${stylePath} must exist`);
+}
+assert.match(readFileSync("styles/index.css", "utf8"), /@import "\.\/shell\.css"/);
 
 assert.match(buildLlmsTxt(compiled), /# SSOT Registry/);
 assert.match(buildRobotsTxt(compiled), /OAI-SearchBot/);

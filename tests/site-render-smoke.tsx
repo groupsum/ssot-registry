@@ -6,7 +6,13 @@ import { generatedCorpusPages, ssotRegistrySite } from "@ssot-registry/site-cont
 import { App } from "../src/App";
 
 const markup = renderToStaticMarkup(<App />);
-const styles = readFileSync("src/styles.css", "utf8");
+const styles = [
+  "packages/site-content-pack/styles/base.css",
+  "packages/site-content-pack/styles/shell.css",
+  "packages/site-content-pack/styles/content.css",
+  "packages/site-content-pack/styles/breadcrumbs.css",
+  "packages/site-content-pack/styles/index.css",
+].map((path) => readFileSync(path, "utf8")).join("\n");
 const htmlShell = readFileSync("index.html", "utf8");
 const nginxConfig = readFileSync("nginx/default.conf", "utf8");
 
@@ -48,6 +54,7 @@ assert.ok(styles.includes(".site-brand-tagline"));
 assert.ok(styles.includes('.site-shell:not([data-page-path="/"]) .lander-page__hero'));
 assert.ok(styles.includes(".lander-page__hero .lander-page__eyebrow"));
 assert.ok(styles.includes('.site-shell[data-page-path="/"] .lander-page__inner > nav[aria-label="Breadcrumb"]'));
+assert.ok(htmlShell.includes("@ssot-registry/site-content-pack/styles") === false);
 assert.ok(!htmlShell.includes("<h1>SSOT Registry</h1>"));
 assert.ok(htmlShell.includes("app-boot-shell"));
 assert.ok(htmlShell.includes("app-boot-sr"));

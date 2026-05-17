@@ -1,0 +1,29 @@
+.site-shell:not([data-page-path="/"]) .lander-page__hero {
+  padding: 3.25rem 0 2.75rem;
+  background: transparent;
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero .lander-page__inner {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero .lander-page__eyebrow {
+  display: none;
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero .lander-page__title {
+  max-width: 24ch;
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.05;
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero .lander-page__intro {
+  max-width: 58rem;
+  margin: 0;
+}
+
+.site-shell:not([data-page-path="/"]) .lander-page__hero .lander-page__button-row {
+  margin-top: 0.2rem;
+}

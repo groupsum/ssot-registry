@@ -20,13 +20,16 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
-    }
+    },
+    "./styles": "./styles/index.css",
+    "./styles/*": "./styles/*"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "src",
     "dist",
+    "styles",
     "README.md"
   ],
   "license": "Apache-2.0"
