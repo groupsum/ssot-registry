@@ -37,7 +37,7 @@ export const ssotRegistryHomePage = {
     {
       kind: "SoftwareSourceCode",
       data: {
-        codeRepository: "https://github.com/swarmauri/ssot-registry",
+        codeRepository: "https://github.com/groupsum/ssot-registry",
         programmingLanguage: "Python",
       },
     },
@@ -57,7 +57,7 @@ export const ssotRegistryHomePage = {
       },
       secondaryCta: {
         label: "View GitHub",
-        href: "https://github.com/swarmauri/ssot-registry",
+        href: "https://github.com/groupsum/ssot-registry",
       },
     },
     {
@@ -203,9 +203,9 @@ export const ssotRegistrySite = {
     description:
       "SSOT Registry keeps architectural decisions, specifications, features, claims, tests, evidence, boundaries, and releases in one inspectable registry.",
     category: "DeveloperApplication",
-    canonicalUrl: "https://ssot-registry.swarmauri.com",
+    canonicalUrl: "https://ssot-registry.com",
     sameAs: [
-      "https://github.com/swarmauri/ssot-registry",
+      "https://github.com/groupsum/ssot-registry",
     ],
   },
   nav: {
@@ -217,14 +217,14 @@ export const ssotRegistrySite = {
     ],
     cta: {
       label: "View GitHub",
-      href: "https://github.com/swarmauri/ssot-registry",
+      href: "https://github.com/groupsum/ssot-registry",
       variant: "primary",
     },
   },
   footer: {
     links: [
       { label: "Documentation", href: "/docs/" },
-      { label: "GitHub", href: "https://github.com/swarmauri/ssot-registry" },
+      { label: "GitHub", href: "https://github.com/groupsum/ssot-registry" },
       { label: "PyPI", href: "https://pypi.org/project/ssot-registry/" },
     ],
     note: "SSOT Registry content is packaged separately from the website host.",

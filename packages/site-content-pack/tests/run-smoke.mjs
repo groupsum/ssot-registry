@@ -10,7 +10,7 @@ assert.deepEqual(errors, []);
 assert.equal(ssotRegistrySite.product.name, "SSOT Registry");
 assert.equal(ssotRegistryHomePage.slug, "/");
 assert.ok(home, "home page must compile");
-assert.equal(home?.canonicalUrl, "https://ssot-registry.swarmauri.com/");
+assert.equal(home?.canonicalUrl, "https://ssot-registry.com/");
 assert.ok(home?.componentIntents.some((intent) => intent.kind === "page_shell"));
 assert.ok(home?.componentIntents.some((intent) => intent.kind === "hero"));
 assert.ok(home?.schemaIntents.some((intent) => intent.kind === "WebPage"));
@@ -19,4 +19,4 @@ assert.ok(home?.schemaIntents.some((intent) => intent.kind === "SoftwareSourceCo
 
 assert.match(buildLlmsTxt(compiled), /# SSOT Registry/);
 assert.match(buildRobotsTxt(compiled), /OAI-SearchBot/);
-assert.equal(buildSitemap(compiled)[0]?.loc, "https://ssot-registry.swarmauri.com/");
+assert.equal(buildSitemap(compiled)[0]?.loc, "https://ssot-registry.com/");

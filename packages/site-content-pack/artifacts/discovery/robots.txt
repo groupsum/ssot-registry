@@ -7,4 +7,4 @@ Allow: /
 User-agent: GPTBot
 Disallow: /
 
-Sitemap: https://ssot-registry.swarmauri.com/sitemap.xml
+Sitemap: https://ssot-registry.com/sitemap.xml

@@ -24,9 +24,10 @@ const semanticIndex = JSON.parse(readFileSync(resolve(discoveryDir, "semantic-in
 const graph = JSON.parse(readFileSync(resolve(discoveryDir, "structured-data-graph.json"), "utf8"));
 
 assert.ok((sitemap.match(/<url>/g) ?? []).length >= 2500);
-assert.match(sitemap, /https:\/\/ssot-registry\.swarmauri\.com\/content\//);
-assert.match(sitemap, /https:\/\/ssot-registry\.swarmauri\.com\/content\/features\//);
-assert.match(sitemap, /https:\/\/ssot-registry\.swarmauri\.com\/features\/developer\/adrs\/what-is\//);
+assert.match(sitemap, /https:\/\/ssot-registry\.com\/content\//);
+assert.match(sitemap, /https:\/\/ssot-registry\.com\/content\/features\//);
+assert.match(sitemap, /https:\/\/ssot-registry\.com\/features\/developer\/adrs\/what-is\//);
+assert.equal(sitemap.includes("swarmauri"), false);
 assert.match(llmsFull, /SSOT Registry Full Content Index/);
 assert.ok(contentIndex.pageCount >= 2500);
 assert.equal(contentIndex.pageCount, semanticIndex.pageCount);

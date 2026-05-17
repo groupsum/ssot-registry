@@ -13,6 +13,13 @@ build/
 .tmp/
 .tmp*
 node_modules/
+public/content-index.json
+public/llms-full.txt
+public/llms.txt
+public/robots.txt
+public/semantic-index.json
+public/sitemap.xml
+public/structured-data-graph.json
 desired-state/
 /.pip-cache
 /.tigrstore_site/tigrbl_engine_tigrstore-0.1.0.dist-info
