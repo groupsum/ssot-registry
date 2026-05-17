@@ -40,6 +40,12 @@ for (const page of generatedPages) {
   assert.ok(renderedText.includes("What, why, how, and when"), `${page.slug} must answer reader question types`);
   assert.ok(renderedText.includes("Install, use, and operate SSOT Registry"), `${page.slug} must teach install/use/operation`);
   assert.ok(renderedText.includes("SSOT Registry explains"), `${page.slug} must use reader-facing explanatory language`);
+  const copy = visibleCopy(page);
+  assert.match(copy, /\bSSOT\b/, `${page.slug} visible copy must strengthen SSOT presence`);
+  assert.match(copy, /single source of truth/i, `${page.slug} visible copy must mention single source of truth`);
+  assert.match(copy, /canonical/i, `${page.slug} visible copy must mention canonical positioning`);
+  assert.match(copy, /\bcanon\b/i, `${page.slug} visible copy must mention canon positioning`);
+  assert.match(copy, /authority/i, `${page.slug} visible copy must mention authority positioning`);
   assert.equal(renderedText.includes("agent discovery"), false, `${page.slug} must not expose discovery mechanics`);
   assert.equal(renderedText.includes("page has"), false, `${page.slug} must not expose generation mechanics`);
 }

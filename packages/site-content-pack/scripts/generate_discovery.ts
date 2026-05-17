@@ -63,12 +63,33 @@ function semanticIndex(items: typeof pages) {
     terms: items.map((page) => ({
       path: page.path,
       title: page.title,
+      description: page.description,
+      keywords: page.seo?.keywords ?? [],
       breadcrumbs: page.breadcrumbs.map((item) => item.label),
       schemaTypes: page.schemaIntents.map((intent) => intent.kind),
       componentKinds: page.componentIntents.map((intent) => intent.kind),
+      semanticSignals: semanticSignals(page),
       wordCount: page.wordCount,
     })),
   };
+}
+
+function semanticSignals(page: typeof pages[number]) {
+  const text = [
+    page.title,
+    page.description,
+    page.intro,
+    page.seo?.keywords?.join(" "),
+  ].join(" ");
+  return [
+    ["SSOT", /\bSSOT\b/i],
+    ["single source of truth", /single source of truth/i],
+    ["canonical", /canonical/i],
+    ["canon", /\bcanon\b/i],
+    ["authority", /authority/i],
+  ]
+    .filter(([, pattern]) => (pattern as RegExp).test(text))
+    .map(([label]) => label);
 }
 
 function structuredDataGraph(items: typeof pages) {

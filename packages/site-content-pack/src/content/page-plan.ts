@@ -95,51 +95,51 @@ function titleForPlan(subjectArea: SubjectArea, intent: string, audience: Audien
 function directAnswer(subjectArea: SubjectArea, intent: string, audience: Audience): string {
   const role = audience.toLowerCase();
   if (intent.includes("what") || intent.includes("definition")) {
-    return `SSOT Registry explains ${subjectArea} as governed records in .ssot/registry.json that give ${role}s a dependable way to name, inspect, and connect software assurance work without relying on scattered notes.`;
+    return `SSOT Registry explains ${subjectArea} as governed records in .ssot/registry.json, the canonical single source of truth that gives ${role}s authority to name, inspect, and connect software assurance work without relying on scattered notes.`;
   }
   if (intent.includes("how") || intent.includes("guide") || intent.includes("workflow")) {
-    return `SSOT Registry explains how ${role}s create or inspect ${subjectArea}, link them to features, claims, tests, evidence, boundaries, or releases, and validate the result before release decisions depend on it.`;
+    return `SSOT Registry explains how ${role}s create or inspect ${subjectArea}, link them to features, claims, tests, evidence, boundaries, or releases, and validate the canonical result before release decisions depend on it.`;
   }
   if (intent.includes("readiness") || intent.includes("proof") || intent.includes("certification")) {
-    return `SSOT Registry explains how ${subjectArea} help ${role}s prove readiness by connecting frozen scope, claims, tests, and evidence into a reviewable registry trail.`;
+    return `SSOT Registry explains how ${subjectArea} help ${role}s prove readiness by connecting frozen scope, claims, tests, and evidence into a reviewable SSOT authority trail.`;
   }
-  return `SSOT Registry explains how ${subjectArea} help ${role}s understand what changed, why it matters, how it is verified, and where the next CLI-backed workflow step belongs.`;
+  return `SSOT Registry explains how ${subjectArea} help ${role}s understand what changed, why it matters, how it is verified, and where the next CLI-backed workflow step belongs in the canonical source of truth.`;
 }
 
 function usageQuestion(subjectArea: SubjectArea, intent: string, audience: Audience): string {
   const role = audience.toLowerCase();
   if (intent.includes("what") || intent.includes("definition")) {
-    return `${subjectArea} matter because SSOT Registry turns them into named, normalized, inspectable records instead of leaving ${role}s to reconstruct intent from scattered documents.`;
+    return `${subjectArea} matter because SSOT Registry turns them into named, normalized, inspectable SSOT records instead of leaving ${role}s to reconstruct intent from scattered documents.`;
   }
   if (intent.includes("how") || intent.includes("guide")) {
-    return `${role}s use ${subjectArea} by reading or changing the registry entity, linking it to adjacent work, and validating the result before downstream automation or release review depends on it.`;
+    return `${role}s use ${subjectArea} by reading or changing the registry entity, linking it to adjacent work, and validating the canonical result before downstream automation or release review depends on it.`;
   }
   if (intent.includes("reference") || intent.includes("command")) {
-    return `SSOT Registry commands help ${role}s list, create, link, execute, export, or verify ${subjectArea} while keeping the canonical registry and derived views aligned.`;
+    return `SSOT Registry commands help ${role}s list, create, link, execute, export, or verify ${subjectArea} while keeping the canonical registry, canon views, and derived views aligned.`;
   }
   if (intent.includes("compare")) {
-    return `Governed ${subjectArea} give ${role}s a stronger alternative to manual tracking because IDs, links, status, and evidence can be validated and exported.`;
+    return `Governed ${subjectArea} give ${role}s a stronger alternative to manual tracking because IDs, links, status, evidence, and authority can be validated and exported.`;
   }
   if (intent.includes("proof") || intent.includes("certification") || intent.includes("readiness")) {
-    return `${subjectArea} improve release readiness because claims, tests, evidence, frozen boundaries, and release status can be reviewed from the same registry trail.`;
+    return `${subjectArea} improve release readiness because claims, tests, evidence, frozen boundaries, and release status can be reviewed from the same canonical registry trail.`;
   }
-  return `${subjectArea} improve governed software delivery for ${role}s by making scope, proof, decisions, and next actions visible in one registry-backed workflow.`;
+  return `${subjectArea} improve governed software delivery for ${role}s by making scope, proof, decisions, and next actions visible in one registry-backed single source of truth workflow.`;
 }
 
 function operationalGuidance(subjectArea: SubjectArea, intent: string, audience: Audience): string {
   const role = audience.toLowerCase();
   if (intent.includes("install") || intent.includes("command") || intent.includes("api")) {
-    return `Install SSOT Registry with pip or uv, run the relevant ssot command, inspect JSON, CSV, YAML, or graph output, and keep ${subjectArea} linked to the work they support.`;
+    return `Install SSOT Registry with pip or uv, run the relevant ssot command, inspect JSON, CSV, YAML, or graph output, and keep ${subjectArea} linked to the canonical work they support.`;
   }
   if (intent.includes("workflow") || intent.includes("scope") || intent.includes("publish")) {
-    return `Use this guidance when ${role}s need a repeatable operating path from ADR and SPEC decisions through scoped features, validation, proof review, certification, promotion, and publication.`;
+    return `Use this guidance when ${role}s need a repeatable operating path from ADR and SPEC decisions through scoped features, validation, proof review, certification, promotion, publication, and authority handoff.`;
   }
-  return `Use this page to explain ${subjectArea}, choose the next SSOT Registry command or workflow, and keep registry decisions traceable for future maintainers and release reviewers.`;
+  return `Use this page to explain ${subjectArea}, choose the next SSOT Registry command or workflow, and keep registry decisions traceable for future maintainers, release reviewers, and canonical authority checks.`;
 }
 
 function summaryForPlan(sectionLabel: string, subjectArea: SubjectArea, intent: string, audience: Audience): string {
   const value = usageQuestion(subjectArea, intent, audience);
-  return `${value} This ${formatCopyAcronyms(sectionLabel.toLowerCase())} guide explains the concept, shows where it fits in the registry, and points to practical next steps.`;
+  return `${value} This ${formatCopyAcronyms(sectionLabel.toLowerCase())} guide explains the concept, shows where it fits in the SSOT canon, and points to practical next steps for a governed single source of truth.`;
 }
 
 function rotate(values: readonly string[], index: number, count: number): string[] {

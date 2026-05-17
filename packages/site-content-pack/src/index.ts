@@ -16,12 +16,12 @@ export const ssotRegistryHomePage = {
   slug: "/",
   title: "SSOT Registry",
   description:
-    "A governed single source of truth for ADRs, specs, features, claims, tests, evidence, boundaries, and releases.",
+    "A governed SSOT and single source of truth for ADRs, specs, features, claims, tests, evidence, boundaries, authority, and releases.",
   h1: "Govern software truth from decision to release.",
   intro:
-    "SSOT Registry turns architecture, scope, proof, and release state into durable registry entities that can be validated, queried, and certified.",
+    "SSOT Registry turns architecture, scope, proof, canon, authority, and release state into durable registry entities that can be validated, queried, and certified.",
   seo: {
-    keywords: ["ssot", "software assurance", "adr", "release certification", "evidence registry"],
+    keywords: ["ssot", "single source of truth", "canonical registry", "canon", "software authority", "software assurance", "adr", "release certification", "evidence registry"],
   },
   schema: [
     { kind: "WebPage" },
@@ -50,7 +50,7 @@ export const ssotRegistryHomePage = {
       eyebrow: "SSOT Registry",
       title: "Govern software truth from decision to release.",
       subtitle:
-        "Model ADRs, specs, features, claims, tests, evidence, boundaries, and releases as one validated source of truth.",
+        "Model ADRs, specs, features, claims, tests, evidence, boundaries, and releases as one validated canonical source of truth.",
       primaryCta: {
         label: "Browse Content",
         href: "/content/",
@@ -68,13 +68,13 @@ export const ssotRegistryHomePage = {
         {
           title: "Governed entity model",
           description:
-            "Track ADRs, specs, features, issues, risks, profiles, tests, claims, evidence, boundaries, and releases with stable IDs.",
+            "Track ADRs, specs, features, issues, risks, profiles, tests, claims, evidence, boundaries, and releases with stable IDs in one canonical SSOT.",
           href: "/content/features/",
         },
         {
           title: "Proof-linked claims",
           description:
-            "Connect claims to required features, test rows, and evidence artifacts so certification can fail closed.",
+            "Connect claims to required features, test rows, and evidence artifacts so certification can fail closed against the authority record.",
           href: "/content/proofs/",
         },
         {
@@ -99,7 +99,7 @@ export const ssotRegistryHomePage = {
         {
           title: "Answer real implementation questions",
           description:
-            "Every guide answers what, why, how, and when questions about the registry model, then points to practical CLI-backed next steps.",
+            "Every guide answers what, why, how, and when questions about the registry model, then points to practical CLI-backed next steps for the single source of truth.",
           href: "/content/",
         },
         {
@@ -124,13 +124,13 @@ export const ssotRegistryHomePage = {
         {
           claim: "Release boundaries",
           status: "supported",
-          evidence: "Frozen boundary snapshots preserve feature and profile scope for release review.",
+          evidence: "Frozen boundary snapshots preserve feature and profile scope as canonical authority for release review.",
           href: "/content/workflows/",
         },
         {
           claim: "Evidence traceability",
           status: "supported",
-          evidence: "Evidence rows point at concrete artifacts and link back to claims and tests.",
+          evidence: "Evidence rows point at concrete artifacts and link back to claims and tests in the SSOT canon.",
           href: "/content/proofs/",
         },
       ],
@@ -142,7 +142,7 @@ export const ssotRegistryHomePage = {
       packages: [
         {
           name: "ssot-registry",
-          description: "CLI and registry APIs for governed SSOT workflows.",
+          description: "CLI and registry APIs for governed SSOT, canonical registry, and authority workflows.",
           install: "uv add ssot-registry",
           href: "https://pypi.org/project/ssot-registry/",
           api: ["ssot validate", "ssot feature list", "ssot release certify"],
@@ -159,7 +159,7 @@ export const ssotRegistryHomePage = {
       kind: "markdown",
       title: "How SSOT Registry work moves",
       body:
-        "A typical SSOT Registry workflow starts with ADRs and specs, targets features, links claims to tests and evidence, freezes a boundary, runs verification, certifies the release, promotes it, and publishes the final state.",
+        "A typical SSOT Registry workflow starts with ADRs and specs, targets features, links claims to tests and evidence, freezes a boundary, runs verification, certifies the release, promotes it, and publishes the final canonical state.",
     },
     {
       id: "faq",
@@ -169,7 +169,7 @@ export const ssotRegistryHomePage = {
         {
           question: "What is the source of truth?",
           answer:
-            "The registry JSON and its linked ADR, SPEC, feature, claim, test, evidence, boundary, and release entities are the source of truth.",
+            "The registry JSON and its linked ADR, SPEC, feature, claim, test, evidence, boundary, and release entities are the SSOT, canonical source of truth, and authority record.",
         },
         {
           question: "Why use release boundaries?",
@@ -188,12 +188,12 @@ export const ssotRegistryHomePage = {
     {
       question: "Can SSOT Registry publish release evidence?",
       answer:
-        "Yes. Release rows can include claim and evidence membership, certification reports, promotion snapshots, and publication snapshots.",
+        "Yes. Release rows can include claim and evidence membership, certification reports, promotion snapshots, publication snapshots, and the final canonical authority state.",
     },
     {
       question: "What can a release reviewer inspect?",
       answer:
-        "A release reviewer can inspect the frozen boundary, feature targets, claim tiers, linked tests, evidence rows, certification report, promotion state, publication state, and any blocking issues or risks.",
+        "A release reviewer can inspect the frozen boundary, feature targets, claim tiers, linked tests, evidence rows, certification report, promotion state, publication state, canon, and any blocking issues or risks.",
     },
   ],
 } satisfies LanderSite["pages"][number];
@@ -204,7 +204,7 @@ export const ssotRegistrySite = {
     slug: "ssot-registry",
     tagline: "Governed single source of truth for software assurance.",
     description:
-      "SSOT Registry keeps architectural decisions, specifications, features, claims, tests, evidence, boundaries, and releases in one inspectable registry.",
+      "SSOT Registry keeps architectural decisions, specifications, features, claims, tests, evidence, boundaries, and releases in one inspectable canonical single source of truth.",
     category: "DeveloperApplication",
     canonicalUrl: "https://ssot-registry.com",
     sameAs: [
@@ -235,15 +235,15 @@ export const ssotRegistrySite = {
   seo: {
     defaultTitle: "SSOT Registry",
     defaultDescription:
-      "A governed registry for ADRs, specs, features, claims, tests, evidence, release boundaries, and certification workflows.",
+      "A governed SSOT and canonical registry for ADRs, specs, features, claims, tests, evidence, release boundaries, authority, and certification workflows.",
     titleTemplate: "%s | SSOT Registry",
   },
   ai: {
     llmsTxtTitle: "SSOT Registry",
     summary:
-      "SSOT Registry is a governed software assurance registry and CLI for managing architecture, scope, claims, tests, evidence, boundaries, and releases.",
+      "SSOT Registry is a governed software assurance registry and CLI for managing architecture, scope, claims, tests, evidence, boundaries, canon, authority, and releases as a single source of truth.",
     coreFacts: [
-      "The registry is the canonical source for governed software assurance entities.",
+      "The registry is the canonical source, canon, and authority record for governed software assurance entities.",
       "Boundaries freeze scoped delivery targets before certification and release.",
       "Claims link behavior to tests and evidence instead of relying on prose assertions.",
     ],

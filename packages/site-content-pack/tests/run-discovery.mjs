@@ -44,6 +44,10 @@ assert.match(robots, /Sitemap: https:\/\/ssot-registry\.com\/sitemap\.xml/);
 assert.match(robots, /User-agent: \*/);
 assert.match(llms, /SSOT Registry/);
 assert.match(llmsFull, /SSOT Registry Full Content Index/);
+for (const term of [/single source of truth/i, /canonical/i, /\bcanon\b/i, /authority/i]) {
+  assert.match(llms, term);
+  assert.match(llmsFull, term);
+}
 assert.equal(contentIndex.product, "SSOT Registry");
 assert.equal(contentIndex.pageCount, expectedPageCount);
 assert.equal(contentIndex.pages.length, expectedPageCount);
@@ -51,6 +55,10 @@ assert.ok(contentIndex.pageCount >= 2500);
 assert.equal(contentIndex.pageCount, semanticIndex.pageCount);
 assert.equal(semanticIndex.product, "SSOT Registry");
 assert.equal(semanticIndex.terms.length, expectedPageCount);
+assert.ok(semanticIndex.terms.some((entry) => JSON.stringify(entry).match(/single source of truth/i)));
+assert.ok(semanticIndex.terms.some((entry) => JSON.stringify(entry).match(/canonical/i)));
+assert.ok(semanticIndex.terms.some((entry) => JSON.stringify(entry).match(/\bcanon\b/i)));
+assert.ok(semanticIndex.terms.some((entry) => JSON.stringify(entry).match(/authority/i)));
 assert.equal(graph.product, "SSOT Registry");
 assert.ok(graph.nodes.length > contentIndex.pageCount);
 assert.ok(graph.nodes.every((node) => node.canonicalUrl.startsWith("https://ssot-registry.com/")));

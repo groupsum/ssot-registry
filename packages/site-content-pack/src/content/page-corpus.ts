@@ -11,28 +11,28 @@ const primaryContentSections = [
     id: "features",
     label: "Features",
     href: "/content/features/",
-    description: "Learn what SSOT Registry tracks, why each entity matters, and how governed records support delivery work.",
+    description: "Learn what SSOT Registry tracks, why each entity matters, and how governed records establish a canonical single source of truth for delivery work.",
     subsections: ["Features", "Workflows", "Comparisons"],
   },
   {
     id: "proof",
     label: "Proof",
     href: "/content/proofs/",
-    description: "Understand claims, evidence, certification, release boundaries, and the review trail that supports release decisions.",
+    description: "Understand claims, evidence, certification, release boundaries, and the authority trail that supports canonical release decisions.",
     subsections: ["Proofs", "Certifications", "Courses", "Lessons"],
   },
   {
     id: "packages",
     label: "Packages",
     href: "/content/packages/",
-    description: "Install SSOT Registry, find the package split, and use CLI, runtime, conformance, contract, view, codegen, and TUI entry points.",
+    description: "Install SSOT Registry, find the package split, and use CLI, runtime, conformance, contract, view, codegen, and TUI entry points to preserve SSOT canon.",
     subsections: ["Packages", "Packs", "API_Reference"],
   },
   {
     id: "faq",
     label: "FAQ",
     href: "/content/faq-qa/",
-    description: "Get direct answers, definitions, and operational explanations for common SSOT Registry questions.",
+    description: "Get direct answers, definitions, and operational explanations for common SSOT Registry, single source of truth, canon, and authority questions.",
     subsections: ["FAQ_QA", "Glossary"],
   },
 ] as const;
@@ -62,6 +62,11 @@ export function pageSpecFromPlan(plan: PlannedPage): GeneratedCorpusPage {
       description: plan.summary,
       keywords: [
         "ssot registry",
+        "ssot",
+        "single source of truth",
+        "canonical registry",
+        "canon",
+        "software authority",
         slugify(plan.subjectArea),
         plan.intent,
         slugify(plan.audience),
@@ -230,7 +235,7 @@ function courseSectionsForPlan(plan: PlannedPage): SectionSpec[] {
           cells: {
             field: "Outcome",
             value: "Operational registry confidence",
-            "registry-use": "The learner should know which registry entity to inspect, which command to run, and which proof link matters next.",
+            "registry-use": "The learner should know which registry entity to inspect, which command to run, and which proof link establishes canonical authority next.",
           },
         },
         {
@@ -321,12 +326,12 @@ function courseLessons(plan: PlannedPage) {
   return [
     {
       title: `Lesson 1: Locate ${plan.subjectArea} in the registry`,
-      description: `Inspect how ${plan.subjectArea.toLowerCase()} are represented, named, and linked inside .ssot/registry.json before changing them.`,
+      description: `Inspect how ${plan.subjectArea.toLowerCase()} are represented, named, and linked inside .ssot/registry.json before changing the canonical source of truth.`,
       href: `/lessons/${audienceSlug}/${subjectSlug}/lesson/`,
     },
     {
       title: `Lesson 2: Connect ${plan.subjectArea} to proof`,
-      description: `Trace the path from ${plan.subjectArea.toLowerCase()} to features, claims, tests, evidence, and reviewable release state.`,
+      description: `Trace the path from ${plan.subjectArea.toLowerCase()} to features, claims, tests, evidence, authority, and reviewable release state.`,
       href: `/lessons/${audienceSlug}/${subjectSlug}/worked-example/`,
     },
     {
@@ -342,7 +347,7 @@ function courseQuiz(plan: PlannedPage) {
   return [
     {
       question: `What makes ${plan.subjectArea} trustworthy in SSOT Registry?`,
-      answer: `${plan.subjectArea} become trustworthy when they are named with stable IDs, linked to adjacent registry entities, and validated instead of being tracked only in prose.`,
+      answer: `${plan.subjectArea} become trustworthy when they are named with stable IDs, linked to adjacent registry entities, and validated as canonical SSOT authority instead of being tracked only in prose.`,
     },
     {
       question: `Which command should a ${plan.audience.toLowerCase()} try first after this course?`,
@@ -382,15 +387,15 @@ function registryConcern(schemaType: string): string {
 
 function whenToUse(plan: PlannedPage): string {
   if (plan.section === "Packages" || plan.section === "API_Reference") {
-    return `Use this when you need to install SSOT Registry, find the right command, or understand how ${plan.subjectArea.toLowerCase()} fit into daily operation.`;
+    return `Use this when you need to install SSOT Registry, find the right command, or understand how ${plan.subjectArea.toLowerCase()} fit into daily canonical operation.`;
   }
   if (plan.section === "Proofs" || plan.section === "Certifications") {
-    return `Use this before certification, release review, or any decision that depends on traceable ${plan.subjectArea.toLowerCase()}.`;
+    return `Use this before certification, release review, or any decision that depends on traceable ${plan.subjectArea.toLowerCase()} authority.`;
   }
   if (plan.section === "FAQ_QA" || plan.section === "Glossary") {
-    return `Use this when a teammate, reviewer, or automation needs a clear explanation of ${plan.subjectArea.toLowerCase()} without losing registry context.`;
+    return `Use this when a teammate, reviewer, or automation needs a clear explanation of ${plan.subjectArea.toLowerCase()} without losing single source of truth context.`;
   }
-  return `Use this when ${plan.audience.toLowerCase()}s need to understand, update, validate, or explain ${plan.subjectArea.toLowerCase()} in SSOT Registry.`;
+  return `Use this when ${plan.audience.toLowerCase()}s need to understand, update, validate, or explain ${plan.subjectArea.toLowerCase()} in SSOT Registry as canon.`;
 }
 
 function usageSteps(plan: PlannedPage): Array<Record<string, unknown>> {
@@ -400,17 +405,17 @@ function usageSteps(plan: PlannedPage): Array<Record<string, unknown>> {
   return [
     {
       title: "Install",
-      description: "Install SSOT Registry with `python -m pip install ssot-registry`, `uv add ssot-registry`, or a project-local uv environment before changing registry state.",
+      description: "Install SSOT Registry with `python -m pip install ssot-registry`, `uv add ssot-registry`, or a project-local uv environment before changing canonical registry state.",
       href: "/content/packages/",
     },
     {
       title: "Inspect",
-      description: `Run ${firstApi} to inspect .ssot/registry.json and its derived views before changing ${plan.subjectArea.toLowerCase()}.`,
+      description: `Run ${firstApi} to inspect .ssot/registry.json and its derived views before changing ${plan.subjectArea.toLowerCase()} in the single source of truth.`,
       href: `/content/${slugify(plan.section)}/`,
     },
     {
       title: "Use",
-      description: `Run ${secondApi} when you need to create, list, link, execute, export, or explain ${plan.subjectArea.toLowerCase()} as part of an SSOT Registry workflow.`,
+      description: `Run ${secondApi} when you need to create, list, link, execute, export, or explain ${plan.subjectArea.toLowerCase()} as part of an SSOT Registry authority workflow.`,
       href: `/content/${slugify(plan.section)}/`,
     },
     {
@@ -423,21 +428,21 @@ function usageSteps(plan: PlannedPage): Array<Record<string, unknown>> {
 
 function registryUsage(plan: PlannedPage, index: number): string {
   const api = plan.relatedApis[index % plan.relatedApis.length] ?? "ssot validate";
-  if (plan.section === "Packages" || plan.section === "API_Reference") return `Use ${api} while installing, validating, exporting, or inspecting SSOT Registry.`;
-  if (plan.section === "Proofs" || plan.section === "Certifications") return `Use ${api} to connect ${plan.subjectArea.toLowerCase()} to claims, tests, evidence, or release review.`;
+  if (plan.section === "Packages" || plan.section === "API_Reference") return `Use ${api} while installing, validating, exporting, or inspecting SSOT Registry canon.`;
+  if (plan.section === "Proofs" || plan.section === "Certifications") return `Use ${api} to connect ${plan.subjectArea.toLowerCase()} to claims, tests, evidence, authority, or release review.`;
   if (plan.section === "FAQ_QA" || plan.section === "Glossary") return `Use ${api} when a direct answer needs to point back to registry truth.`;
-  return `Use ${api} to inspect or update governed ${plan.subjectArea.toLowerCase()} records.`;
+  return `Use ${api} to inspect or update governed ${plan.subjectArea.toLowerCase()} records in the canonical registry.`;
 }
 
 function registryBenefit(plan: PlannedPage): string {
-  return `This keeps ${plan.subjectArea.toLowerCase()} understandable for ${plan.audience.toLowerCase()}s while preserving the registry links needed for validation, automation, and release review.`;
+  return `This keeps ${plan.subjectArea.toLowerCase()} understandable for ${plan.audience.toLowerCase()}s while preserving the registry links needed for validation, automation, canonical authority, and release review.`;
 }
 
 function nextStepDescription(plan: PlannedPage, index: number): string {
   const api = plan.relatedApis[index % plan.relatedApis.length] ?? "ssot validate";
-  if (index === 0) return `Start by running ${api} and reading the registry output for the relevant ${plan.subjectArea.toLowerCase()} records.`;
+  if (index === 0) return `Start by running ${api} and reading the registry output for the relevant ${plan.subjectArea.toLowerCase()} records in the SSOT canon.`;
   if (index === 1) return `Use ${api} to connect this guidance to adjacent SSOT Registry entities instead of tracking it in prose alone.`;
-  return `Finish by validating the registry so ${plan.subjectArea.toLowerCase()} remain ready for review, automation, and release work.`;
+  return `Finish by validating the registry so ${plan.subjectArea.toLowerCase()} remain ready for review, automation, authority checks, and release work.`;
 }
 
 function schemaForPlan(plan: PlannedPage): SchemaSpec[] {
@@ -510,9 +515,9 @@ function contentIndexPage(sectionPages: GeneratedCorpusPage[]): GeneratedCorpusP
     kind: "docs_bridge",
     slug: "/content/",
     title: "SSOT Registry Learning and Reference Hub",
-    description: "Start with the main SSOT Registry sections, then drill into focused guides for governed entities, proof chains, packages, commands, and direct operating answers.",
+    description: "Start with the main SSOT Registry sections, then drill into focused guides for governed entities, proof chains, packages, commands, and direct operating answers that preserve a canonical single source of truth.",
     h1: "Learn SSOT Registry by outcome",
-    intro: "Choose the area that matches your question: what SSOT Registry tracks, how proof works, how to install and operate the CLI, or how to answer a release-review question from registry truth.",
+    intro: "Choose the area that matches your question: what SSOT Registry tracks, how proof works, how to install and operate the CLI, or how to answer a release-review question from canonical registry authority.",
     schema: [
       { kind: "WebPage" },
       { kind: "ItemList" },
@@ -549,7 +554,7 @@ function contentIndexPage(sectionPages: GeneratedCorpusPage[]): GeneratedCorpusP
     faq: [
       {
         question: "How much SSOT Registry guidance is available?",
-        answer: "The SSOT Registry site organizes 3,840 focused guides, answers, references, and workflow pages around registry entities, proof chains, package surfaces, and release operations.",
+        answer: "The SSOT Registry site organizes 3,840 focused guides, answers, references, and workflow pages around registry entities, proof chains, package surfaces, release operations, and single source of truth authority.",
       },
     ],
   };
@@ -572,9 +577,9 @@ function sectionIndexPage(sectionId: string, sectionLabel: string, pages: Genera
     kind: sectionId === "Packages" ? "package" : "docs_bridge",
     slug,
     title: `${sectionLabel} Guide Index`,
-    description: `Find SSOT Registry ${formatCopyAcronyms(sectionLabel.toLowerCase())} guides, explanations, workflows, and next steps.`,
+    description: `Find SSOT Registry ${formatCopyAcronyms(sectionLabel.toLowerCase())} guides, explanations, workflows, and next steps for canonical SSOT authority.`,
     h1: `${sectionLabel} guides for SSOT Registry`,
-    intro: `${sectionLabel} pages explain what to do, why it matters, and how to keep SSOT Registry work inspectable, validated, and ready for review.`,
+    intro: `${sectionLabel} pages explain what to do, why it matters, and how to keep SSOT Registry work inspectable, validated, canonical, and ready for review.`,
     schema: [
       { kind: "WebPage" },
       { kind: "ItemList" },
@@ -630,8 +635,8 @@ function indexCardDescription(page: GeneratedCorpusPage): string {
   const subject = plan.subjectArea.toLowerCase();
   const command = plan.relatedApis[0] ?? "ssot validate";
   const variants: Record<string, string> = {
-    Features: `Shows ${role}s how ${subject} become targetable registry records, where they link to specs, claims, tests, and evidence, and what to validate next.`,
-    Proofs: `Connects ${subject} to claim review, evidence status, and release confidence so ${role}s can see what is proved and what still needs work.`,
+    Features: `Shows ${role}s how ${subject} become targetable canonical registry records, where they link to specs, claims, tests, and evidence, and what to validate next.`,
+    Proofs: `Connects ${subject} to claim review, evidence status, authority, and release confidence so ${role}s can see what is proved and what still needs work.`,
     Packages: `Helps ${role}s choose the package surface for ${subject}, install the right tool, and move from package discovery into a working SSOT command.`,
     Packs: `Explains how governed packs keep ${subject} reusable, reserved, and reviewable without mixing package-owned material into repo-local scope.`,
     FAQ_QA: `Answers the practical ${subject} question in a direct form, then points ${role}s back to the registry relationship that makes the answer trustworthy.`,
@@ -639,8 +644,8 @@ function indexCardDescription(page: GeneratedCorpusPage): string {
     Lessons: `Gives ${role}s a focused exercise for ${subject}, with enough operating context to practice the command path instead of only reading definitions.`,
     Certifications: `Prepares ${role}s to review ${subject} against claim tiers, passing tests, evidence rows, frozen boundaries, and release status.`,
     API_Reference: `Maps ${subject} to ${command}, explains when ${role}s should run it, and shows how command output supports validation, export, or review.`,
-    Workflows: `Places ${subject} inside the ${intentLabel(plan.intent)} workflow so ${role}s can move from decision state to the next governed action.`,
-    Comparisons: `Compares manual ${subject} tracking with SSOT Registry records, emphasizing stable IDs, links, evidence, and exportable review trails.`,
+    Workflows: `Places ${subject} inside the ${intentLabel(plan.intent)} workflow so ${role}s can move from decision state to the next governed canon action.`,
+    Comparisons: `Compares manual ${subject} tracking with SSOT Registry records, emphasizing stable IDs, links, evidence, authority, and exportable review trails.`,
     Glossary: `Defines ${subject} in operational language for ${role}s and connects the term to commands, proof links, and release-review vocabulary.`,
   };
   return variants[plan.section] ?? page.description;
