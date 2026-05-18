@@ -55,6 +55,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("package_name: ssot-contracts", workflow)
         self.assertIn("package_name: ssot-pack-contracts", workflow)
         self.assertIn("package_name: ssot-registry", workflow)
+        self.assertNotIn("if package_name in target_set", workflow)
         self.assertNotIn("./.github/workflows/publish-ssot-", workflow)
 
     def test_ci_runs_shared_suite_once_per_python_version(self) -> None:

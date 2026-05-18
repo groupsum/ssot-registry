@@ -143,8 +143,6 @@ jobs:
               ("publish_layer_6", ["ssot-registry"]),
           ]
 
-          target_set = set(targets)
-
           def package_payload(package_name):
               info = package_meta[package_name]
               return {
@@ -161,7 +159,6 @@ jobs:
                   layer_targets = [
                       package_payload(package_name)
                       for package_name in package_names
-                      if package_name in target_set
                   ]
                   handle.write(
                       f"{output_name}={json.dumps(layer_targets, separators=(',', ':'))}\n"
