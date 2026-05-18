@@ -13,28 +13,28 @@ const primaryContentSections = [
     id: "features",
     label: "Features",
     href: "/content/features/",
-    description: "Learn what SSOT Registry tracks, why each entity matters, and how governed records establish a canonical single source of truth for delivery work.",
+    description: "Plan real delivery work: ADRs, SPECs, features, profiles, and comparisons that turn intent into targetable registry scope.",
     subsections: ["Features", "Workflows", "Comparisons"],
   },
   {
     id: "proof",
     label: "Proof",
     href: "/content/proofs/",
-    description: "Understand claims, evidence, certification, release boundaries, and the authority trail that supports canonical release decisions.",
+    description: "Prepare release proof: claims, tests, evidence, certifications, courses, and lessons that make readiness reviewable.",
     subsections: ["Proofs", "Certifications", "Courses", "Lessons"],
   },
   {
     id: "packages",
     label: "Packages",
     href: "/content/packages/",
-    description: "Install SSOT Registry, find the package split, and use CLI, runtime, conformance, contract, view, codegen, and TUI entry points to preserve SSOT canon.",
+    description: "Install and automate the right surface: full bundle, CLI, core APIs, conformance, contracts, views, codegen, packs, or TUI.",
     subsections: ["Packages", "Packs", "API_Reference"],
   },
   {
     id: "faq",
     label: "FAQ",
     href: "/content/faq-qa/",
-    description: "Get direct answers, definitions, and operational explanations for common SSOT Registry, single source of truth, canon, and authority questions.",
+    description: "Get direct answers and vocabulary for canonical registry authority, proof chains, boundaries, releases, and package choices.",
     subsections: ["FAQ_QA", "Glossary"],
   },
 ] as const;
@@ -94,6 +94,7 @@ export function pageSpecFromPlan(plan: PlannedPage): GeneratedCorpusPage {
 
 function sectionsForPlan(plan: PlannedPage): SectionSpec[] {
   if (plan.section === "Courses") return courseSectionsForPlan(plan);
+  const runbook = runbookForPlan(plan);
   return [
     {
       id: "overview",
@@ -108,37 +109,20 @@ function sectionsForPlan(plan: PlannedPage): SectionSpec[] {
     {
       id: "answer",
       kind: "feature_grid",
-      title: "What, why, how, and when",
-      items: [
-        {
-          title: `What are ${plan.subjectArea}?`,
-          description: plan.aeoGoal,
-        },
-        {
-          title: "Why it matters",
-          description: plan.seoQueryTarget,
-        },
-        {
-          title: "How to use it",
-          description: plan.aieoAgentFact,
-        },
-        {
-          title: "When to use it",
-          description: whenToUse(plan),
-        },
-      ],
+      title: "Answer first",
+      items: answerItems(plan),
     },
     {
-      id: "usage",
+      id: "runbook",
       kind: "feature_grid",
-      title: "Install, use, and operate SSOT Registry",
-      items: usageSteps(plan),
+      title: runbook.title,
+      items: runbook.items,
     },
     {
-      id: "learning-checkpoint",
+      id: "review-checkpoint",
       kind: "feature_grid",
-      title: "Learning outcome and checkpoint",
-      items: learningCheckpointItems(plan),
+      title: "What good looks like",
+      items: reviewCheckpointItems(plan),
     },
     {
       id: "structured-data",
@@ -162,7 +146,7 @@ function sectionsForPlan(plan: PlannedPage): SectionSpec[] {
     {
       id: "related-surfaces",
       kind: "package_grid",
-      title: "Commands and next steps",
+      title: "Open the next operating surface",
       packages: plan.relatedPackages.map((name, index) => ({
         name,
         description: packageNextStepDescription(plan, name, index),
@@ -191,6 +175,133 @@ function sectionsForPlan(plan: PlannedPage): SectionSpec[] {
           evidence: plan.aieoAgentFact,
         },
       ],
+    },
+  ];
+}
+
+function answerItems(plan: PlannedPage): Array<Record<string, unknown>> {
+  const subject = subjectCopy(plan);
+  const command = plan.relatedApis[0] ?? "ssot validate";
+  if (plan.section === "Workflows") {
+    return [
+      {
+        title: "The workflow decision",
+        description: `Use this page when ${subject} must move to the next governed lifecycle state and the team needs a registry-backed decision, not a loose checklist.`,
+      },
+      {
+        title: "The command to start with",
+        description: `Start with \`${command}\`, inspect the registry output, then run the next freeze, proof, certification, promotion, or publication command only when the current state is valid.`,
+      },
+      {
+        title: "The review question",
+        description: `Can a reviewer see the intended scope, the evidence supporting it, and the canonical record that says the workflow is ready to advance?`,
+      },
+    ];
+  }
+  if (plan.section === "API_Reference" || plan.section === "Packages") {
+    return [
+      {
+        title: "What this helps you run",
+        description: `${plan.subjectArea} work should end in a command, package choice, export, or validation result that keeps the registry authoritative.`,
+      },
+      {
+        title: "The first command",
+        description: `Use \`${command}\` as the first concrete operation for this page, then inspect the expected output before chaining more release work.`,
+      },
+      {
+        title: "Why it matters",
+        description: `The value is operational: fewer hand-maintained docs, fewer release-review gaps, and a clearer path from registry state to automation.`,
+      },
+    ];
+  }
+  if (plan.section === "Proofs" || plan.section === "Certifications") {
+    return [
+      {
+        title: "The proof question",
+        description: `For ${subject}, the useful answer is whether claims, tests, evidence, boundaries, and release rows prove readiness together.`,
+      },
+      {
+        title: "The failure condition",
+        description: "If a claim has no test, evidence cannot be verified, or scope is not frozen, certification should not be treated as complete.",
+      },
+      {
+        title: "The next check",
+        description: `Run \`${command}\` or the matching proof command, then decide what evidence must be added before release review continues.`,
+      },
+    ];
+  }
+  return [
+    {
+      title: `What ${plan.subjectArea} do`,
+      description: plan.aeoGoal,
+    },
+    {
+      title: "Why this page exists",
+      description: plan.seoQueryTarget,
+    },
+    {
+      title: "How to act on it",
+      description: plan.aieoAgentFact,
+    },
+  ];
+}
+
+function runbookForPlan(plan: PlannedPage): { title: string; items: Array<Record<string, unknown>> } {
+  const subject = subjectCopy(plan);
+  const firstApi = plan.relatedApis[0] ?? "ssot validate";
+  const secondApi = plan.relatedApis[1] ?? "ssot feature list";
+  const thirdApi = plan.relatedApis[2] ?? "ssot release certify";
+  const firstApiDetail = relatedApiDetails.find((detail) => detail.command === firstApi);
+  const secondApiDetail = relatedApiDetails.find((detail) => detail.command === secondApi);
+  const thirdApiDetail = relatedApiDetails.find((detail) => detail.command === thirdApi);
+  return {
+    title: "Operator runbook",
+    items: [
+      {
+        title: "Input",
+        description: `Start from the current .ssot/registry.json plus the ADRs, SPECs, features, tests, claims, evidence, boundaries, or releases that touch ${subject}.`,
+        href: "/content/features/",
+      },
+      {
+        title: `Run ${firstApi}`,
+        description: `${firstApiDetail?.description ?? "Inspect the registry before changing authority state."} Expected output: ${firstApiDetail?.output ?? "A reviewable registry result."}`,
+        href: "/content/api-reference/",
+      },
+      {
+        title: `Then ${secondApi}`,
+        description: `${secondApiDetail?.description ?? "Move to the next linked registry action."} Expected output: ${secondApiDetail?.output ?? "A linked registry update or report."}`,
+        href: "/content/api-reference/",
+      },
+      {
+        title: `Review with ${thirdApi}`,
+        description: `${thirdApiDetail?.description ?? "Validate release readiness before relying on the result."} Expected output: ${thirdApiDetail?.output ?? "A release-review decision point."}`,
+        href: "/content/workflows/",
+      },
+    ],
+  };
+}
+
+function reviewCheckpointItems(plan: PlannedPage): Array<Record<string, unknown>> {
+  return [
+    {
+      title: "Prerequisites",
+      description: plan.prerequisites.join(" "),
+    },
+    {
+      title: "Reader outcome",
+      description: plan.learningOutcome,
+    },
+    {
+      title: "Exercise",
+      description: plan.exercise,
+    },
+    {
+      title: "Review checkpoint",
+      description: plan.checkpoint,
+    },
+    {
+      title: "Next registry action",
+      description: plan.nextStep,
     },
   ];
 }
@@ -596,10 +707,10 @@ function contentIndexPage(sectionPages: GeneratedCorpusPage[]): GeneratedCorpusP
     planId: "page:ssot.content.index",
     kind: "docs_bridge",
     slug: "/content/",
-    title: "SSOT Registry Learning and Reference Hub",
-    description: "Start with the main SSOT Registry sections, then drill into focused guides for governed entities, proof chains, packages, commands, and direct operating answers that preserve a canonical single source of truth.",
-    h1: "Learn SSOT Registry by outcome",
-    intro: "Choose the area that matches your question: what SSOT Registry tracks, how proof works, how to install and operate the CLI, or how to answer a release-review question from canonical registry authority.",
+    title: "SSOT Registry Operator Hub",
+    description: "Choose a practical SSOT Registry path: plan scope, prove release readiness, install or automate commands, or answer authority questions from the canonical registry.",
+    h1: "Start with the job, not the taxonomy",
+    intro: "Use this hub to move from the work in front of you to the right SSOT Registry path: create target scope, build a proof chain, run the CLI, import governed packs, or explain release authority.",
     schema: [
       { kind: "WebPage" },
       { kind: "ItemList" },
@@ -612,9 +723,36 @@ function contentIndexPage(sectionPages: GeneratedCorpusPage[]): GeneratedCorpusP
     ],
     sections: [
       {
+        id: "operator-paths",
+        kind: "feature_grid",
+        title: "Pick the path that matches your task",
+        items: [
+          {
+            title: "I need to plan a change",
+            description: "Create or sync decision records, target features, and prepare the scope that will later be frozen into a boundary.",
+            href: "/content/features/",
+          },
+          {
+            title: "I need to prove a release",
+            description: "Evaluate claims, run tests, verify evidence, freeze scope, certify release readiness, and publish the closure state.",
+            href: "/content/proofs/",
+          },
+          {
+            title: "I need commands or packages",
+            description: "Install the operator bundle or choose the narrower CLI, core, conformance, contracts, views, codegen, TUI, or pack surface.",
+            href: "/content/packages/",
+          },
+          {
+            title: "I need a direct answer",
+            description: "Use direct answers and glossary definitions to explain SSOT, canon, authority, boundaries, proof, and release state.",
+            href: "/content/faq-qa/",
+          },
+        ],
+      },
+      {
         id: "corpus-summary",
         kind: "feature_grid",
-        title: "Start with a primary section",
+        title: "Browse by section",
         items: primaryContentSections.map((section) => ({
           title: section.label,
           description: section.description,
@@ -786,6 +924,15 @@ function subsectionDescription(sectionId: string, sectionLabel: string): string 
 
 function formatCopyAcronyms(value: string): string {
   return value
+    .replace(/\badr\b/gi, "ADR")
+    .replace(/\badrs\b/gi, "ADRs")
+    .replace(/\bspec\b/gi, "SPEC")
+    .replace(/\bspecs\b/gi, "SPECs")
+    .replace(/\bapi\b/gi, "API")
     .replace(/\bfaq\b/gi, "FAQ")
     .replace(/\bqa\b/gi, "QA");
+}
+
+function subjectCopy(plan: PlannedPage): string {
+  return formatCopyAcronyms(plan.subjectArea.toLowerCase());
 }

@@ -216,42 +216,45 @@ function learningOutcomeFor(
   command: string,
 ): string {
   const role = audience.toLowerCase();
+  const subject = formatCopyAcronyms(subjectArea.toLowerCase());
   if (section === "Courses") {
-    return `By the end, ${role}s can explain ${subjectArea.toLowerCase()}, run ${command}, and decide the next registry action.`;
+    return `By the end, ${role}s can explain ${subject}, run ${command}, and decide the next registry action.`;
   }
   if (section === "Lessons") {
-    return `Practice one concrete ${subjectArea.toLowerCase()} task and verify the result with ${command}.`;
+    return `Practice one concrete ${subject} task and verify the result with ${command}.`;
   }
   if (section === "API_Reference") {
-    return `Choose and run ${command} for ${subjectArea.toLowerCase()} without breaking canonical registry authority.`;
+    return `Choose and run ${command} for ${subject} without breaking canonical registry authority.`;
   }
   if (section === "Workflows") {
-    return `Move ${subjectArea.toLowerCase()} through the ${intent.replace(/-/g, " ")} workflow with a visible validation checkpoint.`;
+    return `Move ${subject} through the ${intent.replace(/-/g, " ")} workflow with a visible validation checkpoint.`;
   }
   if (section === "Proofs" || section === "Certifications") {
-    return `Judge whether ${subjectArea.toLowerCase()} are backed by linked claims, tests, evidence, and frozen release scope.`;
+    return `Judge whether ${subject} are backed by linked claims, tests, evidence, and frozen release scope.`;
   }
-  return `Explain ${subjectArea.toLowerCase()} and identify the next command-backed SSOT Registry step.`;
+  return `Explain ${subject} and identify the next command-backed SSOT Registry step.`;
 }
 
 function exerciseFor(section: string, subjectArea: SubjectArea, audience: Audience, command: string): string {
   const role = audience.toLowerCase();
+  const subject = formatCopyAcronyms(subjectArea.toLowerCase());
   if (section === "Glossary" || section === "FAQ_QA") {
     return `Write a one-paragraph answer for another ${role}, then point it back to ${command} or a registry record.`;
   }
-  return `In a sample repo, run ${command}, find the relevant ${subjectArea.toLowerCase()} records, and note the canonical link or status that should change next.`;
+  return `In a sample repo, run ${command}, find the relevant ${subject} records, and note the canonical link or status that should change next.`;
 }
 
 function checkpointFor(section: string, subjectArea: SubjectArea, audience: Audience): string {
   const role = audience.toLowerCase();
+  const subject = formatCopyAcronyms(subjectArea.toLowerCase());
   if (section === "Certifications" || section === "Proofs") {
-    return `A ${role} can identify which claim, test, evidence, boundary, or release row proves the ${subjectArea.toLowerCase()} state.`;
+    return `A ${role} can identify which claim, test, evidence, boundary, or release row proves the ${subject} state.`;
   }
-  return `A ${role} can describe what ${subjectArea.toLowerCase()} mean, where they live in the registry, and which command validates them.`;
+  return `A ${role} can describe what ${subject} mean, where they live in the registry, and which command validates them.`;
 }
 
 function nextStepFor(section: string, subjectArea: SubjectArea): string {
-  const subject = subjectArea.toLowerCase();
+  const subject = formatCopyAcronyms(subjectArea.toLowerCase());
   const next: Record<string, string> = {
     Features: `Link ${subject} to claims, tests, evidence, and a target boundary.`,
     Proofs: `Run claim, test, or evidence verification before release certification.`,
@@ -271,6 +274,11 @@ function nextStepFor(section: string, subjectArea: SubjectArea): string {
 
 function formatCopyAcronyms(value: string): string {
   return value
+    .replace(/\badr\b/gi, "ADR")
+    .replace(/\badrs\b/gi, "ADRs")
+    .replace(/\bspec\b/gi, "SPEC")
+    .replace(/\bspecs\b/gi, "SPECs")
+    .replace(/\bapi\b/gi, "API")
     .replace(/\bfaq\b/gi, "FAQ")
     .replace(/\bqa\b/gi, "QA");
 }

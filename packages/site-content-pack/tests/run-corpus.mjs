@@ -64,10 +64,13 @@ for (const page of generatedPages) {
   assert.equal(page.sections[0]?.eyebrow, undefined, `${page.slug} must not render generated intro badge copy`);
   assert.ok(compiled.pageByPath.has(page.slug), `${page.slug} must be routable after compile`);
   const renderedText = JSON.stringify(page);
-  assert.ok(renderedText.includes("What, why, how, and when"), `${page.slug} must answer reader question types`);
-  assert.ok(renderedText.includes("Install, use, and operate SSOT Registry"), `${page.slug} must teach install/use/operation`);
   assert.ok(
-    renderedText.includes("Learning outcome and checkpoint") || renderedText.includes("Course metadata"),
+    renderedText.includes("Answer first") || renderedText.includes("What, why, how, and when"),
+    `${page.slug} must answer reader question types`,
+  );
+  assert.ok(renderedText.includes("Operator runbook") || renderedText.includes("Install, use, and operate SSOT Registry"), `${page.slug} must teach install/use/operation`);
+  assert.ok(
+    renderedText.includes("What good looks like") || renderedText.includes("Course metadata"),
     `${page.slug} must expose curriculum checkpoint content`,
   );
   assert.ok(renderedText.includes("Prerequisites"), `${page.slug} must expose prerequisites`);
@@ -186,12 +189,12 @@ assert.equal(
 const lessonPage = generatedPages.find((page) => page.slug === "/lessons/developer/adrs/lesson/");
 assert.ok(lessonPage, "sample lesson page must exist");
 assert.ok(
-  lessonPage.sections.some((section) => section.id === "learning-checkpoint"),
-  "lesson pages must render a learning checkpoint section",
+  lessonPage.sections.some((section) => section.id === "review-checkpoint"),
+  "lesson pages must render a review checkpoint section",
 );
 assert.ok(
   JSON.stringify(lessonPage.sections).includes("Exercise") &&
-  JSON.stringify(lessonPage.sections).includes("Next step:"),
+  JSON.stringify(lessonPage.sections).includes("Next registry action"),
   "lesson pages must include exercise and next-step copy",
 );
 

@@ -26,10 +26,10 @@ export const ssotRegistryHomePage = {
   slug: "/",
   title: "SSOT Registry",
   description:
-    "A governed SSOT and single source of truth for proving what changed, why it is releasable, and which canonical record says so.",
-  h1: "Prove what changed, why it is releasable, and where the authority lives.",
+    "A governed release-readiness registry for teams that need decisions, scope, proof, and publication state in one canonical record.",
+  h1: "Ship from a registry that proves the release.",
   intro:
-    "SSOT Registry makes .ssot/registry.json the governed authority for delivery work: ADRs, SPECs, targetable features, tests, claims, evidence, risks, frozen boundaries, and releases.",
+    "SSOT Registry turns ADRs, SPECs, features, tests, claims, evidence, frozen boundaries, and releases into one inspectable `.ssot/registry.json` authority file.",
   seo: {
     keywords: ["ssot", "single source of truth", "canonical registry", "canon", "software authority", "software assurance", "adr", "release certification", "evidence registry"],
   },
@@ -58,36 +58,36 @@ export const ssotRegistryHomePage = {
       id: "hero",
       kind: "hero",
       eyebrow: "SSOT Registry",
-      title: "Prove what changed, why it is releasable, and where the authority lives.",
+      title: "Ship from a registry that proves the release.",
       subtitle:
-        "Answer the release-review question clearly: what was intended, what changed, what proves it, and which canonical registry record says so.",
+        "Freeze the intended scope, run the required proof, certify the release, and publish the authority trail without reconstructing truth from tickets, docs, and CI logs.",
       primaryCta: {
-        label: "Browse Content",
-        href: "/content/",
+        label: "Follow the release workflow",
+        href: "/content/workflows/",
       },
       secondaryCta: {
-        label: "View GitHub",
-        href: "https://github.com/groupsum/ssot-registry",
+        label: "Install SSOT Registry",
+        href: "/content/packages/",
       },
     },
     {
       id: "first-five-minutes",
       kind: "feature_grid",
-      title: "First five minutes",
+      title: "A concrete first run",
       items: [
         {
-          title: "Install the operator bundle",
-          description: "Run `uv add ssot-registry` or install it in a project-local environment so the CLI can inspect and validate .ssot/registry.json.",
+          title: "1. Install",
+          description: "`uv add ssot-registry` gives operators the full CLI for registry initialization, validation, proof review, and release closure.",
           href: "/content/packages/",
         },
         {
-          title: "Create or inspect the registry",
-          description: "Run `ssot init` for a new repo or `ssot validate` in an existing repo to find schema, link, and readiness problems before review.",
+          title: "2. Validate the registry",
+          description: "`ssot validate` checks schema, links, status, and readiness before automation or reviewers trust `.ssot/registry.json`.",
           href: "/content/api-reference/",
         },
         {
-          title: "Follow the proof path",
-          description: "Move from ADR/SPEC decisions to features, tests, claims, evidence, frozen boundaries, release certification, promotion, and publication.",
+          title: "3. Certify a release",
+          description: "`ssot boundary freeze`, `ssot claim evaluate`, `ssot evidence verify`, and `ssot release certify` turn scope and proof into a reviewable release decision.",
           href: "/content/workflows/",
         },
       ],
@@ -95,24 +95,24 @@ export const ssotRegistryHomePage = {
     {
       id: "features",
       kind: "feature_grid",
-      title: "A registry for the full assurance chain",
+      title: "What the registry replaces",
       items: [
         {
-          title: "Governed entity model",
+          title: "Spreadsheets of release scope",
           description:
-            "Track ADRs, specs, features, issues, risks, profiles, tests, claims, evidence, boundaries, and releases with stable IDs in one canonical SSOT.",
+            "Feature and profile rows are selected into frozen boundaries, so the target set for certification is explicit and cannot drift during review.",
           href: "/content/features/",
         },
         {
-          title: "Proof-linked claims",
+          title: "Unreviewable proof claims",
           description:
-            "Connect claims to required features, test rows, and evidence artifacts so certification can fail closed against the authority record.",
+            "Claims stay linked to required features, test rows, evidence artifacts, and claim tiers, so certification can fail closed instead of trusting prose.",
           href: "/content/proofs/",
         },
         {
-          title: "Boundary-driven release closure",
+          title: "Release notes as authority",
           description:
-            "Freeze release scope, execute verification, certify claims, promote releases, and publish closure snapshots.",
+            "Release rows reference a frozen boundary, carry certification state, and publish closure snapshots as derived outputs from registry truth.",
           href: "/content/workflows/",
         },
       ],
@@ -163,27 +163,33 @@ export const ssotRegistryHomePage = {
       body: boundaryVsReleaseCopy,
     },
     {
-      id: "content-corpus",
+      id: "operator-journeys",
       kind: "feature_grid",
-      title: "Learn SSOT Registry by the work you need to do",
+      title: "Choose the work you are doing",
       items: [
         {
-          title: "Start from the content hub",
+          title: "Planning a change",
           description:
-            "Browse SSOT Registry by features, proof, packages, and direct answers, then drill into the guide that matches your next operation.",
-          href: "/content/",
+            "Start with ADRs and SPECs, create targetable feature rows, and keep the decision-to-scope trail inspectable before implementation starts.",
+          href: "/content/features/",
         },
         {
-          title: "Answer real implementation questions",
+          title: "Preparing release proof",
           description:
-            "Every guide answers what, why, how, and when questions about the registry model, then points to practical CLI-backed next steps for the single source of truth.",
-          href: "/content/",
+            "Link claims to tests and evidence, verify the artifacts, and certify only against the scope frozen into the boundary.",
+          href: "/content/proofs/",
         },
         {
-          title: "Queryable registry exports",
+          title: "Installing or automating",
           description:
-            "Use registry export, graph export, validation reports, and conformance output when a reviewer needs machine-readable proof.",
+            "Pick the package surface for the job: full operator bundle, CLI-only automation, core APIs, conformance checks, views, codegen, or TUI review.",
           href: "/content/api-reference/",
+        },
+        {
+          title: "Importing governed content",
+          description:
+            "Use governance packs when external ADR and SPEC material must sync into reserved ranges instead of being copied as loose documentation.",
+          href: "/content/packs/",
         },
       ],
     },
@@ -233,9 +239,9 @@ export const ssotRegistryHomePage = {
     {
       id: "workflow",
       kind: "markdown",
-      title: "How SSOT Registry work moves",
+      title: "The release workflow in one line",
       body:
-        "A typical SSOT Registry workflow starts with ADRs and SPECs, targets features, links claims to tests and evidence, freezes a boundary, runs verification, certifies the release, promotes it, and publishes the final canonical state.",
+        "`ssot adr sync` and `ssot spec sync` establish decision authority; feature rows define targetable work; tests and evidence prove claims; `ssot boundary freeze` locks scope; `ssot release certify`, `ssot release promote`, and `ssot release publish` close the release.",
     },
     {
       id: "faq",
