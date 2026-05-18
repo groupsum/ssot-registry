@@ -51,13 +51,105 @@ permissions:
 
 jobs:
   publish:
-    uses: ./.github/workflows/_package-publish.yml
-    with:
-      package_name: ssot-views
-      project_path: pkgs/ssot-views
-      pypi_project_url: https://pypi.org/p/ssot-views
-      ref_name: ${{ inputs.ref_name }}
-      publish_to_pypi: ${{ inputs.publish_to_pypi }}
-      create_tag: ${{ inputs.create_tag }}
-      create_github_release: ${{ inputs.create_github_release }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/ssot-views
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install Python 3.12
+        run: uv python install 3.12
+
+      - name: Determine release version and tag
+        id: release_meta
+        env:
+          PACKAGE_NAME: ssot-views
+        run: |
+          VERSION=$(python scripts/release_metadata.py version --package "$PACKAGE_NAME")
+          TAG=$(python scripts/release_metadata.py tag --package "$PACKAGE_NAME")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Create git tag from package version
+        if: ${{ inputs.create_tag }}
+        env:
+          TAG: ${{ steps.release_meta.outputs.tag }}
+        run: |
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists; continuing."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - name: Verify package version and tag are in sync
+        if: ${{ !inputs.create_tag }}
+        env:
+          PACKAGE_NAME: ssot-views
+          EXPECTED_TAG: ${{ steps.release_meta.outputs.tag }}
+        run: |
+          ACTUAL_TAG="${GITHUB_REF_NAME}"
+          if [ "$ACTUAL_TAG" != "$EXPECTED_TAG" ]; then
+            echo "Release tag and package version are out of sync for $PACKAGE_NAME."
+            echo "Expected: $EXPECTED_TAG"
+            echo "Actual:   $ACTUAL_TAG"
+            exit 1
+          fi
+
+      - name: Build package
+        run: uv build --project pkgs/ssot-views --out-dir pkgs/ssot-views/dist
+
+      - name: Generate checksums
+        run: |
+          cd pkgs/ssot-views/dist
+          sha256sum * > SHA256SUMS
+
+      - name: Upload distribution
+        uses: actions/upload-artifact@v6
+        with:
+          name: dist-ssot-views
+          path: pkgs/ssot-views/dist/*
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: ${{ inputs.create_github_release }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release_meta.outputs.tag }}
+          VERSION: ${{ steps.release_meta.outputs.version }}
+          REF_NAME: ${{ inputs.ref_name }}
+          PROJECT_PATH: pkgs/ssot-views
+        run: |
+          ARGS=(
+            "$TAG"
+            "$PROJECT_PATH"/dist/*
+            --target "$REF_NAME"
+            --title "$TAG"
+            --generate-notes
+          )
+          if [[ "$VERSION" == *".dev"* ]]; then
+            ARGS+=(--prerelease)
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "GitHub Release $TAG already exists; continuing."
+            exit 0
+          fi
+          gh release create "${ARGS[@]}"
+
+      - name: Publish package distributions to PyPI
+        if: ${{ inputs.publish_to_pypi }}
+        env:
+          PROJECT_PATH: pkgs/ssot-views
+        run: uv publish --trusted-publishing always --check-url https://pypi.org/simple/ "$PROJECT_PATH"/dist/*
