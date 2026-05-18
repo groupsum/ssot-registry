@@ -169,23 +169,26 @@ class ExtensionPackRegistryLifecycleCliFlagTests(unittest.TestCase):
             preflight_payload = json.loads(preflight.stdout)
             self.assertTrue(preflight_payload["passed"])
             self.assertEqual(preflight_payload["pin"], "2.0.0")
-            self.assertEqual(preflight_payload["resolved"][0]["id"], "spc:5000")
+            resolved_id = preflight_payload["resolved"][0]["id"]
+            resolved_path = preflight_payload["resolved"][0]["target_path"]
+            self.assertTrue(resolved_id.startswith("spc:pack.cli-governance-pack.5000"))
+            self.assertEqual(preflight_payload["resolved"][0]["source_document_id"], "spc:5000")
 
             dry_run = _run_cli_with_package(root, "pack", "sync", str(repo), package_name, "--dry-run", "--resolved")
             self.assertEqual(dry_run.returncode, 0, dry_run.stderr)
-            self.assertFalse((repo / ".ssot" / "specs" / "SPEC-5000-cli-pack-spec.yaml").exists())
+            self.assertFalse((repo / resolved_path).exists())
 
             no_sync = _run_cli_with_package(root, "pack", "sync", str(repo), package_name, "--no-sync")
             self.assertEqual(no_sync.returncode, 0, no_sync.stderr)
             self.assertTrue(json.loads(no_sync.stdout)["no_sync"])
-            self.assertFalse((repo / ".ssot" / "specs" / "SPEC-5000-cli-pack-spec.yaml").exists())
+            self.assertFalse((repo / resolved_path).exists())
 
             sync = _run_cli_with_package(root, "pack", "sync", str(repo), package_name, "--all", "--trust", "--yes", "--reservations")
             self.assertEqual(sync.returncode, 0, sync.stderr)
             sync_payload = json.loads(sync.stdout)
             self.assertTrue(sync_payload["trusted_operator_approved"])
             self.assertTrue(sync_payload["yes"])
-            self.assertEqual(sync_payload["created"], ["spc:5000"])
+            self.assertEqual(sync_payload["created"], [resolved_id])
             self.assertEqual(sync_payload["reservations"][0]["owner"], "extension-pack:cli-governance-pack")
 
     def test_pack_preflight_detects_conflicts_missing_artifacts_schema_pin_and_trust_failures(self) -> None:
@@ -233,7 +236,11 @@ class ExtensionPackRegistryLifecycleCliFlagTests(unittest.TestCase):
             repo.mkdir()
             package_name = _write_pack(root, entries=[{"id": "spc:5000", "number": 5000, "slug": "cli-pack-spec", "title": "CLI Pack Spec"}])
             self.assertEqual(run_cli("init", str(repo), "--repo-id", "repo:pack-prune", "--repo-name", "pack-prune", "--version", "1.0.0").returncode, 0)
-            self.assertEqual(_run_cli_with_package(root, "pack", "sync", str(repo), package_name).returncode, 0)
+            sync = _run_cli_with_package(root, "pack", "sync", str(repo), package_name, "--resolved")
+            self.assertEqual(sync.returncode, 0)
+            sync_payload = json.loads(sync.stdout)
+            synced_id = sync_payload["created"][0]
+            synced_path = sync_payload["resolved"][0]["target_path"]
 
             package_root = root / package_name
             docs_root = package_root / "templates" / "specs"
@@ -243,13 +250,13 @@ class ExtensionPackRegistryLifecycleCliFlagTests(unittest.TestCase):
 
             retained = _run_cli_with_package(root, "pack", "sync", str(repo), package_name)
             self.assertEqual(retained.returncode, 0, retained.stderr)
-            self.assertEqual(json.loads(retained.stdout)["stale"], ["spc:5000"])
-            self.assertTrue((repo / ".ssot" / "specs" / "SPEC-5000-cli-pack-spec.yaml").exists())
+            self.assertEqual(json.loads(retained.stdout)["stale"], [synced_id])
+            self.assertTrue((repo / synced_path).exists())
 
             pruned = _run_cli_with_package(root, "pack", "sync", str(repo), package_name, "--prune-stale")
             self.assertEqual(pruned.returncode, 0, pruned.stderr)
-            self.assertEqual(json.loads(pruned.stdout)["pruned"], ["spc:5000"])
-            self.assertFalse((repo / ".ssot" / "specs" / "SPEC-5000-cli-pack-spec.yaml").exists())
+            self.assertEqual(json.loads(pruned.stdout)["pruned"], [synced_id])
+            self.assertFalse((repo / synced_path).exists())
 
 
 if __name__ == "__main__":

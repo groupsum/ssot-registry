@@ -29,6 +29,19 @@ class ContractsViewsCodegenTests(unittest.TestCase):
         self.assertIn("adr:0600", list_document_manifest_entries("adr"))
         self.assertTrue(load_schema_text("registry.schema.json").startswith("{"))
 
+    def test_registry_schema_exposes_claim_lineage_and_pack_document_provenance(self) -> None:
+        schema = json.loads(load_schema_text("registry.schema.json"))
+        self.assertEqual(schema["properties"]["schema_version"]["const"], "0.6.0")
+        claim_def = schema["$defs"]["claim"]
+        self.assertIn("depends_on_claim_ids", claim_def["required"])
+        self.assertEqual(claim_def["properties"]["depends_on_claim_ids"], {"$ref": "#/$defs/stringList"})
+        for document_def_name in ("adr", "spec"):
+            properties = schema["$defs"][document_def_name]["properties"]
+            self.assertIn("source_pack_id", properties)
+            self.assertIn("source_package_name", properties)
+            self.assertIn("source_document_kind", properties)
+            self.assertIn("source_document_id", properties)
+
     def test_codegen_emits_json_metadata_indexes(self) -> None:
         output_root = REPO_ROOT / ".tmp_test_runs" / "codegen-check"
         written = generate_python_artifacts(output_root)

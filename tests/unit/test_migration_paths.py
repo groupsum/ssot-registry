@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 from ssot_registry.api import upgrade
 from ssot_registry.model.enums import SCHEMA_VERSION
@@ -32,6 +33,38 @@ class MigrationPathTests(unittest.TestCase):
                     seen.add(current)
                     self.assertIn(current, path_by_source)
                     current = path_by_source[current]
+
+    def test_v0_5_to_v0_6_adds_claim_lineage_defaults_without_splitting_claims(self) -> None:
+        registry = {
+            "schema_version": "0.5.0",
+            "claims": [
+                {
+                    "id": "clm:example.t1",
+                    "title": "Example T1 claim",
+                    "status": "asserted",
+                    "tier": "T1",
+                    "kind": "conformance",
+                    "description": "example",
+                    "feature_ids": ["feat:example"],
+                    "test_ids": [],
+                    "evidence_ids": [],
+                    "origin": "repo-local",
+                }
+            ],
+        }
+
+        migrated = upgrade.migrate_v0_5_0_to_v0_6_0(
+            registry,
+            Path("."),
+            previous_version="0.2.10",
+            target_version="0.2.10",
+        )
+
+        self.assertEqual(migrated["schema_version"], SCHEMA_VERSION)
+        self.assertEqual(len(migrated["claims"]), 1)
+        self.assertEqual(migrated["claims"][0]["id"], "clm:example.t1")
+        self.assertEqual(migrated["claims"][0]["tier"], "T1")
+        self.assertEqual(migrated["claims"][0]["depends_on_claim_ids"], [])
 
 
 if __name__ == "__main__":

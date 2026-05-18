@@ -1,0 +1,78 @@
+schema_version: "0.5.0"
+kind: "spec"
+id: "spc:0555"
+number: 555
+slug: "claim-tier-append-only-contract"
+title: "Claim tier append-only contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines the registry contract for claim tier changes after claim creation."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to require one immutable claim row per claim tier."
+    at: "2026-05-18T11:00:12Z"
+references: []
+body: |-
+  ## Scope
+  
+  This specification defines the registry contract for claim tier changes after claim creation.
+  
+  ## Append-Only Tier Rule
+  
+  A claim row represents one assertion at one assurance tier. The `claim.tier` field SHALL be immutable after claim creation.
+  
+  Tooling SHALL NOT overwrite an existing claim row to raise or lower its tier. A higher assurance level SHALL be represented as a new claim row with its own id, tier, status, tests, and evidence.
+  
+  ## One Claim Per Tier
+  
+  For a governed assertion family, each assurance tier SHALL use a distinct claim row. Tier-specific claim ids SHOULD include a tier suffix that matches the row tier, such as:
+  
+  ```text
+  clm:example.capability.t1
+  clm:example.capability.t2
+  clm:example.capability.t3
+  ```
+  
+  The suffix convention is recommended for human review and stable retrieval. Validators MAY enforce the suffix when the id clearly follows the `.t0` through `.t4` convention.
+  
+  ## Tier Relationships
+  
+  Higher-tier claims MAY reference lower-tier claims through `depends_on_claim_ids`. This relationship records proof lineage without mutating lower-tier rows.
+  
+  When present, `depends_on_claim_ids` SHALL contain normalized claim ids. Each referenced claim SHALL exist, SHALL have a tier lower than the referencing claim, and SHOULD describe the same governed assertion family.
+  
+  ## CLI and API Behavior
+  
+  `claim set-tier` SHALL NOT mutate `claim.tier` in place. Implementations SHALL either reject the command with guidance or replace it with an explicit append-only promotion workflow that requires a new claim id.
+  
+  An append-only promotion workflow SHALL:
+  
+  - read the source claim,
+  - require a target tier and new claim id,
+  - create a new claim row at the target tier,
+  - copy only intentional links and metadata,
+  - preserve the source claim unchanged,
+  - optionally add the source claim to `depends_on_claim_ids`.
+  
+  ## Validation
+  
+  Registry validation SHALL reject in-place tier mutation when previous tier history is available from a migration, audit log, or append-only promotion context.
+  
+  Validation SHALL reject a claim whose `depends_on_claim_ids` references a missing claim or a claim at the same or higher tier.
+  
+  Feature, profile, boundary, and release evaluation SHALL continue to evaluate linked active claims against the required tier. Linking a new higher-tier claim SHALL NOT imply that lower-tier claims can be edited, retired, or removed.
+  
+  ## Migration
+  
+  The schema migration that introduces this contract SHALL add `depends_on_claim_ids: []` to existing claim rows. It SHALL preserve existing claim ids, tiers, statuses, tests, evidence, and feature links.
+  
+  The migration SHALL NOT split historical claims into multiple tier rows or invent higher-tier claims. Append-only tier rows apply to future changes after the migration.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0006"
+  - "adr:0625"

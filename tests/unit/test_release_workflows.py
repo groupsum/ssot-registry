@@ -93,15 +93,15 @@ class ReleaseWorkflowTests(unittest.TestCase):
 
     def test_reusable_publish_workflow_uses_tag_as_release_title(self) -> None:
         workflow = _read(".github/workflows/_package-publish.yml")
-        self.assertIn("tag_name: ${{ steps.release_meta.outputs.tag }}", workflow)
-        self.assertIn("name: ${{ steps.release_meta.outputs.tag }}", workflow)
+        self.assertIn("gh release create", workflow)
+        self.assertIn("--title \"$TAG\"", workflow)
 
     def test_built_package_publish_workflow_consumes_release_artifacts(self) -> None:
         workflow = _read(".github/workflows/_publish-built-package.yml")
         self.assertIn("actions/download-artifact@v6", workflow)
         self.assertIn("release-distributions", workflow)
         self.assertIn("gh release create", workflow)
-        self.assertIn("uv publish release-dist/$PACKAGE_NAME/*.whl release-dist/$PACKAGE_NAME/*.tar.gz", workflow)
+        self.assertIn("uv publish --trusted-publishing always --check-url https://pypi.org/simple/ release-dist/$PACKAGE_NAME/*.whl release-dist/$PACKAGE_NAME/*.tar.gz", workflow)
 
     def test_prepare_release_uses_package_aware_bump_script(self) -> None:
         workflow = _read(".github/workflows/prepare-release.yml")

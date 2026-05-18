@@ -65,6 +65,69 @@ class CliClaimSurfaceTests(unittest.TestCase):
 
         set_tier = run_cli("claim", "set-tier", str(repo), "--id", "clm:cli.generated.t1", "--tier", "T3")
         self.assertEqual(set_tier.returncode, 0, set_tier.stderr)
+        self.assertFalse(json.loads(set_tier.stdout)["changed"])
+
+        mutate_tier = run_cli("claim", "set-tier", str(repo), "--id", "clm:cli.generated.t1", "--tier", "T4")
+        self.assertNotEqual(mutate_tier.returncode, 0)
+        self.assertIn("tier is immutable", mutate_tier.stdout)
+
+        lower_claim = run_cli(
+            "claim",
+            "create",
+            str(repo),
+            "--id",
+            "clm:cli.generated.lower.t1",
+            "--title",
+            "CLI lower claim",
+            "--tier",
+            "T1",
+            "--kind",
+            "conformance",
+            "--description",
+            "lower-tier claim",
+        )
+        self.assertEqual(lower_claim.returncode, 0, lower_claim.stderr)
+
+        higher_claim = run_cli(
+            "claim",
+            "create",
+            str(repo),
+            "--id",
+            "clm:cli.generated.higher.t2",
+            "--title",
+            "CLI higher claim",
+            "--tier",
+            "T2",
+            "--kind",
+            "conformance",
+            "--description",
+            "higher-tier claim",
+            "--depends-on-claim-ids",
+            "clm:cli.generated.lower.t1",
+        )
+        self.assertEqual(higher_claim.returncode, 0, higher_claim.stderr)
+        higher_payload = json.loads(higher_claim.stdout)["entity"]
+        self.assertEqual(higher_payload["depends_on_claim_ids"], ["clm:cli.generated.lower.t1"])
+
+        invalid_lineage = run_cli(
+            "claim",
+            "create",
+            str(repo),
+            "--id",
+            "clm:cli.generated.invalid.t1",
+            "--title",
+            "CLI invalid lineage claim",
+            "--tier",
+            "T1",
+            "--kind",
+            "conformance",
+            "--description",
+            "invalid claim lineage",
+            "--depends-on-claim-ids",
+            "clm:cli.generated.higher.t2",
+        )
+        self.assertNotEqual(invalid_lineage.returncode, 0)
+        self.assertIn("dependencies must be lower than T1", invalid_lineage.stdout)
 
         evaluate = run_cli("claim", "evaluate", str(repo), "--claim-id", "clm:cli.generated.t1")
         self.assertEqual(evaluate.returncode, 0, evaluate.stderr)

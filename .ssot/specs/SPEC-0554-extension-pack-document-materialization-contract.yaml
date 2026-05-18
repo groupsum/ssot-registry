@@ -13,9 +13,13 @@ supersedes: []
 superseded_by: []
 status_notes:
   -
-    status: "draft"
-    note: "Created to define collision-safe materialization for pack-local ADR/SPEC ids."
     at: "2026-05-18T08:40:25Z"
+    note: "Created to define collision-safe materialization for pack-local ADR/SPEC ids."
+    status: "draft"
+  -
+    status: "draft"
+    note: "Updated to make pack provenance explicit registry schema metadata and exclude it from ADR/SPEC payloads."
+    at: "2026-05-18T11:00:14Z"
 references: []
 body: |-
   ## Scope
@@ -44,7 +48,7 @@ body: |-
   
   ## Required Provenance
   
-  Materialized extension-pack ADR and SPEC rows SHALL preserve enough provenance to reconstruct the source tuple:
+  Materialized extension-pack ADR and SPEC registry rows SHALL preserve enough provenance to reconstruct the source tuple:
   
   ```json
   {
@@ -55,7 +59,9 @@ body: |-
   }
   ```
   
-  Equivalent field names MAY be introduced by schema migration, but the information content is required.
+  These fields are registry entity metadata. They SHALL be declared explicitly in `registry.schema.json` for ADR and SPEC rows. They SHALL NOT be written into authored ADR or SPEC document payloads unless a future document-payload SPEC explicitly adds them.
+  
+  For extension-pack rows, provenance fields SHALL be all-or-nothing: if any source provenance field is present, all required source provenance fields SHALL be present and valid. For non-extension-pack rows, source provenance fields SHALL be absent.
   
   ## Link Rewriting
   
@@ -69,6 +75,19 @@ body: |-
   - If the same tuple is synced again with changed content, normal managed document update policy applies.
   - If a different tuple maps to an existing materialized id, sync SHALL fail closed.
   - If a pack changes its local source document id, tooling SHALL treat that as a new source tuple unless explicit supersession or migration metadata is present.
+  
+  ## Schema Contract
+  
+  The registry schema that formalizes materialized extension-pack documents SHALL include explicit ADR and SPEC row properties for:
+  
+  - `source_pack_id`,
+  - `source_package_name`,
+  - `source_document_kind`,
+  - `source_document_id`.
+  
+  The schema SHALL constrain `source_pack_id` to normalized `pack:*` identifiers. It SHALL constrain `source_document_kind` to the row's document kind and `source_document_id` to the source document id prefix for that kind.
+  
+  This schema formalization SHALL be delivered through a schema version bump and migration when it changes the declared entity contract.
   
   ## Conformance Obligation
   

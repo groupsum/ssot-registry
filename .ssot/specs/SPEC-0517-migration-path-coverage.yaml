@@ -1,20 +1,59 @@
-adr_ids:
-  - "adr:0510"
+schema_version: "0.5.0"
+kind: "spec"
+id: "spc:0517"
+number: 517
+slug: "migration-path-coverage"
+title: "Migration path coverage contract"
+status: "accepted"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "The upgrade module SHALL expose the supported migration path inventory. Unit tests SHALL verify that every known non-current schema_version has a path to the current schema_version, that each edge names a callable migration function, and that every edge has a release-window label."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "accepted"
+    note: "Updated to require the 0.5.0 to 0.6.0 migration contract for append-only claim tiers and pack provenance."
+    at: "2026-05-18T11:00:13Z"
+references: []
 body: |-
   The upgrade module SHALL expose the supported migration path inventory. Unit tests SHALL verify that every known non-current schema_version has a path to the current schema_version, that each edge names a callable migration function, and that every edge has a release-window label.
-decision_date: null
-id: "spc:0517"
-kind: "spec"
-number: 517
-origin: "ssot-core"
-references: []
-schema_version: "0.2.0"
-slug: "migration-path-coverage"
+  
+  ## Explicit Migration Edges
+  
+  Every breaking schema contract change SHALL add an explicit migration edge from the previous supported schema version to the new schema version.
+  
+  The migration inventory SHALL include:
+  
+  - source schema version,
+  - target schema version,
+  - callable migration function name,
+  - release-window label,
+  - test coverage proving the edge reaches the current schema version.
+  
+  ## Schema 0.6.0 Requirements
+  
+  The `0.5.0 -> 0.6.0` migration SHALL preserve existing assurance history and SHALL NOT invent new claim semantics.
+  
+  For claim tier append-only semantics, the migration SHALL:
+  
+  - add `depends_on_claim_ids: []` to existing claim rows,
+  - preserve existing `claim.tier`, `claim.status`, `feature_ids`, `test_ids`, and `evidence_ids`,
+  - avoid splitting an existing claim into multiple tier rows,
+  - enforce append-only tier behavior only for future mutations after migration.
+  
+  For extension-pack document provenance, the migration SHALL:
+  
+  - preserve complete `source_pack_id`, `source_package_name`, `source_document_kind`, and `source_document_id` fields when already present,
+  - fail closed on partial provenance rather than guessing missing values,
+  - leave non-pack ADR and SPEC rows without source provenance.
+  
+  The migration SHALL update generated schemas, generated constants, registry validation, and migration tests in the same change set.
+  
+  ## Validation Coupling
+  
+  Schema version bumps SHALL be accompanied by validation behavior that understands the new fields. A registry that declares the target schema version SHALL validate under both JSON Schema and runtime validators.
 spec_kind: "governance"
-status: "accepted"
-status_notes: []
-summary: "The upgrade module SHALL expose the supported migration path inventory. Unit tests SHALL verify that every known non-current schema_version has a path to the current schema_version, that each edge names a callable migration function, and that every edge has a release-window label."
-superseded_by: []
-supersedes: []
-tags: []
-title: "Migration path coverage contract"
+adr_ids:
+  - "adr:0510"

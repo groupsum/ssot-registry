@@ -56,6 +56,7 @@ class CliStatusSyncTests(unittest.TestCase):
                     "feature_ids": [feature_id],
                     "test_ids": [test_id],
                     "evidence_ids": [evidence_id],
+                    "depends_on_claim_ids": [],
                 }
             )
         registry["tests"].append(
@@ -182,6 +183,7 @@ class CliStatusSyncTests(unittest.TestCase):
                 "feature_ids": [feature_id],
                 "test_ids": [test_id],
                 "evidence_ids": [evidence_id],
+                "depends_on_claim_ids": [],
             }
         )
         registry["tests"].append(

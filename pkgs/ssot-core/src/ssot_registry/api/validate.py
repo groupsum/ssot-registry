@@ -10,6 +10,7 @@ from ssot_registry.validators import (
     validate_structure,
     validate_references,
     validate_bidirectional_links,
+    validate_claim_lineage,
     validate_coverage,
     validate_document_rows,
     validate_document_reservations,
@@ -38,6 +39,7 @@ def validate_registry_document(
     validate_bidirectional_links(index, failures)
     validate_coverage(index, failures, warnings)
     validate_tiers(index, failures)
+    validate_claim_lineage(index, failures)
     validate_lifecycle_semantics(registry, index, failures, warnings)
     validate_out_of_bounds_disposition(registry, index, failures, warnings)
     validate_assurance_origins(registry, index, failures)

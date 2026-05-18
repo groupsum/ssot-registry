@@ -31,7 +31,7 @@ class RegistryTestExecutionTests(unittest.TestCase):
         self.assertTrue(payload["passed"], payload)
         self.assertEqual(payload["summary"]["passed"], 1)
         self.assertEqual(payload["cases"][0]["runner"], "command")
-        self.assertEqual(payload["cases"][0]["command"][1:3], ["-m", "pytest"])
+        self.assertEqual(payload["cases"][0]["command"][1:3], ["-m", "unittest"])
 
     def test_run_tests_dry_run_reports_execution_contract(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
@@ -63,6 +63,13 @@ class RegistryTestExecutionTests(unittest.TestCase):
         self.assertTrue(
             any("tests.tst:pytest.rfc.9000.connection-migration.execution.argv" in failure for failure in report["failures"])
         )
+
+    def test_repo_registry_test_rows_have_execution_contracts(self) -> None:
+        registry = json.loads((REPO_ROOT / ".ssot" / "registry.json").read_text(encoding="utf-8"))
+
+        missing = [row["id"] for row in registry["tests"] if not row.get("execution")]
+
+        self.assertEqual([], missing)
 
 
 if __name__ == "__main__":

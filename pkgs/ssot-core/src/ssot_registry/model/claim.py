@@ -15,3 +15,4 @@ class ClaimRow(TypedDict, total=False):
     feature_ids: list[str]
     test_ids: list[str]
     evidence_ids: list[str]
+    depends_on_claim_ids: list[str]

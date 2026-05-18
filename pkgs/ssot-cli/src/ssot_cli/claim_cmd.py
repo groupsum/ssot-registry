@@ -22,6 +22,7 @@ _LINK_MAPPING = {
     "feature_ids": "feature_ids",
     "test_ids": "test_ids",
     "evidence_ids": "evidence_ids",
+    "depends_on_claim_ids": "depends_on_claim_ids",
 }
 
 
@@ -47,6 +48,7 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--feature-ids", nargs="*", default=[], help="Feature ids the claim is about.")
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids that support the claim.")
     create.add_argument("--evidence-ids", nargs="*", default=[], help="Evidence ids that substantiate the claim.")
+    create.add_argument("--depends-on-claim-ids", nargs="*", default=[], help="Lower-tier claim ids this claim builds on.")
     create.set_defaults(func=run_create)
 
     get = claim_sub.add_parser("get", help="Show one claim.", description="Fetch a single claim record by id.")
@@ -82,6 +84,7 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
     link.add_argument("--feature-ids", nargs="*", help="Feature ids to attach.")
     link.add_argument("--test-ids", nargs="*", help="Test ids to attach.")
     link.add_argument("--evidence-ids", nargs="*", help="Evidence ids to attach.")
+    link.add_argument("--depends-on-claim-ids", nargs="*", help="Lower-tier claim ids this claim builds on.")
     link.set_defaults(func=run_link)
 
     unlink = claim_sub.add_parser("unlink", help="Remove related records from a claim.", description="Remove links from a claim to features, tests, or evidence.")
@@ -90,6 +93,7 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
     unlink.add_argument("--feature-ids", nargs="*", help="Feature ids to detach.")
     unlink.add_argument("--test-ids", nargs="*", help="Test ids to detach.")
     unlink.add_argument("--evidence-ids", nargs="*", help="Evidence ids to detach.")
+    unlink.add_argument("--depends-on-claim-ids", nargs="*", help="Lower-tier claim ids to detach.")
     unlink.set_defaults(func=run_unlink)
 
     evaluate = claim_sub.add_parser("evaluate", help="Evaluate claim support.", description="Recompute claim support and readiness for one claim or the entire registry.")
@@ -104,7 +108,11 @@ def register_claim(subparsers: argparse._SubParsersAction) -> None:
     set_status.add_argument("--status", required=True, choices=["proposed", "declared", "implemented", "asserted", "evidenced", "certified", "promoted", "published", "blocked", "retired"], help="Target lifecycle or publication state.")
     set_status.set_defaults(func=run_set_status)
 
-    set_tier = claim_sub.add_parser("set-tier", help="Change claim tier.", description="Set the assurance tier expected for a claim.")
+    set_tier = claim_sub.add_parser(
+        "set-tier",
+        help="Check claim tier immutability.",
+        description="Reject in-place claim tier changes; create a new claim row and use depends_on_claim_ids for append-only tier promotion.",
+    )
     add_path_argument(set_tier)
     set_tier.add_argument("--id", required=True, help="Claim id whose tier should change.")
     set_tier.add_argument("--tier", required=True, choices=["T0", "T1", "T2", "T3", "T4"], help="Target assurance tier to assign.")
@@ -132,6 +140,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "feature_ids": args.feature_ids,
         "test_ids": args.test_ids,
         "evidence_ids": args.evidence_ids,
+        "depends_on_claim_ids": args.depends_on_claim_ids,
     }
     return create_entity(args.path, "claims", row)
 

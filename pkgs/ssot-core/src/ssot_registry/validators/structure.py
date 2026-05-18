@@ -218,7 +218,7 @@ def _validate_claim(claim: dict[str, Any], failures: list[str]) -> None:
         failures.append(f"claims.{entity_id}.kind must be a non-empty string")
     if not isinstance(claim.get("description"), str):
         failures.append(f"claims.{entity_id}.description must be a string")
-    for field_name in ("feature_ids", "test_ids", "evidence_ids"):
+    for field_name in ("feature_ids", "test_ids", "evidence_ids", "depends_on_claim_ids"):
         if not _list_of_strings(claim.get(field_name)):
             failures.append(f"claims.{entity_id}.{field_name} must be a list of strings")
 

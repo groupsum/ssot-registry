@@ -43,7 +43,7 @@ LINKABLE_FIELDS = {
     "features": {"spec_ids", "claim_ids", "test_ids", "requires"},
     "profiles": {"feature_ids", "profile_ids"},
     "tests": {"feature_ids", "claim_ids", "evidence_ids"},
-    "claims": {"feature_ids", "test_ids", "evidence_ids"},
+    "claims": {"feature_ids", "test_ids", "evidence_ids", "depends_on_claim_ids"},
     "evidence": {"claim_ids", "test_ids"},
     "issues": {"feature_ids", "claim_ids", "test_ids", "evidence_ids", "risk_ids"},
     "risks": {"feature_ids", "claim_ids", "test_ids", "evidence_ids", "issue_ids"},
@@ -219,6 +219,8 @@ def create_entity(path: str | Path, section: str, row: dict[str, Any]) -> dict[s
 
     candidate = deepcopy(row)
     _ensure_assurance_origin(registry, section, candidate)
+    if section == "claims":
+        candidate.setdefault("depends_on_claim_ids", [])
     _validate_assurance_origin_mutation(registry, section, candidate)
     for field_name in LINKABLE_FIELDS[section]:
         if field_name in candidate and isinstance(candidate[field_name], list):
@@ -394,7 +396,26 @@ def set_claim_status(path: str | Path, claim_id: str, status: str) -> dict[str, 
 
 
 def set_claim_tier(path: str | Path, claim_id: str, tier: str) -> dict[str, Any]:
-    return update_entity(path, "claims", claim_id, {"tier": tier})
+    registry_path, repo_root, registry = load_registry(path)
+    row = _entity_row(registry, "claims", claim_id)
+    current_tier = row.get("tier")
+    if current_tier == tier:
+        report = validate_registry_document(registry, registry_path, repo_root)
+        if not report["passed"]:
+            detail = "; ".join(report["failures"])
+            raise ValidationError(f"Registry validation failed while checking claim {claim_id}: {detail}")
+        return {
+            "passed": True,
+            "registry_path": registry_path.as_posix(),
+            "section": "claims",
+            "entity": deepcopy(row),
+            "changed": False,
+            "message": f"Claim {claim_id} is already tier {tier}; no in-place tier mutation was performed.",
+            "validation": report,
+        }
+    raise ValidationError(
+        f"Claim {claim_id} tier is immutable. Create a new claim row at tier {tier} and link the existing claim through depends_on_claim_ids."
+    )
 
 
 def set_issue_status(path: str | Path, issue_id: str, status: str) -> dict[str, Any]:

@@ -45,7 +45,7 @@ class RegistryExecutionCliTests(unittest.TestCase):
         evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
         self.assertEqual(evidence["target"]["kind"], "test")
         self.assertEqual(evidence["resolved_test_ids"], ["tst:pytest.rfc.9000.connection-migration"])
-        self.assertEqual(evidence["cases"][0]["command"][1:3], ["-m", "pytest"])
+        self.assertEqual(evidence["cases"][0]["command"][1:3], ["-m", "unittest"])
 
     def test_test_run_accepts_dot_repo_path_from_repo_root(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")

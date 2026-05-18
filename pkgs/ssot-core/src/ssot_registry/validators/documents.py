@@ -51,6 +51,19 @@ def _validate_status_notes(prefix: str, row: dict[str, Any], failures: list[str]
             failures.append(f"{prefix}.status_notes[{idx}].reason must be a string when provided")
 
 
+def _has_pack_document_source(row: dict[str, Any], kind: str) -> bool:
+    return (
+        row.get("origin") == "extension-pack"
+        and isinstance(row.get("source_pack_id"), str)
+        and row["source_pack_id"].startswith("pack:")
+        and isinstance(row.get("source_package_name"), str)
+        and bool(row["source_package_name"].strip())
+        and row.get("source_document_kind") == kind
+        and isinstance(row.get("source_document_id"), str)
+        and row["source_document_id"].startswith("adr:" if kind == "adr" else "spc:")
+    )
+
+
 def validate_document_rows(
     registry: dict[str, Any],
     index: dict[str, dict[str, dict[str, Any]]],
@@ -111,8 +124,14 @@ def validate_document_rows(
             if not isinstance(number, int) or number < 1:
                 failures.append(f"{prefix}.number must be an integer >= 1")
                 continue
-            if expected_id is not None and entity_id != expected_id:
+            has_pack_document_source = _has_pack_document_source(row, kind)
+            if expected_id is not None and entity_id != expected_id and not has_pack_document_source:
                 failures.append(f"{prefix}.id must match its number: expected {expected_id}")
+            if any(field_name in row for field_name in ("source_pack_id", "source_package_name", "source_document_kind", "source_document_id")):
+                if not has_pack_document_source:
+                    failures.append(
+                        f"{prefix}.source_* fields must identify a pack-scoped {kind} source document for extension-pack rows"
+                    )
             if not isinstance(slug, str) or not slug:
                 failures.append(f"{prefix}.slug must be a non-empty string")
             if isinstance(slug, str) and isinstance(origin, str):

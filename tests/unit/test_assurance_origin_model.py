@@ -53,6 +53,7 @@ def _repo_with_assurance(repo_kind: str = "repo-local") -> dict[str, object]:
             "feature_ids": ["feat:local.behavior"],
             "test_ids": ["tst:local.behavior"],
             "evidence_ids": ["evd:local.behavior"],
+            "depends_on_claim_ids": [],
         }
     ]
     registry["evidence"] = [
