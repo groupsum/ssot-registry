@@ -16,7 +16,7 @@
 
 `ssot-cli` is the primary command-line distribution for SSOT.
 
-It installs `ssot`, `ssot-cli`, and `ssot-registry` as equivalent executables over the same parser and runtime. The command surface is implemented here, while domain logic lives in [ssot-core](https://pypi.org/project/ssot-core/), reusable conformance checks come from [ssot-conformance](https://pypi.org/project/ssot-conformance/), and shared contract metadata comes from [ssot-contracts](https://pypi.org/project/ssot-contracts/).
+It installs `ssot`, `ssot-cli`, and `ssot-registry` as equivalent executables over the same parser and runtime. The command surface is implemented here, while domain logic lives in [ssot-core](https://pypi.org/project/ssot-core/), reusable conformance checks come from [ssot-conformance](https://pypi.org/project/ssot-conformance/), shared contract metadata comes from [ssot-contracts](https://pypi.org/project/ssot-contracts/), and governance pack interoperability contracts come from [ssot-pack-contracts](https://pypi.org/project/ssot-pack-contracts/).
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
@@ -38,7 +38,9 @@ For local development:
 python -m pip install -e pkgs/ssot-cli
 ```
 
-This package depends on [ssot-core](https://pypi.org/project/ssot-core/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), and [ssot-contracts](https://pypi.org/project/ssot-contracts/), so installing it gives you the full CLI runtime stack.
+This package depends on [ssot-core](https://pypi.org/project/ssot-core/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), and [ssot-pack-contracts](https://pypi.org/project/ssot-pack-contracts/), so installing it gives you the full CLI runtime stack for registry operations and governance pack contract checks.
+
+The CLI tracks the current core release train through compatible `<0.3.0` ranges and uses the current `ssot-pack-contracts` floor. That keeps pack-aware CLI behavior compatible with the latest contract package without forcing unrelated surface packages into core lockstep.
 
 ## Executable names
 
@@ -94,7 +96,7 @@ ssot registry --help
 
 ## Screenshots
 
-Regenerate these assets with `python scripts/generate_cli_screenshots.py`.
+The screenshots below are generated from the current parser help. Regenerate them with `python scripts/generate_cli_screenshots.py`, or regenerate the CLI and TUI assets together with `python scripts/generate_terminal_screenshots.py`.
 
 ![ssot top-level help](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-cli/assets/ssot-cli-help.png)
 
@@ -837,7 +839,7 @@ ssot release certify . --release-id rel:0.1.0 --write-report
 ## Package relationships
 
 - Package type: CLI distribution
-- Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/)
+- Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), [ssot-pack-contracts](https://pypi.org/project/ssot-pack-contracts/)
 - Related packages: [ssot-registry](https://pypi.org/project/ssot-registry/), [ssot-tui](https://pypi.org/project/ssot-tui/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-codegen](https://pypi.org/project/ssot-codegen/)
 
 If you need the command-line interface, this is the package to install.

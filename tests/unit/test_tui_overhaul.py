@@ -145,6 +145,17 @@ class TuiOverhaulUnitTests(unittest.TestCase):
         self.assertIn("get", command.command)
         self.assertEqual(command.command[-1], "feat:demo")
 
+    def test_bridge_action_provider_includes_pack_contracts_src_for_cli_bridge(self) -> None:
+        provider = BridgeActionProvider()
+        command = provider.build_cli_list_command(Path.cwd(), "features")
+        completed = SimpleNamespace(returncode=0, stdout="", stderr="")
+        with patch("ssot_tui.providers.subprocess.run", return_value=completed) as run_mock:
+            provider.run(command)
+
+        env = run_mock.call_args.kwargs["env"]
+        pythonpath = env["PYTHONPATH"]
+        self.assertIn(str(Path("pkgs") / "ssot-pack-contracts" / "src"), pythonpath)
+
     def test_detail_view_model_builds_related_entity_and_file_resources(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         repo = Path(temp_dir.name) / "repo"

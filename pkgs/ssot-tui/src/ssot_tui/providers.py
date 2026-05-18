@@ -169,6 +169,7 @@ class BridgeActionProvider:
                 repo_root / "pkgs" / "ssot-cli" / "src",
                 repo_root / "pkgs" / "ssot-core" / "src",
                 repo_root / "pkgs" / "ssot-contracts" / "src",
+                repo_root / "pkgs" / "ssot-pack-contracts" / "src",
                 repo_root / "pkgs" / "ssot-codegen" / "src",
                 repo_root / "pkgs" / "ssot-views" / "src",
             ]

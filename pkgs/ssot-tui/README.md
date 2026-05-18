@@ -12,7 +12,7 @@
 
 `ssot-tui` is a Textual-based terminal UI for browsing SSOT registries.
 
-It is focused on read-oriented exploration and safe workflow bridges rather than full CRUD parity with the CLI.
+It is focused on read-oriented exploration and safe workflow bridges rather than full CRUD parity with the CLI. It runs on top of the current [ssot-core](https://pypi.org/project/ssot-core/) runtime and [ssot-contracts](https://pypi.org/project/ssot-contracts/) metadata, while the umbrella [ssot-registry](https://pypi.org/project/ssot-registry/) package exposes it through the optional `tui` extra.
 
 ## What this package owns
 
@@ -50,7 +50,7 @@ For local development from this repository:
 python -m pip install -e pkgs/ssot-tui
 ```
 
-This package depends on [ssot-core](https://pypi.org/project/ssot-core/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), and `textual`.
+This package depends on [ssot-core](https://pypi.org/project/ssot-core/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), and `textual`. Its internal SSOT dependency ranges track the current core release train with compatible `<0.3.0` bounds.
 
 ## Start the TUI
 
@@ -78,9 +78,9 @@ The detail pane can traverse linked entity ids, preview file-backed resources, a
 
 ## Screenshots
 
-Regenerate these assets with `python scripts/generate_tui_screenshots.py`.
+The screenshots below are generated from the current Textual application against the repository's SSOT registry. Regenerate them with `python scripts/generate_tui_screenshots.py`, or regenerate the CLI and TUI assets together with `python scripts/generate_terminal_screenshots.py`.
 
-Captured against [`examples/minimal-repo`](../../examples/minimal-repo/README.md) in this workspace:
+Captured against the current repository registry in this workspace:
 
 ![SSOT TUI browser](https://raw.githubusercontent.com/groupsum/ssot-registry/main/pkgs/ssot-tui/assets/ssot-tui-browser.png)
 
