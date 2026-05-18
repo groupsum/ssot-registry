@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssot-registry"
-version = "0.2.18.dev8"
+version = "0.2.18.dev9"
 description = "Umbrella distribution for SSOT that installs the core runtime and primary CLI together."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
@@ -13,9 +13,9 @@ authors = [
   { name = "Jacob Stewart", email = "jacob@swarmauri.com" }
 ]
 dependencies = [
-  "ssot-core==0.2.18.dev8",
-  "ssot-cli>=0.1.12.dev8,<0.2.0",
-  "ssot-contracts==0.2.18.dev8",
+  "ssot-core==0.2.18.dev9",
+  "ssot-cli>=0.1.12.dev9,<0.2.0",
+  "ssot-contracts==0.2.18.dev9",
   "ssot-pack-contracts>=0.2.17,<0.3.0",
   "tomli>=2.0.1; python_version < '3.11'",
 ]
