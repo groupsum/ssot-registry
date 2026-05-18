@@ -25,7 +25,7 @@ class ReleaseMetadataTests(unittest.TestCase):
         payload = json.loads(_run_release_metadata("show").stdout)
         core_versions = [
             payload["packages"][name]["version"]
-            for name in ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core")
+            for name in ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core", "ssot-registry")
         ]
         self.assertEqual(len(set(core_versions)), 1)
 
@@ -103,6 +103,27 @@ class ReleaseMetadataTests(unittest.TestCase):
         payload = json.loads(_run_release_metadata("show").stdout)
         for package_name, package in payload["packages"].items():
             self.assertEqual(package["tag"], f"{package_name}=={package['version']}")
+
+    def test_pack_contracts_and_tui_compatibility_floors_track_current_versions(self) -> None:
+        payload = json.loads(_run_release_metadata("show").stdout)
+        pack_contracts_version = payload["packages"]["ssot-pack-contracts"]["version"]
+        tui_version = payload["packages"]["ssot-tui"]["version"]
+        self.assertEqual(
+            payload["packages"]["ssot-core"]["dependencies"]["ssot-pack-contracts"],
+            f"ssot-pack-contracts>={pack_contracts_version},<0.3.0",
+        )
+        self.assertEqual(
+            payload["packages"]["ssot-registry"]["dependencies"]["ssot-pack-contracts"],
+            f"ssot-pack-contracts>={pack_contracts_version},<0.3.0",
+        )
+        self.assertEqual(
+            payload["packages"]["ssot-cli"]["dependencies"]["ssot-pack-contracts"],
+            f"ssot-pack-contracts>={pack_contracts_version},<0.3.0",
+        )
+        self.assertEqual(
+            payload["packages"]["ssot-registry"]["dependencies"]["ssot-tui"],
+            f"ssot-tui>={tui_version},<0.2.0",
+        )
 
 
 if __name__ == "__main__":

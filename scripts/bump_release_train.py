@@ -16,7 +16,11 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10 fallback
 def _read_project_dependencies(pyproject_path: Path) -> dict[str, str]:
     payload = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
     result: dict[str, str] = {}
-    for dependency in payload.get("project", {}).get("dependencies", []):
+    dependencies = list(payload.get("project", {}).get("dependencies", []))
+    optional_dependencies = payload.get("project", {}).get("optional-dependencies", {})
+    for values in optional_dependencies.values():
+        dependencies.extend(values)
+    for dependency in dependencies:
         for package_name in PACKAGE_INFOS:
             if dependency.startswith(f"{package_name}==") or dependency.startswith(f"{package_name}>="):
                 result[package_name] = dependency
@@ -39,8 +43,15 @@ def _rewrite_dependency(pyproject_path: Path, dependency_name: str, expected_spe
 def sync_release_dependencies() -> list[Path]:
     updated_files: list[Path] = []
     core_version = read_project_version(Path(PACKAGE_INFOS["ssot-contracts"].project_path) / "pyproject.toml")
+    pack_contracts_version = read_project_version(Path(PACKAGE_INFOS["ssot-pack-contracts"].project_path) / "pyproject.toml")
     cli_version = read_project_version(Path(PACKAGE_INFOS["ssot-cli"].project_path) / "pyproject.toml")
-    for package_name, expectations in expected_dependency_specs(core_version, cli_version=cli_version).items():
+    tui_version = read_project_version(Path(PACKAGE_INFOS["ssot-tui"].project_path) / "pyproject.toml")
+    for package_name, expectations in expected_dependency_specs(
+        core_version,
+        cli_version=cli_version,
+        pack_contracts_version=pack_contracts_version,
+        tui_version=tui_version,
+    ).items():
         pyproject_path = Path(PACKAGE_INFOS[package_name].project_path) / "pyproject.toml"
         changed = False
         for dependency_name, expected_spec in expectations.items():

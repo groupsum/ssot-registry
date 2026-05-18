@@ -13,7 +13,7 @@ authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = [
   "orjson>=3.10,<4.0",
   "ssot-contracts==0.2.18.dev9",
-  "ssot-pack-contracts>=0.2.17,<0.3.0",
+  "ssot-pack-contracts>=0.2.19.dev11,<0.3.0",
   "ssot-views==0.2.18.dev9",
   "tomli>=2.0.1; python_version < '3.11'",
 ]

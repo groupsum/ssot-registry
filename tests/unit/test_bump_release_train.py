@@ -41,11 +41,17 @@ class BumpReleaseTrainTests(unittest.TestCase):
                 "ssot-pack-contracts": ("0.2.3", []),
                 "ssot-views": ("0.2.3", ["ssot-contracts==0.2.3"]),
                 "ssot-codegen": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-views==0.2.3"]),
-                "ssot-core": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-pack-contracts==0.2.3", "ssot-views==0.2.3"]),
+                "ssot-core": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-pack-contracts>=0.2.3,<0.3.0", "ssot-views==0.2.3"]),
                 "ssot-conformance": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-core==0.2.3"]),
                 "ssot-registry": (
                     "0.2.3",
-                    ["ssot-contracts==0.2.3", "ssot-pack-contracts==0.2.3", "ssot-core==0.2.3", "ssot-cli>=0.1.0,<0.2.0"],
+                    [
+                        "ssot-contracts==0.2.3",
+                        "ssot-pack-contracts>=0.2.3,<0.3.0",
+                        "ssot-core==0.2.3",
+                        "ssot-cli>=0.1.0,<0.2.0",
+                        "ssot-tui>=0.1.0,<0.2.0",
+                    ],
                 ),
                 "ssot-cli": (
                     "0.1.0",
@@ -93,15 +99,16 @@ class BumpReleaseTrainTests(unittest.TestCase):
             self.assertIn('ssot-views==0.2.4.dev1', codegen_text)
             self.assertIn('version = "0.2.4.dev1"', core_text)
             self.assertIn('ssot-contracts==0.2.4.dev1', core_text)
-            self.assertIn('ssot-pack-contracts>=0.2.17,<0.3.0', core_text)
+            self.assertIn('ssot-pack-contracts>=0.2.4.dev1,<0.3.0', core_text)
             self.assertIn('ssot-views==0.2.4.dev1', core_text)
             self.assertIn('version = "0.2.4.dev1"', conformance_text)
             self.assertIn('ssot-contracts==0.2.4.dev1', conformance_text)
             self.assertIn('ssot-core==0.2.4.dev1', conformance_text)
             self.assertIn('ssot-contracts==0.2.4.dev1', registry_text)
-            self.assertIn('ssot-pack-contracts>=0.2.17,<0.3.0', registry_text)
+            self.assertIn('ssot-pack-contracts>=0.2.4.dev1,<0.3.0', registry_text)
             self.assertIn('ssot-core==0.2.4.dev1', registry_text)
             self.assertIn('ssot-cli>=0.1.1.dev1,<0.2.0', registry_text)
+            self.assertIn('ssot-tui>=0.1.1.dev1,<0.2.0', registry_text)
             self.assertIn('version = "0.1.1.dev1"', cli_text)
             self.assertIn('ssot-contracts>=0.2.4.dev1,<0.3.0', cli_text)
             self.assertIn('ssot-pack-contracts>=0.2.4.dev1,<0.3.0', cli_text)

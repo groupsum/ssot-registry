@@ -27,6 +27,7 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10 fallback
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CORE_PACKAGES = ("ssot-contracts", "ssot-views", "ssot-codegen", "ssot-core")
+LOCKSTEP_PACKAGES = (*CORE_PACKAGES, "ssot-registry")
 RELEASE_ORDER = (
     "ssot-contracts",
     "ssot-pack-contracts",
@@ -121,9 +122,17 @@ def supported_python_spec() -> str:
     return _load_root_pyproject()["tool"]["ssot"]["release"]["supported-python"]
 
 
+def _iter_package_dependency_strings(pyproject: dict) -> list[str]:
+    dependencies = list(pyproject.get("project", {}).get("dependencies", []))
+    optional_dependencies = pyproject.get("project", {}).get("optional-dependencies", {})
+    for values in optional_dependencies.values():
+        dependencies.extend(values)
+    return dependencies
+
+
 def _package_dependencies(pyproject: dict) -> dict[str, str]:
     result: dict[str, str] = {}
-    for dependency in pyproject.get("project", {}).get("dependencies", []):
+    for dependency in _iter_package_dependency_strings(pyproject):
         for package_name in PACKAGE_INFOS:
             if dependency.startswith(f"{package_name}==") or dependency.startswith(f"{package_name}>="):
                 result[package_name] = dependency
@@ -145,11 +154,19 @@ def _next_minor_upper_bound(version: str) -> str:
     return f"{major}.{minor + 1}.0"
 
 
-def expected_dependency_specs(core_version: str, cli_version: str | None = None) -> dict[str, dict[str, str]]:
+def expected_dependency_specs(
+    core_version: str,
+    cli_version: str | None = None,
+    pack_contracts_version: str | None = None,
+    tui_version: str | None = None,
+) -> dict[str, dict[str, str]]:
     compatible_core_range = f">={core_version},<{_next_minor_upper_bound(core_version)}"
-    compatible_pack_contracts_range = ">=0.2.17,<0.3.0"
+    pack_contracts_version = pack_contracts_version or _load_pyproject("ssot-pack-contracts")["project"]["version"]
+    compatible_pack_contracts_range = f">={pack_contracts_version},<{_next_minor_upper_bound(pack_contracts_version)}"
     cli_version = cli_version or _load_pyproject("ssot-cli")["project"]["version"]
     compatible_cli_range = f">={cli_version},<{_next_minor_upper_bound(cli_version)}"
+    tui_version = tui_version or _load_pyproject("ssot-tui")["project"]["version"]
+    compatible_tui_range = f">={tui_version},<{_next_minor_upper_bound(tui_version)}"
     return {
         "ssot-pack-contracts": {},
         "ssot-views": {"ssot-contracts": f"ssot-contracts=={core_version}"},
@@ -171,10 +188,11 @@ def expected_dependency_specs(core_version: str, cli_version: str | None = None)
             "ssot-pack-contracts": f"ssot-pack-contracts{compatible_pack_contracts_range}",
             "ssot-core": f"ssot-core=={core_version}",
             "ssot-cli": f"ssot-cli{compatible_cli_range}",
+            "ssot-tui": f"ssot-tui{compatible_tui_range}",
         },
         "ssot-cli": {
             "ssot-contracts": f"ssot-contracts{compatible_core_range}",
-            "ssot-pack-contracts": f"ssot-pack-contracts{compatible_core_range}",
+            "ssot-pack-contracts": f"ssot-pack-contracts{compatible_pack_contracts_range}",
             "ssot-core": f"ssot-core{compatible_core_range}",
             "ssot-conformance": f"ssot-conformance{compatible_core_range}",
         },
@@ -198,7 +216,7 @@ def collect_metadata() -> dict[str, object]:
             "version": version,
             "tag": f"{package_name}=={version}",
             "dependencies": _package_dependencies(pyproject),
-            "group": "core" if package_name in CORE_PACKAGES else "surface",
+            "group": "lockstep" if package_name in LOCKSTEP_PACKAGES else "surface",
             "requires_python": pyproject["project"]["requires-python"],
         }
     return {
@@ -247,9 +265,9 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
     if ordered_targets != targets:
         raise ValueError("Selected packages must follow canonical release order.")
 
-    core_versions = {packages[name]["version"] for name in CORE_PACKAGES}  # type: ignore[index]
+    core_versions = {packages[name]["version"] for name in LOCKSTEP_PACKAGES}  # type: ignore[index]
     if len(core_versions) != 1:
-        raise ValueError("Core packages are not in lockstep version alignment.")
+        raise ValueError("Lockstep packages are not in version alignment.")
     core_version = next(iter(core_versions))
 
     dependency_specs = expected_dependency_specs(core_version)
