@@ -15,7 +15,9 @@ body: |-
   - `ssot-contracts`, `ssot-views`, `ssot-codegen`, `ssot-core`, and `ssot-registry` SHALL share one version.
   - Dependencies among those lockstep packages SHALL pin the shared core version exactly.
   - `ssot-cli` and `ssot-tui` SHALL depend on compatible ranges for `ssot-core` and `ssot-contracts`.
-  - `ssot-registry` SHALL bundle the canonical runtime by depending on `ssot-core`, `ssot-cli`, and `ssot-contracts`.
+  - `ssot-cli`, `ssot-core`, and `ssot-registry` SHALL depend on a compatible range for the current `ssot-pack-contracts` version when they expose or consume governance-pack contract behavior.
+  - `ssot-registry` SHALL bundle the canonical runtime by depending on `ssot-core`, `ssot-cli`, `ssot-contracts`, and `ssot-pack-contracts`.
+  - `ssot-registry[tui]` SHALL depend on a compatible range for the current `ssot-tui` surface package.
   - Release automation SHALL validate train order and dependency constraints before tags are created.
 decision_date: null
 id: "spc:0511"
