@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from ssot_registry.api import export_registry, sync_automated_statuses
+from ssot_registry.api import export_registry, repair_document_hashes, sync_automated_statuses
 
 
 def register_registry(subparsers: argparse._SubParsersAction) -> None:
@@ -32,6 +32,18 @@ def register_registry(subparsers: argparse._SubParsersAction) -> None:
     sync_statuses.add_argument("--dry-run", action="store_true", help="Report proposed status changes without saving them.")
     sync_statuses.set_defaults(func=run_sync_statuses)
 
+    repair_doc_hashes = registry_sub.add_parser(
+        "repair-doc-hashes",
+        help="Refresh mutable repo-local ADR/SPEC content hashes.",
+        description=(
+            "Repair explicitly selected repo-local ADR and SPEC content_sha256 values after validating each "
+            "document at its registered path, then run full registry validation before saving."
+        ),
+    )
+    repair_doc_hashes.add_argument("path", nargs="?", default=".", help="Repository root or registry file to repair.")
+    repair_doc_hashes.add_argument("--ids", nargs="+", required=True, help="ADR and SPEC ids whose document hashes should be repaired.")
+    repair_doc_hashes.set_defaults(func=run_repair_doc_hashes)
+
 
 def run_export(args: argparse.Namespace) -> dict[str, object]:
     return export_registry(path=args.path, output_format=args.format, output=args.output)
@@ -39,3 +51,7 @@ def run_export(args: argparse.Namespace) -> dict[str, object]:
 
 def run_sync_statuses(args: argparse.Namespace) -> dict[str, object]:
     return sync_automated_statuses(path=args.path, dry_run=args.dry_run)
+
+
+def run_repair_doc_hashes(args: argparse.Namespace) -> dict[str, object]:
+    return repair_document_hashes(path=args.path, ids=args.ids)

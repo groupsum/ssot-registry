@@ -768,6 +768,65 @@ def sync_documents(path: str | Path, kind: str) -> dict[str, Any]:
     }
 
 
+def repair_document_hashes(path: str | Path, ids: list[str]) -> dict[str, Any]:
+    if not ids:
+        raise ValidationError("At least one ADR or SPEC id is required")
+
+    registry_path, repo_root, registry = load_registry(path)
+    lookups = {
+        "adr": _row_lookup(registry, "adr"),
+        "spec": _row_lookup(registry, "spec"),
+    }
+    repaired: list[dict[str, str]] = []
+    seen_ids: set[str] = set()
+
+    for document_id in ids:
+        if document_id in seen_ids:
+            continue
+        seen_ids.add(document_id)
+        if document_id.startswith("adr:"):
+            kind = "adr"
+        elif document_id.startswith("spc:"):
+            kind = "spec"
+        else:
+            raise ValidationError(f"Unsupported document id for hash repair: {document_id}")
+
+        row = lookups[kind].get(document_id)
+        if row is None:
+            raise ValueError(f"Unknown {_document_label(kind)} id: {document_id}")
+        if row.get("origin") != "repo-local" or row.get("managed") is not False or row.get("immutable") is not False:
+            raise ValidationError(f"{_document_label(kind)} {document_id} hash repair only supports mutable repo-local documents")
+
+        target = repo_root / row["path"]
+        if not target.exists():
+            raise ValidationError(f"{_document_label(kind)} {document_id} document path does not exist: {row['path']}")
+
+        payload = normalize_document_payload(kind, load_document_yaml(target))
+        validate_document_payload(kind, payload, expected_row=row)
+        previous_hash = row["content_sha256"]
+        current_hash = sha256_normalized_text_path(target)
+        row["content_sha256"] = current_hash
+        repaired.append(
+            {
+                "id": document_id,
+                "kind": kind,
+                "path": row["path"],
+                "previous_content_sha256": previous_hash,
+                "content_sha256": current_hash,
+            }
+        )
+
+    _sort_document_rows(registry, "adr")
+    _sort_document_rows(registry, "spec")
+    mutation = _validate_and_save(registry_path, repo_root, registry, "repairing document hashes")
+    return {
+        "passed": True,
+        "registry_path": registry_path.as_posix(),
+        "repaired": repaired,
+        **mutation,
+    }
+
+
 def sync_all_documents(path: str | Path) -> dict[str, Any]:
     adr_result = sync_documents(path, "adr")
     spec_result = sync_documents(path, "spec")
