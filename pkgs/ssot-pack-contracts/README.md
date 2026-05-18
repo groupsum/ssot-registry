@@ -10,7 +10,6 @@
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Repository hits" /></a>
 <!-- ssot-schema-badges:start -->
   <img src="https://img.shields.io/badge/schema_version-0.5.0-blue" alt="schema_version 0.5.0" />
-  <img src="https://img.shields.io/badge/migration%20coverage-12%2F12-brightgreen" alt="Migration coverage 12/12" />
 <!-- ssot-schema-badges:end -->
 </div>
 
@@ -50,11 +49,11 @@ Use another package when you want:
 
 ## Governance packs using this contract
 
-These governance packs are expected to expose the `ssot-pack-contracts` API surface from their package root:
+These governance packs implement this contract and expose the `ssot-pack-contracts` API surface from their package root:
 
-- [seo-aeo-aieo-governance-pack](https://pypi.org/project/seo-aeo-aieo-governance-pack/) packages SEO, AEO, and AiEO governance ADR/SPEC content.
-- [digital-signature-governance-pack](https://pypi.org/project/digital-signature-governance-pack/) packages digital-signature governance ADR/SPEC content.
-- [cache-freshness-governance-pack](https://pypi.org/project/cache-freshness-governance-pack/) packages cache freshness and cache governance ADR/SPEC content.
+- [seo-aeo-aieo-governance-pack](https://pypi.org/project/seo-aeo-aieo-governance-pack/) supplies governed SEO, AEO, and AiEO decision/specification templates for search, answer-engine, and AI-engine optimization work.
+- [cache-freshness-governance-pack](https://pypi.org/project/cache-freshness-governance-pack/) supplies HTTP caching and freshness governance templates for cache-control, ETag, CDN, invalidation, and stale-content policy surfaces.
+- [digital-signature-governance-pack](https://pypi.org/project/digital-signature-governance-pack/) supplies digital-signature, electronic-signature, timestamping, validation, archival, and assurance-language governance templates.
 
 Each pack should depend on `ssot-pack-contracts`, include a packaged `metadata.json`, include declared document manifests, and bind the shared API at the package root.
 
@@ -207,7 +206,7 @@ print(pack_api["list_packaged_document_ids"]("spec"))
 
 - Package type: governance-pack contract package
 - Depends on: standard library only, plus `tomli` on Python earlier than 3.11
-- Used by: governance packs such as [seo-aeo-aieo-governance-pack](https://pypi.org/project/seo-aeo-aieo-governance-pack/), [digital-signature-governance-pack](https://pypi.org/project/digital-signature-governance-pack/), and [cache-freshness-governance-pack](https://pypi.org/project/cache-freshness-governance-pack/)
+- Used by: governance packs such as [seo-aeo-aieo-governance-pack](https://pypi.org/project/seo-aeo-aieo-governance-pack/), [cache-freshness-governance-pack](https://pypi.org/project/cache-freshness-governance-pack/), and [digital-signature-governance-pack](https://pypi.org/project/digital-signature-governance-pack/)
 - Consumed by: [ssot-core](https://pypi.org/project/ssot-core/) pack ingestion and [ssot-cli](https://pypi.org/project/ssot-cli/) pack inspection, preflight, and sync workflows
 
 If you are publishing an SSOT governance pack, use `ssot-pack-contracts` as the root API contract. If you are consuming packs, use [ssot-cli](https://pypi.org/project/ssot-cli/) or [ssot-core](https://pypi.org/project/ssot-core/) to inspect, preflight, and synchronize pack content into a governed registry.
