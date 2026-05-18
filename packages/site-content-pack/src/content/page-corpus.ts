@@ -58,12 +58,12 @@ export function pageSpecFromPlan(plan: PlannedPage): GeneratedCorpusPage {
     kind: pageKindForSection(plan.section),
     slug: plan.slug,
     title: plan.title,
-    description: plan.summary,
+    description: `${plan.summary} ${plan.learningOutcome}`,
     h1: plan.title,
-    intro: plan.summary,
+    intro: `${plan.summary} ${plan.learningOutcome}`,
     seo: {
       title: plan.title,
-      description: plan.summary,
+      description: `${plan.summary} ${plan.learningOutcome}`,
       keywords: [
         "ssot registry",
         "ssot",
@@ -133,6 +133,12 @@ function sectionsForPlan(plan: PlannedPage): SectionSpec[] {
       kind: "feature_grid",
       title: "Install, use, and operate SSOT Registry",
       items: usageSteps(plan),
+    },
+    {
+      id: "learning-checkpoint",
+      kind: "feature_grid",
+      title: "Learning outcome and checkpoint",
+      items: learningCheckpointItems(plan),
     },
     {
       id: "structured-data",
@@ -238,8 +244,44 @@ function courseSectionsForPlan(plan: PlannedPage): SectionSpec[] {
           label: "Outcome",
           cells: {
             field: "Outcome",
-            value: "Operational registry confidence",
+            value: plan.learningOutcome,
             "registry-use": "The learner should know which registry entity to inspect, which command to run, and which proof link establishes canonical authority next.",
+          },
+        },
+        {
+          id: "course-level",
+          label: "Learner level",
+          cells: {
+            field: "Learner level",
+            value: plan.learnerLevel,
+            "registry-use": "Keeps the course sequence honest about whether the reader is learning foundations, operation, review, or advanced workflow decisions.",
+          },
+        },
+        {
+          id: "course-prerequisites",
+          label: "Prerequisites",
+          cells: {
+            field: "Prerequisites",
+            value: plan.prerequisites.join(" "),
+            "registry-use": "Makes the entry criteria explicit before the learner tries to operate canonical registry state.",
+          },
+        },
+        {
+          id: "course-exercise",
+          label: "Exercise",
+          cells: {
+            field: "Exercise",
+            value: plan.exercise,
+            "registry-use": "Connects course copy to a concrete command-backed registry task.",
+          },
+        },
+        {
+          id: "course-checkpoint",
+          label: "Checkpoint",
+          cells: {
+            field: "Checkpoint",
+            value: plan.checkpoint,
+            "registry-use": "Defines the observable proof that the learner can use the page instead of only reading it.",
           },
         },
         {
@@ -260,7 +302,7 @@ function courseSectionsForPlan(plan: PlannedPage): SectionSpec[] {
       items: [
         {
           title: "What you will learn",
-          description: plan.aeoGoal,
+          description: `${plan.aeoGoal} Outcome: ${plan.learningOutcome}`,
         },
         {
           title: "Why the course matters",
@@ -273,6 +315,10 @@ function courseSectionsForPlan(plan: PlannedPage): SectionSpec[] {
         {
           title: "When to use this course",
           description: `Use this course when ${plan.audience.toLowerCase()}s need to turn ${plan.subjectArea.toLowerCase()} from a concept into a registry action they can validate.`,
+        },
+        {
+          title: "Completion checkpoint",
+          description: plan.checkpoint,
         },
       ],
     },
@@ -320,6 +366,27 @@ function courseSectionsForPlan(plan: PlannedPage): SectionSpec[] {
           evidence: "The follow-up quiz checks concept, operation, and release-readiness understanding.",
         },
       ],
+    },
+  ];
+}
+
+function learningCheckpointItems(plan: PlannedPage): Array<Record<string, unknown>> {
+  return [
+    {
+      title: "Prerequisites",
+      description: plan.prerequisites.join(" "),
+    },
+    {
+      title: "Learning outcome",
+      description: plan.learningOutcome,
+    },
+    {
+      title: "Exercise",
+      description: plan.exercise,
+    },
+    {
+      title: "Checkpoint",
+      description: `${plan.checkpoint} Next step: ${plan.nextStep}`,
     },
   ];
 }
@@ -406,9 +473,9 @@ function usageSteps(plan: PlannedPage): Array<Record<string, unknown>> {
   const firstApi = plan.relatedApis[0] ?? "ssot validate";
   const secondApi = plan.relatedApis[1] ?? "ssot feature list";
   const thirdApi = plan.relatedApis[2] ?? "ssot release certify";
-  const firstApiDetail = relatedApiDetails.find((detail) => detail.command === firstApi)?.description;
-  const secondApiDetail = relatedApiDetails.find((detail) => detail.command === secondApi)?.description;
-  const thirdApiDetail = relatedApiDetails.find((detail) => detail.command === thirdApi)?.description;
+  const firstApiDetail = relatedApiDetails.find((detail) => detail.command === firstApi);
+  const secondApiDetail = relatedApiDetails.find((detail) => detail.command === secondApi);
+  const thirdApiDetail = relatedApiDetails.find((detail) => detail.command === thirdApi);
   return [
     {
       title: "Install",
@@ -417,17 +484,17 @@ function usageSteps(plan: PlannedPage): Array<Record<string, unknown>> {
     },
     {
       title: "Inspect",
-      description: `Run ${firstApi} to inspect .ssot/registry.json and its derived views before changing ${plan.subjectArea.toLowerCase()} in the single source of truth.${firstApiDetail ? ` ${firstApiDetail}` : ""}`,
+      description: `Run ${firstApi} to inspect .ssot/registry.json and its derived views before changing ${plan.subjectArea.toLowerCase()} in the single source of truth.${firstApiDetail ? ` ${firstApiDetail.description} Expected output: ${firstApiDetail.output}` : ""}`,
       href: `/content/${slugify(plan.section)}/`,
     },
     {
       title: "Use",
-      description: `Run ${secondApi} when you need to create, list, link, execute, export, or explain ${plan.subjectArea.toLowerCase()} as part of an SSOT Registry authority workflow.${secondApiDetail ? ` ${secondApiDetail}` : ""}`,
+      description: `Run ${secondApi} when you need to create, list, link, execute, export, or explain ${plan.subjectArea.toLowerCase()} as part of an SSOT Registry authority workflow.${secondApiDetail ? ` ${secondApiDetail.description} Expected output: ${secondApiDetail.output}` : ""}`,
       href: `/content/${slugify(plan.section)}/`,
     },
     {
       title: "Operate",
-      description: `Run ${thirdApi} or validate the registry before certification, promotion, publication, or release closure depends on this work.${thirdApiDetail ? ` ${thirdApiDetail}` : ""}`,
+      description: `Run ${thirdApi} or validate the registry before certification, promotion, publication, or release closure depends on this work.${thirdApiDetail ? ` ${thirdApiDetail.description} Expected output: ${thirdApiDetail.output}` : ""}`,
       href: "/content/workflows/",
     },
   ];
@@ -447,9 +514,9 @@ function registryBenefit(plan: PlannedPage): string {
 
 function nextStepDescription(plan: PlannedPage, index: number): string {
   const api = plan.relatedApis[index % plan.relatedApis.length] ?? "ssot validate";
-  const apiDetail = relatedApiDetails.find((detail) => detail.command === api)?.description;
+  const apiDetail = relatedApiDetails.find((detail) => detail.command === api);
   if (index === 0) return `Start by running ${api} and reading the registry output for the relevant ${plan.subjectArea.toLowerCase()} records in the SSOT canon.`;
-  if (index === 1) return `Use ${api} to connect this guidance to adjacent SSOT Registry entities instead of tracking it in prose alone.${apiDetail ? ` ${apiDetail}` : ""}`;
+  if (index === 1) return `Use ${api} to connect this guidance to adjacent SSOT Registry entities instead of tracking it in prose alone.${apiDetail ? ` ${apiDetail.description}` : ""}`;
   return `Finish by validating the registry so ${plan.subjectArea.toLowerCase()} remain ready for review, automation, authority checks, and release work.`;
 }
 

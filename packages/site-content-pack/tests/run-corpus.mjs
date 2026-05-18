@@ -66,6 +66,12 @@ for (const page of generatedPages) {
   const renderedText = JSON.stringify(page);
   assert.ok(renderedText.includes("What, why, how, and when"), `${page.slug} must answer reader question types`);
   assert.ok(renderedText.includes("Install, use, and operate SSOT Registry"), `${page.slug} must teach install/use/operation`);
+  assert.ok(
+    renderedText.includes("Learning outcome and checkpoint") || renderedText.includes("Course metadata"),
+    `${page.slug} must expose curriculum checkpoint content`,
+  );
+  assert.ok(renderedText.includes("Prerequisites"), `${page.slug} must expose prerequisites`);
+  assert.ok(renderedText.includes("Exercise"), `${page.slug} must expose exercises`);
   assert.ok(renderedText.includes("SSOT Registry explains"), `${page.slug} must use reader-facing explanatory language`);
   const copy = visibleCopy(page);
   assert.match(copy, /\bSSOT\b/, `${page.slug} visible copy must strengthen SSOT presence`);
@@ -153,6 +159,13 @@ assert.ok(
   "course pages must render course metadata",
 );
 assert.ok(
+  JSON.stringify(coursePage.sections).includes("Learner level") &&
+  JSON.stringify(coursePage.sections).includes("Prerequisites") &&
+  JSON.stringify(coursePage.sections).includes("Exercise") &&
+  JSON.stringify(coursePage.sections).includes("Checkpoint"),
+  "course pages must render explicit curriculum metadata",
+);
+assert.ok(
   coursePage.sections.some((section) => section.id === "course-overview"),
   "course pages must render course content",
 );
@@ -168,6 +181,18 @@ assert.equal(
   coursePage.sections[0].primaryCta.href,
   "#course-overview",
   "Start course CTA must jump to the course content on the course page",
+);
+
+const lessonPage = generatedPages.find((page) => page.slug === "/lessons/developer/adrs/lesson/");
+assert.ok(lessonPage, "sample lesson page must exist");
+assert.ok(
+  lessonPage.sections.some((section) => section.id === "learning-checkpoint"),
+  "lesson pages must render a learning checkpoint section",
+);
+assert.ok(
+  JSON.stringify(lessonPage.sections).includes("Exercise") &&
+  JSON.stringify(lessonPage.sections).includes("Next step:"),
+  "lesson pages must include exercise and next-step copy",
 );
 
 function visibleCopy(value, key = "") {

@@ -13,8 +13,10 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "plan:json": "tsx scripts/generate_content_plan_json.ts",
     "plan:xlsx": "npm run plan:json && python scripts/generate_content_plan_xlsx.py",
+    "audit": "tsx scripts/generate_site_content_audit.ts",
+    "traceability": "tsx scripts/generate_component_traceability.ts",
     "discovery": "tsx scripts/generate_discovery.ts",
-    "test": "npm run build && node tests/run-smoke.mjs && npm run plan:json && node tests/run-plan.mjs && node tests/run-corpus.mjs && npm run discovery && node tests/run-discovery.mjs"
+    "test": "npm run build && node tests/run-smoke.mjs && npm run audit && node tests/run-audit.mjs && npm run plan:json && node tests/run-plan.mjs && node tests/run-corpus.mjs && npm run traceability && node tests/run-traceability.mjs && npm run discovery && node tests/run-discovery.mjs"
   },
   "exports": {
     ".": {

@@ -23,6 +23,12 @@ for (const page of pages) {
   assert.ok(page.breadcrumbs.length >= 4, `${page.pageId} must define breadcrumbs`);
   assert.ok(page.relatedPackages.length > 0, `${page.pageId} must define related packages`);
   assert.ok(page.relatedApis.length > 0, `${page.pageId} must define related APIs`);
+  assert.ok(page.learnerLevel, `${page.pageId} must define learner level`);
+  assert.ok(page.prerequisites.length >= 2, `${page.pageId} must define prerequisites`);
+  assert.match(page.learningOutcome, /explain|practice|choose|run|move|judge|identify/i, `${page.pageId} must define a measurable learning outcome`);
+  assert.ok(page.exercise.includes(page.relatedApis[0]) || page.exercise.includes("registry"), `${page.pageId} must define a concrete exercise`);
+  assert.ok(page.checkpoint.length > 60, `${page.pageId} must define a checkpoint`);
+  assert.ok(page.nextStep.length > 30, `${page.pageId} must define a next step`);
 
   const segments = page.slug.split("/").filter(Boolean);
   assert.notEqual(segments.at(-1), page.audience.toLowerCase().replace(/[^a-z0-9]+/g, "-"));

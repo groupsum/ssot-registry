@@ -36,7 +36,11 @@ assert.ok(ssotRegistryImageAssetPlan.every((asset) => asset.alt.includes("SSOT R
 assert.ok(ssotRegistryImageAssetPlan.some((asset) => asset.id === "hero-canonical-flow" && asset.ratio === "16:9"));
 assert.ok(relatedApiDetails.some((detail) => detail.command === "ssot pack preflight"));
 assert.ok(relatedApiDetails.some((detail) => detail.command === "ssot profile list"));
+assert.ok(relatedApiDetails.every((detail) => detail.output && detail.workflowStage));
 assert.ok(relatedPackageDetails.some((detail) => detail.name === "ssot-tui" && detail.role.includes("terminal browser")));
+assert.ok(relatedPackageDetails.every((detail) => detail.bestFor && detail.proofPoint && detail.primaryCommands.length > 0));
+assert.ok(JSON.stringify(ssotRegistryHomePage.sections).includes("First five minutes"));
+assert.ok(JSON.stringify(ssotRegistryHomePage.sections).includes("Best for:"));
 for (const stylePath of [
   "styles/base.css",
   "styles/shell.css",

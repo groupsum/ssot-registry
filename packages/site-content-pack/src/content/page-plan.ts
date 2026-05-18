@@ -23,6 +23,12 @@ export interface PlannedPage {
   summary: string;
   primaryCta: string;
   wordTarget: number;
+  learnerLevel: "foundation" | "operator" | "reviewer" | "advanced";
+  prerequisites: readonly string[];
+  learningOutcome: string;
+  exercise: string;
+  checkpoint: string;
+  nextStep: string;
 }
 
 export const contentPlanFormula = "12 sections * 20 subject areas * 4 intents * 4 audiences = 3840 pages";
@@ -58,6 +64,8 @@ function buildPagePlan(
   const subjectSlug = slugify(subjectArea);
   const intentSlug = slugify(intent);
   const audienceSlug = slugify(audience);
+  const relatedApiSlice = rotate(relatedApis, rotationIndex, 3);
+  const primaryCommand = relatedApiSlice[0] ?? "ssot validate";
   return {
     pageId: `page:ssot.${sectionSlug}.${audienceSlug}.${subjectSlug}.${intentSlug}`,
     slug: `/${sectionSlug}/${audienceSlug}/${subjectSlug}/${intentSlug}/`,
@@ -72,11 +80,17 @@ function buildPagePlan(
     structuredDataTypes: section.structuredDataTypes,
     landerComponents: section.components,
     relatedPackages: rotate(relatedPackages, rotationIndex, 3),
-    relatedApis: rotate(relatedApis, rotationIndex, 3),
+    relatedApis: relatedApiSlice,
     breadcrumbs: ["SSOT Registry", section.label, subjectArea, intent],
     summary: summaryForPlan(section.label, subjectArea, intent, audience),
     primaryCta: primaryCta(section.id),
     wordTarget: section.id === "FAQ_QA" || section.id === "Glossary" ? 900 : 1400,
+    learnerLevel: learnerLevel(section.id, intent),
+    prerequisites: prerequisitesFor(section.id, subjectArea),
+    learningOutcome: learningOutcomeFor(section.id, subjectArea, intent, audience, primaryCommand),
+    exercise: exerciseFor(section.id, subjectArea, audience, primaryCommand),
+    checkpoint: checkpointFor(section.id, subjectArea, audience),
+    nextStep: nextStepFor(section.id, subjectArea),
   };
 }
 
@@ -162,6 +176,97 @@ function primaryCta(section: string): string {
     Glossary: "Explore related terms",
   };
   return ctas[section] ?? "Read page";
+}
+
+function learnerLevel(section: string, intent: string): PlannedPage["learnerLevel"] {
+  if (section === "FAQ_QA" || section === "Glossary" || intent.includes("what") || intent.includes("definition")) {
+    return "foundation";
+  }
+  if (section === "Proofs" || section === "Certifications" || intent.includes("proof") || intent.includes("readiness")) {
+    return "reviewer";
+  }
+  if (section === "API_Reference" || section === "Workflows" || section === "Packs" || intent.includes("reference")) {
+    return "advanced";
+  }
+  return "operator";
+}
+
+function prerequisitesFor(section: string, subjectArea: SubjectArea): string[] {
+  const basics = [
+    "Know that .ssot/registry.json is the canonical registry authority.",
+    `Recognize ${subjectArea} as governed SSOT Registry entities or relationships.`,
+  ];
+  const additions: Record<string, string> = {
+    Proofs: "Understand that claims, tests, and evidence are separate proof-chain records.",
+    Certifications: "Understand frozen boundaries before judging release certification.",
+    Courses: "Be ready to inspect registry records and follow command output.",
+    Lessons: "Complete the matching course overview or understand the entity vocabulary first.",
+    API_Reference: "Have a repo with an initialized .ssot registry or a sample registry to inspect.",
+    Workflows: "Understand ADR, SPEC, feature, claim, test, evidence, boundary, and release relationships.",
+    Packs: "Understand that governed packs import declared ADR and SPEC material into reserved ranges.",
+  };
+  return additions[section] ? [...basics, additions[section]] : basics;
+}
+
+function learningOutcomeFor(
+  section: string,
+  subjectArea: SubjectArea,
+  intent: string,
+  audience: Audience,
+  command: string,
+): string {
+  const role = audience.toLowerCase();
+  if (section === "Courses") {
+    return `By the end, ${role}s can explain ${subjectArea.toLowerCase()}, run ${command}, and decide the next registry action.`;
+  }
+  if (section === "Lessons") {
+    return `Practice one concrete ${subjectArea.toLowerCase()} task and verify the result with ${command}.`;
+  }
+  if (section === "API_Reference") {
+    return `Choose and run ${command} for ${subjectArea.toLowerCase()} without breaking canonical registry authority.`;
+  }
+  if (section === "Workflows") {
+    return `Move ${subjectArea.toLowerCase()} through the ${intent.replace(/-/g, " ")} workflow with a visible validation checkpoint.`;
+  }
+  if (section === "Proofs" || section === "Certifications") {
+    return `Judge whether ${subjectArea.toLowerCase()} are backed by linked claims, tests, evidence, and frozen release scope.`;
+  }
+  return `Explain ${subjectArea.toLowerCase()} and identify the next command-backed SSOT Registry step.`;
+}
+
+function exerciseFor(section: string, subjectArea: SubjectArea, audience: Audience, command: string): string {
+  const role = audience.toLowerCase();
+  if (section === "Glossary" || section === "FAQ_QA") {
+    return `Write a one-paragraph answer for another ${role}, then point it back to ${command} or a registry record.`;
+  }
+  return `In a sample repo, run ${command}, find the relevant ${subjectArea.toLowerCase()} records, and note the canonical link or status that should change next.`;
+}
+
+function checkpointFor(section: string, subjectArea: SubjectArea, audience: Audience): string {
+  const role = audience.toLowerCase();
+  if (section === "Certifications" || section === "Proofs") {
+    return `A ${role} can identify which claim, test, evidence, boundary, or release row proves the ${subjectArea.toLowerCase()} state.`;
+  }
+  return `A ${role} can describe what ${subjectArea.toLowerCase()} mean, where they live in the registry, and which command validates them.`;
+}
+
+function nextStepFor(section: string, subjectArea: SubjectArea): string {
+  const subject = subjectArea.toLowerCase();
+  const next: Record<string, string> = {
+    Features: `Link ${subject} to claims, tests, evidence, and a target boundary.`,
+    Proofs: `Run claim, test, or evidence verification before release certification.`,
+    Packages: `Install the package surface that owns the next ${subject} operation.`,
+    Packs: `Run pack preflight before syncing governed ${subject} material.`,
+    FAQ_QA: `Open the related workflow or glossary entry for ${subject}.`,
+    Courses: `Continue to the linked lessons and complete the quiz checkpoint.`,
+    Lessons: `Apply the lesson in a sample registry and validate the result.`,
+    Certifications: `Compare the proof chain with the frozen boundary before promotion.`,
+    API_Reference: `Run the referenced command and inspect the output artifact.`,
+    Workflows: `Validate the registry before moving to the next lifecycle stage.`,
+    Comparisons: `Choose the governed registry path when ${subject} need auditability.`,
+    Glossary: `Use the term consistently in feature, claim, evidence, boundary, and release copy.`,
+  };
+  return next[section] ?? `Validate ${subject} before relying on the registry state.`;
 }
 
 function formatCopyAcronyms(value: string): string {

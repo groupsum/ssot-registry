@@ -9,12 +9,14 @@ import { relatedPackageDetails } from "./content/packages.js";
 
 export * from "./content/apis.js";
 export * from "./content/audiences.js";
+export * from "./content/component-traceability.js";
 export * from "./content/components.js";
 export * from "./content/editorial-guidance.js";
 export * from "./content/packages.js";
 export * from "./content/page-corpus.js";
 export * from "./content/page-plan.js";
 export * from "./content/sections.js";
+export * from "./content/site-content-audit.js";
 export * from "./content/sitemap-tree.js";
 export * from "./content/structured-data.js";
 export * from "./content/subjects.js";
@@ -24,10 +26,10 @@ export const ssotRegistryHomePage = {
   slug: "/",
   title: "SSOT Registry",
   description:
-    "A governed SSOT and single source of truth for ADRs, specs, features, claims, tests, evidence, boundaries, authority, and releases.",
-  h1: "Govern software truth from decision to release.",
+    "A governed SSOT and single source of truth for proving what changed, why it is releasable, and which canonical record says so.",
+  h1: "Prove what changed, why it is releasable, and where the authority lives.",
   intro:
-    "SSOT Registry makes .ssot/registry.json the governed authority for delivery work: decisions, specifications, targetable features, tests, claims, evidence, risks, frozen boundaries, and releases.",
+    "SSOT Registry makes .ssot/registry.json the governed authority for delivery work: ADRs, SPECs, targetable features, tests, claims, evidence, risks, frozen boundaries, and releases.",
   seo: {
     keywords: ["ssot", "single source of truth", "canonical registry", "canon", "software authority", "software assurance", "adr", "release certification", "evidence registry"],
   },
@@ -56,9 +58,9 @@ export const ssotRegistryHomePage = {
       id: "hero",
       kind: "hero",
       eyebrow: "SSOT Registry",
-      title: "Govern software truth from decision to release.",
+      title: "Prove what changed, why it is releasable, and where the authority lives.",
       subtitle:
-        "Answer one release-review question clearly: what was intended, what changed, what proves it, and which canonical record says so.",
+        "Answer the release-review question clearly: what was intended, what changed, what proves it, and which canonical registry record says so.",
       primaryCta: {
         label: "Browse Content",
         href: "/content/",
@@ -67,6 +69,28 @@ export const ssotRegistryHomePage = {
         label: "View GitHub",
         href: "https://github.com/groupsum/ssot-registry",
       },
+    },
+    {
+      id: "first-five-minutes",
+      kind: "feature_grid",
+      title: "First five minutes",
+      items: [
+        {
+          title: "Install the operator bundle",
+          description: "Run `uv add ssot-registry` or install it in a project-local environment so the CLI can inspect and validate .ssot/registry.json.",
+          href: "/content/packages/",
+        },
+        {
+          title: "Create or inspect the registry",
+          description: "Run `ssot init` for a new repo or `ssot validate` in an existing repo to find schema, link, and readiness problems before review.",
+          href: "/content/api-reference/",
+        },
+        {
+          title: "Follow the proof path",
+          description: "Move from ADR/SPEC decisions to features, tests, claims, evidence, frozen boundaries, release certification, promotion, and publication.",
+          href: "/content/workflows/",
+        },
+      ],
     },
     {
       id: "features",
@@ -194,10 +218,10 @@ export const ssotRegistryHomePage = {
       title: "Choose the package for the job",
       packages: relatedPackageDetails.map((detail) => ({
         name: detail.name,
-        description: detail.role,
+        description: `${detail.role} Best for: ${detail.bestFor} Proof point: ${detail.proofPoint}`,
         install: detail.install,
         href: detail.name === "ssot-registry" ? "https://pypi.org/project/ssot-registry/" : "/content/packages/",
-        api: detail.name === "ssot-cli" ? ["ssot validate", "ssot boundary freeze", "ssot release certify"] : undefined,
+        api: detail.primaryCommands,
       })),
     },
     {
@@ -211,7 +235,7 @@ export const ssotRegistryHomePage = {
       kind: "markdown",
       title: "How SSOT Registry work moves",
       body:
-        "A typical SSOT Registry workflow starts with ADRs and specs, targets features, links claims to tests and evidence, freezes a boundary, runs verification, certifies the release, promotes it, and publishes the final canonical state.",
+        "A typical SSOT Registry workflow starts with ADRs and SPECs, targets features, links claims to tests and evidence, freezes a boundary, runs verification, certifies the release, promotes it, and publishes the final canonical state.",
     },
     {
       id: "faq",
