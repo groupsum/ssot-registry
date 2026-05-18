@@ -44,6 +44,13 @@ from .profile_eval import evaluate_feature_passing, evaluate_profile, evaluate_p
 from .evidence import verify_evidence_rows
 from .graph import export_graph
 from .init import initialize_repo
+from .local_assurance import (
+    build_artifact_manifest,
+    build_local_evidence_bundle,
+    build_source_snapshot,
+    deterministic_root_hash,
+    verify_local_release,
+)
 from .lifecycle import set_feature_lifecycle
 from .load import load_registry
 from .plan import plan_features, plan_issues
@@ -108,6 +115,11 @@ __all__ = [
     "sync_pack",
     "sync_origin_assurance_rows",
     "set_feature_lifecycle",
+    "build_artifact_manifest",
+    "build_local_evidence_bundle",
+    "build_source_snapshot",
+    "deterministic_root_hash",
+    "verify_local_release",
     "evaluate_claims",
     "evaluate_feature_passing",
     "evaluate_profile",

@@ -48,9 +48,31 @@ def _declared_entries(package: str, kind: str | None = None) -> list[dict[str, A
     return entries
 
 
-def preflight_pack(path: str | Path, package: str, *, kind: str | None = None, trusted_only: bool = False) -> dict[str, Any]:
+def _metadata_version(metadata: dict[str, Any]) -> str:
+    return str(metadata.get("version") or metadata.get("origin", {}).get("version") or "")
+
+
+def _check_pin(metadata: dict[str, Any], pin: str | None) -> None:
+    if pin is None:
+        return
+    version = _metadata_version(metadata)
+    if version != pin:
+        raise ValidationError(f"Pack version {version!r} does not match pinned version {pin!r}")
+
+
+def preflight_pack(
+    path: str | Path,
+    package: str,
+    *,
+    kind: str | None = None,
+    trusted_only: bool = False,
+    pin: str | None = None,
+    include_manifest: bool = False,
+    include_resolved: bool = False,
+) -> dict[str, Any]:
     registry_path, repo_root, registry = load_registry(path)
     metadata = load_pack_metadata(package)
+    _check_pin(metadata, pin)
     if trusted_only and not bool(metadata.get("trust", {}).get("trusted_by_default")):
         raise ValidationError(f"Pack {package} is not trusted by default")
 
@@ -98,7 +120,7 @@ def preflight_pack(path: str | Path, package: str, *, kind: str | None = None, t
             if path_owner is not None and path_owner.get("id") != entry["id"]:
                 failures.append(f"{entry['id']} target_path conflicts with {path_owner.get('id')}")
 
-    return {
+    result: dict[str, Any] = {
         "passed": not failures,
         "registry_path": registry_path.as_posix(),
         "package": package,
@@ -106,6 +128,13 @@ def preflight_pack(path: str | Path, package: str, *, kind: str | None = None, t
         "checked": len(entries),
         "failures": failures,
     }
+    if pin is not None:
+        result["pin"] = pin
+    if include_manifest:
+        result["manifest"] = load_pack_manifest(package)
+    if include_resolved:
+        result["resolved"] = entries
+    return result
 
 
 def _row_from_entry(entry: dict[str, Any], *, package_version: str) -> dict[str, Any]:
@@ -154,24 +183,68 @@ def _ensure_extension_reservation(registry: dict[str, Any], kind: str, entry: di
     )
 
 
-def sync_pack(path: str | Path, package: str, *, kind: str | None = None, dry_run: bool = False, trusted_only: bool = False) -> dict[str, Any]:
-    preflight = preflight_pack(path, package, kind=kind, trusted_only=trusted_only)
+def sync_pack(
+    path: str | Path,
+    package: str,
+    *,
+    kind: str | None = None,
+    dry_run: bool = False,
+    trusted_only: bool = False,
+    pin: str | None = None,
+    preflight_only: bool = False,
+    no_sync: bool = False,
+    prune_stale: bool = False,
+    include_manifest: bool = False,
+    include_resolved: bool = False,
+    include_reservations: bool = False,
+    trust: bool = False,
+    yes: bool = False,
+) -> dict[str, Any]:
+    preflight = preflight_pack(
+        path,
+        package,
+        kind=kind,
+        trusted_only=trusted_only,
+        pin=pin,
+        include_manifest=include_manifest,
+        include_resolved=include_resolved,
+    )
     if not preflight["passed"]:
         return {**preflight, "dry_run": dry_run, "created": [], "updated": [], "unchanged": []}
+    if preflight_only or no_sync:
+        return {
+            **preflight,
+            "dry_run": True,
+            "preflight_only": preflight_only,
+            "no_sync": no_sync,
+            "created": [],
+            "updated": [],
+            "unchanged": [],
+            "stale": [],
+            "pruned": [],
+        }
 
     registry_path, repo_root, registry = load_registry(path)
     metadata = load_pack_metadata(package)
+    _check_pin(metadata, pin)
     package_version = str(metadata["version"])
     entries = _declared_entries(package, kind)
     created: list[str] = []
     updated: list[str] = []
     unchanged: list[str] = []
+    touched_ids: set[str] = set()
+    reservation_changes: list[dict[str, Any]] = []
 
     for entry in entries:
         document_kind = str(entry.get("_document_kind") or ("adr" if str(entry["id"]).startswith("adr:") else "spec"))
         section = section_for_document_kind(document_kind)
         row = _row_from_entry(entry, package_version=package_version)
+        before_reservations = deepcopy(registry.get("document_id_reservations", {}).get(reservation_kind_key(document_kind), []))
         _ensure_extension_reservation(registry, document_kind, entry)
+        after_reservations = registry.get("document_id_reservations", {}).get(reservation_kind_key(document_kind), [])
+        if before_reservations != after_reservations:
+            reservation_changes.append({"kind": document_kind, "owner": entry["reservation_owner"], "number": entry["number"]})
+        touched_ids.add(str(entry["id"]))
         if not dry_run:
             target = repo_root / row["path"]
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -190,18 +263,59 @@ def sync_pack(path: str | Path, package: str, *, kind: str | None = None, dry_ru
             if not dry_run:
                 current.clear()
                 current.update(row)
+    stale: list[str] = []
+    pruned: list[str] = []
+    reservation_owner = str(metadata.get("trust", {}).get("reservation_owner", ""))
+    if reservation_owner:
+        for document_kind in ("adr", "spec"):
+            section = section_for_document_kind(document_kind)
+            rows = registry.setdefault(section, [])
+            stale_rows = [
+                row
+                for row in rows
+                if row.get("origin") == "extension-pack"
+                and row.get("id") not in touched_ids
+                and any(
+                    reservation.get("owner") == reservation_owner
+                    and isinstance(reservation.get("start"), int)
+                    and isinstance(reservation.get("end"), int)
+                    and reservation["start"] <= int(row.get("number", -1)) <= reservation["end"]
+                    for reservation in registry.get("document_id_reservations", {}).get(reservation_kind_key(document_kind), [])
+                )
+            ]
+            stale.extend(str(row["id"]) for row in stale_rows)
+            if prune_stale and not dry_run:
+                for row in stale_rows:
+                    target = repo_root / str(row["path"])
+                    if target.exists():
+                        target.unlink()
+                    pruned.append(str(row["id"]))
+                registry[section] = [row for row in rows if row not in stale_rows]
     if not dry_run:
         for document_kind in ("adr", "spec"):
             section = section_for_document_kind(document_kind)
             registry[section] = sorted(registry.get(section, []), key=lambda row: (row.get("number", 0), row.get("id", "")))
         _validate_and_save(registry_path, repo_root, registry, f"syncing pack {package}")
 
-    return {
+    result: dict[str, Any] = {
         "passed": True,
         "registry_path": registry_path.as_posix(),
         "package": package,
         "dry_run": dry_run,
+        "trusted_operator_approved": trust,
+        "yes": yes,
         "created": created,
         "updated": updated,
         "unchanged": unchanged,
+        "stale": stale,
+        "pruned": pruned,
     }
+    if pin is not None:
+        result["pin"] = pin
+    if include_manifest:
+        result["manifest"] = load_pack_manifest(package)
+    if include_resolved:
+        result["resolved"] = entries
+    if include_reservations:
+        result["reservations"] = reservation_changes
+    return result

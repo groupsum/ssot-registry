@@ -229,7 +229,19 @@ def validate_repo_config(path: str | Path) -> dict[str, Any]:
 def run_repo_automation(path: str | Path) -> dict[str, Any]:
     global _AUTOMATION_DEPTH
 
-    payload = load_repo_config(path)
+    try:
+        payload = load_repo_config(path)
+    except FileNotFoundError as exc:
+        return {
+            "passed": True,
+            "config_path": str(exc).removeprefix("Repo-local SSOT config not found: "),
+            "skipped": True,
+            "sync": None,
+            "validation": None,
+            "generation": {
+                "graphs": [],
+            },
+        }
     config = payload["config"]
     results: dict[str, Any] = {
         "passed": True,

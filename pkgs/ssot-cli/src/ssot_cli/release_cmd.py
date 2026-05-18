@@ -18,6 +18,7 @@ from ssot_registry.api import (
     remove_release_evidence,
     revoke_release,
     update_entity,
+    verify_local_release,
 )
 from ssot_cli.common import add_ids_argument, add_path_argument, compact_dict, load_text_argument
 
@@ -121,6 +122,18 @@ def register_release(subparsers: argparse._SubParsersAction) -> None:
     publish.add_argument("--release-id", default=None, help="Release id to publish. Omit to use the active release.")
     publish.set_defaults(func=run_publish)
 
+    verify_local = release_sub.add_parser(
+        "verify-local",
+        help="Run local release assurance verification.",
+        description="Generate governed source snapshots, artifact manifests, evidence bundles, and a local verification report for a release.",
+    )
+    add_path_argument(verify_local)
+    verify_local.add_argument("--release-id", default=None, help="Release id to verify. Omit to use the active release.")
+    verify_local.add_argument("--path-policy", choices=["ssot-only", "declared", "full-repo"], default="ssot-only", help="Source snapshot path policy.")
+    verify_local.add_argument("--no-write-artifacts", action="store_true", help="Return the report without writing the verification report artifact.")
+    verify_local.add_argument("--blocking", action="store_true", help="Mark the report as intended for blocking release gates.")
+    verify_local.set_defaults(func=run_verify_local)
+
     revoke = release_sub.add_parser("revoke", help="Revoke a release.", description="Mark a release revoked and record the reason for operators and auditors.")
     add_path_argument(revoke)
     revoke.add_argument("--release-id", required=True, help="Release id to revoke.")
@@ -212,6 +225,16 @@ def run_promote(args: argparse.Namespace) -> dict[str, object]:
 
 def run_publish(args: argparse.Namespace) -> dict[str, object]:
     return publish_release(path=args.path, release_id=args.release_id)
+
+
+def run_verify_local(args: argparse.Namespace) -> dict[str, object]:
+    return verify_local_release(
+        path=args.path,
+        release_id=args.release_id,
+        path_policy=args.path_policy,
+        write_artifacts=not args.no_write_artifacts,
+        blocking=args.blocking,
+    )
 
 
 def run_revoke(args: argparse.Namespace) -> dict[str, object]:
