@@ -257,8 +257,12 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: ./.github/workflows/publish-ssot-contracts.yml
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ssot-contracts
+      package_tag: ${{ fromJSON(needs.validate.outputs.publish_layer_1)[0].tag }}
+      package_version: ${{ fromJSON(needs.validate.outputs.publish_layer_1)[0].version }}
+      pypi_project_url: https://pypi.org/p/ssot-contracts
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true

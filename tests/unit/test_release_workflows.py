@@ -51,8 +51,9 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("publish-ssot-cli:", workflow)
         self.assertIn("./.github/workflows/publish-ssot-core.yml", workflow)
         self.assertIn("needs.publish-ssot-pack-contracts.result", workflow)
-        self.assertNotIn("./.github/workflows/_publish-built-package.yml", workflow)
-        self.assertIn("./.github/workflows/publish-ssot-contracts.yml", workflow)
+        self.assertIn("./.github/workflows/_publish-built-package.yml", workflow)
+        self.assertIn("package_name: ssot-contracts", workflow)
+        self.assertIn("./.github/workflows/publish-ssot-pack-contracts.yml", workflow)
         self.assertIn("./.github/workflows/publish-ssot-registry.yml", workflow)
 
     def test_ci_runs_shared_suite_once_per_python_version(self) -> None:
