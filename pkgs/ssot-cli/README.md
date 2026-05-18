@@ -134,6 +134,167 @@ ssot conformance run . --profiles registry
 
 ## Command surface
 
+### Complete parser manifest
+
+This table is generated from the live `argparse` parser and is checked by integration tests against the current CLI implementation.
+
+Global flags: `--output-file`, `--output-format`, `--version`
+
+| Command path | Flags |
+| --- | --- |
+| `ssot-registry adr` | none |
+| `ssot-registry adr create` | `--body`, `--body-file`, `--note`, `--number`, `--origin`, `--reserve-range`, `--slug`, `--status`, `--title` |
+| `ssot-registry adr delete` | `--id` |
+| `ssot-registry adr get` | `--id` |
+| `ssot-registry adr list` | `--ids` |
+| `ssot-registry adr reserve` | none |
+| `ssot-registry adr reserve create` | `--end`, `--name`, `--start` |
+| `ssot-registry adr reserve list` | none |
+| `ssot-registry adr set-status` | `--id`, `--note`, `--status` |
+| `ssot-registry adr supersede` | `--id`, `--note`, `--supersedes` |
+| `ssot-registry adr sync` | none |
+| `ssot-registry adr update` | `--body`, `--body-file`, `--id`, `--note`, `--status`, `--title` |
+| `ssot-registry boundary` | none |
+| `ssot-registry boundary add-feature` | `--feature-ids`, `--id` |
+| `ssot-registry boundary add-profile` | `--id`, `--profile-ids` |
+| `ssot-registry boundary create` | `--body`, `--body-file`, `--feature-ids`, `--frozen`, `--id`, `--no-frozen`, `--profile-ids`, `--status`, `--title` |
+| `ssot-registry boundary delete` | `--id` |
+| `ssot-registry boundary freeze` | `--boundary-id` |
+| `ssot-registry boundary get` | `--id` |
+| `ssot-registry boundary list` | `--ids` |
+| `ssot-registry boundary remove-feature` | `--feature-ids`, `--id` |
+| `ssot-registry boundary remove-profile` | `--id`, `--profile-ids` |
+| `ssot-registry boundary run-tests` | `--dry-run`, `--evidence-output`, `--id` |
+| `ssot-registry boundary update` | `--body`, `--body-file`, `--frozen`, `--id`, `--no-frozen`, `--status`, `--title` |
+| `ssot-registry claim` | none |
+| `ssot-registry claim create` | `--body`, `--body-file`, `--depends-on-claim-ids`, `--description`, `--evidence-ids`, `--feature-ids`, `--id`, `--kind`, `--origin`, `--status`, `--test-ids`, `--tier`, `--title` |
+| `ssot-registry claim delete` | `--id` |
+| `ssot-registry claim evaluate` | `--claim-id`, `--include-tier-gate` |
+| `ssot-registry claim get` | `--id` |
+| `ssot-registry claim link` | `--depends-on-claim-ids`, `--evidence-ids`, `--feature-ids`, `--id`, `--test-ids` |
+| `ssot-registry claim list` | `--ids`, `--origin` |
+| `ssot-registry claim set-status` | `--id`, `--status` |
+| `ssot-registry claim set-tier` | `--id`, `--tier` |
+| `ssot-registry claim unlink` | `--depends-on-claim-ids`, `--evidence-ids`, `--feature-ids`, `--id`, `--test-ids` |
+| `ssot-registry claim update` | `--body`, `--body-file`, `--description`, `--id`, `--kind`, `--origin`, `--title` |
+| `ssot-registry config` | none |
+| `ssot-registry config init` | `--force` |
+| `ssot-registry config show` | none |
+| `ssot-registry config validate` | none |
+| `ssot-registry conformance` | none |
+| `ssot-registry conformance discover` | `--profiles` |
+| `ssot-registry conformance origin` | `--apply`, `--include-claims`, `--include-evidence`, `--kinds`, `--overwrite`, `--report-output` |
+| `ssot-registry conformance profile` | none |
+| `ssot-registry conformance profile list` | none |
+| `ssot-registry conformance run` | `--dry-run`, `--evidence-output`, `--profiles` |
+| `ssot-registry conformance scaffold` | `--apply`, `--include-claims`, `--include-evidence`, `--profiles` |
+| `ssot-registry evidence` | none |
+| `ssot-registry evidence create` | `--body`, `--body-file`, `--claim-ids`, `--evidence-path`, `--id`, `--kind`, `--origin`, `--status`, `--test-ids`, `--tier`, `--title` |
+| `ssot-registry evidence delete` | `--id` |
+| `ssot-registry evidence get` | `--id` |
+| `ssot-registry evidence link` | `--claim-ids`, `--id`, `--test-ids` |
+| `ssot-registry evidence list` | `--ids`, `--origin` |
+| `ssot-registry evidence unlink` | `--claim-ids`, `--id`, `--test-ids` |
+| `ssot-registry evidence update` | `--body`, `--body-file`, `--evidence-path`, `--id`, `--kind`, `--origin`, `--status`, `--tier`, `--title` |
+| `ssot-registry evidence verify` | `--evidence-id` |
+| `ssot-registry feature` | none |
+| `ssot-registry feature create` | `--body`, `--body-file`, `--claim-ids`, `--claim-tier`, `--description`, `--horizon`, `--id`, `--implementation-status`, `--lifecycle-stage`, `--note`, `--origin`, `--out-of-bounds-disposition`, `--replacement-feature-id`, `--requires`, `--slot`, `--spec-ids`, `--target-lifecycle-stage`, `--test-ids`, `--title` |
+| `ssot-registry feature delete` | `--id` |
+| `ssot-registry feature get` | `--id` |
+| `ssot-registry feature lifecycle` | none |
+| `ssot-registry feature lifecycle set` | `--effective-release-id`, `--ids`, `--note`, `--replacement-feature-id`, `--stage` |
+| `ssot-registry feature link` | `--claim-ids`, `--id`, `--requires`, `--spec-ids`, `--test-ids` |
+| `ssot-registry feature list` | `--ids`, `--origin` |
+| `ssot-registry feature plan` | `--claim-tier`, `--horizon`, `--ids`, `--out-of-bounds-disposition`, `--slot`, `--target-lifecycle-stage` |
+| `ssot-registry feature unlink` | `--claim-ids`, `--id`, `--requires`, `--spec-ids`, `--test-ids` |
+| `ssot-registry feature update` | `--body`, `--body-file`, `--description`, `--id`, `--implementation-status`, `--origin`, `--title` |
+| `ssot-registry graph` | none |
+| `ssot-registry graph export` | `--format`, `--output` |
+| `ssot-registry init` | `--force`, `--repo-id`, `--repo-name`, `--version` |
+| `ssot-registry issue` | none |
+| `ssot-registry issue close` | `--id` |
+| `ssot-registry issue create` | `--body`, `--body-file`, `--claim-ids`, `--description`, `--evidence-ids`, `--feature-ids`, `--horizon`, `--id`, `--no-release-blocking`, `--release-blocking`, `--risk-ids`, `--severity`, `--slot`, `--status`, `--test-ids`, `--title` |
+| `ssot-registry issue delete` | `--id` |
+| `ssot-registry issue get` | `--id` |
+| `ssot-registry issue link` | `--claim-ids`, `--evidence-ids`, `--feature-ids`, `--id`, `--risk-ids`, `--test-ids` |
+| `ssot-registry issue list` | `--ids` |
+| `ssot-registry issue plan` | `--horizon`, `--ids`, `--slot` |
+| `ssot-registry issue reopen` | `--id` |
+| `ssot-registry issue unlink` | `--claim-ids`, `--evidence-ids`, `--feature-ids`, `--id`, `--risk-ids`, `--test-ids` |
+| `ssot-registry issue update` | `--body`, `--body-file`, `--description`, `--id`, `--no-release-blocking`, `--release-blocking`, `--severity`, `--title` |
+| `ssot-registry pack` | none |
+| `ssot-registry pack inspect` | `--manifest` |
+| `ssot-registry pack preflight` | `--all`, `--kind`, `--manifest`, `--pin`, `--resolved`, `--trusted-only` |
+| `ssot-registry pack sync` | `--all`, `--dry-run`, `--kind`, `--manifest`, `--no-sync`, `--pin`, `--preflight-only`, `--prune-stale`, `--reservations`, `--resolved`, `--trust`, `--trusted-only`, `--yes` |
+| `ssot-registry profile` | none |
+| `ssot-registry profile create` | `--allow-feature-override-tier`, `--body`, `--body-file`, `--claim-tier`, `--description`, `--feature-ids`, `--id`, `--kind`, `--no-allow-feature-override-tier`, `--profile-ids`, `--status`, `--title` |
+| `ssot-registry profile delete` | `--id` |
+| `ssot-registry profile evaluate` | `--profile-id` |
+| `ssot-registry profile get` | `--id` |
+| `ssot-registry profile link` | `--feature-ids`, `--id`, `--profile-ids` |
+| `ssot-registry profile list` | `--ids` |
+| `ssot-registry profile unlink` | `--feature-ids`, `--id`, `--profile-ids` |
+| `ssot-registry profile update` | `--body`, `--body-file`, `--claim-tier`, `--description`, `--id`, `--kind`, `--status`, `--title` |
+| `ssot-registry profile verify` | `--profile-id` |
+| `ssot-registry registry` | none |
+| `ssot-registry registry export` | `--format`, `--output` |
+| `ssot-registry registry repair-doc-hashes` | `--ids` |
+| `ssot-registry registry sync-statuses` | `--dry-run` |
+| `ssot-registry release` | none |
+| `ssot-registry release add-boundary` | `--boundary-ids`, `--id` |
+| `ssot-registry release add-claim` | `--claim-ids`, `--id` |
+| `ssot-registry release add-evidence` | `--evidence-ids`, `--id` |
+| `ssot-registry release certify` | `--release-id`, `--write-report` |
+| `ssot-registry release create` | `--body`, `--body-file`, `--boundary-id`, `--boundary-ids`, `--claim-ids`, `--evidence-ids`, `--id`, `--status`, `--version` |
+| `ssot-registry release delete` | `--id` |
+| `ssot-registry release get` | `--id` |
+| `ssot-registry release list` | `--ids` |
+| `ssot-registry release promote` | `--release-id` |
+| `ssot-registry release publish` | `--release-id` |
+| `ssot-registry release remove-boundary` | `--boundary-ids`, `--id` |
+| `ssot-registry release remove-claim` | `--claim-ids`, `--id` |
+| `ssot-registry release remove-evidence` | `--evidence-ids`, `--id` |
+| `ssot-registry release revoke` | `--reason`, `--release-id` |
+| `ssot-registry release update` | `--body`, `--body-file`, `--boundary-id`, `--boundary-ids`, `--id`, `--status`, `--version` |
+| `ssot-registry release verify-local` | `--blocking`, `--no-write-artifacts`, `--path-policy`, `--release-id` |
+| `ssot-registry risk` | none |
+| `ssot-registry risk accept` | `--id` |
+| `ssot-registry risk create` | `--body`, `--body-file`, `--claim-ids`, `--description`, `--evidence-ids`, `--feature-ids`, `--id`, `--issue-ids`, `--no-release-blocking`, `--release-blocking`, `--severity`, `--status`, `--test-ids`, `--title` |
+| `ssot-registry risk delete` | `--id` |
+| `ssot-registry risk get` | `--id` |
+| `ssot-registry risk link` | `--claim-ids`, `--evidence-ids`, `--feature-ids`, `--id`, `--issue-ids`, `--test-ids` |
+| `ssot-registry risk list` | `--ids` |
+| `ssot-registry risk mitigate` | `--id` |
+| `ssot-registry risk retire` | `--id` |
+| `ssot-registry risk unlink` | `--claim-ids`, `--evidence-ids`, `--feature-ids`, `--id`, `--issue-ids`, `--test-ids` |
+| `ssot-registry risk update` | `--body`, `--body-file`, `--description`, `--id`, `--no-release-blocking`, `--release-blocking`, `--severity`, `--title` |
+| `ssot-registry spec` | none |
+| `ssot-registry spec create` | `--adr-ids`, `--body`, `--body-file`, `--kind`, `--note`, `--number`, `--origin`, `--reserve-range`, `--slug`, `--status`, `--title` |
+| `ssot-registry spec delete` | `--id` |
+| `ssot-registry spec get` | `--id` |
+| `ssot-registry spec link` | `--adr-ids`, `--id` |
+| `ssot-registry spec list` | `--ids` |
+| `ssot-registry spec reserve` | none |
+| `ssot-registry spec reserve create` | `--end`, `--name`, `--start` |
+| `ssot-registry spec reserve list` | none |
+| `ssot-registry spec run-tests` | `--dry-run`, `--evidence-output`, `--id` |
+| `ssot-registry spec set-status` | `--id`, `--note`, `--status` |
+| `ssot-registry spec supersede` | `--id`, `--note`, `--supersedes` |
+| `ssot-registry spec sync` | none |
+| `ssot-registry spec unlink` | `--adr-ids`, `--id` |
+| `ssot-registry spec update` | `--adr-ids`, `--body`, `--body-file`, `--id`, `--kind`, `--note`, `--status`, `--title` |
+| `ssot-registry test` | none |
+| `ssot-registry test create` | `--body`, `--body-file`, `--claim-ids`, `--evidence-ids`, `--execution-file`, `--execution-json`, `--feature-ids`, `--id`, `--kind`, `--origin`, `--status`, `--test-path`, `--title` |
+| `ssot-registry test delete` | `--id` |
+| `ssot-registry test get` | `--id` |
+| `ssot-registry test link` | `--claim-ids`, `--evidence-ids`, `--feature-ids`, `--id` |
+| `ssot-registry test list` | `--ids`, `--origin` |
+| `ssot-registry test run` | `--dry-run`, `--evidence-output`, `--id`, `--ids` |
+| `ssot-registry test unlink` | `--claim-ids`, `--evidence-ids`, `--feature-ids`, `--id` |
+| `ssot-registry test update` | `--body`, `--body-file`, `--execution-file`, `--execution-json`, `--id`, `--kind`, `--origin`, `--status`, `--test-path`, `--title` |
+| `ssot-registry upgrade` | `--sync-docs`, `--target-version`, `--write-report` |
+| `ssot-registry validate` | `--write-report` |
+
 ### Top-level commands
 
 - `init`

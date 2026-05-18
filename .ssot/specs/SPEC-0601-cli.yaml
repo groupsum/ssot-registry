@@ -66,5 +66,13 @@ body: |-
   - entity `create` and `update` commands SHALL reject requests that provide both `--body` and `--body-file`
   - when `--body` is provided, the entity row `body` field SHALL be set from the inline UTF-8 text
   - when `--body-file` is provided, the entity row `body` field SHALL be set from the referenced UTF-8 text file
+
+  CLI surface coverage rules:
+  - `ssot-cli` SHALL maintain a parser-derived command surface manifest that lists every global flag, top-level command, command path, subcommand path, and command-specific flag exposed by the live `argparse` parser.
+  - The `ssot-cli` PyPI README SHALL include every command path and flag from the parser-derived manifest so documented CLI support cannot lag the implemented command surface.
+  - Integration tests SHALL compare the checked-in manifest to the live parser and fail when commands, subcommands, or flags are added without updating the manifest and README.
+  - Integration tests SHALL exercise valid help output for every command and subcommand path.
+  - Integration tests SHALL exercise invalid CLI input output for every command and subcommand path, including parser errors for missing required arguments, invalid choices, or unknown flags.
+  - Integration tests SHALL exercise valid and invalid global rendering flags, including supported output formats and invalid output format rejection.
 spec_kind: "operational"
 adr_ids: []

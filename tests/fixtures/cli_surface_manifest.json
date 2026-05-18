@@ -105,11 +105,13 @@
     "claim create": [
       "--body",
       "--body-file",
+      "--depends-on-claim-ids",
       "--description",
       "--evidence-ids",
       "--feature-ids",
       "--id",
       "--kind",
+      "--origin",
       "--status",
       "--test-ids",
       "--tier",
@@ -119,19 +121,22 @@
       "--id"
     ],
     "claim evaluate": [
-      "--claim-id"
+      "--claim-id",
+      "--include-tier-gate"
     ],
     "claim get": [
       "--id"
     ],
     "claim link": [
+      "--depends-on-claim-ids",
       "--evidence-ids",
       "--feature-ids",
       "--id",
       "--test-ids"
     ],
     "claim list": [
-      "--ids"
+      "--ids",
+      "--origin"
     ],
     "claim set-status": [
       "--id",
@@ -142,6 +147,7 @@
       "--tier"
     ],
     "claim unlink": [
+      "--depends-on-claim-ids",
       "--evidence-ids",
       "--feature-ids",
       "--id",
@@ -153,11 +159,26 @@
       "--description",
       "--id",
       "--kind",
+      "--origin",
       "--title"
     ],
+    "config": [],
+    "config init": [
+      "--force"
+    ],
+    "config show": [],
+    "config validate": [],
     "conformance": [],
     "conformance discover": [
       "--profiles"
+    ],
+    "conformance origin": [
+      "--apply",
+      "--include-claims",
+      "--include-evidence",
+      "--kinds",
+      "--overwrite",
+      "--report-output"
     ],
     "conformance profile": [],
     "conformance profile list": [],
@@ -180,6 +201,7 @@
       "--evidence-path",
       "--id",
       "--kind",
+      "--origin",
       "--status",
       "--test-ids",
       "--tier",
@@ -197,7 +219,8 @@
       "--test-ids"
     ],
     "evidence list": [
-      "--ids"
+      "--ids",
+      "--origin"
     ],
     "evidence unlink": [
       "--claim-ids",
@@ -210,6 +233,7 @@
       "--evidence-path",
       "--id",
       "--kind",
+      "--origin",
       "--status",
       "--tier",
       "--title"
@@ -229,6 +253,7 @@
       "--implementation-status",
       "--lifecycle-stage",
       "--note",
+      "--origin",
       "--out-of-bounds-disposition",
       "--replacement-feature-id",
       "--requires",
@@ -260,7 +285,8 @@
       "--test-ids"
     ],
     "feature list": [
-      "--ids"
+      "--ids",
+      "--origin"
     ],
     "feature plan": [
       "--claim-tier",
@@ -283,6 +309,7 @@
       "--description",
       "--id",
       "--implementation-status",
+      "--origin",
       "--title"
     ],
     "graph": [],
@@ -361,6 +388,33 @@
       "--severity",
       "--title"
     ],
+    "pack": [],
+    "pack inspect": [
+      "--manifest"
+    ],
+    "pack preflight": [
+      "--all",
+      "--kind",
+      "--manifest",
+      "--pin",
+      "--resolved",
+      "--trusted-only"
+    ],
+    "pack sync": [
+      "--all",
+      "--dry-run",
+      "--kind",
+      "--manifest",
+      "--no-sync",
+      "--pin",
+      "--preflight-only",
+      "--prune-stale",
+      "--reservations",
+      "--resolved",
+      "--trust",
+      "--trusted-only",
+      "--yes"
+    ],
     "profile": [],
     "profile create": [
       "--allow-feature-override-tier",
@@ -415,6 +469,9 @@
     "registry export": [
       "--format",
       "--output"
+    ],
+    "registry repair-doc-hashes": [
+      "--ids"
     ],
     "registry sync-statuses": [
       "--dry-run"
@@ -486,6 +543,12 @@
       "--id",
       "--status",
       "--version"
+    ],
+    "release verify-local": [
+      "--blocking",
+      "--no-write-artifacts",
+      "--path-policy",
+      "--release-id"
     ],
     "risk": [],
     "risk accept": [
@@ -623,6 +686,7 @@
       "--feature-ids",
       "--id",
       "--kind",
+      "--origin",
       "--status",
       "--test-path",
       "--title"
@@ -640,7 +704,8 @@
       "--id"
     ],
     "test list": [
-      "--ids"
+      "--ids",
+      "--origin"
     ],
     "test run": [
       "--dry-run",
@@ -661,6 +726,7 @@
       "--execution-json",
       "--id",
       "--kind",
+      "--origin",
       "--status",
       "--test-path",
       "--title"
@@ -715,8 +781,13 @@
     "claim set-tier",
     "claim unlink",
     "claim update",
+    "config",
+    "config init",
+    "config show",
+    "config validate",
     "conformance",
     "conformance discover",
+    "conformance origin",
     "conformance profile",
     "conformance profile list",
     "conformance run",
@@ -755,6 +826,10 @@
     "issue reopen",
     "issue unlink",
     "issue update",
+    "pack",
+    "pack inspect",
+    "pack preflight",
+    "pack sync",
     "profile",
     "profile create",
     "profile delete",
@@ -767,6 +842,7 @@
     "profile verify",
     "registry",
     "registry export",
+    "registry repair-doc-hashes",
     "registry sync-statuses",
     "release",
     "release add-boundary",
@@ -784,6 +860,7 @@
     "release remove-evidence",
     "release revoke",
     "release update",
+    "release verify-local",
     "risk",
     "risk accept",
     "risk create",
@@ -826,12 +903,14 @@
     "adr",
     "boundary",
     "claim",
+    "config",
     "conformance",
     "evidence",
     "feature",
     "graph",
     "init",
     "issue",
+    "pack",
     "profile",
     "registry",
     "release",

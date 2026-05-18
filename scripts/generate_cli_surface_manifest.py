@@ -14,7 +14,20 @@ CONTRACTS_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-contracts" / "src"
 VIEWS_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-views" / "src"
 CODEGEN_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-codegen" / "src"
 CLI_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-cli" / "src"
-for path in (CORE_SRC_DIR, CODEGEN_SRC_DIR, VIEWS_SRC_DIR, CONTRACTS_SRC_DIR, CLI_SRC_DIR, SRC_DIR):
+TUI_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-tui" / "src"
+CONFORMANCE_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-conformance" / "src"
+PACK_CONTRACTS_SRC_DIR = REPO_ROOT / "pkgs" / "ssot-pack-contracts" / "src"
+for path in (
+    CORE_SRC_DIR,
+    CODEGEN_SRC_DIR,
+    VIEWS_SRC_DIR,
+    CONTRACTS_SRC_DIR,
+    PACK_CONTRACTS_SRC_DIR,
+    CLI_SRC_DIR,
+    TUI_SRC_DIR,
+    CONFORMANCE_SRC_DIR,
+    SRC_DIR,
+):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
