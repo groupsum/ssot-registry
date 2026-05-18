@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssot-pack-contracts"
-version = "0.2.19.dev1"
+version = "0.2.19.dev2"
 description = "Shared governance-pack metadata, manifest, and packaged document contracts for SSOT."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
