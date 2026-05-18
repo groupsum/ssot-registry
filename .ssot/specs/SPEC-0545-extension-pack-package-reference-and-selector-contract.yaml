@@ -1,4 +1,4 @@
-schema_version: "0.3.0"
+schema_version: "0.5.0"
 kind: "spec"
 id: "spc:0545"
 number: 545
@@ -8,15 +8,19 @@ status: "draft"
 origin: "ssot-core"
 decision_date: null
 tags: []
-summary: "This specification defines how the pack CLI resolves package references and catalog selectors."
+summary: "This specification defines how the pack CLI resolves package references, catalog selectors, and pack-scoped document references."
 supersedes: []
 superseded_by: []
-status_notes: []
+status_notes:
+  -
+    status: "draft"
+    note: "Updated to define pack-scoped document references and selector disambiguation."
+    at: "2026-05-18T08:40:05Z"
 references: []
 body: |-
   ## Scope
   
-  This specification defines how the pack CLI resolves package references and catalog selectors.
+  This specification defines how the pack CLI resolves package references, catalog selectors, and pack-scoped document references.
   
   ## Package Reference Rules
   
@@ -26,17 +30,39 @@ body: |-
   - Package references SHALL resolve to governance-pack metadata through `load_pack_metadata()` and document inventory through `load_pack_manifest()` before repo-local registration is mutated.
   - A package that cannot expose the governance-pack root API SHALL fail preflight before trust, reservation, or sync policy is evaluated.
   
+  ## Pack-Scoped Document Reference Rules
+  
+  External references to governance-pack documents SHALL use a structured tuple rather than a bare local document id:
+  
+  ```json
+  {
+    pack_id: pack:example-governance-pack,
+    kind: spec,
+    id: spc:0001
+  }
+  ```
+  
+  The tuple fields mean:
+  - `pack_id`: the normalized pack id from governance-pack metadata.
+  - `kind`: the document family, currently `adr` or `spec`.
+  - `id`: the pack-local ADR or SPEC id declared by that pack's manifest.
+  
+  Tooling MAY expose a compact selector syntax for operators, but persisted registry state and machine-readable outputs SHALL retain the structured tuple or a materialized local id with equivalent provenance.
+  
   ## Selector Rules
   
   - Catalog-oriented pack subcommands SHALL accept a catalog selector rather than duplicated identity flags.
-  - A selector MAY resolve by catalog id, package reference, or another normalized catalog alias defined by repo-local state.
+  - A selector MAY resolve by catalog id, package reference, pack id, package name, or another normalized catalog alias defined by repo-local state.
+  - A selector that resolves to multiple packs SHALL fail closed unless the operator supplies an explicit disambiguator.
   
   ## CLI Minimality
   
   - Operators SHALL NOT be required to supply publisher, origin type, reservation ranges, or catalog id if those fields are present in the package metadata.
   - Override flags are reserved for trust and execution policy, not identity restatement.
+  - CLI output that reports ADR/SPEC links from extension packs SHOULD include both the materialized local id and the source pack-scoped document reference.
 spec_kind: "normative"
 adr_ids:
   - "adr:0540"
   - "adr:0541"
   - "adr:0542"
+  - "adr:0546"

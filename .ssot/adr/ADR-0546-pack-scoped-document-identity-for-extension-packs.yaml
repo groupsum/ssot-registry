@@ -1,0 +1,40 @@
+schema_version: "0.5.0"
+kind: "adr"
+id: "adr:0546"
+number: 546
+slug: "pack-scoped-document-identity-for-extension-packs"
+title: "Pack-scoped document identity for extension packs"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Installable governance packs can each author local ADR and SPEC identifiers such as `adr:0001` and `spc:0001`. Those local ids are useful inside a pack repository, but they are ambiguous once multiple packs are inspected, synced, or used to constrain downstream features."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to govern shared local ADR/SPEC ids across governance packs."
+    at: "2026-05-18T08:39:22Z"
+references: []
+body: |-
+  ## Context
+  
+  Installable governance packs can each author local ADR and SPEC identifiers such as `adr:0001` and `spc:0001`. Those local ids are useful inside a pack repository, but they are ambiguous once multiple packs are inspected, synced, or used to constrain downstream features.
+  
+  The current registry feature model intentionally keeps features SPEC-oriented: a feature references `feature.spec_ids`, and ADR visibility is derived through `spec.adr_ids`. That model must remain intact, but extension-pack documents need a pack-scoped identity layer so identical local ids from different packs do not overwrite each other or resolve to the wrong authority.
+  
+  ## Decision
+  
+  Extension-pack ADR and SPEC identifiers are pack-local identifiers. A globally meaningful extension-pack document identity is the tuple `(pack_id, document_kind, local_document_id)`.
+  
+  Downstream registries SHALL NOT treat a bare extension-pack `adr:*` or `spc:*` id as globally authoritative when multiple packs may be present. Sync and resolution workflows SHALL either preserve the tuple explicitly as provenance or materialize documents into collision-safe local registry ids derived from the tuple.
+  
+  Features continue to reference SPECs, not ADRs. ADR visibility remains derived through `feature.spec_ids -> spec.adr_ids`. A feature that is governed by a pack SPEC must reference a locally resolvable SPEC row whose provenance identifies the source pack and source pack-local SPEC id.
+  
+  ## Consequences
+  
+  - Pack manifests may keep local ADR/SPEC ids that are stable within the pack.
+  - Pack sync must preserve `source_pack_id`, `source_document_kind`, and `source_document_id` or equivalent provenance on materialized document rows.
+  - Preflight must fail closed when bare ids collide and no collision-safe materialization or explicit pack-scoped reference policy is in effect.
+  - Conformance must include a regression where two packs share local ADR/SPEC ids and features still resolve to the correct pack-specific SPEC and derived ADR.

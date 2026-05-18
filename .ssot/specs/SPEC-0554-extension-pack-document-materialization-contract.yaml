@@ -1,0 +1,81 @@
+schema_version: "0.5.0"
+kind: "spec"
+id: "spc:0554"
+number: 554
+slug: "extension-pack-document-materialization-contract"
+title: "Extension-pack document materialization contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "This specification defines how governance-pack ADR and SPEC documents are materialized into a downstream registry when their pack-local ids may collide with local ids from other packs."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to define collision-safe materialization for pack-local ADR/SPEC ids."
+    at: "2026-05-18T08:40:25Z"
+references: []
+body: |-
+  ## Scope
+  
+  This specification defines how governance-pack ADR and SPEC documents are materialized into a downstream registry when their pack-local ids may collide with local ids from other packs.
+  
+  ## Materialized Identity
+  
+  When an extension-pack document is synced into a downstream registry, the local registry row SHALL use a collision-safe id unless the bare id is proven unique within the target registry and its installed pack set.
+  
+  The recommended materialized id shape is:
+  
+  ```text
+  spc:pack.<pack-slug>.<local-id-suffix>
+  adr:pack.<pack-slug>.<local-id-suffix>
+  ```
+  
+  For example:
+  
+  ```text
+  spc:pack.web-performance-rum-governance-pack.0001
+  adr:pack.web-performance-rum-governance-pack.0001
+  ```
+  
+  The materialized id SHALL remain a normalized SSOT id and SHALL be deterministic for a given `(pack_id, document_kind, source_document_id)` tuple.
+  
+  ## Required Provenance
+  
+  Materialized extension-pack ADR and SPEC rows SHALL preserve enough provenance to reconstruct the source tuple:
+  
+  ```json
+  {
+    source_pack_id: pack:web-performance-rum-governance-pack,
+    source_package_name: web-performance-rum-governance-pack,
+    source_document_kind: spec,
+    source_document_id: spc:0001
+  }
+  ```
+  
+  Equivalent field names MAY be introduced by schema migration, but the information content is required.
+  
+  ## Link Rewriting
+  
+  When a pack SPEC declares `adr_ids`, sync SHALL rewrite those ADR links to the materialized ADR ids that correspond to the same source pack. It SHALL NOT bind a pack SPEC to a bare ADR id from another pack or from the downstream repo by accidental id equality.
+  
+  When a downstream feature is governed by a pack SPEC, `feature.spec_ids` SHALL reference the materialized local SPEC id. Features SHALL NOT store a bare pack-local `spc:*` id unless that id is the actual materialized local row id in the downstream registry.
+  
+  ## Collision and Update Semantics
+  
+  - Sync SHALL be idempotent for an unchanged `(pack_id, document_kind, source_document_id)` tuple.
+  - If the same tuple is synced again with changed content, normal managed document update policy applies.
+  - If a different tuple maps to an existing materialized id, sync SHALL fail closed.
+  - If a pack changes its local source document id, tooling SHALL treat that as a new source tuple unless explicit supersession or migration metadata is present.
+  
+  ## Conformance Obligation
+  
+  The conformance suite SHALL include a regression with at least two packs that both publish `spc:0001` and `adr:0001`. The regression SHALL prove that each feature resolves to the materialized SPEC from its intended source pack and derives ADR visibility from that pack's materialized ADR.
+spec_kind: "normative"
+adr_ids:
+  - "adr:0546"
+  - "adr:0540"
+  - "adr:0541"
+  - "adr:0542"

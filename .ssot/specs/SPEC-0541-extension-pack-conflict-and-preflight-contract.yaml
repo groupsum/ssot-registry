@@ -1,4 +1,4 @@
-schema_version: "0.3.0"
+schema_version: "0.5.0"
 kind: "spec"
 id: "spc:0541"
 number: 541
@@ -11,7 +11,11 @@ tags: []
 summary: "This specification defines fail-closed validation before external-pack mutation and sync."
 supersedes: []
 superseded_by: []
-status_notes: []
+status_notes:
+  -
+    status: "draft"
+    note: "Updated to require pack-scoped collision handling for shared local ADR/SPEC ids."
+    at: "2026-05-18T08:39:48Z"
 references: []
 body: |-
   ## Scope
@@ -21,18 +25,32 @@ body: |-
   ## Required Preflight Checks
   
   Validation SHALL reject, at minimum:
-  - duplicate document ids
-  - duplicate reserved numbers
-  - duplicate target paths
+  - duplicate document ids inside one pack manifest
+  - duplicate reserved numbers inside one pack manifest
+  - duplicate target paths inside one pack manifest
   - trust failures
   - schema incompatibility
   - missing package artifacts or manifests
+  - cross-pack document identity collisions that cannot be resolved through pack-scoped materialization
+  
+  ## Pack-Scoped Collision Rules
+  
+  A pack document's globally meaningful identity is `(pack_id, document_kind, local_document_id)`.
+  
+  Preflight SHALL distinguish these cases:
+  - Same pack and same local document id: treat as the same managed document candidate and evaluate update, checksum, path, and version policy.
+  - Different pack and same local document id: treat as a collision unless sync will materialize each document under a collision-safe local id with preserved source pack provenance.
+  - Different pack and same target path: reject unless an explicit migration maps one source document to a new collision-safe target path before mutation.
+  - Different pack and same reserved number: reject unless the reservation owner and materialized local id policy prove the rows cannot overwrite or shadow each other.
   
   ## Rules
   
   - Preflight validation SHALL run before downstream file mutation.
   - Conflicts across trusted catalogs SHALL fail closed unless explicitly resolved by policy.
+  - Preflight output SHOULD report both the local document id and the source pack id for every collision.
+  - A feature-to-SPEC reference SHALL NOT be considered resolved by a bare extension-pack `spc:*` id when multiple installed packs can publish the same local id.
 spec_kind: "normative"
 adr_ids:
   - "adr:0538"
   - "adr:0540"
+  - "adr:0546"

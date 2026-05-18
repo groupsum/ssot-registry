@@ -1,20 +1,48 @@
+schema_version: "0.5.0"
+kind: "spec"
+id: "spc:0525"
+number: 525
+slug: "ssot-conformance-case-contract"
+title: "SSOT conformance case contract"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Contract: ssot conformance cases shall be grouped by registry, document, id, SPEC-to-ADR, feature-to-SPEC, proof-chain, boundary, release, and extension-pack identity concerns. Cases shall evaluate a target repository against its SSOT registry and .ssot artifacts in a language-agnostic way. Features remain spec-aware through feature spec_ids. SPEC entities shall not own feature_ids."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Updated to require conformance coverage for pack-scoped document identity collisions."
+    at: "2026-05-18T08:40:40Z"
+references: []
+body: |-
+  Contract: ssot conformance cases shall be grouped by registry, document, id, SPEC-to-ADR, feature-to-SPEC, proof-chain, boundary, release, and extension-pack identity concerns. Cases shall evaluate a target repository against its SSOT registry and .ssot artifacts in a language-agnostic way. Features remain spec-aware through feature spec_ids. SPEC entities shall not own feature_ids.
+  
+  ## Required Case Families
+  
+  Conformance cases SHALL cover:
+  - registry shape and required sections
+  - document metadata and document body consistency
+  - normalized id validity and id max length rules
+  - SPEC-to-ADR links through `spec.adr_ids`
+  - feature-to-SPEC links through `feature.spec_ids`
+  - proof-chain links across features, claims, tests, and evidence
+  - boundary and release membership semantics
+  - extension-pack document identity and materialization semantics
+  
+  ## Extension-Pack Identity Regression
+  
+  The extension-pack conformance family SHALL include a fixture with at least two governance packs that both publish the same pack-local SPEC id and ADR id, for example `spc:0001` and `adr:0001`.
+  
+  The regression SHALL prove:
+  - each pack-local SPEC is materialized into a distinct local registry SPEC row or otherwise resolved through an unambiguous pack-scoped reference;
+  - each pack-local ADR is materialized into a distinct local registry ADR row or otherwise resolved through an unambiguous pack-scoped reference;
+  - `feature.spec_ids` points to the intended materialized SPEC row;
+  - derived feature-to-ADR visibility follows the intended pack-specific `spec.adr_ids` chain;
+  - a bare pack-local `spc:*` or `adr:*` collision cannot silently bind a feature to another pack's document.
+spec_kind: "normative"
 adr_ids:
   - "adr:0524"
-body: |-
-  Contract: ssot conformance cases shall be grouped by registry, document, id, SPEC-to-ADR, feature-to-SPEC, proof-chain, boundary, and release concerns. Cases shall evaluate a target repository against its SSOT registry and .ssot artifacts in a language-agnostic way. Features remain spec-aware through feature spec_ids. SPEC entities shall not own feature_ids.
-decision_date: null
-id: "spc:0525"
-kind: "spec"
-number: 525
-origin: "ssot-core"
-references: []
-schema_version: "0.2.0"
-slug: "ssot-conformance-case-contract"
-spec_kind: "normative"
-status: "draft"
-status_notes: []
-summary: "Contract: ssot conformance cases shall be grouped by registry, document, id, SPEC-to-ADR, feature-to-SPEC, proof-chain, boundary, and release concerns. Cases shall evaluate a target repository against its SSOT registry and .ssot artifacts in a language-agnostic way. Features remain spec-aware through feature spec_ids. SPEC entities shall not own feature_ids."
-superseded_by: []
-supersedes: []
-tags: []
-title: "SSOT conformance case contract"
+  - "adr:0546"
