@@ -110,6 +110,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
             self.assertIn("contents: write", workflow, filename)
             self.assertIn("id-token: write", workflow, filename)
             self.assertIn("UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}", workflow, filename)
+            self.assertIn("env -u UV_PUBLISH_TOKEN uv publish --trusted-publishing always", workflow, filename)
             self.assertIn("uv publish --trusted-publishing never", workflow, filename)
 
     def test_reusable_publish_workflow_uses_tag_as_release_title(self) -> None:
@@ -123,7 +124,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("release-distributions", workflow)
         self.assertIn("gh release create", workflow)
         self.assertIn("UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}", workflow)
-        self.assertIn("uv publish --trusted-publishing always", workflow)
+        self.assertIn("env -u UV_PUBLISH_TOKEN uv publish --trusted-publishing always", workflow)
         self.assertIn("uv publish --trusted-publishing never", workflow)
 
     def test_prepare_release_uses_package_aware_bump_script(self) -> None:

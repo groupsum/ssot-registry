@@ -138,11 +138,11 @@ jobs:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           DIST_FILES=("$PROJECT_PATH"/dist/*)
-          if uv publish --trusted-publishing always --check-url https://pypi.org/simple/ "${DIST_FILES[@]}"; then
+          if env -u UV_PUBLISH_TOKEN uv publish --trusted-publishing always --check-url https://pypi.org/simple/ "${DIST_FILES[@]}"; then
             exit 0
           fi
           if [ -z "${UV_PUBLISH_TOKEN:-}" ]; then
             echo "Trusted publishing failed and PYPI_API_TOKEN is not configured."
             exit 1
           fi
-          uv publish --trusted-publishing never --check-url https://pypi.org/simple/ "${DIST_FILES[@]}"
+          uv publish --trusted-publishing never --token "$UV_PUBLISH_TOKEN" --check-url https://pypi.org/simple/ "${DIST_FILES[@]}"
