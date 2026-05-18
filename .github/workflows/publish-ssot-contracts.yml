@@ -45,6 +45,10 @@ concurrency:
   group: publish-ssot-contracts-${{ inputs.ref_name }}
   cancel-in-progress: false
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   publish:
     uses: ./.github/workflows/_package-publish.yml

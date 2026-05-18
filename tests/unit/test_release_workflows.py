@@ -46,12 +46,14 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("publish_layer_1", workflow)
         self.assertIn("build-distributions:", workflow)
         self.assertIn("release-distributions", workflow)
-        self.assertIn("publish-layer-1:", workflow)
-        self.assertIn("publish-layer-3:", workflow)
-        self.assertIn("publish-layer-5:", workflow)
-        self.assertIn("./.github/workflows/_publish-built-package.yml", workflow)
-        self.assertNotIn("./.github/workflows/publish-ssot-contracts.yml", workflow)
-        self.assertNotIn("./.github/workflows/publish-ssot-registry.yml", workflow)
+        self.assertIn("publish-ssot-contracts:", workflow)
+        self.assertIn("publish-ssot-codegen:", workflow)
+        self.assertIn("publish-ssot-cli:", workflow)
+        self.assertIn("./.github/workflows/publish-ssot-core.yml", workflow)
+        self.assertIn("needs.publish-ssot-pack-contracts.result", workflow)
+        self.assertNotIn("./.github/workflows/_publish-built-package.yml", workflow)
+        self.assertIn("./.github/workflows/publish-ssot-contracts.yml", workflow)
+        self.assertIn("./.github/workflows/publish-ssot-registry.yml", workflow)
 
     def test_ci_runs_shared_suite_once_per_python_version(self) -> None:
         workflow = _read(".github/workflows/ci.yml")
@@ -90,6 +92,22 @@ class ReleaseWorkflowTests(unittest.TestCase):
             ".github/workflows/publish-ssot-tui.yml",
         ):
             self.assertTrue((REPO_ROOT / filename).exists(), filename)
+
+    def test_publish_wrappers_grant_oidc_for_trusted_publishing(self) -> None:
+        for filename in (
+            ".github/workflows/publish-ssot-contracts.yml",
+            ".github/workflows/publish-ssot-views.yml",
+            ".github/workflows/publish-ssot-codegen.yml",
+            ".github/workflows/publish-ssot-core.yml",
+            ".github/workflows/publish-ssot-conformance.yml",
+            ".github/workflows/publish-ssot-registry.yml",
+            ".github/workflows/publish-ssot-cli.yml",
+            ".github/workflows/publish-ssot-tui.yml",
+        ):
+            workflow = _read(filename)
+            self.assertIn("permissions:", workflow, filename)
+            self.assertIn("contents: write", workflow, filename)
+            self.assertIn("id-token: write", workflow, filename)
 
     def test_reusable_publish_workflow_uses_tag_as_release_title(self) -> None:
         workflow = _read(".github/workflows/_package-publish.yml")
