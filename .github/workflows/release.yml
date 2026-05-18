@@ -276,8 +276,12 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: ./.github/workflows/publish-ssot-pack-contracts.yml
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ssot-pack-contracts
+      package_tag: ${{ fromJSON(needs.validate.outputs.publish_layer_1)[1].tag }}
+      package_version: ${{ fromJSON(needs.validate.outputs.publish_layer_1)[1].version }}
+      pypi_project_url: https://pypi.org/p/ssot-pack-contracts
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
@@ -310,8 +314,12 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: ./.github/workflows/publish-ssot-codegen.yml
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ssot-codegen
+      package_tag: ${{ fromJSON(needs.validate.outputs.publish_layer_3)[0].tag }}
+      package_version: ${{ fromJSON(needs.validate.outputs.publish_layer_3)[0].version }}
+      pypi_project_url: https://pypi.org/p/ssot-codegen
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
@@ -325,8 +333,12 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: ./.github/workflows/publish-ssot-core.yml
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ssot-core
+      package_tag: ${{ fromJSON(needs.validate.outputs.publish_layer_3)[1].tag }}
+      package_version: ${{ fromJSON(needs.validate.outputs.publish_layer_3)[1].version }}
+      pypi_project_url: https://pypi.org/p/ssot-core
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
@@ -340,8 +352,12 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: ./.github/workflows/publish-ssot-conformance.yml
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ssot-conformance
+      package_tag: ${{ fromJSON(needs.validate.outputs.publish_layer_4)[0].tag }}
+      package_version: ${{ fromJSON(needs.validate.outputs.publish_layer_4)[0].version }}
+      pypi_project_url: https://pypi.org/p/ssot-conformance
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
@@ -355,8 +371,12 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: ./.github/workflows/publish-ssot-cli.yml
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ssot-cli
+      package_tag: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[0].tag }}
+      package_version: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[0].version }}
+      pypi_project_url: https://pypi.org/p/ssot-cli
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
@@ -370,8 +390,12 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: ./.github/workflows/publish-ssot-tui.yml
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ssot-tui
+      package_tag: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[1].tag }}
+      package_version: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[1].version }}
+      pypi_project_url: https://pypi.org/p/ssot-tui
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true
@@ -385,8 +409,12 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: ./.github/workflows/publish-ssot-registry.yml
+    uses: ./.github/workflows/_publish-built-package.yml
     with:
+      package_name: ssot-registry
+      package_tag: ${{ fromJSON(needs.validate.outputs.publish_layer_6)[0].tag }}
+      package_version: ${{ fromJSON(needs.validate.outputs.publish_layer_6)[0].version }}
+      pypi_project_url: https://pypi.org/p/ssot-registry
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
       create_tag: true

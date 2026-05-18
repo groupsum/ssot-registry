@@ -49,12 +49,13 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("publish-ssot-contracts:", workflow)
         self.assertIn("publish-ssot-codegen:", workflow)
         self.assertIn("publish-ssot-cli:", workflow)
-        self.assertIn("./.github/workflows/publish-ssot-core.yml", workflow)
         self.assertIn("needs.publish-ssot-pack-contracts.result", workflow)
         self.assertIn("./.github/workflows/_publish-built-package.yml", workflow)
+        self.assertEqual(workflow.count("./.github/workflows/_publish-built-package.yml"), 9)
         self.assertIn("package_name: ssot-contracts", workflow)
-        self.assertIn("./.github/workflows/publish-ssot-pack-contracts.yml", workflow)
-        self.assertIn("./.github/workflows/publish-ssot-registry.yml", workflow)
+        self.assertIn("package_name: ssot-pack-contracts", workflow)
+        self.assertIn("package_name: ssot-registry", workflow)
+        self.assertNotIn("./.github/workflows/publish-ssot-", workflow)
 
     def test_ci_runs_shared_suite_once_per_python_version(self) -> None:
         workflow = _read(".github/workflows/ci.yml")
@@ -109,9 +110,10 @@ class ReleaseWorkflowTests(unittest.TestCase):
             self.assertIn("permissions:", workflow, filename)
             self.assertIn("contents: write", workflow, filename)
             self.assertIn("id-token: write", workflow, filename)
-            self.assertIn("UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}", workflow, filename)
-            self.assertIn("env -u UV_PUBLISH_TOKEN uv publish --trusted-publishing always", workflow, filename)
-            self.assertIn("uv publish --trusted-publishing never", workflow, filename)
+            self.assertIn("uses: ./.github/workflows/release.yml", workflow, filename)
+            self.assertIn("publish_to_pypi: ${{ inputs.publish_to_pypi }}", workflow, filename)
+            self.assertNotIn("uv publish", workflow, filename)
+            self.assertNotIn("PYPI_API_TOKEN", workflow, filename)
 
     def test_reusable_publish_workflow_uses_tag_as_release_title(self) -> None:
         workflow = _read(".github/workflows/_package-publish.yml")
@@ -123,9 +125,9 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("actions/download-artifact@v6", workflow)
         self.assertIn("release-distributions", workflow)
         self.assertIn("gh release create", workflow)
-        self.assertIn("UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}", workflow)
-        self.assertIn("env -u UV_PUBLISH_TOKEN uv publish --trusted-publishing always", workflow)
-        self.assertIn("uv publish --trusted-publishing never", workflow)
+        self.assertIn("uv publish --trusted-publishing always --check-url https://pypi.org/simple/ release-dist/$PACKAGE_NAME/*.whl release-dist/$PACKAGE_NAME/*.tar.gz", workflow)
+        self.assertNotIn("PYPI_API_TOKEN", workflow)
+        self.assertNotIn("trusted-publishing never", workflow)
 
     def test_prepare_release_uses_package_aware_bump_script(self) -> None:
         workflow = _read(".github/workflows/prepare-release.yml")

@@ -124,14 +124,4 @@ jobs:
         if: ${{ inputs.publish_to_pypi }}
         env:
           PACKAGE_NAME: ${{ inputs.package_name }}
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          DIST_FILES=(release-dist/$PACKAGE_NAME/*.whl release-dist/$PACKAGE_NAME/*.tar.gz)
-          if env -u UV_PUBLISH_TOKEN uv publish --trusted-publishing always --check-url https://pypi.org/simple/ "${DIST_FILES[@]}"; then
-            exit 0
-          fi
-          if [ -z "${UV_PUBLISH_TOKEN:-}" ]; then
-            echo "Trusted publishing failed and PYPI_API_TOKEN is not configured."
-            exit 1
-          fi
-          uv publish --trusted-publishing never --token "$UV_PUBLISH_TOKEN" --check-url https://pypi.org/simple/ "${DIST_FILES[@]}"
+        run: uv publish --trusted-publishing always --check-url https://pypi.org/simple/ release-dist/$PACKAGE_NAME/*.whl release-dist/$PACKAGE_NAME/*.tar.gz
