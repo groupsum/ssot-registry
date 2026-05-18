@@ -146,4 +146,15 @@ jobs:
 
       - name: Publish package distributions to PyPI
         if: ${{ inputs.publish_to_pypi }}
-        run: uv publish --trusted-publishing always --check-url https://pypi.org/simple/ pkgs/ssot-pack-contracts/dist/*
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          DIST_FILES=(pkgs/ssot-pack-contracts/dist/*)
+          if uv publish --trusted-publishing always --check-url https://pypi.org/simple/ "${DIST_FILES[@]}"; then
+            exit 0
+          fi
+          if [ -z "${UV_PUBLISH_TOKEN:-}" ]; then
+            echo "Trusted publishing failed and PYPI_API_TOKEN is not configured."
+            exit 1
+          fi
+          uv publish --trusted-publishing never --check-url https://pypi.org/simple/ "${DIST_FILES[@]}"

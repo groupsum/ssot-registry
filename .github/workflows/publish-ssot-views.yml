@@ -152,4 +152,14 @@ jobs:
         if: ${{ inputs.publish_to_pypi }}
         env:
           PROJECT_PATH: pkgs/ssot-views
-        run: uv publish --trusted-publishing always --check-url https://pypi.org/simple/ "$PROJECT_PATH"/dist/*
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          DIST_FILES=("$PROJECT_PATH"/dist/*)
+          if uv publish --trusted-publishing always --check-url https://pypi.org/simple/ "${DIST_FILES[@]}"; then
+            exit 0
+          fi
+          if [ -z "${UV_PUBLISH_TOKEN:-}" ]; then
+            echo "Trusted publishing failed and PYPI_API_TOKEN is not configured."
+            exit 1
+          fi
+          uv publish --trusted-publishing never --check-url https://pypi.org/simple/ "${DIST_FILES[@]}"
