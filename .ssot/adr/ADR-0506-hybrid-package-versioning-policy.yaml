@@ -1,3 +1,18 @@
+schema_version: "0.6.0"
+kind: "adr"
+id: "adr:0506"
+number: 506
+slug: "hybrid-package-versioning-policy"
+title: "Hybrid package versioning policy"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Python package versioning SHALL follow a hybrid model."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
 body: |-
   Python package versioning SHALL follow a hybrid model.
   
@@ -5,18 +20,4 @@ body: |-
   - `ssot-cli` and `ssot-tui` SHALL version independently.
   - Surface packages SHALL depend on compatible released `ssot-core` and `ssot-contracts` ranges rather than exact lockstep versions.
   - The umbrella `ssot-registry` package SHALL remain the published bundle that composes the canonical runtime and primary CLI distributions.
-decision_date: null
-id: "adr:0506"
-kind: "adr"
-number: 506
-origin: "ssot-core"
-references: []
-schema_version: "0.1.0"
-slug: "hybrid-package-versioning-policy"
-status: "draft"
-status_notes: []
-summary: "Python package versioning SHALL follow a hybrid model."
-superseded_by: []
-supersedes: []
-tags: []
-title: "Hybrid package versioning policy"
+  - Root CLI version reporting SHALL expose the effective installed `ssot-*` package set so operators can see the hybrid package versions active in the current environment from `ssot --version`, `ssot-cli --version`, and `ssot-registry --version`.

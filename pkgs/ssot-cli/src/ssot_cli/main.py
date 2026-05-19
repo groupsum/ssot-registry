@@ -3,7 +3,11 @@ from __future__ import annotations
 import argparse
 import re
 import sys
-from importlib.metadata import PackageNotFoundError, version as package_version
+from importlib.metadata import (
+    PackageNotFoundError,
+    distributions as package_distributions,
+    version as package_version,
+)
 from pathlib import Path
 from typing import Any
 
@@ -33,7 +37,9 @@ from .validate_cmd import register_validate
 
 _PACKAGE_NAME = "ssot-cli"
 _PYPROJECT_PATH = Path(__file__).resolve().parents[2] / "pyproject.toml"
+_PACKAGES_ROOT = _PYPROJECT_PATH.parent.parent
 _VERSION_PATTERN = re.compile(r'^version\s*=\s*"(?P<version>[^"]+)"\s*$')
+_NAME_PATTERN = re.compile(r'^name\s*=\s*"(?P<name>[^"]+)"\s*$')
 
 
 def _default_prog() -> str:
@@ -47,7 +53,7 @@ def _default_prog() -> str:
     return executable
 
 
-def _read_version_from_pyproject(pyproject_path: Path = _PYPROJECT_PATH) -> str:
+def _read_project_field_from_pyproject(field_pattern: re.Pattern[str], pyproject_path: Path) -> str:
     in_project_section = False
 
     for line in pyproject_path.read_text(encoding="utf-8").splitlines():
@@ -60,11 +66,15 @@ def _read_version_from_pyproject(pyproject_path: Path = _PYPROJECT_PATH) -> str:
         if not in_project_section:
             continue
 
-        match = _VERSION_PATTERN.match(stripped)
+        match = field_pattern.match(stripped)
         if match is not None:
-            return match.group("version")
+            return next(value for value in match.groupdict().values() if value is not None)
 
-    raise RuntimeError(f"Unable to locate [project].version in {pyproject_path}")
+    raise RuntimeError(f"Unable to locate requested [project] field in {pyproject_path}")
+
+
+def _read_version_from_pyproject(pyproject_path: Path = _PYPROJECT_PATH) -> str:
+    return _read_project_field_from_pyproject(_VERSION_PATTERN, pyproject_path)
 
 
 def _cli_version() -> str:
@@ -74,6 +84,69 @@ def _cli_version() -> str:
         return package_version(_PACKAGE_NAME)
     except PackageNotFoundError:
         return _read_version_from_pyproject()
+
+
+def _normalize_distribution_name(name: str) -> str:
+    return name.strip().lower().replace("_", "-")
+
+
+def _installed_ssot_package_versions() -> list[tuple[str, str]]:
+    packages: dict[str, str] = {}
+    for distribution in package_distributions():
+        name = distribution.metadata.get("Name")
+        if not name:
+            continue
+        normalized_name = _normalize_distribution_name(name)
+        if normalized_name.startswith("ssot-"):
+            packages[normalized_name] = distribution.version
+    return sorted(packages.items())
+
+
+def _source_tree_ssot_package_versions() -> list[tuple[str, str]]:
+    if not _PACKAGES_ROOT.exists():
+        return []
+
+    packages: dict[str, str] = {}
+    for pyproject_path in _PACKAGES_ROOT.glob("ssot-*/pyproject.toml"):
+        name = _read_project_field_from_pyproject(_NAME_PATTERN, pyproject_path)
+        normalized_name = _normalize_distribution_name(name)
+        if normalized_name.startswith("ssot-"):
+            packages[normalized_name] = _read_version_from_pyproject(pyproject_path)
+    return sorted(packages.items())
+
+
+def _ssot_package_versions() -> list[tuple[str, str]]:
+    packages = dict(_installed_ssot_package_versions())
+    packages.update(_source_tree_ssot_package_versions())
+    if _PACKAGE_NAME not in packages:
+        packages[_PACKAGE_NAME] = _cli_version()
+    return sorted(packages.items())
+
+
+def _version_report() -> str:
+    lines = ["%(prog)s package versions:"]
+    lines.extend(f"{name} {version}" for name, version in _ssot_package_versions())
+    return "\n".join(lines)
+
+
+class _VersionReportAction(argparse.Action):
+    def __init__(
+        self,
+        option_strings: list[str],
+        dest: str = argparse.SUPPRESS,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(option_strings=option_strings, dest=dest, nargs=0, **kwargs)
+
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: str | None,
+        option_string: str | None = None,
+    ) -> None:
+        parser._print_message(_version_report() % {"prog": parser.prog} + "\n", sys.stdout)
+        parser.exit()
 
 
 def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
@@ -87,9 +160,8 @@ def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--version",
-        action="version",
-        version=f"%(prog)s {_cli_version()}",
-        help="Print the installed CLI package version and exit.",
+        action=_VersionReportAction,
+        help="Print installed SSOT package versions and exit.",
     )
     parser.add_argument(
         "--output-format",

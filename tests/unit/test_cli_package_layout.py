@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import importlib.util
 import sys
 import unittest
@@ -19,6 +20,7 @@ for path in (
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
+cli_main = importlib.import_module("ssot_cli.main")
 from ssot_cli.main import build_parser
 from ssot_registry.cli.main import main as compatibility_main
 from ssot_tui.services import RegistryWorkspaceService
@@ -32,6 +34,48 @@ class CliPackageLayoutTests(unittest.TestCase):
         self.assertIn("--output-format", options)
         self.assertIn("--output-file", options)
         self.assertIn("--version", options)
+
+    def test_version_report_includes_installed_ssot_distributions(self) -> None:
+        class Distribution:
+            def __init__(self, name: str, version: str) -> None:
+                self.metadata = {"Name": name}
+                self.version = version
+
+        with (
+            patch.object(cli_main, "_source_tree_ssot_package_versions", return_value=[]),
+            patch.object(
+                cli_main,
+                "package_distributions",
+                return_value=[
+                    Distribution("ssot-cli", "1.2.3"),
+                    Distribution("ssot-core", "4.5.6"),
+                    Distribution("not-ssot", "9.9.9"),
+                ],
+            ),
+        ):
+            report = cli_main._version_report()
+
+        self.assertIn("ssot-cli 1.2.3", report)
+        self.assertIn("ssot-core 4.5.6", report)
+        self.assertNotIn("not-ssot", report)
+
+    def test_version_report_prefers_source_tree_versions_when_present(self) -> None:
+        class Distribution:
+            metadata = {"Name": "ssot-cli"}
+            version = "1.2.3"
+
+        with (
+            patch.object(
+                cli_main,
+                "_source_tree_ssot_package_versions",
+                return_value=[("ssot-cli", "9.8.7")],
+            ),
+            patch.object(cli_main, "package_distributions", return_value=[Distribution()]),
+        ):
+            report = cli_main._version_report()
+
+        self.assertIn("ssot-cli 9.8.7", report)
+        self.assertNotIn("ssot-cli 1.2.3", report)
 
     def test_entity_parsers_expose_semantic_descriptions(self) -> None:
         parser = build_parser(prog="ssot")
