@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import importlib
 import importlib.util
 import sys
@@ -53,7 +55,7 @@ class CliPackageLayoutTests(unittest.TestCase):
                 ],
             ),
         ):
-            report = cli_main._version_report()
+            report = cli_main._version_report("ssot-registry")
 
         self.assertIn("ssot-cli 1.2.3", report)
         self.assertIn("ssot-core 4.5.6", report)
@@ -72,10 +74,29 @@ class CliPackageLayoutTests(unittest.TestCase):
             ),
             patch.object(cli_main, "package_distributions", return_value=[Distribution()]),
         ):
-            report = cli_main._version_report()
+            report = cli_main._version_report("ssot-registry")
 
         self.assertIn("ssot-cli 9.8.7", report)
         self.assertNotIn("ssot-cli 1.2.3", report)
+
+    def test_root_version_action_reports_all_entrypoint_aliases(self) -> None:
+        with patch.object(
+            cli_main,
+            "_ssot_package_versions",
+            return_value=[("ssot-cli", "1.2.3"), ("ssot-core", "4.5.6")],
+        ):
+            for prog in ("ssot", "ssot-cli", "ssot-registry"):
+                parser = build_parser(prog=prog)
+                stdout = io.StringIO()
+                with contextlib.redirect_stdout(stdout):
+                    with self.assertRaises(SystemExit) as raised:
+                        parser.parse_args(["--version"])
+
+                self.assertEqual(raised.exception.code, 0)
+                self.assertEqual(
+                    stdout.getvalue(),
+                    f"{prog} package versions:\nssot-cli 1.2.3\nssot-core 4.5.6\n",
+                )
 
     def test_entity_parsers_expose_semantic_descriptions(self) -> None:
         parser = build_parser(prog="ssot")

@@ -123,8 +123,8 @@ def _ssot_package_versions() -> list[tuple[str, str]]:
     return sorted(packages.items())
 
 
-def _version_report() -> str:
-    lines = ["%(prog)s package versions:"]
+def _version_report(prog: str) -> str:
+    lines = [f"{prog} package versions:"]
     lines.extend(f"{name} {version}" for name, version in _ssot_package_versions())
     return "\n".join(lines)
 
@@ -145,7 +145,7 @@ class _VersionReportAction(argparse.Action):
         values: str | None,
         option_string: str | None = None,
     ) -> None:
-        parser._print_message(_version_report() % {"prog": parser.prog} + "\n", sys.stdout)
+        parser._print_message(_version_report(parser.prog) + "\n", sys.stdout)
         parser.exit()
 
 
