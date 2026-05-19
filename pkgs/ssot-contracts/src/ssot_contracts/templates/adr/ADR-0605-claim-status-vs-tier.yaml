@@ -1,3 +1,18 @@
+schema_version: "0.6.0"
+kind: "adr"
+id: "adr:0605"
+number: 605
+slug: "claim-status-vs-tier"
+title: "Claim status and claim tier are orthogonal"
+status: "draft"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "Claims carry both lifecycle status and assurance tier. Earlier wording stated that status and tier are orthogonal, but the registry now also needs explicit promotion gates so a high lifecycle status cannot be mistaken for high assurance."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
 body: |-
   ## Context
   
@@ -16,18 +31,3 @@ body: |-
   Automation and reviewers must not infer assurance strength from status alone. A claim with a high lifecycle status but insufficient tier-gate evidence must be reported as over-stated or blocked at the requested tier.
   
   Claim closure remains a support-coherence check. Tier gates remain the authority for the semantic meaning of `T1`, `T2`, `T3`, and `T4`.
-decision_date: null
-id: "adr:0605"
-kind: "adr"
-number: 605
-origin: "ssot-origin"
-references: []
-schema_version: "0.1.0"
-slug: "claim-status-vs-tier"
-status: "draft"
-status_notes: []
-summary: "Claim status expresses lifecycle progression, while claim tier expresses assurance strength and requires the applicable tier gate."
-superseded_by: []
-supersedes: []
-tags: []
-title: "Claim status and claim tier are orthogonal"

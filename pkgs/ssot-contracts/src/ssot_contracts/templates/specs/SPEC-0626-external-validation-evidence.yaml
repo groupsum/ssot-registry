@@ -1,4 +1,4 @@
-schema_version: "0.3.0"
+schema_version: "0.6.0"
 kind: "spec"
 id: "spc:0626"
 number: 626
@@ -8,7 +8,7 @@ status: "draft"
 origin: "ssot-origin"
 decision_date: null
 tags: []
-summary: "Define the evidence contract for T4 external, independent, or third-party validation."
+summary: "This SPEC defines the evidence contract used by `T4` externally certified claims."
 supersedes: []
 superseded_by: []
 status_notes: []

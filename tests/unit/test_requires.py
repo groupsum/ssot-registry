@@ -52,6 +52,48 @@ class FeatureRequiresValidationTests(unittest.TestCase):
         joined = "\n".join(report["failures"])
         self.assertIn("requires feat:dependency.not-passing to be passing", joined)
 
+    def test_requires_is_not_parent_leaf_composition(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+        registry_path = repo / ".ssot" / "registry.json"
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+
+        registry["features"].append(
+            {
+                "id": "feat:umbrella.operator-surface",
+                "title": "Operator surface umbrella",
+                "description": "inventory grouping row",
+                "implementation_status": "implemented",
+                "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": None},
+                "plan": {"horizon": "current", "slot": None, "target_claim_tier": "T3", "target_lifecycle_stage": "active"},
+                "spec_ids": [],
+                "claim_ids": ["clm:rfc.9000.connection-migration.t3"],
+                "test_ids": ["tst:pytest.rfc.9000.connection-migration"],
+                "requires": ["feat:umbrella.operator-surface.leaf"],
+            }
+        )
+        registry["features"].append(
+            {
+                "id": "feat:umbrella.operator-surface.leaf",
+                "title": "Operator surface leaf",
+                "description": "leaf inventory row",
+                "implementation_status": "absent",
+                "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": None},
+                "plan": {"horizon": "backlog", "slot": None, "target_claim_tier": None, "target_lifecycle_stage": "active"},
+                "spec_ids": [],
+                "claim_ids": [],
+                "test_ids": [],
+                "requires": [],
+            }
+        )
+        registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
+
+        report = validate_registry(repo)
+        self.assertFalse(report["passed"])
+        joined = "\n".join(report["failures"])
+        self.assertIn("requires feat:umbrella.operator-surface.leaf to be passing", joined)
+
     def test_requires_cycle_is_reported(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)

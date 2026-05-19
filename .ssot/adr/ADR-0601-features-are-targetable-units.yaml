@@ -15,3 +15,7 @@ status_notes: []
 references: []
 body: |-
   Features are the only targetable implementation units. There is no separate `targets[]` section.
+  
+  Feature inventory naming MAY use umbrella/leaf conventions when a repository needs grouped readability,
+  but that convention is not a runtime dependency model. `feature.requires` is reserved for prerequisite
+  features that must independently pass before the dependent feature can pass.

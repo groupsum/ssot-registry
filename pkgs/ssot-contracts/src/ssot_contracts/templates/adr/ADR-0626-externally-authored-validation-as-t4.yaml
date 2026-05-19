@@ -1,4 +1,4 @@
-schema_version: "0.3.0"
+schema_version: "0.6.0"
 kind: "adr"
 id: "adr:0626"
 number: 626
@@ -8,7 +8,7 @@ status: "draft"
 origin: "ssot-origin"
 decision_date: null
 tags: []
-summary: "T4 requires external validation authority; externally authored validation may count even when executed internally if provenance, scope, and result are recorded."
+summary: "`T4` needs to represent external assurance rather than stronger project self-attestation. At the same time, many authoritative conformance suites, probe corpora, review artifacts, and certification checks can be executed locally while remaining externally authored or independently controlled."
 supersedes: []
 superseded_by: []
 status_notes: []

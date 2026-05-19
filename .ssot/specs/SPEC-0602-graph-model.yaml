@@ -27,5 +27,11 @@ body: |-
   - `AFFECTS`
   - `PUBLISHES`
   - `INCLUDES`
+  - `REQUIRES`
+  
+  A `REQUIRES` edge derived from `feature.requires` SHALL represent a passing prerequisite relationship.
+  It SHALL NOT be used to model parent/leaf, umbrella/member, category/item, or inventory grouping
+  composition. Such grouping remains a feature inventory convention unless represented through a separate
+  SSOT entity with its own semantics.
 spec_kind: "normative"
 adr_ids: []

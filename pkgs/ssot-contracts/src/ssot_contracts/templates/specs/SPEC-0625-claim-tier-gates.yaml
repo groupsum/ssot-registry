@@ -1,4 +1,4 @@
-schema_version: "0.3.0"
+schema_version: "0.6.0"
 kind: "spec"
 id: "spc:0625"
 number: 625
@@ -8,7 +8,7 @@ status: "draft"
 origin: "ssot-origin"
 decision_date: null
 tags: []
-summary: "Define machine-actionable gates for claim tier promotion from T1 through T4."
+summary: "This SPEC defines the machine-actionable gates that determine whether a claim may be treated as valid at `T1`, `T2`, `T3`, or `T4`."
 supersedes: []
 superseded_by: []
 status_notes: []

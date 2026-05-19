@@ -1,5 +1,18 @@
-adr_ids:
-  - "adr:0616"
+schema_version: "0.6.0"
+kind: "spec"
+id: "spc:0616"
+number: 616
+slug: "out-of-bounds-implementation-disposition"
+title: "Out-of-bounds implementation disposition"
+status: "accepted"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "Feature `plan` MAY include:"
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
 body: |-
   ## Registry Field
   
@@ -33,19 +46,6 @@ body: |-
   Feature creation and planning commands expose `--out-of-bounds-disposition`.
   
   The Python `plan_features()` API accepts `out_of_bounds_disposition`. Planning a feature away from `out_of_bounds` clears the field unless a new value is explicitly supplied and then rejected by validation.
-decision_date: null
-id: "spc:0616"
-kind: "spec"
-number: 616
-origin: "ssot-origin"
-references: []
-schema_version: "0.2.0"
-slug: "out-of-bounds-implementation-disposition"
 spec_kind: "normative"
-status: "accepted"
-status_notes: []
-summary: "Feature `plan` MAY include:"
-superseded_by: []
-supersedes: []
-tags: []
-title: "Out-of-bounds implementation disposition"
+adr_ids:
+  - "adr:0616"

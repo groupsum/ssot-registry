@@ -1,6 +1,18 @@
-adr_ids:
-  - "adr:0605"
-  - "adr:0625"
+schema_version: "0.6.0"
+kind: "spec"
+id: "spc:0605"
+number: 605
+slug: "claim-tiers"
+title: "Claim tiers"
+status: "draft"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "Claim tiers describe assurance strength. They do not describe lifecycle status. Claim lifecycle status remains governed by claim statuses; tier promotion is governed by the tier semantics below and by the claim tier gates defined in `SPEC-0625`."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
 body: |-
   ## Overview
   
@@ -29,19 +41,7 @@ body: |-
   - `T2` SHALL NOT be described as release certification.
   - `T3` SHALL NOT be described as external certification.
   - `T4` SHALL require external validation authority, not only internally authored self-attestation.
-decision_date: null
-id: "spc:0605"
-kind: "spec"
-number: 605
-origin: "ssot-origin"
-references: []
-schema_version: "0.1.0"
-slug: "claim-tiers"
 spec_kind: "normative"
-status: "draft"
-status_notes: []
-summary: "Claim tiers define the assurance ladder from declared inventory through direct project verification, robust project verification, release certification, and external certification."
-superseded_by: []
-supersedes: []
-tags: []
-title: "Claim tiers"
+adr_ids:
+  - "adr:0605"
+  - "adr:0625"

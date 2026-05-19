@@ -1,3 +1,18 @@
+schema_version: "0.6.0"
+kind: "adr"
+id: "adr:0616"
+number: 616
+slug: "out-of-bounds-implementation-disposition"
+title: "Out-of-bounds implementation disposition is explicit"
+status: "accepted"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "Feature implementation state, planning horizon, and lifecycle state are separate axes. That separation is useful, but it leaves an ambiguous case: a feature can be `out_of_bounds` while still being `partial` or `implemented` in the codebase."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
 body: |-
   ## Context
   
@@ -30,18 +45,3 @@ body: |-
   Release and certification workflows can distinguish acceptable non-target behavior from prohibited implementation leakage.
   
   A removed feature still requires `implementation_status: absent`; `prohibited` is the managed transition state while code or behavior remains present.
-decision_date: null
-id: "adr:0616"
-kind: "adr"
-number: 616
-origin: "ssot-origin"
-references: []
-schema_version: "0.2.0"
-slug: "out-of-bounds-implementation-disposition"
-status: "accepted"
-status_notes: []
-summary: "Feature implementation state, planning horizon, and lifecycle state are separate axes. That separation is useful, but it leaves an ambiguous case: a feature can be `out_of_bounds` while still being `partial` or `implemented` in the codebase."
-superseded_by: []
-supersedes: []
-tags: []
-title: "Out-of-bounds implementation disposition is explicit"

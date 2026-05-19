@@ -64,7 +64,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--spec-ids", nargs="*", default=[], help="SPEC ids that define or constrain the feature.")
     create.add_argument("--claim-ids", nargs="*", default=[], help="Claim ids currently attached to the feature.")
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids that verify the feature.")
-    create.add_argument("--requires", nargs="*", default=[], help="Other feature ids that this feature depends on.")
+    create.add_argument("--requires", nargs="*", default=[], help="Passing prerequisite feature ids; not a parent/leaf composition link.")
     create.set_defaults(func=run_create)
 
     get = feature_sub.add_parser("get", help="Show one feature.", description="Fetch a single feature record by id.")
@@ -94,13 +94,13 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     delete.add_argument("--id", required=True, help="Feature id to delete.")
     delete.set_defaults(func=run_delete)
 
-    link = feature_sub.add_parser("link", help="Attach related records to a feature.", description="Add links from a feature to governing SPECs, claims, tests, or prerequisite features.")
+    link = feature_sub.add_parser("link", help="Attach related records to a feature.", description="Add links from a feature to governing SPECs, claims, tests, or passing prerequisite features.")
     add_path_argument(link)
     link.add_argument("--id", required=True, help="Feature id that should receive the links.")
     link.add_argument("--spec-ids", nargs="*", help="SPEC ids to attach.")
     link.add_argument("--claim-ids", nargs="*", help="Claim ids to attach.")
     link.add_argument("--test-ids", nargs="*", help="Test ids to attach.")
-    link.add_argument("--requires", nargs="*", help="Dependency feature ids to attach.")
+    link.add_argument("--requires", nargs="*", help="Passing prerequisite feature ids to attach; not parent/leaf composition.")
     link.set_defaults(func=run_link)
 
     unlink = feature_sub.add_parser("unlink", help="Remove related records from a feature.", description="Remove links from a feature to SPECs, claims, tests, or prerequisite features.")
@@ -109,7 +109,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     unlink.add_argument("--spec-ids", nargs="*", help="SPEC ids to detach.")
     unlink.add_argument("--claim-ids", nargs="*", help="Claim ids to detach.")
     unlink.add_argument("--test-ids", nargs="*", help="Test ids to detach.")
-    unlink.add_argument("--requires", nargs="*", help="Dependency feature ids to detach.")
+    unlink.add_argument("--requires", nargs="*", help="Passing prerequisite feature ids to detach.")
     unlink.set_defaults(func=run_unlink)
 
     plan = feature_sub.add_parser("plan", help="Set planned rollout targets.", description="Update feature planning fields such as horizon, target claim tier, and future lifecycle.")

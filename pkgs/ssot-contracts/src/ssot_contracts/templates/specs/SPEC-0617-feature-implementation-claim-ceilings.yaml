@@ -1,6 +1,18 @@
-adr_ids:
-  - "adr:0617"
-  - "adr:0625"
+schema_version: "0.6.0"
+kind: "spec"
+id: "spc:0617"
+number: 617
+slug: "feature-implementation-claim-ceilings"
+title: "Feature implementation claim ceilings"
+status: "accepted"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "Feature implementation status SHALL be derived and validated through active required claim ceilings."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
 body: |-
   ## Overview
   
@@ -46,19 +58,7 @@ body: |-
   ## Profile Evaluation
   
   Profile and boundary-oriented feature evaluation SHALL use the same all-active-required-claims precedence. A feature with an active required `T0` claim SHALL fail feature-pass evaluation even if another linked claim is stronger.
-decision_date: null
-id: "spc:0617"
-kind: "spec"
-number: 617
-origin: "ssot-origin"
-references: []
-schema_version: "0.2.0"
-slug: "feature-implementation-claim-ceilings"
 spec_kind: "normative"
-status: "accepted"
-status_notes: []
-summary: "Feature implementation status SHALL be derived and validated through active required claim ceilings and applicable tier gates."
-superseded_by: []
-supersedes: []
-tags: []
-title: "Feature implementation claim ceilings"
+adr_ids:
+  - "adr:0617"
+  - "adr:0625"
