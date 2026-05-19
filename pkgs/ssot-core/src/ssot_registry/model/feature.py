@@ -16,3 +16,4 @@ class FeatureRow(TypedDict, total=False):
     claim_ids: list[str]
     test_ids: list[str]
     requires: list[str]
+    parent_feature_ids: list[str]

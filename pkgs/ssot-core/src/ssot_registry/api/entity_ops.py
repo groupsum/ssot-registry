@@ -40,7 +40,7 @@ RECIPROCAL_FIELDS = {
 }
 
 LINKABLE_FIELDS = {
-    "features": {"spec_ids", "claim_ids", "test_ids", "requires"},
+    "features": {"spec_ids", "claim_ids", "test_ids", "requires", "parent_feature_ids"},
     "profiles": {"feature_ids", "profile_ids"},
     "tests": {"feature_ids", "claim_ids", "evidence_ids"},
     "claims": {"feature_ids", "test_ids", "evidence_ids", "depends_on_claim_ids"},
@@ -74,6 +74,19 @@ def _dedupe_preserve(values: list[str]) -> list[str]:
             seen.add(value)
             ordered.append(value)
     return ordered
+
+
+def _dedupe_sorted(values: list[str]) -> list[str]:
+    return sorted(dict.fromkeys(values))
+
+
+def _normalize_feature_parent_ids(row: dict[str, Any]) -> None:
+    values = row.get("parent_feature_ids")
+    if values is None:
+        row["parent_feature_ids"] = []
+        return
+    if isinstance(values, list):
+        row["parent_feature_ids"] = _dedupe_sorted(values)
 
 
 def _repo_kind(registry: dict[str, Any]) -> str:
@@ -221,6 +234,9 @@ def create_entity(path: str | Path, section: str, row: dict[str, Any]) -> dict[s
     _ensure_assurance_origin(registry, section, candidate)
     if section == "claims":
         candidate.setdefault("depends_on_claim_ids", [])
+    if section == "features":
+        candidate.setdefault("parent_feature_ids", [])
+        _normalize_feature_parent_ids(candidate)
     _validate_assurance_origin_mutation(registry, section, candidate)
     for field_name in LINKABLE_FIELDS[section]:
         if field_name in candidate and isinstance(candidate[field_name], list):
@@ -278,6 +294,8 @@ def update_entity(path: str | Path, section: str, entity_id: str, changes: dict[
             continue
         row[field_name] = deepcopy(value)
     _validate_assurance_origin_mutation(registry, section, row, current=current_row)
+    if section == "features":
+        _normalize_feature_parent_ids(row)
     if isinstance(next_id, str) and next_id != entity_id:
         _rewrite_references_for_renamed_id(registry, target_section=section, old_id=entity_id, new_id=next_id)
         action = f"renaming {SECTION_LABELS[section]} {entity_id} to {next_id}"
@@ -359,6 +377,8 @@ def link_entities(path: str | Path, section: str, entity_id: str, links: dict[st
                 values.append(target_id)
                 _apply_reciprocal_add(registry, section, field_name, entity_id, target_id)
         row[field_name] = _dedupe_preserve(values)
+    if section == "features":
+        _normalize_feature_parent_ids(row)
     mutation = _validate_and_save(registry_path, repo_root, registry, f"linking {SECTION_LABELS[section]} {entity_id}")
     return {
         "passed": True,
@@ -381,6 +401,8 @@ def unlink_entities(path: str | Path, section: str, entity_id: str, links: dict[
                 values.remove(target_id)
             _apply_reciprocal_remove(registry, section, field_name, entity_id, target_id)
         row[field_name] = _dedupe_preserve(values)
+    if section == "features":
+        _normalize_feature_parent_ids(row)
     mutation = _validate_and_save(registry_path, repo_root, registry, f"unlinking {SECTION_LABELS[section]} {entity_id}")
     return {
         "passed": True,
@@ -393,6 +415,75 @@ def unlink_entities(path: str | Path, section: str, entity_id: str, links: dict[
 
 def set_claim_status(path: str | Path, claim_id: str, status: str) -> dict[str, Any]:
     return update_entity(path, "claims", claim_id, {"status": status})
+
+
+def set_feature_parents(path: str | Path, ids: list[str], parent_ids: list[str], mode: str) -> dict[str, Any]:
+    if mode not in {"add", "set", "remove", "clear"}:
+        raise ValueError("mode must be one of add, set, remove, or clear")
+    registry_path, repo_root, registry = load_registry(path)
+    feature_lookup = _row_lookup(registry, "features")
+    target_ids = _dedupe_preserve(ids)
+    requested_parent_ids = _dedupe_preserve(parent_ids)
+    if mode == "clear":
+        requested_parent_ids = []
+    elif not requested_parent_ids:
+        raise ValueError("At least one parent feature id is required")
+
+    missing_targets = sorted(entity_id for entity_id in target_ids if entity_id not in feature_lookup)
+    missing_parents = sorted(parent_id for parent_id in requested_parent_ids if parent_id not in feature_lookup)
+    if missing_targets or missing_parents:
+        messages: list[str] = []
+        if missing_targets:
+            messages.append(f"Unknown feature ids: {', '.join(missing_targets)}")
+        if missing_parents:
+            messages.append(f"Unknown parent feature ids: {', '.join(missing_parents)}")
+        raise ValueError("; ".join(messages))
+
+    for entity_id in target_ids:
+        row = feature_lookup[entity_id]
+        current = _ensure_list_field(row, "parent_feature_ids")
+        if mode == "add":
+            row["parent_feature_ids"] = _dedupe_sorted([*current, *requested_parent_ids])
+        elif mode == "set":
+            row["parent_feature_ids"] = _dedupe_sorted(requested_parent_ids)
+        elif mode == "remove":
+            removals = set(requested_parent_ids)
+            row["parent_feature_ids"] = _dedupe_sorted([value for value in current if value not in removals])
+        else:
+            row["parent_feature_ids"] = []
+
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"{mode} feature parent links")
+    return {
+        "passed": True,
+        "registry_path": registry_path.as_posix(),
+        "section": "features",
+        "mode": mode,
+        "ids": target_ids,
+        "parent_ids": requested_parent_ids,
+        "entities": [deepcopy(feature_lookup[entity_id]) for entity_id in target_ids],
+        **mutation,
+    }
+
+
+def add_feature_children(path: str | Path, parent_id: str, child_ids: list[str]) -> dict[str, Any]:
+    return set_feature_parents(path, child_ids, [parent_id], "add")
+
+
+def remove_feature_children(path: str | Path, parent_id: str, child_ids: list[str]) -> dict[str, Any]:
+    return set_feature_parents(path, child_ids, [parent_id], "remove")
+
+
+def list_feature_children(path: str | Path, parent_id: str) -> list[dict[str, Any]]:
+    _registry_path, _repo_root, registry = load_registry(path)
+    feature_lookup = _row_lookup(registry, "features")
+    if parent_id not in feature_lookup:
+        raise ValueError(f"Unknown feature id: {parent_id}")
+    rows = [
+        deepcopy(row)
+        for row in registry.get("features", [])
+        if isinstance(row, dict) and parent_id in row.get("parent_feature_ids", [])
+    ]
+    return sorted(rows, key=lambda row: row["id"])
 
 
 def set_claim_tier(path: str | Path, claim_id: str, tier: str) -> dict[str, Any]:

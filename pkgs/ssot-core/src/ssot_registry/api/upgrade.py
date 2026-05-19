@@ -40,6 +40,7 @@ SCHEMA_V0_2_0 = "0.2.0"
 SCHEMA_V0_3_0 = "0.3.0"
 SCHEMA_V0_4_0 = "0.4.0"
 SCHEMA_V0_5_0 = "0.5.0"
+SCHEMA_V0_6_0 = "0.6.0"
 MIGRATION_RELEASE_WINDOWS = {
     (3, 4): "0.1.x->0.2.1",
     (4, 5): "0.2.1->0.2.2",
@@ -53,7 +54,8 @@ MIGRATION_RELEASE_WINDOWS = {
     (SCHEMA_V0_2_0, SCHEMA_V0_3_0): "0.2.10->0.3.0",
     (SCHEMA_V0_3_0, SCHEMA_V0_4_0): "0.2.10->0.4.0",
     (SCHEMA_V0_4_0, SCHEMA_V0_5_0): "0.4.0->0.5.0",
-    (SCHEMA_V0_5_0, SCHEMA_VERSION): "0.5.0->0.6.0",
+    (SCHEMA_V0_5_0, SCHEMA_V0_6_0): "0.5.0->0.6.0",
+    (SCHEMA_V0_6_0, SCHEMA_VERSION): "0.6.0->0.7.0",
 }
 
 MIGRATION_PATHS = (
@@ -69,7 +71,8 @@ MIGRATION_PATHS = (
     (SCHEMA_V0_2_0, SCHEMA_V0_3_0, "migrate_v0_2_0_to_v0_3_0"),
     (SCHEMA_V0_3_0, SCHEMA_V0_4_0, "migrate_v0_3_0_to_v0_4_0"),
     (SCHEMA_V0_4_0, SCHEMA_V0_5_0, "migrate_v0_4_0_to_v0_5_0"),
-    (SCHEMA_V0_5_0, SCHEMA_VERSION, "migrate_v0_5_0_to_v0_6_0"),
+    (SCHEMA_V0_5_0, SCHEMA_V0_6_0, "migrate_v0_5_0_to_v0_6_0"),
+    (SCHEMA_V0_6_0, SCHEMA_VERSION, "migrate_v0_6_0_to_v0_7_0"),
 )
 
 
@@ -594,10 +597,31 @@ def migrate_v0_5_0_to_v0_6_0(
 ) -> dict[str, Any]:
     _ = repo_root, previous_version, target_version
     migrated = deepcopy(registry)
-    migrated["schema_version"] = SCHEMA_VERSION
+    migrated["schema_version"] = SCHEMA_V0_6_0
     for claim in migrated.get("claims", []):
         if isinstance(claim, dict):
             claim.setdefault("depends_on_claim_ids", [])
+    return migrated
+
+
+def migrate_v0_6_0_to_v0_7_0(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    _ = repo_root, previous_version, target_version
+    migrated = deepcopy(registry)
+    migrated["schema_version"] = SCHEMA_VERSION
+    for feature in migrated.get("features", []):
+        if not isinstance(feature, dict):
+            continue
+        parent_feature_ids = feature.get("parent_feature_ids", [])
+        if not isinstance(parent_feature_ids, list) or not all(isinstance(value, str) for value in parent_feature_ids):
+            feature_id = feature.get("id", "<missing>")
+            raise ValidationError(f"features.{feature_id}.parent_feature_ids must be a list of strings")
+        feature["parent_feature_ids"] = sorted(dict.fromkeys(parent_feature_ids))
     return migrated
 
 
@@ -767,11 +791,21 @@ def upgrade_registry(
             target_version=target_version,
         )
         schema_migrations.append("migrate_v0_5_0_to_v0_6_0")
-        migrations.append(_migration_window_label(SCHEMA_V0_5_0, SCHEMA_VERSION))
+        migrations.append(_migration_window_label(SCHEMA_V0_5_0, SCHEMA_V0_6_0))
+        source_schema = SCHEMA_V0_6_0
+    if source_schema == SCHEMA_V0_6_0:
+        working = migrate_v0_6_0_to_v0_7_0(
+            working,
+            repo_root,
+            previous_version=source_tooling_version,
+            target_version=target_version,
+        )
+        schema_migrations.append("migrate_v0_6_0_to_v0_7_0")
+        migrations.append(_migration_window_label(SCHEMA_V0_6_0, SCHEMA_VERSION))
         source_schema = SCHEMA_VERSION
     elif source_schema != SCHEMA_VERSION:
         raise RegistryError(
-            f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10, 0.1.0, 0.2.0, 0.3.0, 0.4.0, 0.5.0 or {SCHEMA_VERSION}"
+            f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10, 0.1.0, 0.2.0, 0.3.0, 0.4.0, 0.5.0, 0.6.0 or {SCHEMA_VERSION}"
         )
 
     normalized_current = _normalize_current_registry(working)

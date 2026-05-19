@@ -33,6 +33,8 @@ class CliFeatureTests(unittest.TestCase):
             "partial",
             "--requires",
             "feat:rfc.9000.connection-migration",
+            "--parent-feature-ids",
+            "feat:rfc.9000.connection-migration",
         )
         self.assertEqual(create.returncode, 0, create.stderr)
         self.assertTrue(json.loads(create.stdout)["passed"])
@@ -43,6 +45,7 @@ class CliFeatureTests(unittest.TestCase):
         get_payload = json.loads(get_result.stdout)
         self.assertEqual(get_payload["id"], "feat:cli.generated")
         self.assertEqual(get_payload["body"], "generated feature body from file")
+        self.assertEqual(get_payload["parent_feature_ids"], ["feat:rfc.9000.connection-migration"])
 
         list_result = run_cli("feature", "list", str(repo))
         self.assertEqual(list_result.returncode, 0, list_result.stderr)
@@ -93,6 +96,94 @@ class CliFeatureTests(unittest.TestCase):
             "implemented",
         )
         self.assertEqual(implement.returncode, 0, implement.stderr)
+
+        parent_set = run_cli(
+            "feature",
+            "parent",
+            "set",
+            str(repo),
+            "--ids",
+            "feat:cli.generated",
+            "--parent-ids",
+            "feat:rfc.9000.connection-migration",
+        )
+        self.assertEqual(parent_set.returncode, 0, parent_set.stderr)
+        self.assertEqual(json.loads(parent_set.stdout)["entities"][0]["parent_feature_ids"], ["feat:rfc.9000.connection-migration"])
+
+        parent_remove = run_cli(
+            "feature",
+            "parent",
+            "remove",
+            str(repo),
+            "--ids",
+            "feat:cli.generated",
+            "--parent-ids",
+            "feat:rfc.9000.connection-migration",
+        )
+        self.assertEqual(parent_remove.returncode, 0, parent_remove.stderr)
+        self.assertEqual(json.loads(parent_remove.stdout)["entities"][0]["parent_feature_ids"], [])
+
+        children_add = run_cli(
+            "feature",
+            "children",
+            "add",
+            str(repo),
+            "--id",
+            "feat:rfc.9000.connection-migration",
+            "--child-ids",
+            "feat:cli.generated",
+        )
+        self.assertEqual(children_add.returncode, 0, children_add.stderr)
+
+        children_list = run_cli(
+            "feature",
+            "children",
+            "list",
+            str(repo),
+            "--id",
+            "feat:rfc.9000.connection-migration",
+        )
+        self.assertEqual(children_list.returncode, 0, children_list.stderr)
+        self.assertEqual([row["id"] for row in json.loads(children_list.stdout)], ["feat:cli.generated"])
+
+        failed_parent = run_cli(
+            "feature",
+            "parent",
+            "add",
+            str(repo),
+            "--ids",
+            "feat:cli.generated",
+            "--parent-ids",
+            "feat:missing.parent",
+        )
+        self.assertNotEqual(failed_parent.returncode, 0)
+        after_failed_parent = run_cli("feature", "get", str(repo), "--id", "feat:cli.generated")
+        self.assertEqual(after_failed_parent.returncode, 0, after_failed_parent.stderr)
+        self.assertEqual(json.loads(after_failed_parent.stdout)["parent_feature_ids"], ["feat:rfc.9000.connection-migration"])
+
+        children_remove = run_cli(
+            "feature",
+            "children",
+            "remove",
+            str(repo),
+            "--id",
+            "feat:rfc.9000.connection-migration",
+            "--child-ids",
+            "feat:cli.generated",
+        )
+        self.assertEqual(children_remove.returncode, 0, children_remove.stderr)
+        self.assertEqual(json.loads(children_remove.stdout)["entities"][0]["parent_feature_ids"], [])
+
+        parent_clear = run_cli(
+            "feature",
+            "parent",
+            "clear",
+            str(repo),
+            "--ids",
+            "feat:cli.generated",
+        )
+        self.assertEqual(parent_clear.returncode, 0, parent_clear.stderr)
+        self.assertEqual(json.loads(parent_clear.stdout)["entities"][0]["parent_feature_ids"], [])
 
         plan = run_cli(
             "feature",

@@ -33,6 +33,8 @@ def build_graph_json(registry: dict[str, object]) -> dict[str, object]:
             edges.append({"type": "INCLUDES", "from": release["id"], "to": evidence_id})
 
     for feature in registry.get("features", []):
+        for parent_feature_id in feature.get("parent_feature_ids", []):
+            edges.append({"type": "CONTAINS", "from": parent_feature_id, "to": feature["id"]})
         for spec_id in feature.get("spec_ids", []):
             edges.append({"type": "SPECIFIED_BY", "from": feature["id"], "to": spec_id})
         for required_feature_id in feature.get("requires", []):

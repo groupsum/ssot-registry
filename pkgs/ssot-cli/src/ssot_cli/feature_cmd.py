@@ -11,13 +11,17 @@ from ssot_contracts.generated.python.enums import (
     PLANNING_HORIZONS,
 )
 from ssot_registry.api import (
+    add_feature_children,
     create_entity,
     delete_entity,
     get_entity,
     link_entities,
+    list_feature_children,
     list_entities,
     plan_features,
+    remove_feature_children,
     set_feature_lifecycle,
+    set_feature_parents,
     unlink_entities,
     update_entity,
 )
@@ -65,6 +69,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--claim-ids", nargs="*", default=[], help="Claim ids currently attached to the feature.")
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids that verify the feature.")
     create.add_argument("--requires", nargs="*", default=[], help="Passing prerequisite feature ids; not a parent/leaf composition link.")
+    create.add_argument("--parent-feature-ids", nargs="*", default=[], help="Inventory parent feature ids; composition only, never a passing prerequisite.")
     create.set_defaults(func=run_create)
 
     get = feature_sub.add_parser("get", help="Show one feature.", description="Fetch a single feature record by id.")
@@ -148,6 +153,42 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     lifecycle_set.add_argument("--note", default=None, help="Lifecycle rationale or operator note.")
     lifecycle_set.set_defaults(func=run_lifecycle_set)
 
+    parent = feature_sub.add_parser("parent", help="Manage feature parent links.", description="Manage inventory composition links from one or more leaf features to one or more parent features.")
+    parent_sub = parent.add_subparsers(dest="feature_parent_command", required=True)
+    for command_name, help_text in (
+        ("add", "Add parent links to features."),
+        ("set", "Replace parent links on features."),
+        ("remove", "Remove parent links from features."),
+    ):
+        command = parent_sub.add_parser(command_name, help=help_text)
+        add_path_argument(command)
+        command.add_argument("--ids", nargs="+", required=True, help="Feature ids whose parent links should change.")
+        command.add_argument("--parent-ids", nargs="+", required=True, help="Parent feature ids to add, set, or remove.")
+        command.set_defaults(func=run_parent, parent_mode=command_name)
+    parent_clear = parent_sub.add_parser("clear", help="Clear all parent links from features.")
+    add_path_argument(parent_clear)
+    parent_clear.add_argument("--ids", nargs="+", required=True, help="Feature ids whose parent links should be cleared.")
+    parent_clear.set_defaults(func=run_parent, parent_mode="clear", parent_ids=[])
+
+    children = feature_sub.add_parser("children", help="Manage feature children.", description="Manage inventory child links by mutating each child feature's parent_feature_ids field.")
+    children_sub = children.add_subparsers(dest="feature_children_command", required=True)
+    children_add = children_sub.add_parser("add", help="Add child features to a parent feature.")
+    add_path_argument(children_add)
+    children_add.add_argument("--id", required=True, help="Parent feature id.")
+    children_add.add_argument("--child-ids", nargs="+", required=True, help="Child feature ids to attach to the parent.")
+    children_add.set_defaults(func=run_children_add)
+
+    children_remove = children_sub.add_parser("remove", help="Remove child features from a parent feature.")
+    add_path_argument(children_remove)
+    children_remove.add_argument("--id", required=True, help="Parent feature id.")
+    children_remove.add_argument("--child-ids", nargs="+", required=True, help="Child feature ids to detach from the parent.")
+    children_remove.set_defaults(func=run_children_remove)
+
+    children_list = children_sub.add_parser("list", help="List child features for a parent feature.")
+    add_path_argument(children_list)
+    children_list.add_argument("--id", required=True, help="Parent feature id.")
+    children_list.set_defaults(func=run_children_list)
+
 
 def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
     links = collect_list_fields(args, _LINK_MAPPING)
@@ -184,6 +225,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "claim_ids": args.claim_ids,
         "test_ids": args.test_ids,
         "requires": args.requires,
+        "parent_feature_ids": args.parent_feature_ids,
     }
     return create_entity(args.path, "features", row)
 
@@ -245,4 +287,20 @@ def run_lifecycle_set(args: argparse.Namespace) -> dict[str, object]:
         note=args.note,
         effective_release_id=args.effective_release_id,
     )
+
+
+def run_parent(args: argparse.Namespace) -> dict[str, object]:
+    return set_feature_parents(args.path, args.ids, getattr(args, "parent_ids", []), args.parent_mode)
+
+
+def run_children_add(args: argparse.Namespace) -> dict[str, object]:
+    return add_feature_children(args.path, args.id, args.child_ids)
+
+
+def run_children_remove(args: argparse.Namespace) -> dict[str, object]:
+    return remove_feature_children(args.path, args.id, args.child_ids)
+
+
+def run_children_list(args: argparse.Namespace) -> list[dict[str, object]]:
+    return list_feature_children(args.path, args.id)
 

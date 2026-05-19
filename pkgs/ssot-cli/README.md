@@ -9,8 +9,8 @@
   <a href="https://pepy.tech/project/ssot-cli"><img src="https://static.pepy.tech/badge/ssot-cli" alt="Downloads" /></a>
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Repository hits" /></a>
 <!-- ssot-schema-badges:start -->
-  <img src="https://img.shields.io/badge/schema_version-0.5.0-blue" alt="schema_version 0.5.0" />
-  <img src="https://img.shields.io/badge/migration%20coverage-12%2F12-brightgreen" alt="Migration coverage 12/12" />
+  <img src="https://img.shields.io/badge/schema_version-0.7.0-blue" alt="schema_version 0.7.0" />
+  <img src="https://img.shields.io/badge/migration%20coverage-14%2F14-brightgreen" alt="Migration coverage 14/14" />
 <!-- ssot-schema-badges:end -->
 </div>
 
@@ -198,13 +198,22 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry evidence update` | `--body`, `--body-file`, `--evidence-path`, `--id`, `--kind`, `--origin`, `--status`, `--tier`, `--title` |
 | `ssot-registry evidence verify` | `--evidence-id` |
 | `ssot-registry feature` | none |
-| `ssot-registry feature create` | `--body`, `--body-file`, `--claim-ids`, `--claim-tier`, `--description`, `--horizon`, `--id`, `--implementation-status`, `--lifecycle-stage`, `--note`, `--origin`, `--out-of-bounds-disposition`, `--replacement-feature-id`, `--requires`, `--slot`, `--spec-ids`, `--target-lifecycle-stage`, `--test-ids`, `--title` |
+| `ssot-registry feature children` | none |
+| `ssot-registry feature children add` | `--child-ids`, `--id` |
+| `ssot-registry feature children list` | `--id` |
+| `ssot-registry feature children remove` | `--child-ids`, `--id` |
+| `ssot-registry feature create` | `--body`, `--body-file`, `--claim-ids`, `--claim-tier`, `--description`, `--horizon`, `--id`, `--implementation-status`, `--lifecycle-stage`, `--note`, `--origin`, `--out-of-bounds-disposition`, `--parent-feature-ids`, `--replacement-feature-id`, `--requires`, `--slot`, `--spec-ids`, `--target-lifecycle-stage`, `--test-ids`, `--title` |
 | `ssot-registry feature delete` | `--id` |
 | `ssot-registry feature get` | `--id` |
 | `ssot-registry feature lifecycle` | none |
 | `ssot-registry feature lifecycle set` | `--effective-release-id`, `--ids`, `--note`, `--replacement-feature-id`, `--stage` |
 | `ssot-registry feature link` | `--claim-ids`, `--id`, `--requires`, `--spec-ids`, `--test-ids` |
 | `ssot-registry feature list` | `--ids`, `--origin` |
+| `ssot-registry feature parent` | none |
+| `ssot-registry feature parent add` | `--ids`, `--parent-ids` |
+| `ssot-registry feature parent clear` | `--ids` |
+| `ssot-registry feature parent remove` | `--ids`, `--parent-ids` |
+| `ssot-registry feature parent set` | `--ids`, `--parent-ids` |
 | `ssot-registry feature plan` | `--claim-tier`, `--horizon`, `--ids`, `--out-of-bounds-disposition`, `--slot`, `--target-lifecycle-stage` |
 | `ssot-registry feature unlink` | `--claim-ids`, `--id`, `--requires`, `--spec-ids`, `--test-ids` |
 | `ssot-registry feature update` | `--body`, `--body-file`, `--description`, `--id`, `--implementation-status`, `--origin`, `--title` |
@@ -453,6 +462,8 @@ ssot-registry spec reserve list [path]
 Subcommands:
 
 - `create`, `get`, `list`, `update`, `delete`, `link`, `unlink`, `plan`
+- `parent add`, `parent set`, `parent remove`, `parent clear`
+- `children add`, `children remove`, `children list`
 - `lifecycle set`
 
 ```text
@@ -472,6 +483,7 @@ ssot-registry feature create [path]
   --claim-ids [CLAIM_IDS ...]
   --test-ids [TEST_IDS ...]
   --requires [REQUIRES ...]
+  --parent-feature-ids [PARENT_FEATURE_IDS ...]
 
 ssot-registry feature get [path]
   --id ID (required)
@@ -513,6 +525,32 @@ ssot-registry feature lifecycle set [path]
   --replacement-feature-id [REPLACEMENT_FEATURE_ID ...]
   --effective-release-id EFFECTIVE_RELEASE_ID
   --note NOTE
+
+ssot-registry feature parent add [path]
+  --ids IDS [IDS ...] (required)
+  --parent-ids PARENT_IDS [PARENT_IDS ...] (required)
+
+ssot-registry feature parent set [path]
+  --ids IDS [IDS ...] (required)
+  --parent-ids PARENT_IDS [PARENT_IDS ...] (required)
+
+ssot-registry feature parent remove [path]
+  --ids IDS [IDS ...] (required)
+  --parent-ids PARENT_IDS [PARENT_IDS ...] (required)
+
+ssot-registry feature parent clear [path]
+  --ids IDS [IDS ...] (required)
+
+ssot-registry feature children add [path]
+  --id ID (required)
+  --child-ids CHILD_IDS [CHILD_IDS ...] (required)
+
+ssot-registry feature children remove [path]
+  --id ID (required)
+  --child-ids CHILD_IDS [CHILD_IDS ...] (required)
+
+ssot-registry feature children list [path]
+  --id ID (required)
 ```
 
 ### `profile`

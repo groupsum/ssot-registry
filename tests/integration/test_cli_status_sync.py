@@ -38,6 +38,7 @@ class CliStatusSyncTests(unittest.TestCase):
                 "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": None},
                 "plan": {"horizon": "current", "slot": None, "target_claim_tier": target_tier, "target_lifecycle_stage": "active"},
                 "requires": [],
+                "parent_feature_ids": [],
                 "spec_ids": [],
                 "claim_ids": claim_ids,
                 "test_ids": [test_id],
@@ -96,6 +97,23 @@ class CliStatusSyncTests(unittest.TestCase):
         registry = json.loads(registry_path.read_text(encoding="utf-8"))
 
         registry["features"][0]["implementation_status"] = "absent"
+        registry["features"][0]["parent_feature_ids"] = ["feat:cli.status-sync.parent"]
+        registry["features"].append(
+            {
+                "id": "feat:cli.status-sync.parent",
+                "title": "Status sync parent feature",
+                "description": "Inventory parent feature with no runtime gate effect.",
+                "origin": "repo-local",
+                "implementation_status": "absent",
+                "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": None},
+                "plan": {"horizon": "backlog", "slot": None, "target_claim_tier": "T1", "target_lifecycle_stage": "active"},
+                "requires": [],
+                "parent_feature_ids": [],
+                "spec_ids": [],
+                "claim_ids": [],
+                "test_ids": [],
+            }
+        )
         registry["tests"][0]["status"] = "planned"
         registry["claims"][0]["status"] = "declared"
         registry["evidence"][0]["status"] = "collected"
@@ -136,6 +154,8 @@ class CliStatusSyncTests(unittest.TestCase):
         self.assertEqual(updated["tests"][0]["status"], "passing")
         self.assertEqual(updated["claims"][0]["status"], "certified")
         self.assertEqual(updated["features"][0]["implementation_status"], "implemented")
+        self.assertEqual(updated["features"][0]["parent_feature_ids"], ["feat:cli.status-sync.parent"])
+        self.assertEqual(next(feature for feature in updated["features"] if feature["id"] == "feat:cli.status-sync.parent")["implementation_status"], "absent")
         self.assertEqual(updated["profiles"][0]["status"], "active")
 
     def test_registry_sync_statuses_keeps_planned_placeholders_planned(self) -> None:
@@ -166,6 +186,7 @@ class CliStatusSyncTests(unittest.TestCase):
                 "lifecycle": {"stage": "active", "replacement_feature_ids": [], "note": None},
                 "plan": {"horizon": "next", "slot": None, "target_claim_tier": "T1", "target_lifecycle_stage": "active"},
                 "requires": [],
+                "parent_feature_ids": [],
                 "spec_ids": [],
                 "claim_ids": [claim_id],
                 "test_ids": [test_id],

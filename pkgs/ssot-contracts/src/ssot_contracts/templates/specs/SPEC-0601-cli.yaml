@@ -1,4 +1,4 @@
-schema_version: "0.6.0"
+schema_version: "0.7.0"
 kind: "spec"
 id: "spc:0601"
 number: 601
@@ -79,5 +79,4 @@ body: |-
   - Integration tests SHALL exercise invalid CLI input output for every command and subcommand path, including parser errors for missing required arguments, invalid choices, or unknown flags.
   - Integration tests SHALL exercise valid and invalid global rendering flags, including supported output formats and invalid output format rejection.
 spec_kind: "operational"
-adr_ids:
-  - "adr:0506"
+adr_ids: []

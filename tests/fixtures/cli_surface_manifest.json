@@ -242,6 +242,18 @@
       "--evidence-id"
     ],
     "feature": [],
+    "feature children": [],
+    "feature children add": [
+      "--child-ids",
+      "--id"
+    ],
+    "feature children list": [
+      "--id"
+    ],
+    "feature children remove": [
+      "--child-ids",
+      "--id"
+    ],
     "feature create": [
       "--body",
       "--body-file",
@@ -255,6 +267,7 @@
       "--note",
       "--origin",
       "--out-of-bounds-disposition",
+      "--parent-feature-ids",
       "--replacement-feature-id",
       "--requires",
       "--slot",
@@ -287,6 +300,22 @@
     "feature list": [
       "--ids",
       "--origin"
+    ],
+    "feature parent": [],
+    "feature parent add": [
+      "--ids",
+      "--parent-ids"
+    ],
+    "feature parent clear": [
+      "--ids"
+    ],
+    "feature parent remove": [
+      "--ids",
+      "--parent-ids"
+    ],
+    "feature parent set": [
+      "--ids",
+      "--parent-ids"
     ],
     "feature plan": [
       "--claim-tier",
@@ -802,6 +831,10 @@
     "evidence update",
     "evidence verify",
     "feature",
+    "feature children",
+    "feature children add",
+    "feature children list",
+    "feature children remove",
     "feature create",
     "feature delete",
     "feature get",
@@ -809,6 +842,11 @@
     "feature lifecycle set",
     "feature link",
     "feature list",
+    "feature parent",
+    "feature parent add",
+    "feature parent clear",
+    "feature parent remove",
+    "feature parent set",
     "feature plan",
     "feature unlink",
     "feature update",

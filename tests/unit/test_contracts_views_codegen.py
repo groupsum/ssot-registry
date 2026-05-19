@@ -31,10 +31,13 @@ class ContractsViewsCodegenTests(unittest.TestCase):
 
     def test_registry_schema_exposes_claim_lineage_and_pack_document_provenance(self) -> None:
         schema = json.loads(load_schema_text("registry.schema.json"))
-        self.assertEqual(schema["properties"]["schema_version"]["const"], "0.6.0")
+        self.assertEqual(schema["properties"]["schema_version"]["const"], "0.7.0")
         claim_def = schema["$defs"]["claim"]
         self.assertIn("depends_on_claim_ids", claim_def["required"])
         self.assertEqual(claim_def["properties"]["depends_on_claim_ids"], {"$ref": "#/$defs/stringList"})
+        feature_def = schema["$defs"]["feature"]
+        self.assertIn("parent_feature_ids", feature_def["required"])
+        self.assertEqual(feature_def["properties"]["parent_feature_ids"], {"$ref": "#/$defs/stringList"})
         for document_def_name in ("adr", "spec"):
             properties = schema["$defs"][document_def_name]["properties"]
             self.assertIn("source_pack_id", properties)

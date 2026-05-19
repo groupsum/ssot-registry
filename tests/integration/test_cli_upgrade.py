@@ -79,19 +79,22 @@ class CliUpgradeTests(unittest.TestCase):
         self.assertIn("0.2.10->0.4.0 (schema 0.3.0->0.4.0)", payload["migrations"])
         self.assertIn("0.4.0->0.5.0 (schema 0.4.0->0.5.0)", payload["migrations"])
         self.assertIn("0.5.0->0.6.0 (schema 0.5.0->0.6.0)", payload["migrations"])
+        self.assertIn("0.6.0->0.7.0 (schema 0.6.0->0.7.0)", payload["migrations"])
         self.assertIn("migrate_v10_to_v0_1_0", payload["schema_migrations"])
         self.assertIn("migrate_v0_1_0_to_v0_2_0", payload["schema_migrations"])
         self.assertIn("migrate_v0_2_0_to_v0_3_0", payload["schema_migrations"])
         self.assertIn("migrate_v0_3_0_to_v0_4_0", payload["schema_migrations"])
         self.assertIn("migrate_v0_4_0_to_v0_5_0", payload["schema_migrations"])
         self.assertIn("migrate_v0_5_0_to_v0_6_0", payload["schema_migrations"])
+        self.assertIn("migrate_v0_6_0_to_v0_7_0", payload["schema_migrations"])
 
         upgraded_registry = json.loads(registry_path.read_text(encoding="utf-8"))
-        self.assertEqual("0.6.0", upgraded_registry["schema_version"])
+        self.assertEqual("0.7.0", upgraded_registry["schema_version"])
         for section in ("features", "tests", "claims", "evidence"):
             self.assertTrue(all("origin" in row for row in upgraded_registry[section]))
         for feature in upgraded_registry["features"]:
             self.assertIn("spec_ids", feature)
+            self.assertIn("parent_feature_ids", feature)
         for spec in upgraded_registry["specs"]:
             self.assertIn("adr_ids", spec)
         for claim in upgraded_registry["claims"]:

@@ -11,6 +11,7 @@ from .bounds import validate_out_of_bounds_disposition
 from .filesystem import validate_filesystem_paths
 from .reservations import validate_document_reservations
 from .origin import validate_assurance_origins
+from .feature_parent_links import validate_feature_parent_links
 
 __all__ = [
     "build_index",
@@ -23,6 +24,7 @@ __all__ = [
     "validate_document_rows",
     "validate_document_reservations",
     "validate_assurance_origins",
+    "validate_feature_parent_links",
     "validate_tiers",
     "validate_lifecycle_semantics",
     "validate_out_of_bounds_disposition",

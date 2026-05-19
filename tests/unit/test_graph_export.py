@@ -34,7 +34,7 @@ class GraphExportTests(unittest.TestCase):
 
     def test_dot_export_escapes_newlines_in_ids(self) -> None:
         registry = {
-            "features": [{"id": "feat:line\nbreak", "title": "Feature", "description": "", "implementation_status": "absent", "plan": {"horizon": "backlog"}, "lifecycle": {"stage": "active"}, "spec_ids": [], "claim_ids": [], "test_ids": [], "requires": []}],
+            "features": [{"id": "feat:line\nbreak", "title": "Feature", "description": "", "implementation_status": "absent", "plan": {"horizon": "backlog"}, "lifecycle": {"stage": "active"}, "spec_ids": [], "claim_ids": [], "test_ids": [], "requires": [], "parent_feature_ids": []}],
             "adrs": [],
             "specs": [],
             "tests": [],
@@ -63,6 +63,7 @@ class GraphExportTests(unittest.TestCase):
                     "claim_ids": [],
                     "test_ids": [],
                     "requires": [],
+                    "parent_feature_ids": [],
                 }
             ],
             "specs": [{"id": "spc:demo.spec-adr", "adr_ids": ["adr:demo.decision"]}],
@@ -80,6 +81,26 @@ class GraphExportTests(unittest.TestCase):
         self.assertIn({"type": "SPECIFIED_BY", "from": "feat:demo.spec-adr", "to": "spc:demo.spec-adr"}, graph["edges"])
         self.assertIn({"type": "DECIDED_BY", "from": "spc:demo.spec-adr", "to": "adr:demo.decision"}, graph["edges"])
         self.assertIn({"type": "DECIDED_BY", "from": "feat:demo.spec-adr", "to": "adr:demo.decision"}, graph["edges"])
+
+    def test_graph_export_includes_feature_parent_contains_edges(self) -> None:
+        registry = {
+            "features": [
+                {"id": "feat:demo.parent", "parent_feature_ids": []},
+                {"id": "feat:demo.leaf", "parent_feature_ids": ["feat:demo.parent"]},
+            ],
+            "specs": [],
+            "adrs": [],
+            "tests": [],
+            "claims": [],
+            "evidence": [],
+            "issues": [],
+            "risks": [],
+            "boundaries": [],
+            "releases": [],
+            "profiles": [],
+        }
+        graph = build_graph_json(registry)
+        self.assertIn({"type": "CONTAINS", "from": "feat:demo.parent", "to": "feat:demo.leaf"}, graph["edges"])
 
     def test_graph_export_includes_all_release_boundaries(self) -> None:
         registry = {

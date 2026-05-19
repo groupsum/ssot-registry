@@ -60,11 +60,44 @@ class MigrationPathTests(unittest.TestCase):
             target_version="0.2.10",
         )
 
-        self.assertEqual(migrated["schema_version"], SCHEMA_VERSION)
+        self.assertEqual(migrated["schema_version"], upgrade.SCHEMA_V0_6_0)
         self.assertEqual(len(migrated["claims"]), 1)
         self.assertEqual(migrated["claims"][0]["id"], "clm:example.t1")
         self.assertEqual(migrated["claims"][0]["tier"], "T1")
         self.assertEqual(migrated["claims"][0]["depends_on_claim_ids"], [])
+
+    def test_v0_6_to_v0_7_adds_feature_parent_defaults_without_rewriting_requires(self) -> None:
+        registry = {
+            "schema_version": "0.6.0",
+            "features": [
+                {
+                    "id": "feat:example.leaf",
+                    "title": "Leaf",
+                    "requires": ["feat:example.prereq"],
+                },
+                {
+                    "id": "feat:example.child",
+                    "title": "Child",
+                    "requires": [],
+                    "parent_feature_ids": ["feat:example.parent", "feat:example.parent", "feat:example.other"],
+                },
+            ],
+        }
+
+        migrated = upgrade.migrate_v0_6_0_to_v0_7_0(
+            registry,
+            Path("."),
+            previous_version="0.2.10",
+            target_version="0.2.10",
+        )
+
+        self.assertEqual(migrated["schema_version"], SCHEMA_VERSION)
+        self.assertEqual(migrated["features"][0]["requires"], ["feat:example.prereq"])
+        self.assertEqual(migrated["features"][0]["parent_feature_ids"], [])
+        self.assertEqual(
+            migrated["features"][1]["parent_feature_ids"],
+            ["feat:example.other", "feat:example.parent"],
+        )
 
 
 if __name__ == "__main__":

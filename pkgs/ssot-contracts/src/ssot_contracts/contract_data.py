@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 CONTRACT_DATA = {
-    "schema_version": "0.6.0",
+    "schema_version": "0.7.0",
     "output_formats": ["json", "csv", "df", "yaml", "toml"],
     "entity_sections": [
         {"key": "features", "label": "Features"},

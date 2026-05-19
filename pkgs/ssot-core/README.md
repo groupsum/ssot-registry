@@ -9,8 +9,8 @@
   <a href="https://pepy.tech/project/ssot-core"><img src="https://static.pepy.tech/badge/ssot-core" alt="Downloads" /></a>
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Hits" /></a>
 <!-- ssot-schema-badges:start -->
-  <img src="https://img.shields.io/badge/schema_version-0.5.0-blue" alt="schema_version 0.5.0" />
-  <img src="https://img.shields.io/badge/migration%20coverage-12%2F12-brightgreen" alt="Migration coverage 12/12" />
+  <img src="https://img.shields.io/badge/schema_version-0.7.0-blue" alt="schema_version 0.7.0" />
+  <img src="https://img.shields.io/badge/migration%20coverage-14%2F14-brightgreen" alt="Migration coverage 14/14" />
 <!-- ssot-schema-badges:end -->
 </div>
 
