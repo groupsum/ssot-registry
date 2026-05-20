@@ -136,6 +136,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("- ssot-pack-contracts", workflow)
         self.assertIn("- ssot-conformance", workflow)
         self.assertIn("scripts/bump_release_train.py", workflow)
+        self.assertIn("steps.bump_version.outputs.changed_files != ''", workflow)
         self.assertNotIn("scripts/release_metadata.py validate-train", workflow)
         self.assertNotIn("python scripts/bump_pyproject_version.py --bump \"$BUMP_TYPE\" pyproject.toml", workflow)
 

@@ -88,6 +88,7 @@ jobs:
           echo "changed_files=$CHANGED" >> "$GITHUB_OUTPUT"
 
       - name: Commit bumped versions
+        if: ${{ steps.bump_version.outputs.changed_files != '' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

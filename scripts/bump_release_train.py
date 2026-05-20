@@ -40,6 +40,21 @@ def _rewrite_dependency(pyproject_path: Path, dependency_name: str, expected_spe
     return True
 
 
+def _next_version(current_version: str, bump_type: str) -> str:
+    if bump_type != "finalize":
+        return bump_version(current_version, bump_type)
+    if ".dev" not in current_version:
+        return current_version
+    return bump_version(current_version, bump_type)
+
+
+def _write_version_if_changed(pyproject_path: Path, current_version: str, new_version: str) -> bool:
+    if current_version == new_version:
+        return False
+    write_project_version(pyproject_path, current_version, new_version)
+    return True
+
+
 def sync_release_dependencies() -> list[Path]:
     updated_files: list[Path] = []
     core_version = read_project_version(Path(PACKAGE_INFOS["ssot-contracts"].project_path) / "pyproject.toml")
@@ -69,25 +84,25 @@ def bump_train(train: str, bump_type: str, selected_packages: str | None) -> lis
     if train in {"core", "all"}:
         source_package = targets[0]
         current_version = read_project_version(Path(PACKAGE_INFOS[source_package].project_path) / "pyproject.toml")
-        new_version = bump_version(current_version, bump_type)
+        new_version = _next_version(current_version, bump_type)
         for package_name in CORE_PACKAGES:
             pyproject_path = Path(PACKAGE_INFOS[package_name].project_path) / "pyproject.toml"
             package_current = read_project_version(pyproject_path)
-            write_project_version(pyproject_path, package_current, new_version)
-            updated_files.append(pyproject_path)
+            if _write_version_if_changed(pyproject_path, package_current, new_version):
+                updated_files.append(pyproject_path)
         registry_pyproject = Path(PACKAGE_INFOS["ssot-registry"].project_path) / "pyproject.toml"
         registry_current = read_project_version(registry_pyproject)
-        write_project_version(registry_pyproject, registry_current, new_version)
-        updated_files.append(registry_pyproject)
+        if _write_version_if_changed(registry_pyproject, registry_current, new_version):
+            updated_files.append(registry_pyproject)
         if train == "all":
             for package_name in targets:
                 if package_name in (*CORE_PACKAGES, "ssot-registry"):
                     continue
                 pyproject_path = Path(PACKAGE_INFOS[package_name].project_path) / "pyproject.toml"
                 current_version = read_project_version(pyproject_path)
-                next_version = bump_version(current_version, bump_type)
-                write_project_version(pyproject_path, current_version, next_version)
-                updated_files.append(pyproject_path)
+                next_version = _next_version(current_version, bump_type)
+                if _write_version_if_changed(pyproject_path, current_version, next_version):
+                    updated_files.append(pyproject_path)
         for path in sync_release_dependencies():
             if path not in updated_files:
                 updated_files.append(path)
@@ -96,9 +111,9 @@ def bump_train(train: str, bump_type: str, selected_packages: str | None) -> lis
     for package_name in targets:
         pyproject_path = Path(PACKAGE_INFOS[package_name].project_path) / "pyproject.toml"
         current_version = read_project_version(pyproject_path)
-        new_version = bump_version(current_version, bump_type)
-        write_project_version(pyproject_path, current_version, new_version)
-        updated_files.append(pyproject_path)
+        new_version = _next_version(current_version, bump_type)
+        if _write_version_if_changed(pyproject_path, current_version, new_version):
+            updated_files.append(pyproject_path)
     for path in sync_release_dependencies():
         if path not in updated_files:
             updated_files.append(path)

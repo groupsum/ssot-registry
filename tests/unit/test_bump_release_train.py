@@ -33,6 +33,56 @@ def _write_pyproject(path: Path, name: str, version: str, dependencies: list[str
 
 
 class BumpReleaseTrainTests(unittest.TestCase):
+    def test_all_train_finalize_skips_already_final_versions(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            root = Path(temp_dir)
+            packages = {
+                "ssot-contracts": ("0.2.3", []),
+                "ssot-pack-contracts": ("0.2.3", []),
+                "ssot-views": ("0.2.3", ["ssot-contracts==0.2.3"]),
+                "ssot-codegen": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-views==0.2.3"]),
+                "ssot-core": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-pack-contracts>=0.2.3,<0.3.0", "ssot-views==0.2.3"]),
+                "ssot-conformance": ("0.2.3", ["ssot-contracts==0.2.3", "ssot-core==0.2.3"]),
+                "ssot-registry": (
+                    "0.2.3",
+                    [
+                        "ssot-contracts==0.2.3",
+                        "ssot-pack-contracts>=0.2.3,<0.3.0",
+                        "ssot-core==0.2.3",
+                        "ssot-cli>=0.1.0,<0.2.0",
+                        "ssot-mcp>=0.1.0,<0.2.0",
+                        "ssot-tui>=0.1.0,<0.2.0",
+                    ],
+                ),
+                "ssot-cli": ("0.1.0", ["ssot-contracts>=0.2.3,<0.3.0"]),
+                "ssot-mcp": ("0.1.0", ["ssot-core>=0.2.3,<0.3.0"]),
+                "ssot-tui": (
+                    "0.1.0",
+                    [
+                        "ssot-contracts>=0.2.3,<0.3.0",
+                        "ssot-core>=0.2.3,<0.3.0",
+                    ],
+                ),
+            }
+            package_infos: dict[str, PackageInfo] = {}
+            for package_name, (version, dependencies) in packages.items():
+                project_path = root / package_name
+                project_path.mkdir(parents=True, exist_ok=True)
+                _write_pyproject(project_path / "pyproject.toml", package_name, version, dependencies)
+                package_infos[package_name] = PackageInfo(
+                    name=package_name,
+                    project_path=str(project_path),
+                    workflow=f"publish-{package_name}.yml",
+                    pypi_url=f"https://example.test/{package_name}",
+                )
+
+            with patch.object(bump_release_train, "PACKAGE_INFOS", package_infos):
+                changed = bump_release_train.bump_train("all", "finalize", None)
+
+            self.assertEqual(changed, [])
+            self.assertIn('version = "0.2.3"', (root / "ssot-contracts" / "pyproject.toml").read_text(encoding="utf-8"))
+            self.assertIn('version = "0.1.0"', (root / "ssot-cli" / "pyproject.toml").read_text(encoding="utf-8"))
+
     def test_all_train_bump_updates_dependency_specs(self) -> None:
         with workspace_tempdir() as temp_dir:
             root = Path(temp_dir)
