@@ -15,6 +15,7 @@ CONTRACTS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src"
 VIEWS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-views" / "src"
 CODEGEN_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-codegen" / "src"
 CLI_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-cli" / "src"
+MCP_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-mcp" / "src"
 TUI_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-tui" / "src"
 CONFORMANCE_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-conformance" / "src"
 PACK_CONTRACTS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-pack-contracts" / "src"
@@ -41,6 +42,7 @@ def run_cli(*args: str, cwd: str | Path | None = None) -> subprocess.CompletedPr
         str(VIEWS_SRC_ROOT),
         str(CONTRACTS_SRC_ROOT),
         str(CLI_SRC_ROOT),
+        str(MCP_SRC_ROOT),
         str(TUI_SRC_ROOT),
         str(CONFORMANCE_SRC_ROOT),
         str(PACK_CONTRACTS_SRC_ROOT),

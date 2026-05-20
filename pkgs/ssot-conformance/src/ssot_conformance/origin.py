@@ -173,6 +173,7 @@ def _row_bundle(obligation: dict[str, object], *, include_claims: bool, include_
         "claim_ids": [ids["claim"]] if include_claims else [],
         "test_ids": [ids["test"]],
         "requires": [],
+        "parent_feature_ids": [],
         "origin": "repo-local",
     }
     claim = {

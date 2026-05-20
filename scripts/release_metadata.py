@@ -36,6 +36,7 @@ RELEASE_ORDER = (
     "ssot-core",
     "ssot-conformance",
     "ssot-cli",
+    "ssot-mcp",
     "ssot-tui",
     "ssot-registry",
 )
@@ -103,6 +104,12 @@ PACKAGE_INFOS: dict[str, PackageInfo] = {
         workflow="publish-ssot-cli.yml",
         pypi_url="https://pypi.org/p/ssot-cli",
     ),
+    "ssot-mcp": PackageInfo(
+        name="ssot-mcp",
+        project_path="pkgs/ssot-mcp",
+        workflow="publish-ssot-mcp.yml",
+        pypi_url="https://pypi.org/p/ssot-mcp",
+    ),
     "ssot-tui": PackageInfo(
         name="ssot-tui",
         project_path="pkgs/ssot-tui",
@@ -157,6 +164,7 @@ def _next_minor_upper_bound(version: str) -> str:
 def expected_dependency_specs(
     core_version: str,
     cli_version: str | None = None,
+    mcp_version: str | None = None,
     pack_contracts_version: str | None = None,
     tui_version: str | None = None,
 ) -> dict[str, dict[str, str]]:
@@ -165,6 +173,8 @@ def expected_dependency_specs(
     compatible_pack_contracts_range = f">={pack_contracts_version},<{_next_minor_upper_bound(pack_contracts_version)}"
     cli_version = cli_version or _load_pyproject("ssot-cli")["project"]["version"]
     compatible_cli_range = f">={cli_version},<{_next_minor_upper_bound(cli_version)}"
+    mcp_version = mcp_version or _load_pyproject("ssot-mcp")["project"]["version"]
+    compatible_mcp_range = f">={mcp_version},<{_next_minor_upper_bound(mcp_version)}"
     tui_version = tui_version or _load_pyproject("ssot-tui")["project"]["version"]
     compatible_tui_range = f">={tui_version},<{_next_minor_upper_bound(tui_version)}"
     return {
@@ -188,6 +198,7 @@ def expected_dependency_specs(
             "ssot-pack-contracts": f"ssot-pack-contracts{compatible_pack_contracts_range}",
             "ssot-core": f"ssot-core=={core_version}",
             "ssot-cli": f"ssot-cli{compatible_cli_range}",
+            "ssot-mcp": f"ssot-mcp{compatible_mcp_range}",
             "ssot-tui": f"ssot-tui{compatible_tui_range}",
         },
         "ssot-cli": {
@@ -195,6 +206,9 @@ def expected_dependency_specs(
             "ssot-pack-contracts": f"ssot-pack-contracts{compatible_pack_contracts_range}",
             "ssot-core": f"ssot-core{compatible_core_range}",
             "ssot-conformance": f"ssot-conformance{compatible_core_range}",
+        },
+        "ssot-mcp": {
+            "ssot-core": f"ssot-core{compatible_core_range}",
         },
         "ssot-tui": {
             "ssot-contracts": f"ssot-contracts{compatible_core_range}",
@@ -281,14 +295,10 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
                 raise ValueError(
                     f"{package_name} dependency mismatch for {dependency_name}: expected {expected_value!r}, got {actual_value!r}"
                 )
-    for package_name in ("ssot-cli", "ssot-tui"):
+    for package_name in ("ssot-cli", "ssot-mcp", "ssot-tui"):
         actual_dependencies = packages[package_name]["dependencies"]  # type: ignore[index]
         assert isinstance(actual_dependencies, dict)
-        dependency_names = (
-            ("ssot-contracts", "ssot-pack-contracts", "ssot-core", "ssot-conformance")
-            if package_name == "ssot-cli"
-            else ("ssot-contracts", "ssot-core")
-        )
+        dependency_names = tuple(dependency_specs[package_name])
         for dependency_name in dependency_names:
             actual_value = actual_dependencies.get(dependency_name, "")
             expected_value = dependency_specs[package_name][dependency_name]

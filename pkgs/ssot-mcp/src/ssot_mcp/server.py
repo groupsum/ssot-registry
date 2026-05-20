@@ -1,0 +1,44 @@
+from __future__ import annotations
+
+import argparse
+from typing import Any
+
+from . import resources, tools
+
+
+def build_server() -> Any:
+    try:
+        from mcp.server.fastmcp import FastMCP
+    except ModuleNotFoundError as exc:  # pragma: no cover - exercised when optional dependency is absent.
+        raise RuntimeError("ssot-mcp requires the official `mcp` Python package. Install the ssot-mcp extra/package.") from exc
+
+    mcp = FastMCP("ssot-mcp")
+
+    mcp.tool()(tools.claim_next_maturation_slice)
+    mcp.tool()(tools.renew_lease)
+    mcp.tool()(tools.get_slice_context)
+    mcp.tool()(tools.complete_slice)
+    mcp.tool()(tools.abandon_slice)
+    mcp.tool()(tools.get_campaign_status)
+    mcp.tool()(tools.get_worker_events)
+    mcp.tool()(tools.ack_worker_events)
+    mcp.tool()(tools.get_conflicts)
+
+    mcp.resource("ssot://registry/{repo}")(resources.registry_resource)
+    mcp.resource("ssot://campaign/{repo}/{campaign_id}")(resources.campaign_status_resource)
+    mcp.resource("ssot://maturation-queue/{repo}")(resources.maturation_queue_resource)
+
+    return mcp
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Run the optional SSOT pull-worker MCP server.")
+    parser.add_argument("--transport", default="stdio", choices=["stdio", "sse"])
+    args = parser.parse_args(argv)
+    server = build_server()
+    server.run(transport=args.transport)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

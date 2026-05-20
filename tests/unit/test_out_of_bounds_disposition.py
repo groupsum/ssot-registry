@@ -30,6 +30,7 @@ def _out_of_bounds_feature(**overrides: object) -> dict[str, object]:
             "out_of_bounds_disposition": "tolerated",
         },
         "requires": [],
+        "parent_feature_ids": [],
         "spec_ids": [],
         "claim_ids": [],
         "test_ids": [],

@@ -1,0 +1,1 @@
+{"commands":[{"command":"uv run pytest tests/unit/test_worker_control_plane.py tests/unit/test_worker_completion_acl_watch.py tests/unit/test_ssot_mcp_tools.py -q","exit_code":0,"result":"passed"}],"feature_group":"pull-worker-control-plane","result":"passed","schema_version":"ssot.evidence.project_verification.v1","tier":"T1"}
