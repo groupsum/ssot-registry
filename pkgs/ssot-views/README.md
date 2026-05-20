@@ -8,6 +8,10 @@
   <a href="https://pypi.org/project/ssot-views/"><img src="https://img.shields.io/pypi/pyversions/ssot-views?label=Python" alt="Supported Python versions" /></a>
   <a href="https://pepy.tech/project/ssot-views"><img src="https://static.pepy.tech/badge/ssot-views" alt="Downloads" /></a>
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Repository hits" /></a>
+<!-- ssot-schema-badges:start -->
+  <img src="https://img.shields.io/badge/schema_version-0.7.0-blue" alt="schema_version 0.7.0" />
+  <img src="https://img.shields.io/badge/migration%20coverage-14%2F14-brightgreen" alt="Migration coverage 14/14" />
+<!-- ssot-schema-badges:end -->
 </div>
 
 `ssot-views` provides reusable derived projections for SSOT registries.

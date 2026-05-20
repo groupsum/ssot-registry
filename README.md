@@ -16,7 +16,7 @@
 
 ![ssot-registry technical marketing graphic](https://raw.githubusercontent.com/groupsum/ssot-registry/master/assets/ssot-registry-technical-marketing.png)
 
-`ssot-registry` is a portable, repository-agnostic single-source-of-truth system built from [ssot-core](https://pypi.org/project/ssot-core/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-tui](https://pypi.org/project/ssot-tui/), and [ssot-codegen](https://pypi.org/project/ssot-codegen/).
+`ssot-registry` is a portable, repository-agnostic single-source-of-truth system built from [ssot-core](https://pypi.org/project/ssot-core/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-tui](https://pypi.org/project/ssot-tui/), [ssot-mcp](https://pypi.org/project/ssot-mcp/), and [ssot-codegen](https://pypi.org/project/ssot-codegen/).
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
@@ -76,16 +76,21 @@ Packaged SSOT documents are manifest-driven, immutable, and synced into reserved
 ## Install
 
 ```bash
-python -m pip install ssot-registry         # [ssot-core](https://pypi.org/project/ssot-core/) + [ssot-cli](https://pypi.org/project/ssot-cli/)
-python -m pip install "ssot-registry[tui]"  # add optional [ssot-tui](https://pypi.org/project/ssot-tui/)
+python -m pip install ssot-registry         # ssot-core + ssot-cli
+python -m pip install "ssot-registry[tui]"  # add optional ssot-tui
+python -m pip install "ssot-registry[mcp]"  # add optional ssot-mcp
+python -m pip install "ssot-registry[all]"  # add optional ssot-mcp + ssot-tui
 python -m pip install ssot-core             # runtime only
 python -m pip install ssot-cli              # primary CLI distribution
+python -m pip install ssot-mcp              # optional MCP server
 python -m pip install ssot-tui              # Textual TUI only
 # or for local development
 python -m pip install -e pkgs/ssot-core
 ```
 
 `ssot_registry` remains the canonical import package. The runtime now ships from [ssot-core](https://pypi.org/project/ssot-core/), while CLI entry points ship from [ssot-cli](https://pypi.org/project/ssot-cli/), including both `ssot` and the compatibility alias `ssot-registry`.
+
+[ssot-mcp](https://pypi.org/project/ssot-mcp/) is optional. Install it when an MCP-capable client such as Codex should coordinate SSOT registry mutations, pull-worker campaigns, leases, worker events, or campaign state through MCP tools.
 
 The repository root is workspace tooling only. Canonical release artifacts are built from package roots under `pkgs/`, and the canonical Python runtime release target is `pkgs/ssot-core`.
 
@@ -953,6 +958,16 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 - ADRs: `.ssot/adr/`
 - Examples: `examples/`
 - Source code: `pkgs/*/src/`
+
+## Package relationships
+
+- Core runtime: [ssot-core](https://pypi.org/project/ssot-core/)
+- Primary CLI: [ssot-cli](https://pypi.org/project/ssot-cli/)
+- Optional MCP server: [ssot-mcp](https://pypi.org/project/ssot-mcp/)
+- Optional terminal UI: [ssot-tui](https://pypi.org/project/ssot-tui/)
+- Conformance checks: [ssot-conformance](https://pypi.org/project/ssot-conformance/)
+- Contracts and templates: [ssot-contracts](https://pypi.org/project/ssot-contracts/) and [ssot-pack-contracts](https://pypi.org/project/ssot-pack-contracts/)
+- Views and metadata generation: [ssot-views](https://pypi.org/project/ssot-views/) and [ssot-codegen](https://pypi.org/project/ssot-codegen/)
 
 ## Development
 

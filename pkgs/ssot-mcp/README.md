@@ -1,12 +1,67 @@
-# ssot-mcp
+<div align="center">
+  <h1>ssot-mcp</h1>
+  <p><strong>Optional MCP server for SSOT registry coordination and pull-worker campaigns.</strong></p>
+</div>
 
-Optional MCP server for SSOT pull-worker coordination. Workers still pull work
-through `claim_next_maturation_slice`; pushed update notifications only wake,
-pause, refresh, or stop workers.
+<div align="center">
+  <a href="https://pypi.org/project/ssot-mcp/"><img src="https://img.shields.io/pypi/v/ssot-mcp?label=PyPI%20version" alt="PyPI version" /></a>
+  <a href="https://pypi.org/project/ssot-mcp/"><img src="https://img.shields.io/pypi/pyversions/ssot-mcp?label=Python" alt="Supported Python versions" /></a>
+  <a href="https://pepy.tech/project/ssot-mcp"><img src="https://static.pepy.tech/badge/ssot-mcp" alt="Downloads" /></a>
+  <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Repository hits" /></a>
+<!-- ssot-schema-badges:start -->
+  <img src="https://img.shields.io/badge/schema_version-0.7.0-blue" alt="schema_version 0.7.0" />
+  <img src="https://img.shields.io/badge/migration%20coverage-14%2F14-brightgreen" alt="Migration coverage 14/14" />
+<!-- ssot-schema-badges:end -->
+</div>
 
-The core `ssot` CLI and `.ssot/registry.json` workflows do not require this
-package. Deploy `ssot-mcp` only when a Codex/MCP client should coordinate
-campaigns, leases, worker events, and registry writes through MCP tools.
+`ssot-mcp` is the optional Model Context Protocol server for SSOT.
+
+It lets MCP-capable clients coordinate registry mutations, pull-worker campaigns, leases, worker events, and campaign state through tools backed by [ssot-core](https://pypi.org/project/ssot-core/). The ordinary `.ssot/registry.json`, Python API, and [ssot-cli](https://pypi.org/project/ssot-cli/) workflows do not require this package.
+
+- GitHub: https://github.com/groupsum/ssot-registry
+
+## What this package owns
+
+- The `ssot-mcp` console entry point
+- MCP tools, resources, and prompts for optional SSOT control-plane workflows
+- Registry entity CRUD and linking tools for MCP clients
+- Pull-worker campaign tools for claiming slices, renewing leases, completing slices, abandoning slices, and reading worker events
+- In-process delegation to the live `ssot` CLI parser for command coverage that is not yet exposed as a dedicated MCP tool
+
+## When to use this package
+
+Use `ssot-mcp` when you want:
+
+- a Codex or MCP client to mutate SSOT registry entities without hand-editing `.ssot/registry.json`
+- workers to pull maturation slices from a shared SSOT registry
+- durable worker events and campaign status exposed through MCP tools
+- a repo-pinned MCP server for one repository
+- an explicit repo-per-call MCP server for development and test harnesses
+
+Use another package when you want:
+
+- [ssot-cli](https://pypi.org/project/ssot-cli/) for complete command-line workflow coverage
+- [ssot-core](https://pypi.org/project/ssot-core/) for direct Python API access
+- [ssot-registry](https://pypi.org/project/ssot-registry/) for the umbrella install bundle
+- [ssot-tui](https://pypi.org/project/ssot-tui/) for terminal browsing
+
+## Install
+
+```bash
+python -m pip install ssot-mcp
+python -m pip install "ssot-registry[mcp]"
+python -m pip install "ssot-registry[all]"
+```
+
+For local development:
+
+```bash
+python -m pip install -e pkgs/ssot-mcp
+```
+
+This package depends on [ssot-core](https://pypi.org/project/ssot-core/) and the official Python MCP runtime. Its SSOT dependency range tracks the current core release train with a compatible `<0.3.0` bound.
+
+## Start the server
 
 Run one pinned server per repository in normal use:
 
@@ -14,25 +69,18 @@ Run one pinned server per repository in normal use:
 ssot-mcp --transport stdio --repo E:\swarmauri_github\ssot-registry
 ```
 
-Run global/dev mode only when callers must pass an explicit `repo` argument on
-every tool/resource call:
+Run global development mode only when every tool and resource call must provide an explicit `repo` argument:
 
 ```powershell
 ssot-mcp --transport stdio --repo-mode explicit
 ```
 
-See [Codex MCP configuration](../../docs/coordination/codex-mcp.md) for Codex
-`config.toml` examples.
+See [Codex MCP configuration](../../docs/coordination/codex-mcp.md) for Codex `config.toml` examples.
 
 ## Registry write authority
 
-Workers must not hand-edit `.ssot/registry.json`. When a worker needs SSOT
-entity changes, it asks `ssot-mcp` to perform the mutation through one of the
-registry tools:
+Workers and MCP clients should not hand-edit `.ssot/registry.json`. When a client needs SSOT entity changes, it asks `ssot-mcp` to perform the mutation through registry tools such as:
 
-- `get_blocked_transitions`
-- `scaffold_target_claim_wiring`
-- `repair_blocked_transition`
 - `registry_entity_get`
 - `registry_entity_list`
 - `registry_entity_search`
@@ -43,28 +91,35 @@ registry tools:
 - `get_ssot_cli_surface`
 - `run_ssot_cli`
 
-The structured entity tools use the same core registry mutation APIs as the
-CLI, validate the registry before saving, and emit `registry_updated` events.
-`run_ssot_cli` delegates to the repo-local CLI parser in-process for command
-coverage that is not yet exposed as a dedicated MCP tool. It supports global
-flags, help/version requests, commands, subcommands, command flags, and
-subcommand flags as argv tokens. `get_ssot_cli_surface` returns the live CLI
-surface (`global_flags`, `top_level_commands`, `subcommand_paths`, and
-`flags_by_path`) so workers can discover the exact supported command shape
-before calling `run_ssot_cli`. Help and invalid-argument parser exits are
-captured as normal tool results; they must not close the MCP transport.
+The structured entity tools use the same core registry mutation APIs as the CLI, validate before saving, and emit `registry_updated` events. `run_ssot_cli` delegates to the repo-local CLI parser in process and supports global flags, help/version requests, commands, subcommands, command flags, and subcommand flags as argv tokens.
 
-Campaign claims can also be scoped instead of running over every active
-in-bounds feature. `claim_next_maturation_slice` accepts `feature_ids`,
-`profile_ids`, and `boundary_ids`; unscoped campaigns consider 25 in-bounds
-active features by default, and operators can raise `feature_limit` explicitly
-for broader campaigns. Out-of-bounds features are filtered from assignment and
-campaign status output. It caps blocker discovery with `max_blockers_per_claim`;
-and auto-scaffolding is enabled by default so
-`ssot-mcp` attempts target-tier claim/test/evidence scaffolding before returning
-a blocked result. Pass `auto_scaffold=false` only when intentionally testing or
-observing raw blocked-transition behavior. When a claim response returns
-`kind="blocked"`, it includes a top-level `reason` and a structured
-`problem_detail` with blocker rows and recommended MCP tool calls such as
-`repair_blocked_transition` or `scaffold_target_claim_wiring`; workers should
-perform those repairs and then pull again.
+## Pull-worker campaign model
+
+Workers pull work with `claim_next_maturation_slice`. Push notifications may wake, pause, refresh, or stop workers, but they do not assign feature or tier slices.
+
+Useful tools include:
+
+- `claim_next_maturation_slice`
+- `get_slice_context`
+- `complete_slice`
+- `renew_lease`
+- `abandon_slice`
+- `get_campaign_status`
+- `get_worker_events`
+- `ack_worker_events`
+- `get_conflicts`
+- `scaffold_target_claim_wiring`
+- `repair_blocked_transition`
+
+`claim_next_maturation_slice` accepts `feature_ids`, `profile_ids`, and `boundary_ids`. Unscoped campaigns consider 25 in-bounds active features by default, and operators can raise `feature_limit` explicitly for broader campaigns. Out-of-bounds features are filtered from assignment and campaign status output.
+
+Auto-scaffolding is enabled by default so `ssot-mcp` attempts target-tier claim, test, and evidence scaffolding before returning a blocked result. When a claim response returns `kind="blocked"`, it includes a top-level `reason` and structured `problem_detail` with recommended MCP tool calls.
+
+## Package relationships
+
+- Package type: optional MCP server package
+- Depends on: [ssot-core](https://pypi.org/project/ssot-core/) and the official Python MCP runtime
+- Optional via: [ssot-registry](https://pypi.org/project/ssot-registry/) extras `mcp` and `all`
+- Related packages: [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-tui](https://pypi.org/project/ssot-tui/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/)
+
+If you need an MCP server for Codex or another MCP-capable client, install this package. If you only need local command-line registry operations, install [ssot-cli](https://pypi.org/project/ssot-cli/).

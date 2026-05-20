@@ -10,8 +10,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CORE_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-core" / "src"
 CONTRACTS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-contracts" / "src"
 VIEWS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-views" / "src"
+PACK_CONTRACTS_SRC_ROOT = PROJECT_ROOT / "pkgs" / "ssot-pack-contracts" / "src"
 
-for source_root in (CORE_SRC_ROOT, CONTRACTS_SRC_ROOT, VIEWS_SRC_ROOT):
+for source_root in (CORE_SRC_ROOT, CONTRACTS_SRC_ROOT, VIEWS_SRC_ROOT, PACK_CONTRACTS_SRC_ROOT):
     source_path = str(source_root)
     if source_path not in sys.path:
         sys.path.insert(0, source_path)
@@ -68,9 +69,31 @@ def replace_managed_block(text: str, start: str, end: str, replacement: str) -> 
     return pattern.sub(replacement, text, count=1)
 
 
+def replace_or_insert_badges_block(text: str) -> str:
+    text_without_badges = re.sub(
+        rf"\n?{re.escape(BADGES_START)}.*?{re.escape(BADGES_END)}\n?",
+        "\n",
+        text,
+        count=1,
+        flags=re.DOTALL,
+    )
+    badge_containers = list(re.finditer(r'<div align="center">\r?\n', text_without_badges))
+    if not badge_containers:
+        if BADGES_START in text:
+            return replace_managed_block(text, BADGES_START, BADGES_END, render_badges())
+        raise ValueError("Missing README badge container")
+
+    container = badge_containers[1] if len(badge_containers) > 1 else badge_containers[0]
+    closing_div = "</div>"
+    index = text_without_badges.find(closing_div, container.end())
+    if index == -1:
+        raise ValueError("Missing README badge container closing </div>")
+    return text_without_badges[:index] + render_badges() + "\n" + text_without_badges[index:]
+
+
 def update_readme(readme_path: Path = PROJECT_ROOT / "README.md", *, include_version_reference: bool = True) -> bool:
     original = readme_path.read_text(encoding="utf-8")
-    updated = replace_managed_block(original, BADGES_START, BADGES_END, render_badges())
+    updated = replace_or_insert_badges_block(original)
     if include_version_reference:
         updated = replace_managed_block(updated, VERSION_START, VERSION_END, render_version_reference())
     if updated == original:
@@ -86,6 +109,12 @@ def main() -> int:
         (PROJECT_ROOT / "pkgs" / "ssot-core" / "README.md", False),
         (PROJECT_ROOT / "pkgs" / "ssot-cli" / "README.md", False),
         (PROJECT_ROOT / "pkgs" / "ssot-contracts" / "README.md", False),
+        (PROJECT_ROOT / "pkgs" / "ssot-views" / "README.md", False),
+        (PROJECT_ROOT / "pkgs" / "ssot-codegen" / "README.md", False),
+        (PROJECT_ROOT / "pkgs" / "ssot-conformance" / "README.md", False),
+        (PROJECT_ROOT / "pkgs" / "ssot-pack-contracts" / "README.md", False),
+        (PROJECT_ROOT / "pkgs" / "ssot-tui" / "README.md", False),
+        (PROJECT_ROOT / "pkgs" / "ssot-mcp" / "README.md", False),
     ]
     for readme_path, include_version_reference in readmes:
         changed = update_readme(readme_path, include_version_reference=include_version_reference)

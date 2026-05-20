@@ -8,6 +8,10 @@
   <a href="https://pypi.org/project/ssot-tui/"><img src="https://img.shields.io/pypi/pyversions/ssot-tui?label=Python" alt="Supported Python versions" /></a>
   <a href="https://pepy.tech/project/ssot-tui"><img src="https://static.pepy.tech/badge/ssot-tui" alt="Downloads" /></a>
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Repository hits" /></a>
+<!-- ssot-schema-badges:start -->
+  <img src="https://img.shields.io/badge/schema_version-0.7.0-blue" alt="schema_version 0.7.0" />
+  <img src="https://img.shields.io/badge/migration%20coverage-14%2F14-brightgreen" alt="Migration coverage 14/14" />
+<!-- ssot-schema-badges:end -->
 </div>
 
 `ssot-tui` is a Textual-based terminal UI for browsing SSOT registries.
@@ -34,6 +38,7 @@ Use another package when you want:
 
 - [ssot-cli](https://pypi.org/project/ssot-cli/) for full command-line workflow coverage
 - [ssot-core](https://pypi.org/project/ssot-core/) for direct Python API access
+- [ssot-mcp](https://pypi.org/project/ssot-mcp/) for MCP clients, pull-worker campaigns, and registry mutation tools
 - [ssot-contracts](https://pypi.org/project/ssot-contracts/) for packaged schemas and templates
 - [ssot-views](https://pypi.org/project/ssot-views/) for report and graph builders
 - [ssot-codegen](https://pypi.org/project/ssot-codegen/) for regeneration of metadata artifacts
@@ -120,6 +125,7 @@ At the application level, `SsotTuiApp` provides a header, footer, and browser sc
 
 - Package type: terminal UI package
 - Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), `textual`
+- Related packages: [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-mcp](https://pypi.org/project/ssot-mcp/), [ssot-registry](https://pypi.org/project/ssot-registry/)
 - Consumed by: users who want interactive browsing on top of the core SSOT runtime
 
 If you need complete operational coverage today, use [ssot-cli](https://pypi.org/project/ssot-cli/). If you want an interactive terminal browser for current registry content, this package is the right entry point.

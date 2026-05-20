@@ -40,6 +40,8 @@ python -m pip install -e pkgs/ssot-cli
 
 This package depends on [ssot-core](https://pypi.org/project/ssot-core/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), and [ssot-pack-contracts](https://pypi.org/project/ssot-pack-contracts/), so installing it gives you the full CLI runtime stack for registry operations and governance pack contract checks.
 
+Install [ssot-mcp](https://pypi.org/project/ssot-mcp/) separately, or through `ssot-registry[mcp]`, when an MCP-capable client should coordinate registry mutations, pull-worker campaigns, leases, and worker events through MCP tools.
+
 The CLI tracks the current core release train through compatible `<0.3.0` ranges and uses the current `ssot-pack-contracts` floor. That keeps pack-aware CLI behavior compatible with the latest contract package without forcing unrelated surface packages into core lockstep.
 
 ## Executable names
@@ -1063,6 +1065,6 @@ ssot release certify . --release-id rel:0.1.0 --write-report
 
 - Package type: CLI distribution
 - Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/), [ssot-pack-contracts](https://pypi.org/project/ssot-pack-contracts/)
-- Related packages: [ssot-registry](https://pypi.org/project/ssot-registry/), [ssot-tui](https://pypi.org/project/ssot-tui/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-codegen](https://pypi.org/project/ssot-codegen/)
+- Related packages: [ssot-registry](https://pypi.org/project/ssot-registry/), [ssot-mcp](https://pypi.org/project/ssot-mcp/), [ssot-tui](https://pypi.org/project/ssot-tui/), [ssot-views](https://pypi.org/project/ssot-views/), [ssot-codegen](https://pypi.org/project/ssot-codegen/)
 
 If you need the command-line interface, this is the package to install.

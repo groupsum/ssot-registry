@@ -18,7 +18,7 @@
 
 `ssot-registry` is the umbrella distribution for SSOT.
 
-It installs [ssot-core](https://pypi.org/project/ssot-core/) and [ssot-cli](https://pypi.org/project/ssot-cli/) together so users get the canonical `ssot_registry` Python package, reusable [ssot-conformance](https://pypi.org/project/ssot-conformance/) checks through the CLI, and the primary command surface in one install. The optional `tui` extra adds [ssot-tui](https://pypi.org/project/ssot-tui/).
+It installs [ssot-core](https://pypi.org/project/ssot-core/) and [ssot-cli](https://pypi.org/project/ssot-cli/) together so users get the canonical `ssot_registry` Python package, reusable [ssot-conformance](https://pypi.org/project/ssot-conformance/) checks through the CLI, and the primary command surface in one install. The optional `mcp` extra adds [ssot-mcp](https://pypi.org/project/ssot-mcp/), the optional `tui` extra adds [ssot-tui](https://pypi.org/project/ssot-tui/), and the `all` extra installs both optional surfaces.
 
 - GitHub: https://github.com/groupsum/ssot-registry
 
@@ -60,9 +60,12 @@ ADR and SPEC companion documents are canonically authored as JSON under `.ssot/a
 
 ```bash
 python -m pip install ssot-registry         # ssot-core + ssot-cli + ssot-conformance
+python -m pip install "ssot-registry[mcp]"  # add optional ssot-mcp server
 python -m pip install "ssot-registry[tui]"  # ssot-core + ssot-cli + ssot-conformance + ssot-tui
+python -m pip install "ssot-registry[all]"  # add both ssot-mcp and ssot-tui
 python -m pip install ssot-core             # runtime only
 python -m pip install ssot-cli              # CLI + runtime + conformance harness
+python -m pip install ssot-mcp              # MCP server only
 ```
 
 For local development:
@@ -71,12 +74,12 @@ For local development:
 python -m pip install -e pkgs/ssot-registry
 ```
 
-`ssot_registry` remains the canonical import package, but it is now distributed by [ssot-core](https://pypi.org/project/ssot-core/). The `ssot-registry` package is the convenience bundle, and the CLI entry points continue to ship from [ssot-cli](https://pypi.org/project/ssot-cli/).
+`ssot_registry` remains the canonical import package, but it is now distributed by [ssot-core](https://pypi.org/project/ssot-core/). The `ssot-registry` package is the convenience bundle, the CLI entry points continue to ship from [ssot-cli](https://pypi.org/project/ssot-cli/), and the optional MCP server ships from [ssot-mcp](https://pypi.org/project/ssot-mcp/).
 
 ## What this package owns
 
 - the convenience install bundle for the SSOT runtime and CLI
-- optional extras that add the Textual TUI without making it mandatory
+- optional extras that add the MCP server and Textual TUI without making them mandatory
 - a stable package name for users who want "install SSOT" rather than choose individual subpackages
 
 ## Python API examples
@@ -899,7 +902,7 @@ ssot-registry registry export . --format toml --output .ssot/exports/registry.to
 
 - Package type: umbrella distribution
 - Depends on: [ssot-core](https://pypi.org/project/ssot-core/), [ssot-cli](https://pypi.org/project/ssot-cli/), [ssot-conformance](https://pypi.org/project/ssot-conformance/), [ssot-contracts](https://pypi.org/project/ssot-contracts/)
-- Optional extras: [ssot-tui](https://pypi.org/project/ssot-tui/)
+- Optional extras: [ssot-mcp](https://pypi.org/project/ssot-mcp/), [ssot-tui](https://pypi.org/project/ssot-tui/)
 - Related packages: [ssot-views](https://pypi.org/project/ssot-views/), [ssot-codegen](https://pypi.org/project/ssot-codegen/)
 
-If you want the bundled install experience, this is the package to install. If you only need the primary CLI distribution, install [ssot-cli](https://pypi.org/project/ssot-cli/). If you only need the Python runtime, install [ssot-core](https://pypi.org/project/ssot-core/).
+If you want the bundled install experience, this is the package to install. If you only need the primary CLI distribution, install [ssot-cli](https://pypi.org/project/ssot-cli/). If you need an MCP server for Codex or another MCP-capable client, install [ssot-mcp](https://pypi.org/project/ssot-mcp/). If you only need the Python runtime, install [ssot-core](https://pypi.org/project/ssot-core/).

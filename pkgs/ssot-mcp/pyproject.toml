@@ -14,7 +14,31 @@ dependencies = [
   "mcp>=1.0",
   "ssot-core>=0.2.19.dev2,<0.3.0",
 ]
-keywords = ["ssot", "mcp", "workers", "leases", "control-plane"]
+keywords = ["ssot", "mcp", "model-context-protocol", "codex", "workers", "leases", "control-plane", "registry", "developer-tools", "automation"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Framework :: AsyncIO",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Database",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-mcp"
+Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-mcp"
+Issues = "https://github.com/groupsum/ssot-registry/issues"
 
 [project.scripts]
 ssot-mcp = "ssot_mcp.server:main"

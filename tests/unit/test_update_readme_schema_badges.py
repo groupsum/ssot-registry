@@ -87,6 +87,31 @@ class UpdateReadmeSchemaBadgesTests(unittest.TestCase):
             self.assertIn("schema_version-9.9.9-blue", updated)
             self.assertNotIn(update_readme_schema_badges.VERSION_START, updated)
 
+    def test_update_readme_inserts_missing_badge_block(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            readme_path = Path(temp_dir) / "README.md"
+            readme_path.write_text(
+                "\n".join(
+                    [
+                        "<div align=\"center\">",
+                        "  <a href=\"https://example.invalid\"><img src=\"badge.svg\" /></a>",
+                        "</div>",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            changed = update_readme_schema_badges.update_readme(
+                readme_path,
+                include_version_reference=False,
+            )
+
+            updated = readme_path.read_text(encoding="utf-8")
+            self.assertTrue(changed)
+            self.assertIn(update_readme_schema_badges.BADGES_START, updated)
+            self.assertIn(update_readme_schema_badges.BADGES_END, updated)
+
 
 if __name__ == "__main__":
     unittest.main()
