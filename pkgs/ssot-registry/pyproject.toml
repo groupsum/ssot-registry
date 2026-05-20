@@ -52,7 +52,7 @@ classifiers = [
 [project.optional-dependencies]
 mcp = ["ssot-mcp>=0.1.1.dev1,<0.2.0"]
 tui = ["ssot-tui>=0.1.13.dev1,<0.2.0"]
-all = ["ssot-mcp>=0.1.0,<0.2.0", "ssot-tui>=0.1.12,<0.2.0"]
+all = ["ssot-mcp>=0.1.1.dev1,<0.2.0", "ssot-tui>=0.1.13.dev1,<0.2.0"]
 
 [project.urls]
 Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-registry"

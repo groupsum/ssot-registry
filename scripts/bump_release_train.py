@@ -33,7 +33,7 @@ def _rewrite_dependency(pyproject_path: Path, dependency_name: str, expected_spe
     if current_spec is None or current_spec == expected_spec:
         return False
     content = pyproject_path.read_text(encoding="utf-8")
-    updated = content.replace(f'"{current_spec}"', f'"{expected_spec}"', 1)
+    updated = content.replace(f'"{current_spec}"', f'"{expected_spec}"')
     if updated == content:
         raise RuntimeError(f"Failed to update {dependency_name} dependency in {pyproject_path}")
     pyproject_path.write_text(updated, encoding="utf-8")
