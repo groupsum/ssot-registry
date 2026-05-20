@@ -25,6 +25,7 @@ def _ensure_link(values: object, entity_id: str) -> list[str]:
 def scaffold_target_claim_wiring(repo_root: str | Path, feature_id: str, target_tier: str) -> dict[str, Any]:
     registry_path, resolved_repo, registry = load_registry(repo_root)
     working = deepcopy(registry)
+    baseline_report = validate_registry_document(registry, registry_path, resolved_repo)
     index = build_registry_index(working)
     feature = index["features"].get(feature_id)
     if feature is None:
@@ -134,12 +135,23 @@ def scaffold_target_claim_wiring(repo_root: str | Path, feature_id: str, target_
         created["files"].append(evidence_path)
 
     report = validate_registry_document(working, registry_path, resolved_repo)
-    if not report["passed"]:
-        return {"passed": False, "feature_id": feature_id, "target_tier": target_tier, "created": created, "validation": report}
+    baseline_failures = set(baseline_report.get("failures", []))
+    new_failures = [failure for failure in report.get("failures", []) if failure not in baseline_failures]
+    if new_failures:
+        return {
+            "passed": False,
+            "feature_id": feature_id,
+            "target_tier": target_tier,
+            "created": created,
+            "validation": report,
+            "baseline_validation": baseline_report,
+            "new_validation_failures": new_failures,
+        }
 
     save_registry(registry_path, working)
     return {
         "passed": True,
+        "validation_clean": bool(report.get("passed")),
         "registry_path": registry_path.as_posix(),
         "feature_id": feature_id,
         "target_tier": target_tier,
@@ -148,4 +160,6 @@ def scaffold_target_claim_wiring(repo_root: str | Path, feature_id: str, target_
         "evidence_id": evidence_id,
         "created": created,
         "validation": report,
+        "baseline_validation": baseline_report,
+        "new_validation_failures": [],
     }

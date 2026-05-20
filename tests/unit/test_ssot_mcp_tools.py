@@ -23,6 +23,7 @@ from ssot_mcp.tools import (
     registry_entity_unlink,
     registry_entity_upsert,
     repair_blocked_transition,
+    repair_blocked_transitions,
     run_ssot_cli,
     scaffold_target_claim_wiring,
     renew_lease,
@@ -284,5 +285,7 @@ def test_mcp_repair_queue_tools_scaffold_and_resolve(tmp_path: Path) -> None:
     repaired = repair_blocked_transition(repo=str(tmp_path), blocked_id=blocked_id)
 
     assert repaired["passed"] is True
+    bulk_repair = repair_blocked_transitions(repo=str(tmp_path), campaign_id="camp:test")
+    assert bulk_repair["passed"] is True
     scaffold = scaffold_target_claim_wiring(repo=str(tmp_path), feature_id="feat:control.missing-wiring", target_tier="T1")
     assert scaffold["passed"] is True

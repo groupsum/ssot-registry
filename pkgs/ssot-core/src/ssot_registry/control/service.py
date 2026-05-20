@@ -131,6 +131,15 @@ def _blocked_problem_detail(
     }
 
 
+def _filter_blocked_transitions_for_scope(
+    blocked_transitions: list[dict[str, Any]],
+    scope_feature_ids: set[str] | None,
+) -> list[dict[str, Any]]:
+    if scope_feature_ids is None:
+        return blocked_transitions
+    return [item for item in blocked_transitions if str(item.get("feature_id")) in scope_feature_ids]
+
+
 class ControlPlane:
     """Core service used by CLI, MCP, and tests for pull-worker coordination."""
 
@@ -234,7 +243,7 @@ class ControlPlane:
         scaffolded_in_call: list[dict[str, Any]] = []
         while True:
             active_roots = [row["path"] for row in self.store.active_path_leases()]
-            blocked = self.store.get_blocked_transitions(campaign_id)
+            blocked = _filter_blocked_transitions_for_scope(self.store.get_blocked_transitions(campaign_id), scope_feature_ids)
             selected = next_maturation_slice(
                 registry,
                 target_tier=target_tier,
@@ -294,7 +303,7 @@ class ControlPlane:
             feature_limit=normalized_feature_limit,
         )
         if selected is None:
-            open_blocked = self.store.get_blocked_transitions(campaign_id)
+            open_blocked = _filter_blocked_transitions_for_scope(self.store.get_blocked_transitions(campaign_id), scope_feature_ids)
             if open_blocked:
                 problem_detail = _blocked_problem_detail(
                     campaign_id=campaign_id,
@@ -473,8 +482,8 @@ class ControlPlane:
     def get_campaign_status(self, campaign_id: str, target_tier: str = "T2", feature_limit: int | None = None) -> dict[str, Any]:
         registry = self._registry()
         status = self.store.campaign_status(campaign_id)
-        blockers = self.store.get_blocked_transitions(campaign_id)
         scope_feature_ids = self._resolve_scope_feature_ids(registry, campaign=status.get("campaign"))
+        blockers = _filter_blocked_transitions_for_scope(self.store.get_blocked_transitions(campaign_id), scope_feature_ids)
         campaign_metadata = status.get("campaign", {}).get("metadata") if isinstance(status.get("campaign"), dict) else {}
         campaign_metadata = campaign_metadata if isinstance(campaign_metadata, dict) else {}
         resolved_feature_limit = normalize_feature_limit(
@@ -528,6 +537,37 @@ class ControlPlane:
             payload={"blocked_transition": resolved, "scaffold": scaffold},
         )
         return {"passed": True, "blocked_transition": resolved, "scaffold": scaffold}
+
+    def repair_blocked_transitions(
+        self,
+        *,
+        campaign_id: str | None = None,
+        feature_ids: list[str] | None = None,
+        limit: int = 25,
+    ) -> dict[str, Any]:
+        feature_scope = set(feature_ids or []) if feature_ids is not None else None
+        blockers = _filter_blocked_transitions_for_scope(
+            self.store.get_blocked_transitions(campaign_id=campaign_id, status="open"),
+            feature_scope,
+        )
+        repaired: list[dict[str, Any]] = []
+        failed: list[dict[str, Any]] = []
+        for blocker in blockers[: max(1, int(limit))]:
+            result = self.repair_blocked_transition(blocked_id=str(blocker["blocked_id"]))
+            if result.get("passed"):
+                repaired.append(result)
+            else:
+                failed.append(result)
+        return {
+            "passed": not failed,
+            "campaign_id": campaign_id,
+            "feature_ids": sorted(feature_scope) if feature_scope is not None else None,
+            "considered_count": len(blockers),
+            "repaired_count": len(repaired),
+            "failed_count": len(failed),
+            "repaired": repaired,
+            "failed": failed,
+        }
 
     def get_worker_events(
         self,

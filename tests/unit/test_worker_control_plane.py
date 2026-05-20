@@ -430,6 +430,40 @@ def test_control_plane_scopes_campaign_to_feature_ids(tmp_path: Path) -> None:
     assert status["summary"]["incomplete_count"] == 1
 
 
+def test_control_plane_scoped_claim_ignores_unrelated_open_blockers(tmp_path: Path) -> None:
+    registry = _registry_missing_target_claim(tmp_path)
+    second = _registry(tmp_path, t1_ready=False, t2_ready=False)["features"][0]
+    assert isinstance(second, dict)
+    second["id"] = "feat:control.worker-b"
+    second["claim_ids"] = ["clm:control.worker.t0", "clm:control.worker.t1", "clm:control.worker.t2"]
+    second["lease_roots"] = ["tests/control", ".ssot/evidence/control/worker"]
+    registry["features"].append(second)
+    _write_registry(tmp_path, registry)
+    plane = ControlPlane(tmp_path)
+
+    blocked = plane.claim_next_maturation_slice(
+        worker_id="worker-01",
+        campaign_id="camp:test",
+        target_tier="T2",
+        auto_scaffold=False,
+        max_blockers_per_claim=1,
+    )
+    assert blocked["kind"] == "blocked"
+    assert blocked["blocked_transitions"][0]["feature_id"] == "feat:control.missing-wiring"
+
+    scoped = plane.claim_next_maturation_slice(
+        worker_id="worker-02",
+        campaign_id="camp:test",
+        target_tier="T2",
+        feature_ids=["feat:control.worker-b"],
+    )
+
+    assert scoped["kind"] == "lease_granted"
+    assert scoped["lease"]["feature_id"] == "feat:control.worker-b"
+    status = plane.get_campaign_status("camp:test", target_tier="T2")
+    assert status["summary"]["blocked_transition_count"] == 0
+
+
 def test_control_plane_caps_blocker_discovery_per_claim(tmp_path: Path) -> None:
     registry = _registry_missing_target_claim(tmp_path)
     second = _registry_missing_target_claim(tmp_path)["features"][0]
@@ -471,6 +505,22 @@ def test_control_plane_auto_scaffolds_missing_target_claim_wiring(tmp_path: Path
     assert (tmp_path / ".ssot" / "evidence" / "control.missing-wiring" / "t1.json").exists()
 
 
+def test_scaffold_target_claim_wiring_allows_unrelated_baseline_validation_drift(tmp_path: Path) -> None:
+    registry = _registry_missing_target_claim(tmp_path)
+    feature = registry["features"][0]
+    assert isinstance(feature, dict)
+    feature.pop("parent_feature_ids", None)
+    _write_registry(tmp_path, registry)
+    plane = ControlPlane(tmp_path)
+
+    scaffold = plane.scaffold_target_claim_wiring(feature_id="feat:control.missing-wiring", target_tier="T1")
+
+    assert scaffold["passed"] is True
+    assert scaffold["validation_clean"] is False
+    assert scaffold["new_validation_failures"] == []
+    assert (tmp_path / ".ssot" / "evidence" / "control.missing-wiring" / "t1.json").exists()
+
+
 def test_repair_blocked_transition_scaffolds_and_resolves(tmp_path: Path) -> None:
     _write_registry(tmp_path, _registry_missing_target_claim(tmp_path))
     plane = ControlPlane(tmp_path)
@@ -483,6 +533,38 @@ def test_repair_blocked_transition_scaffolds_and_resolves(tmp_path: Path) -> Non
     assert repaired["blocked_transition"]["status"] == "resolved"
     retry = plane.claim_next_maturation_slice(worker_id="worker-02", campaign_id="camp:test", target_tier="T2")
     assert retry["kind"] == "lease_granted"
+
+
+def test_repair_blocked_transitions_bulk_repairs_scoped_blockers(tmp_path: Path) -> None:
+    registry = _registry_missing_target_claim(tmp_path)
+    second = _registry_missing_target_claim(tmp_path)["features"][0]
+    assert isinstance(second, dict)
+    second["id"] = "feat:control.missing-wiring-b"
+    second["claim_ids"] = ["clm:control.worker.t2"]
+    second["lease_roots"] = [".ssot/evidence/control/missing-wiring-b"]
+    registry["features"].append(second)
+    _write_registry(tmp_path, registry)
+    plane = ControlPlane(tmp_path)
+
+    blocked = plane.claim_next_maturation_slice(
+        worker_id="worker-01",
+        campaign_id="camp:test",
+        target_tier="T2",
+        auto_scaffold=False,
+        max_blockers_per_claim=2,
+    )
+    assert blocked["kind"] == "blocked"
+
+    repaired = plane.repair_blocked_transitions(
+        campaign_id="camp:test",
+        feature_ids=["feat:control.missing-wiring-b"],
+    )
+
+    assert repaired["passed"] is True
+    assert repaired["repaired_count"] == 1
+    assert repaired["repaired"][0]["blocked_transition"]["feature_id"] == "feat:control.missing-wiring-b"
+    remaining = plane.store.get_blocked_transitions("camp:test")
+    assert [item["feature_id"] for item in remaining] == ["feat:control.missing-wiring"]
 
 
 def test_control_plane_complete_slice_happy_path_records_gate_and_events(tmp_path: Path) -> None:

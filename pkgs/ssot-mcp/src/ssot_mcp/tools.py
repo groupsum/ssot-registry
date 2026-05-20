@@ -298,6 +298,15 @@ def repair_blocked_transition(repo: str | None = None, blocked_id: str = "") -> 
     return _plane(repo).repair_blocked_transition(blocked_id=blocked_id)
 
 
+def repair_blocked_transitions(
+    repo: str | None = None,
+    campaign_id: str | None = None,
+    feature_ids: list[str] | None = None,
+    limit: int = 25,
+) -> dict[str, Any]:
+    return _plane(repo).repair_blocked_transitions(campaign_id=campaign_id, feature_ids=feature_ids, limit=limit)
+
+
 def registry_entity_get(repo: str | None = None, section: str = "", entity_id: str = "") -> dict[str, Any]:
     repo_root = resolve_repo(repo)
     resolved_section = _section_name(section)

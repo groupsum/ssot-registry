@@ -27,6 +27,7 @@ def build_server() -> Any:
     mcp.tool()(tools.get_blocked_transitions)
     mcp.tool()(tools.scaffold_target_claim_wiring)
     mcp.tool()(tools.repair_blocked_transition)
+    mcp.tool()(tools.repair_blocked_transitions)
     mcp.tool()(tools.registry_entity_get)
     mcp.tool()(tools.registry_entity_list)
     mcp.tool()(tools.registry_entity_search)
