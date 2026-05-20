@@ -19,6 +19,7 @@ on:
           - ssot-conformance
           - ssot-registry
           - ssot-cli
+          - ssot-mcp
           - ssot-tui
           - selected
       selected_packages:

@@ -1,0 +1,134 @@
+name: Publish ssot-mcp
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref_name:
+        description: "Branch or ref name to publish from"
+        required: true
+        default: master
+        type: string
+      publish_to_pypi:
+        description: "Publish package distributions to PyPI"
+        required: true
+        default: false
+        type: boolean
+      create_tag:
+        description: "Create the package release tag before publishing"
+        required: true
+        default: true
+        type: boolean
+      create_github_release:
+        description: "Create a GitHub Release for the package tag"
+        required: true
+        default: true
+        type: boolean
+
+concurrency:
+  group: publish-ssot-mcp-${{ inputs.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/ssot-mcp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install Python 3.12
+        run: uv python install 3.12
+
+      - name: Determine release version and tag
+        id: release_meta
+        run: |
+          VERSION=$(python scripts/release_metadata.py version --package ssot-mcp)
+          TAG=$(python scripts/release_metadata.py tag --package ssot-mcp)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Validate ssot-mcp release train
+        run: python scripts/release_metadata.py validate-train --train ssot-mcp
+
+      - name: Build package
+        run: uv build --project pkgs/ssot-mcp --out-dir pkgs/ssot-mcp/dist
+
+      - name: Generate checksums
+        run: |
+          cd pkgs/ssot-mcp/dist
+          sha256sum * > SHA256SUMS
+
+      - name: Upload distribution
+        uses: actions/upload-artifact@v6
+        with:
+          name: dist-ssot-mcp
+          path: pkgs/ssot-mcp/dist/*
+          if-no-files-found: error
+
+      - name: Create git tag from package version
+        if: ${{ inputs.create_tag }}
+        env:
+          TAG: ${{ steps.release_meta.outputs.tag }}
+        run: |
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists; continuing."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - name: Verify package version and tag are in sync
+        if: ${{ !inputs.create_tag }}
+        env:
+          EXPECTED_TAG: ${{ steps.release_meta.outputs.tag }}
+        run: |
+          ACTUAL_TAG="${GITHUB_REF_NAME}"
+          if [ "$ACTUAL_TAG" != "$EXPECTED_TAG" ]; then
+            echo "Release tag and package version are out of sync for ssot-mcp."
+            echo "Expected: $EXPECTED_TAG"
+            echo "Actual:   $ACTUAL_TAG"
+            exit 1
+          fi
+
+      - name: Create GitHub Release
+        if: ${{ inputs.create_github_release }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release_meta.outputs.tag }}
+          VERSION: ${{ steps.release_meta.outputs.version }}
+        run: |
+          ARGS=(
+            "$TAG"
+            pkgs/ssot-mcp/dist/*
+            --target "${{ inputs.ref_name }}"
+            --title "$TAG"
+            --generate-notes
+          )
+          if [[ "$VERSION" == *".dev"* ]]; then
+            ARGS+=(--prerelease)
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "GitHub Release $TAG already exists; continuing."
+            exit 0
+          fi
+          gh release create "${ARGS[@]}"
+
+      - name: Publish package distributions to PyPI
+        if: ${{ inputs.publish_to_pypi }}
+        run: uv publish --trusted-publishing always --check-url https://pypi.org/simple/ pkgs/ssot-mcp/dist/*.whl pkgs/ssot-mcp/dist/*.tar.gz

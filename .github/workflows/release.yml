@@ -44,6 +44,7 @@ on:
           - ssot-conformance
           - ssot-registry
           - ssot-cli
+          - ssot-mcp
           - ssot-tui
           - selected
       ref_name:
@@ -139,7 +140,7 @@ jobs:
               ("publish_layer_2", ["ssot-views"]),
               ("publish_layer_3", ["ssot-codegen", "ssot-core"]),
               ("publish_layer_4", ["ssot-conformance"]),
-              ("publish_layer_5", ["ssot-cli", "ssot-tui"]),
+              ("publish_layer_5", ["ssot-cli", "ssot-mcp", "ssot-tui"]),
               ("publish_layer_6", ["ssot-registry"]),
           ]
 
@@ -390,8 +391,8 @@ jobs:
     uses: ./.github/workflows/_publish-built-package.yml
     with:
       package_name: ssot-tui
-      package_tag: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[1].tag }}
-      package_version: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[1].version }}
+      package_tag: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[2].tag }}
+      package_version: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[2].version }}
       pypi_project_url: https://pypi.org/p/ssot-tui
       ref_name: ${{ inputs.ref_name }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
@@ -399,10 +400,85 @@ jobs:
       create_github_release: ${{ inputs.create_github_release }}
     secrets: inherit
 
+  publish-ssot-mcp:
+    name: Publish ssot-mcp
+    runs-on: ubuntu-latest
+    needs: [validate, build-distributions, publish-ssot-contracts, publish-ssot-pack-contracts, publish-ssot-views, publish-ssot-codegen, publish-ssot-core, publish-ssot-conformance]
+    if: ${{ always() && needs.build-distributions.result == 'success' && contains(fromJSON(needs.validate.outputs.targets), 'ssot-mcp') && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-contracts.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-pack-contracts.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-views.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-codegen.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-core.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-conformance.result) }}
+    permissions:
+      contents: write
+      id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/p/ssot-mcp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Download release distributions
+        uses: actions/download-artifact@v6
+        with:
+          name: release-distributions
+          path: release-dist
+
+      - name: Verify built package artifact
+        run: |
+          test -d "release-dist/ssot-mcp"
+          test -f "release-dist/ssot-mcp/SHA256SUMS"
+          ls -la "release-dist/ssot-mcp"
+
+      - name: Create git tag from package version
+        env:
+          TAG: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[1].tag }}
+        run: |
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists; continuing."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - name: Create GitHub Release
+        if: ${{ inputs.create_github_release }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[1].tag }}
+          VERSION: ${{ fromJSON(needs.validate.outputs.publish_layer_5)[1].version }}
+        run: |
+          ARGS=(
+            "$TAG"
+            release-dist/ssot-mcp/*
+            --target "${{ inputs.ref_name }}"
+            --title "$TAG"
+            --generate-notes
+          )
+          if [[ "$VERSION" == *".dev"* ]]; then
+            ARGS+=(--prerelease)
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "GitHub Release $TAG already exists; continuing."
+            exit 0
+          fi
+          gh release create "${ARGS[@]}"
+
+      - name: Publish package distributions to PyPI
+        if: ${{ inputs.publish_to_pypi }}
+        run: uv publish --trusted-publishing always --check-url https://pypi.org/simple/ release-dist/ssot-mcp/*.whl release-dist/ssot-mcp/*.tar.gz
+
   publish-ssot-registry:
     name: Publish ssot-registry
-    needs: [validate, build-distributions, publish-ssot-contracts, publish-ssot-pack-contracts, publish-ssot-views, publish-ssot-codegen, publish-ssot-core, publish-ssot-conformance, publish-ssot-cli, publish-ssot-tui]
-    if: ${{ always() && needs.build-distributions.result == 'success' && contains(fromJSON(needs.validate.outputs.targets), 'ssot-registry') && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-contracts.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-pack-contracts.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-views.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-codegen.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-core.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-conformance.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-cli.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-tui.result) }}
+    needs: [validate, build-distributions, publish-ssot-contracts, publish-ssot-pack-contracts, publish-ssot-views, publish-ssot-codegen, publish-ssot-core, publish-ssot-conformance, publish-ssot-cli, publish-ssot-mcp, publish-ssot-tui]
+    if: ${{ always() && needs.build-distributions.result == 'success' && contains(fromJSON(needs.validate.outputs.targets), 'ssot-registry') && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-contracts.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-pack-contracts.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-views.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-codegen.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-core.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-conformance.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-cli.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-mcp.result) && contains(fromJSON('["success","skipped"]'), needs.publish-ssot-tui.result) }}
     permissions:
       contents: write
       id-token: write

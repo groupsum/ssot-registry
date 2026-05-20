@@ -34,5 +34,5 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "pkgs/ssot-cli/tests", "pkgs/ssot-tui/tests", "pkgs/ssot-core/tests", "pkgs/ssot-registry/tests", "pkgs/ssot-contracts/tests", "pkgs/ssot-pack-contracts/tests", "pkgs/ssot-views/tests", "pkgs/ssot-codegen/tests", "pkgs/ssot-conformance/src"]
+testpaths = ["tests", "pkgs/ssot-cli/tests", "pkgs/ssot-mcp/tests", "pkgs/ssot-tui/tests", "pkgs/ssot-core/tests", "pkgs/ssot-registry/tests", "pkgs/ssot-contracts/tests", "pkgs/ssot-pack-contracts/tests", "pkgs/ssot-views/tests", "pkgs/ssot-codegen/tests", "pkgs/ssot-conformance/src"]
 norecursedirs = ["tests/fixtures"]
