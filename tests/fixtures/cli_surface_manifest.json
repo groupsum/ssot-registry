@@ -101,6 +101,12 @@
       "--status",
       "--title"
     ],
+    "campaign": [],
+    "campaign status": [
+      "--campaign-id",
+      "--feature-limit",
+      "--target-tier"
+    ],
     "claim": [],
     "claim create": [
       "--body",
@@ -417,6 +423,21 @@
       "--severity",
       "--title"
     ],
+    "leases": [],
+    "leases expire": [],
+    "leases inspect": [
+      "--lease-id"
+    ],
+    "leases list": [
+      "--status"
+    ],
+    "maturity": [],
+    "maturity current-tier": [
+      "--feature-id"
+    ],
+    "maturity next-slice": [
+      "--target-tier"
+    ],
     "pack": [],
     "pack inspect": [
       "--manifest"
@@ -578,6 +599,10 @@
       "--no-write-artifacts",
       "--path-policy",
       "--release-id"
+    ],
+    "repo-watch": [],
+    "repo-watch scan": [
+      "--no-emit-events"
     ],
     "risk": [],
     "risk accept": [
@@ -767,6 +792,48 @@
     ],
     "validate": [
       "--write-report"
+    ],
+    "worker": [],
+    "worker abandon": [
+      "--fencing-token",
+      "--lease-id",
+      "--reason",
+      "--worker-id"
+    ],
+    "worker ack-events": [
+      "--action",
+      "--event-ids",
+      "--worker-id"
+    ],
+    "worker claim-next": [
+      "--auto-scaffold",
+      "--boundary-ids",
+      "--campaign-id",
+      "--feature-ids",
+      "--feature-limit",
+      "--max-blockers-per-claim",
+      "--no-auto-scaffold",
+      "--os-user",
+      "--profile-ids",
+      "--target-tier",
+      "--ttl-seconds",
+      "--worker-id"
+    ],
+    "worker events": [
+      "--after-event-id",
+      "--campaign-id",
+      "--limit",
+      "--worker-id"
+    ],
+    "worker register": [
+      "--os-user",
+      "--worker-id"
+    ],
+    "worker renew": [
+      "--fencing-token",
+      "--lease-id",
+      "--ttl-seconds",
+      "--worker-id"
     ]
   },
   "global_flags": [
@@ -799,6 +866,8 @@
     "boundary remove-profile",
     "boundary run-tests",
     "boundary update",
+    "campaign",
+    "campaign status",
     "claim",
     "claim create",
     "claim delete",
@@ -864,6 +933,13 @@
     "issue reopen",
     "issue unlink",
     "issue update",
+    "leases",
+    "leases expire",
+    "leases inspect",
+    "leases list",
+    "maturity",
+    "maturity current-tier",
+    "maturity next-slice",
     "pack",
     "pack inspect",
     "pack preflight",
@@ -899,6 +975,8 @@
     "release revoke",
     "release update",
     "release verify-local",
+    "repo-watch",
+    "repo-watch scan",
     "risk",
     "risk accept",
     "risk create",
@@ -935,11 +1013,19 @@
     "test unlink",
     "test update",
     "upgrade",
-    "validate"
+    "validate",
+    "worker",
+    "worker abandon",
+    "worker ack-events",
+    "worker claim-next",
+    "worker events",
+    "worker register",
+    "worker renew"
   ],
   "top_level_commands": [
     "adr",
     "boundary",
+    "campaign",
     "claim",
     "config",
     "conformance",
@@ -948,14 +1034,18 @@
     "graph",
     "init",
     "issue",
+    "leases",
+    "maturity",
     "pack",
     "profile",
     "registry",
     "release",
+    "repo-watch",
     "risk",
     "spec",
     "test",
     "upgrade",
-    "validate"
+    "validate",
+    "worker"
   ]
 }

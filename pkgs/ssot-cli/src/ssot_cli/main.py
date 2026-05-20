@@ -17,6 +17,7 @@ from ssot_registry.util.formatting import render_payload
 
 from .adr_cmd import register_adr
 from .boundary_cmd import register_boundary
+from .campaign_cmd import register_campaign
 from .claim_cmd import register_claim
 from .conformance_cmd import register_conformance
 from .config_cmd import register_config
@@ -25,15 +26,19 @@ from .feature_cmd import register_feature
 from .graph_cmd import register_graph
 from .init_cmd import register_init
 from .issue_cmd import register_issue
+from .leases_cmd import register_leases
+from .maturity_cmd import register_maturity
 from .pack_cmd import register_pack
 from .profile_cmd import register_profile
 from .registry_cmd import register_registry
 from .release_cmd import register_release
+from .repo_watch_cmd import register_repo_watch
 from .risk_cmd import register_risk
 from .spec_cmd import register_spec
 from .test_cmd import register_test
 from .upgrade_cmd import register_upgrade
 from .validate_cmd import register_validate
+from .worker_cmd import register_worker
 
 _PACKAGE_NAME = "ssot-cli"
 _PYPROJECT_PATH = Path(__file__).resolve().parents[2] / "pyproject.toml"
@@ -180,6 +185,11 @@ def build_parser(*, prog: str | None = None) -> argparse.ArgumentParser:
     register_validate(subparsers)
     register_upgrade(subparsers)
     register_config(subparsers)
+    register_campaign(subparsers)
+    register_leases(subparsers)
+    register_maturity(subparsers)
+    register_repo_watch(subparsers)
+    register_worker(subparsers)
     register_adr(subparsers)
     register_spec(subparsers)
     register_feature(subparsers)

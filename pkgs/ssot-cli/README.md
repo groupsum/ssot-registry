@@ -166,6 +166,8 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry boundary remove-profile` | `--id`, `--profile-ids` |
 | `ssot-registry boundary run-tests` | `--dry-run`, `--evidence-output`, `--id` |
 | `ssot-registry boundary update` | `--body`, `--body-file`, `--frozen`, `--id`, `--no-frozen`, `--status`, `--title` |
+| `ssot-registry campaign` | none |
+| `ssot-registry campaign status` | `--campaign-id`, `--feature-limit`, `--target-tier` |
 | `ssot-registry claim` | none |
 | `ssot-registry claim create` | `--body`, `--body-file`, `--depends-on-claim-ids`, `--description`, `--evidence-ids`, `--feature-ids`, `--id`, `--kind`, `--origin`, `--status`, `--test-ids`, `--tier`, `--title` |
 | `ssot-registry claim delete` | `--id` |
@@ -231,6 +233,13 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry issue reopen` | `--id` |
 | `ssot-registry issue unlink` | `--claim-ids`, `--evidence-ids`, `--feature-ids`, `--id`, `--risk-ids`, `--test-ids` |
 | `ssot-registry issue update` | `--body`, `--body-file`, `--description`, `--id`, `--no-release-blocking`, `--release-blocking`, `--severity`, `--title` |
+| `ssot-registry leases` | none |
+| `ssot-registry leases expire` | none |
+| `ssot-registry leases inspect` | `--lease-id` |
+| `ssot-registry leases list` | `--status` |
+| `ssot-registry maturity` | none |
+| `ssot-registry maturity current-tier` | `--feature-id` |
+| `ssot-registry maturity next-slice` | `--target-tier` |
 | `ssot-registry pack` | none |
 | `ssot-registry pack inspect` | `--manifest` |
 | `ssot-registry pack preflight` | `--all`, `--kind`, `--manifest`, `--pin`, `--resolved`, `--trusted-only` |
@@ -266,6 +275,8 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry release revoke` | `--reason`, `--release-id` |
 | `ssot-registry release update` | `--body`, `--body-file`, `--boundary-id`, `--boundary-ids`, `--id`, `--status`, `--version` |
 | `ssot-registry release verify-local` | `--blocking`, `--no-write-artifacts`, `--path-policy`, `--release-id` |
+| `ssot-registry repo-watch` | none |
+| `ssot-registry repo-watch scan` | `--no-emit-events` |
 | `ssot-registry risk` | none |
 | `ssot-registry risk accept` | `--id` |
 | `ssot-registry risk create` | `--body`, `--body-file`, `--claim-ids`, `--description`, `--evidence-ids`, `--feature-ids`, `--id`, `--issue-ids`, `--no-release-blocking`, `--release-blocking`, `--severity`, `--status`, `--test-ids`, `--title` |
@@ -303,12 +314,25 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry test update` | `--body`, `--body-file`, `--execution-file`, `--execution-json`, `--id`, `--kind`, `--origin`, `--status`, `--test-path`, `--title` |
 | `ssot-registry upgrade` | `--sync-docs`, `--target-version`, `--write-report` |
 | `ssot-registry validate` | `--write-report` |
+| `ssot-registry worker` | none |
+| `ssot-registry worker abandon` | `--fencing-token`, `--lease-id`, `--reason`, `--worker-id` |
+| `ssot-registry worker ack-events` | `--action`, `--event-ids`, `--worker-id` |
+| `ssot-registry worker claim-next` | `--auto-scaffold`, `--boundary-ids`, `--campaign-id`, `--feature-ids`, `--feature-limit`, `--max-blockers-per-claim`, `--no-auto-scaffold`, `--os-user`, `--profile-ids`, `--target-tier`, `--ttl-seconds`, `--worker-id` |
+| `ssot-registry worker events` | `--after-event-id`, `--campaign-id`, `--limit`, `--worker-id` |
+| `ssot-registry worker register` | `--os-user`, `--worker-id` |
+| `ssot-registry worker renew` | `--fencing-token`, `--lease-id`, `--ttl-seconds`, `--worker-id` |
 
 ### Top-level commands
 
 - `init`
 - `validate`
 - `upgrade`
+- `config`
+- `campaign`
+- `leases`
+- `maturity`
+- `repo-watch`
+- `worker`
 - `adr`
 - `spec`
 - `feature`

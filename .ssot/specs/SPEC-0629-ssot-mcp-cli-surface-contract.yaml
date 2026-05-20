@@ -1,0 +1,72 @@
+schema_version: "0.7.0"
+kind: "spec"
+id: "spc:0629"
+number: 629
+slug: "ssot-mcp-cli-surface-contract"
+title: "SSOT MCP CLI surface contract"
+status: "draft"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "Define the SSOT MCP contract for discovering and safely executing the complete `ssot-registry` CLI surface through MCP tools."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to define full SSOT CLI delegation through ssot-mcp."
+    at: "2026-05-20T16:21:38Z"
+references: []
+body: |-
+  ## Purpose
+  
+  Define the SSOT MCP contract for discovering and safely executing the complete `ssot-registry` CLI surface through MCP tools.
+  
+  ## Required MCP Tools
+  
+  `get_ssot_cli_surface` SHALL return:
+  
+  - `passed`
+  - `global_flags`
+  - `top_level_commands`
+  - `subcommand_paths`
+  - `flags_by_path`
+  
+  `run_ssot_cli` SHALL accept argv tokens after `ssot-registry` and SHALL support:
+  
+  - global flags
+  - top-level commands
+  - command flags
+  - subcommands
+  - subcommand flags
+  - help requests
+  - version requests
+  - invalid-argument requests
+  
+  ## Execution Result Contract
+  
+  `run_ssot_cli` SHALL return a structured result with:
+  
+  - `passed`
+  - `exit_code`
+  - `args`
+  - `output`
+  - `stdout`
+  - `stderr`
+  
+  If stdout is JSON, `output` SHOULD contain the parsed JSON payload. If stdout is not JSON, `output` MAY contain the raw stdout text.
+  
+  ## Parser Exit Containment
+  
+  The MCP server SHALL catch CLI parser exits, including argparse `SystemExit`, and return them as normal tool results. Help, version, and invalid-argument flows SHALL NOT close the MCP transport.
+  
+  ## Repository Resolution
+  
+  When `ssot-mcp` is pinned to a repository, `run_ssot_cli` SHALL execute against the pinned repository unless an explicit different repo is rejected by policy. In explicit repo-per-call mode, non-metadata CLI operations SHALL require a repo argument. Metadata-only operations such as help, version, and CLI surface discovery MAY run without a repo.
+  
+  ## Mutation Notification
+  
+  Successful CLI operations that can mutate registry state SHOULD emit a `registry_updated` event so workers can refresh context.
+spec_kind: "operational"
+adr_ids:
+  - "adr:0628"

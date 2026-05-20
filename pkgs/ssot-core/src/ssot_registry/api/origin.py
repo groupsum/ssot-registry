@@ -20,6 +20,12 @@ def _origin_rows(registry: dict[str, Any], section: str) -> dict[str, dict[str, 
     }
 
 
+def _normalize_feature_rows(registry: dict[str, Any]) -> None:
+    for row in registry.get("features", []):
+        if isinstance(row, dict):
+            row.setdefault("parent_feature_ids", [])
+
+
 def _load_source_registry(source: str | Path | dict[str, Any]) -> dict[str, Any]:
     if isinstance(source, dict):
         return deepcopy(source)
@@ -36,6 +42,8 @@ def sync_origin_assurance_rows(
 ) -> dict[str, Any]:
     registry_path, repo_root, registry = load_registry(path)
     source_registry = _load_source_registry(source)
+    _normalize_feature_rows(registry)
+    _normalize_feature_rows(source_registry)
     selected_sections = tuple(sections or ASSURANCE_ENTITY_SECTIONS)
     unsupported = sorted(set(selected_sections) - set(ASSURANCE_ENTITY_SECTIONS))
     if unsupported:

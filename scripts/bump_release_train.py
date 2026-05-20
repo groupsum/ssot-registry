@@ -45,10 +45,12 @@ def sync_release_dependencies() -> list[Path]:
     core_version = read_project_version(Path(PACKAGE_INFOS["ssot-contracts"].project_path) / "pyproject.toml")
     pack_contracts_version = read_project_version(Path(PACKAGE_INFOS["ssot-pack-contracts"].project_path) / "pyproject.toml")
     cli_version = read_project_version(Path(PACKAGE_INFOS["ssot-cli"].project_path) / "pyproject.toml")
+    mcp_version = read_project_version(Path(PACKAGE_INFOS["ssot-mcp"].project_path) / "pyproject.toml")
     tui_version = read_project_version(Path(PACKAGE_INFOS["ssot-tui"].project_path) / "pyproject.toml")
     for package_name, expectations in expected_dependency_specs(
         core_version,
         cli_version=cli_version,
+        mcp_version=mcp_version,
         pack_contracts_version=pack_contracts_version,
         tui_version=tui_version,
     ).items():
@@ -119,6 +121,7 @@ def main() -> int:
             "ssot-conformance",
             "ssot-registry",
             "ssot-cli",
+            "ssot-mcp",
             "ssot-tui",
             "selected",
         ],

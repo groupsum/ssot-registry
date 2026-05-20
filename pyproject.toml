@@ -7,6 +7,7 @@ members = [
   "pkgs/ssot-core",
   "pkgs/ssot-conformance",
   "pkgs/ssot-registry",
+  "pkgs/ssot-mcp",
   "pkgs/ssot-cli",
   "pkgs/ssot-tui",
 ]
@@ -19,6 +20,7 @@ ssot-codegen = { workspace = true }
 ssot-core = { workspace = true }
 ssot-conformance = { workspace = true }
 ssot-registry = { workspace = true }
+ssot-mcp = { workspace = true }
 ssot-cli = { workspace = true }
 ssot-tui = { workspace = true }
 

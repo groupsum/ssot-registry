@@ -32,6 +32,7 @@ class WorkspacePackageDagTests(unittest.TestCase):
                 "pkgs/ssot-core",
                 "pkgs/ssot-conformance",
                 "pkgs/ssot-registry",
+                "pkgs/ssot-mcp",
                 "pkgs/ssot-cli",
                 "pkgs/ssot-tui",
             ],
@@ -46,6 +47,7 @@ class WorkspacePackageDagTests(unittest.TestCase):
             "ssot-core": "pkgs/ssot-core/pyproject.toml",
             "ssot-conformance": "pkgs/ssot-conformance/pyproject.toml",
             "ssot-registry": "pkgs/ssot-registry/pyproject.toml",
+            "ssot-mcp": "pkgs/ssot-mcp/pyproject.toml",
             "ssot-cli": "pkgs/ssot-cli/pyproject.toml",
             "ssot-tui": "pkgs/ssot-tui/pyproject.toml",
         }
@@ -78,6 +80,7 @@ class WorkspacePackageDagTests(unittest.TestCase):
                 ("ssot-registry", "ssot-pack-contracts"),
                 ("ssot-registry", "ssot-core"),
                 ("ssot-registry", "ssot-cli"),
+                ("ssot-mcp", "ssot-core"),
             },
         )
 
@@ -99,6 +102,7 @@ class WorkspacePackageDagTests(unittest.TestCase):
                 "ssot-core",
                 "ssot-conformance",
                 "ssot-cli",
+                "ssot-mcp",
                 "ssot-tui",
                 "ssot-registry",
             ],

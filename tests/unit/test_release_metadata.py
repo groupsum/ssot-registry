@@ -56,6 +56,7 @@ class ReleaseMetadataTests(unittest.TestCase):
                 "ssot-core",
                 "ssot-conformance",
                 "ssot-cli",
+                "ssot-mcp",
                 "ssot-tui",
                 "ssot-registry",
             ],
@@ -73,6 +74,7 @@ class ReleaseMetadataTests(unittest.TestCase):
                 "ssot-core",
                 "ssot-conformance",
                 "ssot-cli",
+                "ssot-mcp",
                 "ssot-tui",
                 "ssot-registry",
             ],
@@ -94,6 +96,7 @@ class ReleaseMetadataTests(unittest.TestCase):
             "ssot-conformance",
             "ssot-registry",
             "ssot-cli",
+            "ssot-mcp",
             "ssot-tui",
         ):
             payload = json.loads(_run_release_metadata("targets", "--train", package_name).stdout)
@@ -107,6 +110,7 @@ class ReleaseMetadataTests(unittest.TestCase):
     def test_pack_contracts_and_tui_compatibility_floors_track_current_versions(self) -> None:
         payload = json.loads(_run_release_metadata("show").stdout)
         pack_contracts_version = payload["packages"]["ssot-pack-contracts"]["version"]
+        mcp_version = payload["packages"]["ssot-mcp"]["version"]
         tui_version = payload["packages"]["ssot-tui"]["version"]
         self.assertEqual(
             payload["packages"]["ssot-core"]["dependencies"]["ssot-pack-contracts"],
@@ -123,6 +127,10 @@ class ReleaseMetadataTests(unittest.TestCase):
         self.assertEqual(
             payload["packages"]["ssot-registry"]["dependencies"]["ssot-tui"],
             f"ssot-tui>={tui_version},<0.2.0",
+        )
+        self.assertEqual(
+            payload["packages"]["ssot-registry"]["dependencies"]["ssot-mcp"],
+            f"ssot-mcp>={mcp_version},<0.2.0",
         )
 
 
