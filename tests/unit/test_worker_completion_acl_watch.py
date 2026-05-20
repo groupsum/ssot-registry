@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from ssot_registry.acl.policy import AclPolicy, LinuxAclAdapter, WindowsAclAdapter
+from ssot_registry.acl.wrapper import main as acl_wrapper_main
 from ssot_registry.control.events import format_sse_event
 from ssot_registry.guards.completion import evaluate_completion_guard
 from ssot_registry.watch.git_status import parse_porcelain_v2_z
@@ -25,6 +26,17 @@ def test_acl_policy_generates_linux_and_windows_commands(tmp_path: Path) -> None
 
     with pytest.raises(ValueError, match="forbidden"):
         linux.grant_commands("worker01", [".ssot/control/state.sqlite"])
+    with pytest.raises(ValueError, match="path escapes"):
+        linux.grant_commands("worker01", [tmp_path.parent / "outside"])
+
+
+def test_acl_wrapper_dry_run_and_invalid_path_exit(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    exit_code = acl_wrapper_main(["grant", str(tmp_path), "worker01", "src/a", "--dry-run"])
+    assert exit_code == 0
+    assert "worker01" in capsys.readouterr().out
+
+    with pytest.raises(ValueError, match="forbidden"):
+        acl_wrapper_main(["grant", str(tmp_path), "worker01", ".ssot/registry.json", "--dry-run"])
 
 
 def test_completion_guard_rejects_unleased_and_forbidden_paths(tmp_path: Path) -> None:
@@ -47,6 +59,28 @@ def test_completion_guard_rejects_unleased_and_forbidden_paths(tmp_path: Path) -
     assert report["passed"] is False
     assert "completion changed_paths must be under active lease roots" in report["failures"]
     assert "completion changed_paths must not include forbidden paths" in report["failures"]
+
+
+def test_completion_guard_rejects_missing_outputs_and_unknown_tier_claim(tmp_path: Path) -> None:
+    registry = _registry(tmp_path, t1_ready=True, t2_ready=False)
+    lease = {
+        "lease_id": "lease:test",
+        "feature_id": "feat:control.worker",
+        "to_tier": "T2",
+        "path_roots": ["tests/control", ".ssot/evidence/control/worker"],
+    }
+    result = {
+        "changed_paths": ["tests/control/test_worker.py"],
+        "tests_run": [{"command": "pytest", "exit_code": 0}],
+        "evidence_paths": [".ssot/evidence/control/worker/missing.json"],
+        "requested_tier": "T2",
+    }
+
+    report = evaluate_completion_guard(registry, lease, result, repo_root=tmp_path)
+
+    assert report["passed"] is False
+    assert "completion evidence_paths must exist" in report["failures"]
+    assert any("T2 gate requires passed linked evidence" in failure for failure in report["failures"])
 
 
 def test_completion_guard_accepts_leased_paths_and_tier_gate(tmp_path: Path) -> None:
@@ -79,6 +113,16 @@ def test_repo_watch_classifies_authorized_and_forbidden_paths() -> None:
     assert scan.authorized_paths == ["src/a/file.py"]
     assert scan.out_of_lease_paths == ["src/b/file.py"]
     assert scan.forbidden_paths == [".ssot/registry.json"]
+
+
+def test_repo_watch_classifies_control_and_git_as_forbidden() -> None:
+    scan = classify_changed_paths(
+        [".ssot/control/state.sqlite", ".git/index", "docs/readme.md"],
+        [],
+    )
+
+    assert scan.forbidden_paths == [".git/index", ".ssot/control/state.sqlite"]
+    assert scan.out_of_lease_paths == ["docs/readme.md"]
 
 
 def test_git_status_parser_and_sse_format() -> None:
