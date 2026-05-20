@@ -4,11 +4,12 @@ import contextlib
 import io
 import json
 import os
+import argparse
 from pathlib import Path
 from threading import RLock
 from typing import Any
 
-from ssot_cli.main import main as ssot_cli_main
+from ssot_cli.main import build_parser, main as ssot_cli_main
 from ssot_registry.api.entity_ops import (
     SECTIONS,
     create_entity,
@@ -87,6 +88,66 @@ def _cli_root_command(args: list[str]) -> str:
             continue
         return token
     return ""
+
+
+def _option_flags(parser: argparse.ArgumentParser) -> list[str]:
+    flags: list[str] = []
+    for action in parser._actions:
+        if isinstance(action, argparse._HelpAction):
+            continue
+        for option in action.option_strings:
+            if option not in flags:
+                flags.append(option)
+    return sorted(flags)
+
+
+def _walk_parser(
+    parser: argparse.ArgumentParser,
+    path: list[str],
+    subcommand_paths: list[str],
+    flags_by_path: dict[str, list[str]],
+) -> None:
+    if path:
+        path_key = " ".join(path)
+        subcommand_paths.append(path_key)
+        flags_by_path[path_key] = _option_flags(parser)
+
+    for action in parser._actions:
+        if not isinstance(action, argparse._SubParsersAction):
+            continue
+        for name, child_parser in sorted(action.choices.items()):
+            _walk_parser(child_parser, [*path, name], subcommand_paths, flags_by_path)
+
+
+def _cli_surface() -> dict[str, Any]:
+    parser = build_parser(prog="ssot-registry")
+    top_level_commands: list[str] = []
+    for action in parser._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            top_level_commands = sorted(action.choices.keys())
+            break
+
+    subcommand_paths: list[str] = []
+    flags_by_path: dict[str, list[str]] = {}
+    _walk_parser(parser, [], subcommand_paths, flags_by_path)
+    return {
+        "top_level_commands": top_level_commands,
+        "subcommand_paths": sorted(subcommand_paths),
+        "global_flags": _option_flags(parser),
+        "flags_by_path": {key: flags_by_path[key] for key in sorted(flags_by_path)},
+    }
+
+
+def _is_cli_metadata_request(args: list[str]) -> bool:
+    return not args or any(token in {"-h", "--help", "--version"} for token in args)
+
+
+def _resolve_repo_for_cli(repo: str | None, args: list[str]) -> Path:
+    if repo is not None or _PINNED_REPO is not None:
+        return resolve_repo(repo)
+    if _is_cli_metadata_request(args):
+        return Path.cwd()
+    return resolve_repo(repo)
 
 
 @contextlib.contextmanager
@@ -178,6 +239,13 @@ def ack_worker_events(repo: str | None = None, worker_id: str = "", event_ids: l
 
 def get_conflicts(repo: str | None = None, status: str | None = "open") -> dict[str, Any]:
     return _plane(repo).get_conflicts(status=status)
+
+
+def get_ssot_cli_surface(repo: str | None = None) -> dict[str, Any]:
+    if repo is not None or _PINNED_REPO is not None:
+        _resolve_repo_for_cli(repo, ["--help"])
+    surface = _cli_surface()
+    return {"passed": True, **surface}
 
 
 def get_blocked_transitions(repo: str | None = None, campaign_id: str | None = None, status: str | None = "open") -> dict[str, Any]:
@@ -276,20 +344,27 @@ def run_ssot_cli(repo: str | None = None, args: list[str] | None = None) -> dict
     registry. Arguments are argv tokens after `ssot`.
     """
 
-    repo_root = resolve_repo(repo)
     original_args = list(args or [])
+    repo_root = _resolve_repo_for_cli(repo, original_args)
     argv = list(original_args)
-    if "--output-format" not in argv:
+    metadata_request = _is_cli_metadata_request(argv)
+    if "--output-format" not in argv and not metadata_request:
         argv = ["--output-format", "json", *argv]
     stdout = io.StringIO()
+    stderr = io.StringIO()
     with _CLI_LOCK:
-        with _cwd(repo_root), contextlib.redirect_stdout(stdout):
-            exit_code = ssot_cli_main(argv)
-    output = stdout.getvalue()
+        with _cwd(repo_root), contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            try:
+                exit_code = ssot_cli_main(argv)
+            except SystemExit as exc:
+                code = exc.code
+                exit_code = int(code) if isinstance(code, int) else 1
+    stdout_text = stdout.getvalue()
+    stderr_text = stderr.getvalue()
     try:
-        payload: Any = json.loads(output) if output.strip() else None
+        payload: Any = json.loads(stdout_text) if stdout_text.strip() else None
     except json.JSONDecodeError:
-        payload = output
+        payload = stdout_text
     mutating_roots = {
         "init",
         "upgrade",
@@ -310,4 +385,11 @@ def run_ssot_cli(repo: str | None = None, args: list[str] | None = None) -> dict
     command = _cli_root_command(original_args)
     if exit_code == 0 and command in mutating_roots:
         _notify_registry_updated(repo_root, {"source": "ssot-mcp", "tool": "run_ssot_cli", "args": original_args})
-    return {"passed": exit_code == 0, "exit_code": exit_code, "args": original_args, "output": payload}
+    return {
+        "passed": exit_code == 0,
+        "exit_code": exit_code,
+        "args": original_args,
+        "output": payload,
+        "stdout": stdout_text,
+        "stderr": stderr_text,
+    }

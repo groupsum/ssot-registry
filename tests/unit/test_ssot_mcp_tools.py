@@ -12,6 +12,7 @@ from ssot_mcp.tools import (
     complete_slice,
     get_campaign_status,
     get_slice_context,
+    get_ssot_cli_surface,
     get_worker_events,
     get_blocked_transitions,
     registry_entity_delete,
@@ -213,6 +214,34 @@ def test_mcp_run_ssot_cli_executes_against_resolved_repo(tmp_path: Path) -> None
     assert result["passed"] is True
     assert result["exit_code"] == 0
     assert result["output"]["passed"] is True
+    temp_dir.cleanup()
+
+
+def test_mcp_run_ssot_cli_handles_help_version_and_bad_args_without_closing_transport() -> None:
+    configure_repo(None)
+    temp_dir = temp_repo_from_fixture("repo_valid")
+    repo = Path(temp_dir.name) / "repo"
+
+    surface = get_ssot_cli_surface()
+    assert surface["passed"] is True
+    assert "--version" in surface["global_flags"]
+    assert "feature create" in surface["subcommand_paths"]
+    assert "--id" in surface["flags_by_path"]["feature create"]
+
+    help_result = run_ssot_cli(args=["--help"])
+    assert help_result["passed"] is True
+    assert help_result["exit_code"] == 0
+    assert "usage:" in help_result["stdout"]
+    assert "top_level_commands" not in help_result
+
+    version_result = run_ssot_cli(args=["--version"])
+    assert version_result["passed"] is True
+    assert "ssot-cli" in version_result["stdout"]
+
+    invalid_result = run_ssot_cli(repo=str(repo), args=["feature", "list", "--unknown-ssot-flag"])
+    assert invalid_result["passed"] is False
+    assert invalid_result["exit_code"] != 0
+    assert "usage:" in invalid_result["stderr"]
     temp_dir.cleanup()
 
 

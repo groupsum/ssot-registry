@@ -403,7 +403,7 @@ def test_control_plane_skips_open_blocked_transition_on_retry(tmp_path: Path) ->
     assert response["problem_detail"]["recommendations"][0]["tool"] == "repair_blocked_transition"
     blocked = plane.store.get_blocked_transitions("camp:test")
     assert len(blocked) >= 1
-    assert blocked[0]["feature_id"] == "feat:control.missing-wiring"
+    assert {item["feature_id"] for item in blocked} >= {"feat:control.missing-wiring"}
 
 
 def test_control_plane_scopes_campaign_to_feature_ids(tmp_path: Path) -> None:

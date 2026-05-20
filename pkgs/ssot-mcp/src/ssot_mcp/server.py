@@ -20,6 +20,7 @@ def build_server() -> Any:
     mcp.tool()(tools.complete_slice)
     mcp.tool()(tools.abandon_slice)
     mcp.tool()(tools.get_campaign_status)
+    mcp.tool()(tools.get_ssot_cli_surface)
     mcp.tool()(tools.get_worker_events)
     mcp.tool()(tools.ack_worker_events)
     mcp.tool()(tools.get_conflicts)

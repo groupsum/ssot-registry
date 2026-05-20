@@ -40,12 +40,19 @@ registry tools:
 - `registry_entity_delete`
 - `registry_entity_link`
 - `registry_entity_unlink`
+- `get_ssot_cli_surface`
 - `run_ssot_cli`
 
 The structured entity tools use the same core registry mutation APIs as the
 CLI, validate the registry before saving, and emit `registry_updated` events.
 `run_ssot_cli` delegates to the repo-local CLI parser in-process for command
-coverage that is not yet exposed as a dedicated MCP tool.
+coverage that is not yet exposed as a dedicated MCP tool. It supports global
+flags, help/version requests, commands, subcommands, command flags, and
+subcommand flags as argv tokens. `get_ssot_cli_surface` returns the live CLI
+surface (`global_flags`, `top_level_commands`, `subcommand_paths`, and
+`flags_by_path`) so workers can discover the exact supported command shape
+before calling `run_ssot_cli`. Help and invalid-argument parser exits are
+captured as normal tool results; they must not close the MCP transport.
 
 Campaign claims can also be scoped instead of running over every active
 in-bounds feature. `claim_next_maturation_slice` accepts `feature_ids`,
