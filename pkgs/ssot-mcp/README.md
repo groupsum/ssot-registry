@@ -49,6 +49,15 @@ coverage that is not yet exposed as a dedicated MCP tool.
 
 Campaign claims can also be scoped instead of running over every active
 in-bounds feature. `claim_next_maturation_slice` accepts `feature_ids`,
-`profile_ids`, and `boundary_ids`; it caps blocker discovery with
-`max_blockers_per_claim`; and `auto_scaffold=true` lets `ssot-mcp` attempt
-target-tier claim/test/evidence scaffolding before returning a blocked result.
+`profile_ids`, and `boundary_ids`; unscoped campaigns consider 25 in-bounds
+active features by default, and operators can raise `feature_limit` explicitly
+for broader campaigns. Out-of-bounds features are filtered from assignment and
+campaign status output. It caps blocker discovery with `max_blockers_per_claim`;
+and auto-scaffolding is enabled by default so
+`ssot-mcp` attempts target-tier claim/test/evidence scaffolding before returning
+a blocked result. Pass `auto_scaffold=false` only when intentionally testing or
+observing raw blocked-transition behavior. When a claim response returns
+`kind="blocked"`, it includes a top-level `reason` and a structured
+`problem_detail` with blocker rows and recommended MCP tool calls such as
+`repair_blocked_transition` or `scaffold_target_claim_wiring`; workers should
+perform those repairs and then pull again.

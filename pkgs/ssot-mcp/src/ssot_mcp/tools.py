@@ -110,7 +110,8 @@ def claim_next_maturation_slice(
     profile_ids: list[str] | None = None,
     boundary_ids: list[str] | None = None,
     max_blockers_per_claim: int = 5,
-    auto_scaffold: bool = False,
+    auto_scaffold: bool = True,
+    feature_limit: int | None = 25,
 ) -> dict[str, Any]:
     return _plane(repo).claim_next_maturation_slice(
         worker_id=worker_id,
@@ -123,6 +124,7 @@ def claim_next_maturation_slice(
         boundary_ids=boundary_ids,
         max_blockers_per_claim=max_blockers_per_claim,
         auto_scaffold=auto_scaffold,
+        feature_limit=feature_limit,
     )
 
 
@@ -149,8 +151,8 @@ def abandon_slice(repo: str | None = None, worker_id: str = "", lease_id: str = 
     return _plane(repo).abandon_slice(worker_id=worker_id, lease_id=lease_id, fencing_token=fencing_token, reason=reason)
 
 
-def get_campaign_status(repo: str | None = None, campaign_id: str = "", target_tier: str = "T2") -> dict[str, Any]:
-    return _plane(repo).get_campaign_status(campaign_id, target_tier=target_tier)
+def get_campaign_status(repo: str | None = None, campaign_id: str = "", target_tier: str = "T2", feature_limit: int | None = None) -> dict[str, Any]:
+    return _plane(repo).get_campaign_status(campaign_id, target_tier=target_tier, feature_limit=feature_limit)
 
 
 def get_worker_events(

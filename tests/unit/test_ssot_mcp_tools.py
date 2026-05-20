@@ -219,7 +219,17 @@ def test_mcp_run_ssot_cli_executes_against_resolved_repo(tmp_path: Path) -> None
 def test_mcp_repair_queue_tools_scaffold_and_resolve(tmp_path: Path) -> None:
     configure_repo(None)
     _write_registry(tmp_path, _registry_missing_target_claim(tmp_path))
-    blocked = claim_next_maturation_slice(repo=str(tmp_path), worker_id="worker-01", campaign_id="camp:test", target_tier="T2")
+    blocked = claim_next_maturation_slice(
+        repo=str(tmp_path),
+        worker_id="worker-01",
+        campaign_id="camp:test",
+        target_tier="T2",
+        auto_scaffold=False,
+    )
+    assert blocked["kind"] == "blocked"
+    assert blocked["reason"] == "missing_target_tier_claim_wiring"
+    assert blocked["problem_detail"]["blockers"][0]["feature_id"] == "feat:control.missing-wiring"
+    assert any(item["tool"] == "repair_blocked_transition" for item in blocked["problem_detail"]["recommendations"])
     blocked_id = blocked["blocked_transitions"][0]["blocked_id"]
 
     listed = get_blocked_transitions(repo=str(tmp_path), campaign_id="camp:test")

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -264,6 +265,51 @@ def test_maturation_selector_moves_t0_to_t1_then_t1_to_t2(tmp_path: Path) -> Non
     assert next_maturation_slice(registry, repo_root=tmp_path) is None
 
 
+def test_maturation_selector_limits_in_bounds_feature_scan_by_default(tmp_path: Path) -> None:
+    registry = _registry(tmp_path, t1_ready=False, t2_ready=False)
+    template = deepcopy(registry["features"][0])
+    registry["features"] = []
+    active_roots: list[str] = []
+    for index in range(26):
+        feature = deepcopy(template)
+        feature["id"] = f"feat:control.worker-{index:02d}"
+        feature["claim_ids"] = []
+        feature["test_ids"] = []
+        feature["lease_roots"] = [f"tests/control/{index:02d}"]
+        registry["features"].append(feature)
+        if index < 25:
+            active_roots.append(f"tests/control/{index:02d}")
+
+    assert next_maturation_slice(registry, repo_root=tmp_path, active_path_roots=active_roots) is None
+    selected = next_maturation_slice(registry, repo_root=tmp_path, active_path_roots=active_roots, feature_limit=26)
+    assert selected is not None
+    assert selected["feature_id"] == "feat:control.worker-25"
+
+
+def test_campaign_completion_hides_out_of_bounds_features_and_applies_limit(tmp_path: Path) -> None:
+    registry = _registry(tmp_path, t1_ready=False, t2_ready=False)
+    active = deepcopy(registry["features"][0])
+    active["id"] = "feat:control.active"
+    active["claim_ids"] = []
+    active["test_ids"] = []
+    active["lease_roots"] = ["tests/control/active"]
+    out_of_bounds = deepcopy(active)
+    out_of_bounds["id"] = "feat:control.out-of-bounds"
+    out_of_bounds["plan"]["horizon"] = "out_of_bounds"
+    registry["features"] = [active, out_of_bounds]
+    _write_registry(tmp_path, registry)
+    plane = ControlPlane(tmp_path)
+
+    status = plane.get_campaign_status("camp:test", target_tier="T2")
+
+    assert status["summary"]["feature_limit"] == 25
+    assert status["summary"]["features_considered_count"] == 1
+    assert status["summary"]["incomplete_count"] == 1
+    assert "out_of_bounds_count" not in status["summary"]
+    assert status["completion"]["incomplete"][0]["feature_id"] == "feat:control.active"
+    assert "out_of_bounds" not in status["completion"]
+
+
 def test_control_plane_claim_renew_and_abandon_slice(tmp_path: Path) -> None:
     _write_registry(tmp_path, _registry(tmp_path, t1_ready=False, t2_ready=False))
     plane = ControlPlane(tmp_path)
@@ -317,10 +363,19 @@ def test_control_plane_blocks_non_actionable_missing_target_claim_without_lease(
     _write_registry(tmp_path, _registry_missing_target_claim(tmp_path))
     plane = ControlPlane(tmp_path)
 
-    response = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T3")
+    response = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T3", auto_scaffold=False)
 
     assert response["passed"] is False
     assert response["kind"] == "blocked"
+    assert response["reason"] == "missing_target_tier_claim_wiring"
+    assert response["problem_detail"]["type"] == "ssot.maturation.blocked"
+    assert response["problem_detail"]["blocked_count"] == 1
+    assert response["problem_detail"]["blockers"][0]["feature_id"] == "feat:control.missing-wiring"
+    assert {item["tool"] for item in response["problem_detail"]["recommendations"]} >= {
+        "repair_blocked_transition",
+        "scaffold_target_claim_wiring",
+        "claim_next_maturation_slice",
+    }
     assert response["blocked_transitions"][0]["feature_id"] == "feat:control.missing-wiring"
     assert response["blocked_transitions"][0]["from_tier"] == "T0"
     assert response["blocked_transitions"][0]["to_tier"] == "T1"
@@ -341,9 +396,11 @@ def test_control_plane_skips_open_blocked_transition_on_retry(tmp_path: Path) ->
     _write_registry(tmp_path, registry)
     plane = ControlPlane(tmp_path)
 
-    response = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T2")
+    response = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T2", auto_scaffold=False)
 
     assert response["kind"] == "blocked"
+    assert response["problem_detail"]["reason"] == "missing_target_tier_claim_wiring"
+    assert response["problem_detail"]["recommendations"][0]["tool"] == "repair_blocked_transition"
     blocked = plane.store.get_blocked_transitions("camp:test")
     assert len(blocked) >= 1
     assert blocked[0]["feature_id"] == "feat:control.missing-wiring"
@@ -384,7 +441,13 @@ def test_control_plane_caps_blocker_discovery_per_claim(tmp_path: Path) -> None:
     _write_registry(tmp_path, registry)
     plane = ControlPlane(tmp_path)
 
-    response = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T3", max_blockers_per_claim=1)
+    response = plane.claim_next_maturation_slice(
+        worker_id="worker-01",
+        campaign_id="camp:test",
+        target_tier="T3",
+        max_blockers_per_claim=1,
+        auto_scaffold=False,
+    )
 
     assert response["kind"] == "blocked"
     assert len(response["blocked_in_call"]) == 1
@@ -399,7 +462,6 @@ def test_control_plane_auto_scaffolds_missing_target_claim_wiring(tmp_path: Path
         worker_id="worker-01",
         campaign_id="camp:test",
         target_tier="T2",
-        auto_scaffold=True,
     )
 
     assert response["kind"] == "lease_granted"
@@ -412,7 +474,7 @@ def test_control_plane_auto_scaffolds_missing_target_claim_wiring(tmp_path: Path
 def test_repair_blocked_transition_scaffolds_and_resolves(tmp_path: Path) -> None:
     _write_registry(tmp_path, _registry_missing_target_claim(tmp_path))
     plane = ControlPlane(tmp_path)
-    blocked = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T2")
+    blocked = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T2", auto_scaffold=False)
     blocked_id = blocked["blocked_transitions"][0]["blocked_id"]
 
     repaired = plane.repair_blocked_transition(blocked_id=blocked_id)

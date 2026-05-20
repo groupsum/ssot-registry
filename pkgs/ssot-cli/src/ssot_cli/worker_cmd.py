@@ -27,7 +27,13 @@ def register_worker(subparsers: argparse._SubParsersAction) -> None:
     claim.add_argument("--profile-ids", nargs="*", default=None)
     claim.add_argument("--boundary-ids", nargs="*", default=None)
     claim.add_argument("--max-blockers-per-claim", type=int, default=5)
-    claim.add_argument("--auto-scaffold", action="store_true")
+    claim.add_argument("--feature-limit", type=int, default=25, help="Maximum in-bounds features to consider for this claim. Defaults to 25.")
+    claim.add_argument(
+        "--auto-scaffold",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Automatically scaffold missing target-tier claim/test/evidence wiring before blocking. Enabled by default.",
+    )
     claim.set_defaults(func=run_claim_next)
 
     renew = worker_sub.add_parser("renew", help="Renew an active lease.")
@@ -78,6 +84,7 @@ def run_claim_next(args: argparse.Namespace) -> dict[str, object]:
         boundary_ids=args.boundary_ids,
         max_blockers_per_claim=args.max_blockers_per_claim,
         auto_scaffold=args.auto_scaffold,
+        feature_limit=args.feature_limit,
     )
 
 

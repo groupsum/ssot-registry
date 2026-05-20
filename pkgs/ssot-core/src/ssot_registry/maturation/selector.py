@@ -12,6 +12,7 @@ from ssot_registry.util.jsonio import stable_json_dumps
 from ssot_registry.control.paths import ensure_allowed_path, path_is_under, path_overlaps
 
 MATURATION_TIERS = ("T0", "T1", "T2", "T3", "T4")
+DEFAULT_FEATURE_LIMIT = 25
 
 
 def build_registry_index(registry: dict[str, Any]) -> dict[str, dict[str, dict[str, Any]]]:
@@ -53,6 +54,36 @@ def _is_in_bounds(feature: dict[str, Any]) -> bool:
     plan = feature.get("plan") if isinstance(feature.get("plan"), dict) else {}
     lifecycle = feature.get("lifecycle") if isinstance(feature.get("lifecycle"), dict) else {}
     return plan.get("horizon") != "out_of_bounds" and lifecycle.get("stage", "active") == "active"
+
+
+def normalize_feature_limit(limit: int | None = DEFAULT_FEATURE_LIMIT) -> int:
+    if limit is None:
+        return DEFAULT_FEATURE_LIMIT
+    normalized = int(limit)
+    if normalized < 1:
+        raise ValueError("feature_limit must be at least 1")
+    return normalized
+
+
+def _iter_limited_in_bounds_features(
+    registry: dict[str, Any],
+    *,
+    scope_feature_ids: set[str] | None = None,
+    feature_limit: int | None = DEFAULT_FEATURE_LIMIT,
+) -> list[dict[str, Any]]:
+    limit = normalize_feature_limit(feature_limit)
+    selected: list[dict[str, Any]] = []
+    for feature in registry.get("features", []):
+        if not isinstance(feature, dict):
+            continue
+        if scope_feature_ids is not None and str(feature.get("id")) not in scope_feature_ids:
+            continue
+        if not _is_in_bounds(feature):
+            continue
+        selected.append(feature)
+        if len(selected) >= limit:
+            break
+    return selected
 
 
 def current_verified_tier(
@@ -118,6 +149,7 @@ def next_maturation_slice(
     active_path_roots: list[str] | None = None,
     blocked_transitions: list[dict[str, Any]] | None = None,
     scope_feature_ids: set[str] | None = None,
+    feature_limit: int | None = DEFAULT_FEATURE_LIMIT,
 ) -> dict[str, Any] | None:
     root = Path(repo_root) if repo_root is not None else None
     active_roots = active_path_roots or []
@@ -127,11 +159,7 @@ def next_maturation_slice(
         if item.get("status", "open") == "open"
     }
     candidates: list[dict[str, Any]] = []
-    for feature in registry.get("features", []):
-        if not isinstance(feature, dict) or not _is_in_bounds(feature):
-            continue
-        if scope_feature_ids is not None and str(feature.get("id")) not in scope_feature_ids:
-            continue
+    for feature in _iter_limited_in_bounds_features(registry, scope_feature_ids=scope_feature_ids, feature_limit=feature_limit):
         feature_target = _feature_target_tier(feature, target_tier)
         if CLAIM_TIER_RANK[feature_target] > CLAIM_TIER_RANK[target_tier]:
             feature_target = target_tier
@@ -270,18 +298,12 @@ def campaign_completion(
     repo_root: str | Path | None = None,
     active_lease_count: int = 0,
     scope_feature_ids: set[str] | None = None,
+    feature_limit: int | None = DEFAULT_FEATURE_LIMIT,
 ) -> dict[str, Any]:
     root = Path(repo_root) if repo_root is not None else None
     incomplete: list[dict[str, str]] = []
-    out_of_bounds: list[str] = []
-    for feature in registry.get("features", []):
-        if not isinstance(feature, dict):
-            continue
-        if scope_feature_ids is not None and str(feature.get("id")) not in scope_feature_ids:
-            continue
-        if not _is_in_bounds(feature):
-            out_of_bounds.append(str(feature.get("id")))
-            continue
+    limited_features = _iter_limited_in_bounds_features(registry, scope_feature_ids=scope_feature_ids, feature_limit=feature_limit)
+    for feature in limited_features:
         feature_target = _feature_target_tier(feature, target_tier)
         if CLAIM_TIER_RANK[feature_target] > CLAIM_TIER_RANK[target_tier]:
             feature_target = target_tier
@@ -291,7 +313,8 @@ def campaign_completion(
     return {
         "complete": not incomplete and active_lease_count == 0,
         "target_tier": target_tier,
+        "feature_limit": normalize_feature_limit(feature_limit),
+        "features_considered_count": len(limited_features),
         "incomplete": incomplete,
-        "out_of_bounds": sorted(out_of_bounds),
         "active_lease_count": active_lease_count,
     }

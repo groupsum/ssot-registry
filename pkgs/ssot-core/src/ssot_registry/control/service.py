@@ -17,7 +17,7 @@ from ssot_registry.control.models import (
 )
 from ssot_registry.control.scaffold import scaffold_target_claim_wiring
 from ssot_registry.guards.completion import evaluate_completion_guard
-from ssot_registry.maturation.selector import campaign_completion, next_maturation_slice, registry_content_hash, slice_actionability
+from ssot_registry.maturation.selector import DEFAULT_FEATURE_LIMIT, campaign_completion, next_maturation_slice, normalize_feature_limit, registry_content_hash, slice_actionability
 from ssot_registry.util.time import utc_now_iso
 
 from .sqlite_store import ControlStore
@@ -47,6 +47,88 @@ def _as_string_list(value: object) -> list[str]:
     if not isinstance(value, list):
         return []
     return [item for item in value if isinstance(item, str) and item.strip()]
+
+
+def _blocked_problem_detail(
+    *,
+    campaign_id: str,
+    target_tier: str,
+    blocked_transitions: list[dict[str, Any]],
+    blocked_in_call: list[dict[str, Any]],
+    scaffolded_in_call: list[dict[str, Any]],
+    auto_scaffold: bool,
+    feature_limit: int,
+) -> dict[str, Any]:
+    blockers = blocked_in_call or blocked_transitions
+    primary_reason = str(blockers[0].get("reason", "blocked_transitions_present")) if blockers else "blocked_transitions_present"
+    recommendations: list[dict[str, Any]] = []
+    blocker_details: list[dict[str, Any]] = []
+    for blocker in blocked_transitions:
+        feature_id = str(blocker.get("feature_id", ""))
+        to_tier = str(blocker.get("to_tier", target_tier))
+        blocked_id = str(blocker.get("blocked_id", ""))
+        failures = _as_string_list(blocker.get("failures"))
+        blocker_details.append(
+            {
+                "blocked_id": blocked_id,
+                "feature_id": feature_id,
+                "from_tier": blocker.get("from_tier"),
+                "to_tier": to_tier,
+                "reason": blocker.get("reason"),
+                "failures": failures,
+            }
+        )
+        recommendations.append(
+            {
+                "action": "repair_blocked_transition",
+                "why": "Ask ssot-mcp to create or repair the missing target-tier claim/test/evidence wiring for this queued blocker.",
+                "tool": "repair_blocked_transition",
+                "args": {"blocked_id": blocked_id},
+                "after_success": "Call claim_next_maturation_slice again for the same campaign.",
+            }
+        )
+        recommendations.append(
+            {
+                "action": "scaffold_target_claim_wiring",
+                "why": "Use this direct repair path when the blocker is missing target-tier claim wiring for a known feature.",
+                "tool": "scaffold_target_claim_wiring",
+                "args": {"feature_id": feature_id, "target_tier": to_tier},
+                "after_success": "Call claim_next_maturation_slice again for the same campaign.",
+            }
+        )
+    if not auto_scaffold:
+        recommendations.append(
+            {
+                "action": "retry_with_auto_scaffold",
+                "why": "Auto-scaffolding was disabled for this claim attempt.",
+                "tool": "claim_next_maturation_slice",
+                "args": {"campaign_id": campaign_id, "target_tier": target_tier, "auto_scaffold": True, "feature_limit": feature_limit},
+            }
+        )
+    if feature_limit <= DEFAULT_FEATURE_LIMIT:
+        recommendations.append(
+            {
+                "action": "raise_feature_limit_if_scope_is_too_narrow",
+                "why": "The campaign considered only the configured in-bounds feature limit. Raise it only when a broader unscoped campaign is intentional.",
+                "tool": "claim_next_maturation_slice",
+                "args": {"campaign_id": campaign_id, "target_tier": target_tier, "feature_limit": feature_limit + DEFAULT_FEATURE_LIMIT},
+            }
+        )
+    return {
+        "type": "ssot.maturation.blocked",
+        "title": "No actionable maturation slice is currently available.",
+        "reason": primary_reason,
+        "detail": "One or more candidate feature tier transitions are blocked before a worker lease can be granted. The worker should repair the SSOT-side blocker through ssot-mcp and then pull again; pushed events must not be treated as work assignments.",
+        "campaign_id": campaign_id,
+        "target_tier": target_tier,
+        "feature_limit": feature_limit,
+        "auto_scaffold": auto_scaffold,
+        "blocked_count": len(blocked_transitions),
+        "blocked_in_call_count": len(blocked_in_call),
+        "scaffold_attempt_count": len(scaffolded_in_call),
+        "blockers": blocker_details,
+        "recommendations": recommendations,
+    }
 
 
 class ControlPlane:
@@ -123,16 +205,19 @@ class ControlPlane:
         profile_ids: list[str] | None = None,
         boundary_ids: list[str] | None = None,
         max_blockers_per_claim: int = 5,
-        auto_scaffold: bool = False,
+        auto_scaffold: bool = True,
+        feature_limit: int | None = DEFAULT_FEATURE_LIMIT,
     ) -> dict[str, Any]:
         registry = self._registry()
         self.store.register_worker(worker_id, os_user=os_user)
+        normalized_feature_limit = normalize_feature_limit(feature_limit)
         metadata = {
             key: value
             for key, value in {
                 "feature_ids": feature_ids,
                 "profile_ids": profile_ids,
                 "boundary_ids": boundary_ids,
+                "feature_limit": normalized_feature_limit,
             }.items()
             if value is not None
         }
@@ -157,6 +242,7 @@ class ControlPlane:
                 active_path_roots=active_roots,
                 blocked_transitions=blocked,
                 scope_feature_ids=scope_feature_ids,
+                feature_limit=normalized_feature_limit,
             )
             if selected is None:
                 break
@@ -205,13 +291,25 @@ class ControlPlane:
             repo_root=self.repo_root,
             active_lease_count=status["active_lease_count"],
             scope_feature_ids=scope_feature_ids,
+            feature_limit=normalized_feature_limit,
         )
         if selected is None:
             open_blocked = self.store.get_blocked_transitions(campaign_id)
             if open_blocked:
+                problem_detail = _blocked_problem_detail(
+                    campaign_id=campaign_id,
+                    target_tier=target_tier,
+                    blocked_transitions=open_blocked,
+                    blocked_in_call=blocked_in_call,
+                    scaffolded_in_call=scaffolded_in_call,
+                    auto_scaffold=auto_scaffold,
+                    feature_limit=normalized_feature_limit,
+                )
                 return {
                     "passed": False,
                     "kind": "blocked",
+                    "reason": problem_detail["reason"],
+                    "problem_detail": problem_detail,
                     "campaign": completion,
                     "blocked_transitions": open_blocked,
                     "blocked_in_call": blocked_in_call,
@@ -372,32 +470,38 @@ class ControlPlane:
             )
         return {"passed": True, "expired": expired}
 
-    def get_campaign_status(self, campaign_id: str, target_tier: str = "T2") -> dict[str, Any]:
+    def get_campaign_status(self, campaign_id: str, target_tier: str = "T2", feature_limit: int | None = None) -> dict[str, Any]:
         registry = self._registry()
         status = self.store.campaign_status(campaign_id)
         blockers = self.store.get_blocked_transitions(campaign_id)
         scope_feature_ids = self._resolve_scope_feature_ids(registry, campaign=status.get("campaign"))
+        campaign_metadata = status.get("campaign", {}).get("metadata") if isinstance(status.get("campaign"), dict) else {}
+        campaign_metadata = campaign_metadata if isinstance(campaign_metadata, dict) else {}
+        resolved_feature_limit = normalize_feature_limit(
+            feature_limit if feature_limit is not None else campaign_metadata.get("feature_limit", DEFAULT_FEATURE_LIMIT)
+        )
         completion = campaign_completion(
             registry,
             target_tier=target_tier,
             repo_root=self.repo_root,
             active_lease_count=status["active_lease_count"],
             scope_feature_ids=scope_feature_ids,
+            feature_limit=resolved_feature_limit,
         )
         summary = {
             "complete": completion["complete"],
             "target_tier": completion["target_tier"],
+            "feature_limit": completion["feature_limit"],
+            "features_considered_count": completion["features_considered_count"],
             "incomplete_count": len(completion["incomplete"]),
-            "out_of_bounds_count": len(completion["out_of_bounds"]),
             "active_lease_count": completion["active_lease_count"],
             "blocked_transition_count": len(blockers),
         }
-        incomplete_preview = completion["incomplete"][:25]
         return {
             "passed": True,
             **status,
             "summary": summary,
-            "completion": {**completion, "incomplete": incomplete_preview, "incomplete_truncated": len(completion["incomplete"]) > len(incomplete_preview)},
+            "completion": {**completion, "incomplete_truncated": False},
             "blocked_transitions": blockers,
         }
 

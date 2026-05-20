@@ -167,7 +167,7 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry boundary run-tests` | `--dry-run`, `--evidence-output`, `--id` |
 | `ssot-registry boundary update` | `--body`, `--body-file`, `--frozen`, `--id`, `--no-frozen`, `--status`, `--title` |
 | `ssot-registry campaign` | none |
-| `ssot-registry campaign status` | `--campaign-id`, `--target-tier` |
+| `ssot-registry campaign status` | `--campaign-id`, `--feature-limit`, `--target-tier` |
 | `ssot-registry claim` | none |
 | `ssot-registry claim create` | `--body`, `--body-file`, `--depends-on-claim-ids`, `--description`, `--evidence-ids`, `--feature-ids`, `--id`, `--kind`, `--origin`, `--status`, `--test-ids`, `--tier`, `--title` |
 | `ssot-registry claim delete` | `--id` |
@@ -317,7 +317,7 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry worker` | none |
 | `ssot-registry worker abandon` | `--fencing-token`, `--lease-id`, `--reason`, `--worker-id` |
 | `ssot-registry worker ack-events` | `--action`, `--event-ids`, `--worker-id` |
-| `ssot-registry worker claim-next` | `--campaign-id`, `--os-user`, `--target-tier`, `--ttl-seconds`, `--worker-id` |
+| `ssot-registry worker claim-next` | `--auto-scaffold`, `--boundary-ids`, `--campaign-id`, `--feature-ids`, `--feature-limit`, `--max-blockers-per-claim`, `--no-auto-scaffold`, `--os-user`, `--profile-ids`, `--target-tier`, `--ttl-seconds`, `--worker-id` |
 | `ssot-registry worker events` | `--after-event-id`, `--campaign-id`, `--limit`, `--worker-id` |
 | `ssot-registry worker register` | `--os-user`, `--worker-id` |
 | `ssot-registry worker renew` | `--fencing-token`, `--lease-id`, `--ttl-seconds`, `--worker-id` |

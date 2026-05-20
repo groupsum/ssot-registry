@@ -104,6 +104,7 @@
     "campaign": [],
     "campaign status": [
       "--campaign-id",
+      "--feature-limit",
       "--target-tier"
     ],
     "claim": [],
@@ -805,8 +806,15 @@
       "--worker-id"
     ],
     "worker claim-next": [
+      "--auto-scaffold",
+      "--boundary-ids",
       "--campaign-id",
+      "--feature-ids",
+      "--feature-limit",
+      "--max-blockers-per-claim",
+      "--no-auto-scaffold",
       "--os-user",
+      "--profile-ids",
       "--target-tier",
       "--ttl-seconds",
       "--worker-id"

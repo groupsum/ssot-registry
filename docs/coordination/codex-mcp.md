@@ -94,16 +94,24 @@ dedicated MCP tool.
   "target_tier": "T3",
   "feature_ids": ["feat:bucketwarden.brand.asset-registry"],
   "max_blockers_per_claim": 5,
-  "auto_scaffold": true
+  "feature_limit": 25
 }
 ```
 
 Scopes may be explicit `feature_ids`, `profile_ids`, or `boundary_ids`. The
 control plane stores the scope in campaign metadata so later claims and status
-checks use the same narrowed feature set.
+checks use the same narrowed feature set. If no scope is supplied, the control
+plane considers only the first 25 in-bounds active features by default. Operators
+may raise `feature_limit` explicitly for broader campaigns. Out-of-bounds
+features are filtered out of worker assignment and campaign status output.
 
 When missing target-tier claim wiring is found, the control plane records a
-blocked transition instead of recycling a bad lease. Workers can inspect those
-records with `get_blocked_transitions`, ask `ssot-mcp` to scaffold rows with
-`scaffold_target_claim_wiring`, or repair a queued blocker with
-`repair_blocked_transition`.
+blocked transition instead of recycling a bad lease. Auto-scaffolding is enabled
+by default, so `claim_next_maturation_slice` first attempts to create the missing
+target-tier claim/test/evidence wiring before returning a blocked result.
+When `kind == "blocked"`, the response includes `reason` and
+`problem_detail.recommendations`. Workers should follow those recommendations,
+typically by calling `repair_blocked_transition` for each reported `blocked_id`
+or `scaffold_target_claim_wiring` for the named feature/tier, then calling
+`claim_next_maturation_slice` again. Workers can also inspect blocked records
+with `get_blocked_transitions`.
