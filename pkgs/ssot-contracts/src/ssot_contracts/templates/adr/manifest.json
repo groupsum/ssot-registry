@@ -490,5 +490,143 @@
         "status": "accepted"
       }
     ]
+  },
+  {
+    "id": "adr:0628",
+    "number": 628,
+    "slug": "ssot-mcp-cli-surface-delegation",
+    "title": "SSOT MCP delegates the complete CLI surface safely",
+    "filename": "ADR-0628-ssot-mcp-cli-surface-delegation.yaml",
+    "target_path": ".ssot/adr/ADR-0628-ssot-mcp-cli-surface-delegation.yaml",
+    "sha256": "a3ca30d0bd5e9685d4cf6c07ace4ea1b83f0f3970cd67d32178e14e7b46243e7",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T16:21:19Z",
+        "note": "Created to govern safe SSOT CLI delegation through ssot-mcp.",
+        "status": "draft"
+      }
+    ]
+  },
+  {
+    "id": "adr:0629",
+    "number": 629,
+    "slug": "ssot-mcp-worker-repair-authority",
+    "title": "SSOT MCP workers may request registry repair authority",
+    "filename": "ADR-0629-ssot-mcp-worker-repair-authority.yaml",
+    "target_path": ".ssot/adr/ADR-0629-ssot-mcp-worker-repair-authority.yaml",
+    "sha256": "21edaa8a7a927f1de3792ff9f24cff4313c97fa26f98b869ce13e764590fd555",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T17:45:14Z",
+        "note": "Created to govern SSOT MCP worker repair and scoped maturation behavior.",
+        "status": "draft"
+      }
+    ]
+  },
+  {
+    "id": "adr:0630",
+    "number": 630,
+    "slug": "scoped-maturation-claims-and-blockers",
+    "title": "Scoped maturation claims ignore unrelated blockers",
+    "filename": "ADR-0630-scoped-maturation-claims-and-blockers.yaml",
+    "target_path": ".ssot/adr/ADR-0630-scoped-maturation-claims-and-blockers.yaml",
+    "sha256": "ac082de9184093c3d74987ca4b8577e9e9f559e6e4b25699ee9e2ce4d905be5f",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T17:45:15Z",
+        "note": "Created to govern SSOT MCP worker repair and scoped maturation behavior.",
+        "status": "draft"
+      }
+    ]
+  },
+  {
+    "id": "adr:0631",
+    "number": 631,
+    "slug": "mcp-mediated-upgrade-uses-current-runtime",
+    "title": "MCP mediated upgrade uses the current runtime",
+    "filename": "ADR-0631-mcp-mediated-upgrade-uses-current-runtime.yaml",
+    "target_path": ".ssot/adr/ADR-0631-mcp-mediated-upgrade-uses-current-runtime.yaml",
+    "sha256": "bbf48aec20dc35d89d79cb1011e9a62326c0c19aa0ff9429c6f82fcaf954aa0a",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T17:45:16Z",
+        "note": "Created to govern SSOT MCP worker repair and scoped maturation behavior.",
+        "status": "draft"
+      }
+    ]
+  },
+  {
+    "id": "adr:0632",
+    "number": 632,
+    "slug": "targeted-repair-with-baseline-validation-drift",
+    "title": "Targeted repair can proceed with unrelated baseline drift",
+    "filename": "ADR-0632-targeted-repair-with-baseline-validation-drift.yaml",
+    "target_path": ".ssot/adr/ADR-0632-targeted-repair-with-baseline-validation-drift.yaml",
+    "sha256": "1bdcd5b8632632610f518105ecac0300794bccb7b86c7be09a6c4e9916bde625",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T17:45:17Z",
+        "note": "Created to govern SSOT MCP worker repair and scoped maturation behavior.",
+        "status": "draft"
+      }
+    ]
+  },
+  {
+    "id": "adr:0633",
+    "number": 633,
+    "slug": "public-registry-save-validates-before-write",
+    "title": "Public registry save validates before write",
+    "filename": "ADR-0633-public-registry-save-validates-before-write.yaml",
+    "target_path": ".ssot/adr/ADR-0633-public-registry-save-validates-before-write.yaml",
+    "sha256": "7df0543232c6e0f3a076d7c8475153650acd4cbfa18fd9a53644e0e295834b6c",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": []
   }
 ]

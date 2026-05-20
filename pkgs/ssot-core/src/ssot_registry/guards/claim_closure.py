@@ -4,6 +4,45 @@ from ssot_registry.guards.feature_requirements import evaluate_required_feature_
 from ssot_registry.model.enums import CLAIM_STATUS_RANK, CLAIM_TIER_RANK
 
 
+def _dependency_closure_contains(
+    claim: dict[str, object],
+    target_claim_id: str,
+    index: dict[str, dict[str, dict[str, object]]],
+    *,
+    seen: set[str] | None = None,
+) -> bool:
+    seen = seen or set()
+    for dependency_id in claim.get("depends_on_claim_ids", []):
+        if dependency_id == target_claim_id:
+            return True
+        if dependency_id in seen or dependency_id not in index["claims"]:
+            continue
+        seen.add(str(dependency_id))
+        if _dependency_closure_contains(index["claims"][dependency_id], target_claim_id, index, seen=seen):
+            return True
+    return False
+
+
+def _has_target_tier_successor(
+    claim: dict[str, object],
+    feature: dict[str, object],
+    feature_target_tier: str,
+    index: dict[str, dict[str, dict[str, object]]],
+) -> bool:
+    claim_id = str(claim["id"])
+    for candidate_id in feature.get("claim_ids", []):
+        candidate = index["claims"].get(candidate_id)
+        if candidate is None or candidate.get("status") == "retired":
+            continue
+        if CLAIM_TIER_RANK[candidate["tier"]] < CLAIM_TIER_RANK[feature_target_tier]:
+            continue
+        if CLAIM_STATUS_RANK.get(candidate.get("status"), -999) < CLAIM_STATUS_RANK["evidenced"]:
+            continue
+        if _dependency_closure_contains(candidate, claim_id, index):
+            return True
+    return False
+
+
 def evaluate_claim_guard(
     claim: dict[str, object],
     index: dict[str, dict[str, dict[str, object]]],
@@ -64,9 +103,10 @@ def evaluate_claim_guard(
     for feature in linked_features:
         feature_target_tier = feature.get("plan", {}).get("target_claim_tier")
         if feature_target_tier is not None and CLAIM_TIER_RANK[claim["tier"]] < CLAIM_TIER_RANK[feature_target_tier]:
-            feature_target_failures.append(
-                f"Claim {claim['id']} tier {claim['tier']} is below feature target tier {feature_target_tier} on {feature['id']}"
-            )
+            if not _has_target_tier_successor(claim, feature, feature_target_tier, index):
+                feature_target_failures.append(
+                    f"Claim {claim['id']} tier {claim['tier']} is below feature target tier {feature_target_tier} on {feature['id']}"
+                )
         requirement_failures.extend(
             f"Claim {claim['id']} linked feature requirement failure: {failure}"
             for failure in evaluate_required_feature_failures(feature["id"], index)

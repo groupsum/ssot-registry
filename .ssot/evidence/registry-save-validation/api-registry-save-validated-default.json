@@ -1,0 +1,1 @@
+{"feature_id":"feat:api.registry-save-validated-default","test_command":"python -m pytest tests/unit/test_registry_file_lock.py -q","test_path":"tests/unit/test_registry_file_lock.py","tiers":["T0","T1","T2"]}

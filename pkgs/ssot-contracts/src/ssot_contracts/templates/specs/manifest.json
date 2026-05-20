@@ -650,5 +650,198 @@
     "adr_ids": [
       "adr:0627"
     ]
+  },
+  {
+    "id": "spc:0629",
+    "number": 629,
+    "slug": "ssot-mcp-cli-surface-contract",
+    "title": "SSOT MCP CLI surface contract",
+    "filename": "SPEC-0629-ssot-mcp-cli-surface-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0629-ssot-mcp-cli-surface-contract.yaml",
+    "sha256": "00d75a03c3b235d97e6a543bf3828ac8a0aa08d217fcdb3013e23490f99b4c66",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T16:21:38Z",
+        "note": "Created to define full SSOT CLI delegation through ssot-mcp.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0628"
+    ]
+  },
+  {
+    "id": "spc:0630",
+    "number": 630,
+    "slug": "ssot-mcp-registry-repair-authority",
+    "title": "SSOT MCP registry repair authority",
+    "filename": "SPEC-0630-ssot-mcp-registry-repair-authority.yaml",
+    "target_path": ".ssot/specs/SPEC-0630-ssot-mcp-registry-repair-authority.yaml",
+    "sha256": "f20e69acdda6e849cf6cbacee2f63ed4545187a9afa033906b3e5c2388b108b4",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T17:45:19Z",
+        "note": "Created to govern SSOT MCP scoped repair and worker maturation behavior.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0629"
+    ]
+  },
+  {
+    "id": "spc:0631",
+    "number": 631,
+    "slug": "scoped-maturation-blocker-contract",
+    "title": "Scoped maturation blocker contract",
+    "filename": "SPEC-0631-scoped-maturation-blocker-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0631-scoped-maturation-blocker-contract.yaml",
+    "sha256": "5f254419a626ec8bbb4c496400856e531e82a5042a1cf4a96e68f994714ccf91",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T17:45:20Z",
+        "note": "Created to govern SSOT MCP scoped repair and worker maturation behavior.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0630"
+    ]
+  },
+  {
+    "id": "spc:0632",
+    "number": 632,
+    "slug": "mcp-upgrade-delegation-contract",
+    "title": "MCP upgrade delegation contract",
+    "filename": "SPEC-0632-mcp-upgrade-delegation-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0632-mcp-upgrade-delegation-contract.yaml",
+    "sha256": "498421694a5810454488ff83615fee2eb0dbc219b30f36be60d2bee01cf8776b",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T17:45:21Z",
+        "note": "Created to govern SSOT MCP scoped repair and worker maturation behavior.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0631",
+      "adr:0628"
+    ]
+  },
+  {
+    "id": "spc:0633",
+    "number": 633,
+    "slug": "targeted-scaffold-repair-contract",
+    "title": "Targeted scaffold repair contract",
+    "filename": "SPEC-0633-targeted-scaffold-repair-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0633-targeted-scaffold-repair-contract.yaml",
+    "sha256": "82105e8e4ea6bb4be30a5d29db1d240b870213615c8b0b71b2cfecfd5367cbd9",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T17:45:22Z",
+        "note": "Created to govern SSOT MCP scoped repair and worker maturation behavior.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0632"
+    ]
+  },
+  {
+    "id": "spc:0634",
+    "number": 634,
+    "slug": "worker-actionability-and-repair-loop",
+    "title": "Worker actionability and repair loop",
+    "filename": "SPEC-0634-worker-actionability-and-repair-loop.yaml",
+    "target_path": ".ssot/specs/SPEC-0634-worker-actionability-and-repair-loop.yaml",
+    "sha256": "1fd5ad770004e8a736ca398c18f12e7b849880c76a05e93bb71659218a44e787",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-20T17:45:23Z",
+        "note": "Created to govern SSOT MCP scoped repair and worker maturation behavior.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0629",
+      "adr:0630",
+      "adr:0632"
+    ]
+  },
+  {
+    "id": "spc:0635",
+    "number": 635,
+    "slug": "registry-save-validation-contract",
+    "title": "Registry save validation contract",
+    "filename": "SPEC-0635-registry-save-validation-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0635-registry-save-validation-contract.yaml",
+    "sha256": "7eb90a861c39f042c4f85afc354d4bf91848ac080f9f303ccf38bd8697bcc3af",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.10",
+    "status": "accepted",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0633"
+    ]
   }
 ]

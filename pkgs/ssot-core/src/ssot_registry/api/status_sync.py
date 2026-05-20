@@ -234,22 +234,22 @@ def _sync_features_once(registry: dict[str, Any]) -> list[dict[str, object]]:
             required_features = [index["features"][required_id] for required_id in feature.get("requires", []) if required_id in index["features"]]
             required_tier = feature.get("plan", {}).get("target_claim_tier")
             tests_pass = bool(linked_tests) and all(test.get("status") == "passing" for test in linked_tests)
-            claims_pass = bool(active_claims) and all(_claim_satisfies_feature(claim, required_tier) for claim in active_claims)
+            claims_pass = bool(active_claims) and any(_claim_satisfies_feature(claim, required_tier) for claim in active_claims)
             requirements_pass = all(required.get("implementation_status") == "implemented" for required in required_features)
+            ceiling_failures = feature_claim_ceiling_failures(feature, index)
             only_planned_support = (
                 bool(linked_tests or linked_claims)
                 and all(test.get("status") == "planned" for test in linked_tests)
                 and all(CLAIM_STATUS_RANK.get(claim.get("status"), -999) <= CLAIM_STATUS_RANK["proposed"] for claim in active_claims)
             )
-            if tests_pass and claims_pass and requirements_pass:
+            if tests_pass and claims_pass and requirements_pass and not ceiling_failures:
                 status = "implemented"
-                reason = "feature has passing tests, all active required claims satisfy implementation, and implemented requirements"
+                reason = "feature has passing tests, an active required claim satisfies implementation, and implemented requirements"
             elif only_planned_support:
                 status = "absent"
                 reason = "feature has only planned verification support"
             elif linked_tests or linked_claims or required_features:
                 status = "partial"
-                ceiling_failures = feature_claim_ceiling_failures(feature, index)
                 reason = "; ".join(ceiling_failures) if ceiling_failures else "feature has linked support but does not yet satisfy implementation criteria"
             else:
                 status = "absent"

@@ -46,23 +46,29 @@ def evaluate_feature_passing(
 
     checked_claim_ids: list[str] = []
     satisfying_claim_ids: list[str] = []
+    failed_claim_ids: list[str] = []
     active_claims = active_required_feature_claims(feature, index)
     for claim in active_claims:
         claim_id = str(claim["id"])
         checked_claim_ids.append(claim_id)
         guard = evaluate_claim_guard(claim, index, guard_policies)
         if not guard.get("passed"):
+            failed_claim_ids.append(claim_id)
             continue
         if claim.get("tier") != "T0" and (required_tier is None or CLAIM_TIER_RANK[claim["tier"]] >= CLAIM_TIER_RANK[required_tier]):
             satisfying_claim_ids.append(claim_id)
 
-    checks["claim_target_met"] = bool(active_claims) and len(satisfying_claim_ids) == len(active_claims)
+    checks["claim_target_met"] = bool(satisfying_claim_ids) and not failed_claim_ids
     if not checks["claim_target_met"]:
         if required_tier is None:
             failures.append(f"Feature {feature_id} has no effective required claim tier")
         else:
-            failures.append(f"Feature {feature_id} does not have all active required claims satisfying tier {required_tier}")
-        failures.extend(failure.removeprefix(f"features.{feature_id} ") for failure in feature_claim_ceiling_failures(feature, index))
+            failures.append(f"Feature {feature_id} does not have an active evidenced claim satisfying tier {required_tier}")
+        failures.extend(f"Claim {claim_id} does not pass claim guard" for claim_id in failed_claim_ids)
+        failures.extend(
+            failure.removeprefix(f"features.{feature_id} ")
+            for failure in feature_claim_ceiling_failures(feature, index, require_evidenced_status=False)
+        )
 
     return {
         "feature_id": feature_id,

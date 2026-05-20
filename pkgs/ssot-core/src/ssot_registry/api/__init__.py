@@ -62,7 +62,7 @@ from .packs import inspect_pack, preflight_pack, sync_pack
 from .origin import sync_origin_assurance_rows
 from .registry import export_registry
 from .release import certify_release, promote_release, publish_release, revoke_release
-from .save import save_registry
+from .save import save_registry, save_registry_unchecked
 from .status_sync import sync_automated_statuses
 from .test_execution import run_boundary_tests, run_resolved_test_rows, run_spec_tests, run_tests
 from .upgrade import upgrade_registry
@@ -72,6 +72,7 @@ __all__ = [
     "initialize_repo",
     "load_registry",
     "save_registry",
+    "save_registry_unchecked",
     "validate_registry",
     "ensure_repo_config",
     "load_repo_config",

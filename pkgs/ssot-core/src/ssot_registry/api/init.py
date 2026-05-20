@@ -7,7 +7,7 @@ from ssot_registry.api.documents import sync_all_documents
 from ssot_registry.model.registry import build_minimal_registry, default_paths
 from ssot_registry.util.errors import RegistryError
 from .config import ensure_repo_config
-from .save import save_registry
+from .save import save_registry_unchecked
 from .validate import validate_registry
 
 
@@ -37,7 +37,7 @@ def initialize_repo(
         (repo_root / relative_path).mkdir(parents=True, exist_ok=True)
 
     registry = build_minimal_registry(repo_id, repo_name, version)
-    save_registry(registry_path, registry)
+    save_registry_unchecked(registry_path, registry)
 
     _copy_schema_tree(repo_root / paths["schema_root"])
     config_result = ensure_repo_config(repo_root)

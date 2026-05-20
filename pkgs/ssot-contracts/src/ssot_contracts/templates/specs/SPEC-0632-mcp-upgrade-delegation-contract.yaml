@@ -1,0 +1,25 @@
+schema_version: "0.7.0"
+kind: "spec"
+id: "spc:0632"
+number: 632
+slug: "mcp-upgrade-delegation-contract"
+title: "MCP upgrade delegation contract"
+status: "draft"
+origin: "ssot-origin"
+decision_date: null
+tags: []
+summary: "This specification defines MCP upgrade delegation. When run_ssot_cli delegates upgrade, ssot-mcp SHALL use the currently running binary and installed runtime. It SHALL ignore target-version values supplied to MCP upgrade calls, SHALL add sync-docs when absent, SHALL return normalized_args and warnings, and SHALL NOT attempt package installation or PyPI resolution."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Created to govern SSOT MCP scoped repair and worker maturation behavior."
+    at: "2026-05-20T17:45:21Z"
+references: []
+body: |-
+  This specification defines MCP upgrade delegation. When run_ssot_cli delegates upgrade, ssot-mcp SHALL use the currently running binary and installed runtime. It SHALL ignore target-version values supplied to MCP upgrade calls, SHALL add sync-docs when absent, SHALL return normalized_args and warnings, and SHALL NOT attempt package installation or PyPI resolution.
+spec_kind: "operational"
+adr_ids:
+  - "adr:0631"
+  - "adr:0628"

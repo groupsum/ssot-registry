@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from ssot_registry.api.load import load_registry
-from ssot_registry.api.save import save_registry
+from ssot_registry.api.save import save_registry_unchecked
 from ssot_registry.api.validate import validate_registry_document
 from ssot_registry.maturation.selector import build_registry_index
 from ssot_registry.util.jsonio import stable_json_dumps
@@ -148,7 +148,7 @@ def scaffold_target_claim_wiring(repo_root: str | Path, feature_id: str, target_
             "new_validation_failures": new_failures,
         }
 
-    save_registry(registry_path, working)
+    save_registry_unchecked(registry_path, working)
     return {
         "passed": True,
         "validation_clean": bool(report.get("passed")),

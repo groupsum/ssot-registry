@@ -5,8 +5,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from ssot_registry.api.save import save_registry
-from ssot_registry.util.errors import RegistryLockError
+from ssot_registry.api.save import save_registry, save_registry_unchecked
+from ssot_registry.util.errors import RegistryLockError, ValidationError
 from ssot_registry.util.jsonio import load_json, stable_json_dumps
 from ssot_registry.util.registry_lock import RegistryFileLock, registry_lock_path, save_registry_json_locked
 from tests.helpers import PROJECT_ROOT, temp_repo_from_fixture, workspace_tempdir
@@ -58,6 +58,30 @@ class RegistryFileLockTests(unittest.TestCase):
 
         self.assertFalse(lock_path.exists())
 
+    def test_save_registry_rejects_invalid_registry_before_write(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+        registry_path = repo / ".ssot" / "registry.json"
+        original = load_json(registry_path)
+        invalid = dict(original)
+        invalid.pop("repo")
+
+        with self.assertRaisesRegex(ValidationError, "Registry validation failed before saving registry"):
+            save_registry(registry_path, invalid)
+
+        self.assertEqual(load_json(registry_path), original)
+
+    def test_save_registry_unchecked_is_explicit_lock_only_escape_hatch(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            registry_path = Path(temp_dir) / ".ssot" / "registry.json"
+            registry_path.parent.mkdir(parents=True)
+            invalid = {"schema_version": "0.7.0"}
+
+            save_registry_unchecked(registry_path, invalid)
+
+            self.assertEqual(load_json(registry_path), invalid)
+
     def test_lock_release_refuses_non_owner_token(self) -> None:
         with workspace_tempdir() as temp_dir:
             registry_path = Path(temp_dir) / ".ssot" / "registry.json"
@@ -94,6 +118,23 @@ class RegistryFileLockTests(unittest.TestCase):
             for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
                 if "save_json(registry_path" in line or ("registry_path.write_text(" in line):
                     offenders.append(f"{path.relative_to(PROJECT_ROOT).as_posix()}:{line_number}")
+
+        self.assertEqual(offenders, [])
+
+    def test_unchecked_registry_writes_are_limited_to_documented_callers(self) -> None:
+        production_root = PROJECT_ROOT / "pkgs" / "ssot-core" / "src" / "ssot_registry"
+        allowed = {
+            "api/__init__.py",
+            "api/init.py",
+            "api/save.py",
+            "control/scaffold.py",
+        }
+        offenders: list[str] = []
+        for path in production_root.rglob("*.py"):
+            relative = path.relative_to(production_root).as_posix()
+            for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+                if "save_registry_unchecked" in line and relative not in allowed:
+                    offenders.append(f"{relative}:{line_number}")
 
         self.assertEqual(offenders, [])
 

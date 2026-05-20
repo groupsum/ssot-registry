@@ -110,9 +110,9 @@ class AssuranceOriginModelTests(unittest.TestCase):
         (repo_root / "tests" / "test_local_behavior.py").write_text("def test_local_behavior():\n    assert True\n", encoding="utf-8")
         (ssot_root / "evidence").mkdir()
         (ssot_root / "evidence" / "local-behavior.json").write_text("{}", encoding="utf-8")
-        from ssot_registry.api.save import save_registry
+        from ssot_registry.api.save import save_registry_unchecked
 
-        save_registry(target_path, target)
+        save_registry_unchecked(target_path, target)
 
         source = deepcopy(target)
         source["features"][0]["id"] = "feat:origin.shared"
