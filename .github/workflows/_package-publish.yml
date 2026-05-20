@@ -131,8 +131,38 @@ jobs:
           fi
           gh release create "${ARGS[@]}"
 
-      - name: Publish package distributions to PyPI
+      - name: Check PyPI version availability
+        id: pypi_version
         if: ${{ inputs.publish_to_pypi }}
+        env:
+          PACKAGE_NAME: ${{ inputs.package_name }}
+          VERSION: ${{ steps.release_meta.outputs.version }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          package_name = os.environ["PACKAGE_NAME"]
+          version = os.environ["VERSION"]
+          exists = False
+          url = f"https://pypi.org/pypi/{package_name}/json"
+          try:
+              with urllib.request.urlopen(url, timeout=30) as response:
+                  payload = json.load(response)
+              exists = bool(payload.get("releases", {}).get(version))
+          except urllib.error.HTTPError as exc:
+              if exc.code != 404:
+                  raise
+
+          print(f"PyPI version exists for {package_name} {version}: {str(exists).lower()}")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"exists={str(exists).lower()}\n")
+          PY
+
+      - name: Publish package distributions to PyPI
+        if: ${{ inputs.publish_to_pypi && steps.pypi_version.outputs.exists != 'true' }}
         env:
           PROJECT_PATH: ${{ inputs.project_path }}
         run: uv publish --trusted-publishing always --check-url https://pypi.org/simple/ "$PROJECT_PATH"/dist/*

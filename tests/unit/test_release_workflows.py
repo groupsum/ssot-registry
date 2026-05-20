@@ -126,6 +126,8 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("actions/download-artifact@v6", workflow)
         self.assertIn("release-distributions", workflow)
         self.assertIn("gh release create", workflow)
+        self.assertIn("https://pypi.org/pypi/{package_name}/json", workflow)
+        self.assertIn("steps.pypi_version.outputs.exists != 'true'", workflow)
         self.assertIn("uv publish --trusted-publishing always --check-url https://pypi.org/simple/ release-dist/$PACKAGE_NAME/*.whl release-dist/$PACKAGE_NAME/*.tar.gz", workflow)
         self.assertNotIn("PYPI_API_TOKEN", workflow)
         self.assertNotIn("trusted-publishing never", workflow)
