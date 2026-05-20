@@ -480,8 +480,54 @@ jobs:
           python - <<'PY'
           import json
           import os
+          import re
           import urllib.error
           import urllib.request
+          from html.parser import HTMLParser
+          from urllib.parse import unquote, urlparse
+
+
+          class LinkParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.hrefs = []
+
+              def handle_starttag(self, tag, attrs):
+                  if tag != "a":
+                      return
+                  for name, value in attrs:
+                      if name == "href" and value:
+                          self.hrefs.append(value)
+
+
+          def normalized_project_name(name):
+              return re.sub(r"[-_.]+", "-", name).lower()
+
+
+          def distribution_prefix(name):
+              return re.sub(r"[-_.]+", "_", name).lower()
+
+
+          def simple_index_has_version(package_name, version):
+              project = normalized_project_name(package_name)
+              prefix = f"{distribution_prefix(package_name)}-{version}".lower()
+              url = f"https://pypi.org/simple/{project}/"
+              try:
+                  with urllib.request.urlopen(url, timeout=30) as response:
+                      html = response.read().decode("utf-8", errors="replace")
+              except urllib.error.HTTPError as exc:
+                  if exc.code == 404:
+                      return False
+                  raise
+
+              parser = LinkParser()
+              parser.feed(html)
+              for href in parser.hrefs:
+                  path = urlparse(href).path
+                  filename = unquote(path.rsplit("/", 1)[-1]).lower()
+                  if filename.startswith(prefix):
+                      return True
+              return False
 
           package_name = "ssot-mcp"
           version = os.environ["VERSION"]
@@ -494,6 +540,8 @@ jobs:
           except urllib.error.HTTPError as exc:
               if exc.code != 404:
                   raise
+          if not exists:
+              exists = simple_index_has_version(package_name, version)
 
           print(f"PyPI version exists for {package_name} {version}: {str(exists).lower()}")
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
