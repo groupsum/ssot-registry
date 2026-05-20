@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from ssot_mcp.server import main
+from ssot_mcp.server import build_server, main
 
 
 def test_server_requires_repo_or_explicit_repo_mode(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -32,3 +32,7 @@ def test_server_accepts_explicit_repo_mode(monkeypatch: pytest.MonkeyPatch) -> N
 
     assert main(["--transport", "stdio", "--repo-mode", "explicit"]) == 0
     assert server.transport == "stdio"
+
+
+def test_server_build_registers_mcp_resources() -> None:
+    assert build_server() is not None
