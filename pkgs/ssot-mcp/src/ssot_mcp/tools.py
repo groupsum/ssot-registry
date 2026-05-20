@@ -10,6 +10,7 @@ from threading import RLock
 from typing import Any
 
 from ssot_cli.main import build_parser, main as ssot_cli_main
+from ssot_registry.version import __version__ as SSOT_CORE_VERSION
 from ssot_registry.api.entity_ops import (
     SECTIONS,
     create_entity,
@@ -148,6 +149,43 @@ def _resolve_repo_for_cli(repo: str | None, args: list[str]) -> Path:
     if _is_cli_metadata_request(args):
         return Path.cwd()
     return resolve_repo(repo)
+
+
+def _normalize_mcp_cli_args(args: list[str]) -> tuple[list[str], list[str]]:
+    """Normalize delegated CLI calls that are unsafe or ambiguous for MCP workers."""
+
+    if _cli_root_command(args) != "upgrade":
+        return list(args), []
+
+    normalized: list[str] = []
+    warnings: list[str] = []
+    skip_next = False
+    saw_sync_docs = False
+    for token in args:
+        if skip_next:
+            skip_next = False
+            warnings.append(
+                "MCP upgrade ignores --target-version and uses the currently running ssot-mcp binary/runtime instead."
+            )
+            continue
+        if token == "--target-version":
+            skip_next = True
+            continue
+        if token.startswith("--target-version="):
+            warnings.append(
+                "MCP upgrade ignores --target-version and uses the currently running ssot-mcp binary/runtime instead."
+            )
+            continue
+        if token == "--sync-docs":
+            saw_sync_docs = True
+        normalized.append(token)
+
+    if not saw_sync_docs:
+        normalized.append("--sync-docs")
+        warnings.append("MCP upgrade added --sync-docs so packaged ADR/SPEC documents are refreshed with the current runtime.")
+
+    warnings.append(f"MCP upgrade is running with installed ssot-core version {SSOT_CORE_VERSION}.")
+    return normalized, warnings
 
 
 @contextlib.contextmanager
@@ -345,8 +383,9 @@ def run_ssot_cli(repo: str | None = None, args: list[str] | None = None) -> dict
     """
 
     original_args = list(args or [])
-    repo_root = _resolve_repo_for_cli(repo, original_args)
-    argv = list(original_args)
+    normalized_args, normalization_warnings = _normalize_mcp_cli_args(original_args)
+    repo_root = _resolve_repo_for_cli(repo, normalized_args)
+    argv = list(normalized_args)
     metadata_request = _is_cli_metadata_request(argv)
     if "--output-format" not in argv and not metadata_request:
         argv = ["--output-format", "json", *argv]
@@ -384,11 +423,13 @@ def run_ssot_cli(repo: str | None = None, args: list[str] | None = None) -> dict
     }
     command = _cli_root_command(original_args)
     if exit_code == 0 and command in mutating_roots:
-        _notify_registry_updated(repo_root, {"source": "ssot-mcp", "tool": "run_ssot_cli", "args": original_args})
+        _notify_registry_updated(repo_root, {"source": "ssot-mcp", "tool": "run_ssot_cli", "args": original_args, "normalized_args": normalized_args})
     return {
         "passed": exit_code == 0,
         "exit_code": exit_code,
         "args": original_args,
+        "normalized_args": normalized_args,
+        "warnings": normalization_warnings,
         "output": payload,
         "stdout": stdout_text,
         "stderr": stderr_text,

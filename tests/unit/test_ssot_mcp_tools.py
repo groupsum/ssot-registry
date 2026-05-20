@@ -245,6 +245,24 @@ def test_mcp_run_ssot_cli_handles_help_version_and_bad_args_without_closing_tran
     temp_dir.cleanup()
 
 
+def test_mcp_run_ssot_cli_upgrade_uses_current_runtime_and_syncs_docs() -> None:
+    configure_repo(None)
+    temp_dir = temp_repo_from_fixture("repo_valid")
+    repo = Path(temp_dir.name) / "repo"
+
+    result = run_ssot_cli(repo=str(repo), args=["upgrade", "--target-version", "0.7.0", "--write-report"])
+
+    assert result["passed"] is True
+    assert result["exit_code"] == 0
+    assert result["args"] == ["upgrade", "--target-version", "0.7.0", "--write-report"]
+    assert "--target-version" not in result["normalized_args"]
+    assert "0.7.0" not in result["normalized_args"]
+    assert "--sync-docs" in result["normalized_args"]
+    assert any("currently running ssot-mcp binary/runtime" in warning for warning in result["warnings"])
+    assert (repo / ".ssot" / "reports" / "upgrade.report.json").exists()
+    temp_dir.cleanup()
+
+
 def test_mcp_repair_queue_tools_scaffold_and_resolve(tmp_path: Path) -> None:
     configure_repo(None)
     _write_registry(tmp_path, _registry_missing_target_claim(tmp_path))
