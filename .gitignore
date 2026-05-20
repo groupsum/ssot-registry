@@ -8,6 +8,7 @@ build/
 *.egg-info/
 .pytest_cache/
 .ssot/cache/
+.ssot/control/
 .tmp_test_runs/
 /.ssot/tui-session
 .tmp/
