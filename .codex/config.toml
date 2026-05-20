@@ -1,0 +1,3 @@
+[mcp_servers.ssot]
+command = "E:\\swarmauri_github\\ssot-registry\\.venv\\Scripts\\ssot-mcp.exe"
+args = ["--transport", "stdio", "--repo", "E:\\swarmauri_github\\ssot-registry"]

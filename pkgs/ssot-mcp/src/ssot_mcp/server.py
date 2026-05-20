@@ -34,7 +34,19 @@ def build_server() -> Any:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run the optional SSOT pull-worker MCP server.")
     parser.add_argument("--transport", default="stdio", choices=["stdio", "sse"])
+    parser.add_argument("--repo", default=None, help="Pin this MCP server instance to one SSOT repository root.")
+    parser.add_argument(
+        "--repo-mode",
+        choices=["explicit"],
+        default=None,
+        help="Run as a global/dev server where every tool call must pass an explicit repo argument.",
+    )
     args = parser.parse_args(argv)
+    if args.repo is not None and args.repo_mode is not None:
+        parser.error("--repo and --repo-mode explicit are mutually exclusive")
+    if args.repo is None and args.repo_mode != "explicit":
+        parser.error("choose either --repo <path> for a pinned server or --repo-mode explicit for dev/testing")
+    tools.configure_repo(args.repo)
     server = build_server()
     server.run(transport=args.transport)
     return 0

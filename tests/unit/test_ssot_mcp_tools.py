@@ -8,6 +8,7 @@ from ssot_mcp.tools import (
     abandon_slice,
     ack_worker_events,
     claim_next_maturation_slice,
+    configure_repo,
     complete_slice,
     get_campaign_status,
     get_slice_context,
@@ -19,6 +20,7 @@ from .test_worker_control_plane import _registry, _write_registry
 
 
 def test_mcp_tools_delegate_to_control_plane(tmp_path: Path) -> None:
+    configure_repo(None)
     _write_registry(tmp_path, _registry(tmp_path, t1_ready=False, t2_ready=False))
 
     response = claim_next_maturation_slice(
@@ -37,6 +39,7 @@ def test_mcp_tools_delegate_to_control_plane(tmp_path: Path) -> None:
 
 
 def test_mcp_tools_happy_context_renew_and_abandon(tmp_path: Path) -> None:
+    configure_repo(None)
     _write_registry(tmp_path, _registry(tmp_path, t1_ready=False, t2_ready=False))
     response = claim_next_maturation_slice(repo=str(tmp_path), worker_id="worker-01", campaign_id="camp:test")
     lease = response["lease"]
@@ -61,6 +64,7 @@ def test_mcp_tools_happy_context_renew_and_abandon(tmp_path: Path) -> None:
 
 
 def test_mcp_tools_surface_bad_sequences(tmp_path: Path) -> None:
+    configure_repo(None)
     _write_registry(tmp_path, _registry(tmp_path, t1_ready=False, t2_ready=False))
     response = claim_next_maturation_slice(repo=str(tmp_path), worker_id="worker-01", campaign_id="camp:test")
     lease = response["lease"]
@@ -85,3 +89,28 @@ def test_mcp_tools_surface_bad_sequences(tmp_path: Path) -> None:
     assert failed["passed"] is False
     status = get_campaign_status(repo=str(tmp_path), campaign_id="camp:test")
     assert status["active_lease_count"] == 1
+
+
+def test_mcp_tools_can_use_pinned_repo_without_repo_argument(tmp_path: Path) -> None:
+    try:
+        _write_registry(tmp_path, _registry(tmp_path, t1_ready=False, t2_ready=False))
+        configure_repo(tmp_path)
+
+        response = claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test")
+
+        assert response["kind"] == "lease_granted"
+        events = get_worker_events(worker_id="worker-01", campaign_id="camp:test")
+        assert any(event["kind"] == "maturation_lease_acquired" for event in events["events"])
+    finally:
+        configure_repo(None)
+
+
+def test_mcp_tools_reject_repo_outside_pinned_root(tmp_path: Path) -> None:
+    other = tmp_path / "other"
+    other.mkdir()
+    try:
+        configure_repo(tmp_path)
+        with pytest.raises(ValueError, match="pinned"):
+            get_campaign_status(repo=str(other), campaign_id="camp:test")
+    finally:
+        configure_repo(None)
