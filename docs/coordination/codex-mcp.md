@@ -60,3 +60,50 @@ In explicit mode, calls without `repo` fail. This is useful for development tool
 - Use `/mcp` in the Codex TUI to inspect active MCP servers when running in CLI/TUI mode.
 - Keep work assignment pull-only: workers obtain slices through `claim_next_maturation_slice`; notifications may wake, pause, refresh, or stop workers but must not assign slices.
 - Keep registry ownership clear: `ssot-mcp` writes `.ssot/registry.json`; workers write implementation, test, and evidence paths only through their active leases.
+
+## Registry CRUD through MCP
+
+Workers do not edit `.ssot/registry.json` directly. If a slice needs registry
+scaffolding or repair, the worker should call `ssot-mcp` registry tools:
+
+- `get_blocked_transitions`
+- `scaffold_target_claim_wiring`
+- `repair_blocked_transition`
+- `registry_entity_get`
+- `registry_entity_list`
+- `registry_entity_search`
+- `registry_entity_upsert`
+- `registry_entity_delete`
+- `registry_entity_link`
+- `registry_entity_unlink`
+- `run_ssot_cli`
+
+Use the structured tools for normal feature, claim, test, evidence, issue,
+risk, boundary, profile, and release CRUD. Use `run_ssot_cli` when a registry
+operation is already available as a CLI command but does not yet have a
+dedicated MCP tool.
+
+## Campaign Scope And Repair
+
+`claim_next_maturation_slice` supports scoped campaigns:
+
+```json
+{
+  "worker_id": "worker-01",
+  "campaign_id": "camp:bucketwarden-brand",
+  "target_tier": "T3",
+  "feature_ids": ["feat:bucketwarden.brand.asset-registry"],
+  "max_blockers_per_claim": 5,
+  "auto_scaffold": true
+}
+```
+
+Scopes may be explicit `feature_ids`, `profile_ids`, or `boundary_ids`. The
+control plane stores the scope in campaign metadata so later claims and status
+checks use the same narrowed feature set.
+
+When missing target-tier claim wiring is found, the control plane records a
+blocked transition instead of recycling a bad lease. Workers can inspect those
+records with `get_blocked_transitions`, ask `ssot-mcp` to scaffold rows with
+`scaffold_target_claim_wiring`, or repair a queued blocker with
+`repair_blocked_transition`.

@@ -152,6 +152,31 @@ def _registry(tmp_path: Path, *, t1_ready: bool = False, t2_ready: bool = False)
     }
 
 
+def _registry_missing_target_claim(tmp_path: Path) -> dict[str, object]:
+    registry = _registry(tmp_path, t1_ready=False, t2_ready=False)
+    feature = registry["features"][0]
+    assert isinstance(feature, dict)
+    feature["id"] = "feat:control.missing-wiring"
+    feature["claim_ids"] = ["clm:control.worker.t2"]
+    feature["lease_roots"] = [".ssot/evidence/control/missing-wiring"]
+    feature["test_ids"] = ["tst:control.worker"]
+    registry["claims"] = [registry["claims"][2]]
+    registry["claims"][0]["feature_ids"] = [feature["id"]]
+    registry["claims"][0]["test_ids"] = ["tst:control.worker"]
+    registry["claims"][0]["evidence_ids"] = ["evd:control.worker.t2"]
+    registry["claims"][0]["depends_on_claim_ids"] = []
+    registry["tests"][0]["feature_ids"] = [feature["id"]]
+    registry["tests"][0]["claim_ids"] = ["clm:control.worker.t2"]
+    registry["tests"][0]["evidence_ids"] = ["evd:control.worker.t2"]
+    registry["evidence"] = [registry["evidence"][1]]
+    registry["evidence"][0]["claim_ids"] = ["clm:control.worker.t2"]
+    registry["evidence"][0]["test_ids"] = ["tst:control.worker"]
+    registry["evidence"][0].pop("source_evidence_ids", None)
+    registry["boundaries"] = [{"id": "bnd:test", "title": "Test boundary", "status": "draft", "frozen": False, "feature_ids": [], "profile_ids": []}]
+    registry["releases"] = [{"id": "rel:test", "version": "0.1.0", "status": "draft", "boundary_id": "bnd:test", "boundary_ids": ["bnd:test"], "claim_ids": [], "evidence_ids": []}]
+    return registry
+
+
 def test_path_roots_reject_forbidden_and_detect_overlap() -> None:
     assert ensure_allowed_path("src/a/**") == "src/a"
     assert path_overlaps("src/a", "src/a/file.py")
@@ -265,6 +290,137 @@ def test_control_plane_claim_renew_and_abandon_slice(tmp_path: Path) -> None:
     acked = plane.ack_worker_events(worker_id="worker-01", event_ids=[event["event_id"] for event in events], action="tested")
     assert acked["passed"] is True
     assert plane.get_worker_events(worker_id="worker-01", after_event_id=events[-1]["event_id"])["events"] == []
+
+
+def test_structural_abandon_records_blocked_transition(tmp_path: Path) -> None:
+    _write_registry(tmp_path, _registry(tmp_path, t1_ready=False, t2_ready=False))
+    plane = ControlPlane(tmp_path)
+    response = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test")
+    lease = response["lease"]
+
+    plane.abandon_slice(
+        worker_id="worker-01",
+        lease_id=lease["lease_id"],
+        fencing_token=lease["fencing_token"],
+        reason="missing target-tier claim wiring and lease forbids registry edits",
+    )
+
+    blocked = plane.store.get_blocked_transitions("camp:test")
+    assert len(blocked) == 1
+    assert blocked[0]["feature_id"] == "feat:control.worker"
+    assert blocked[0]["reason"] == "worker_reported_structural_blocker"
+    retry = plane.claim_next_maturation_slice(worker_id="worker-02", campaign_id="camp:test")
+    assert retry["kind"] == "blocked"
+
+
+def test_control_plane_blocks_non_actionable_missing_target_claim_without_lease(tmp_path: Path) -> None:
+    _write_registry(tmp_path, _registry_missing_target_claim(tmp_path))
+    plane = ControlPlane(tmp_path)
+
+    response = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T3")
+
+    assert response["passed"] is False
+    assert response["kind"] == "blocked"
+    assert response["blocked_transitions"][0]["feature_id"] == "feat:control.missing-wiring"
+    assert response["blocked_transitions"][0]["from_tier"] == "T0"
+    assert response["blocked_transitions"][0]["to_tier"] == "T1"
+    assert "no linked T1 claim found" in response["blocked_transitions"][0]["failures"][0]
+    assert plane.store.list_leases() == []
+    events = plane.get_worker_events(worker_id="worker-01")["events"]
+    assert events[-1]["kind"] == "maturation_transition_blocked"
+
+
+def test_control_plane_skips_open_blocked_transition_on_retry(tmp_path: Path) -> None:
+    registry = _registry_missing_target_claim(tmp_path)
+    second = _registry(tmp_path, t1_ready=False, t2_ready=False)["features"][0]
+    assert isinstance(second, dict)
+    second["id"] = "feat:control.worker-b"
+    second["claim_ids"] = ["clm:control.worker.t0", "clm:control.worker.t1", "clm:control.worker.t2"]
+    second["lease_roots"] = ["tests/control", ".ssot/evidence/control/worker"]
+    registry["features"].append(second)
+    _write_registry(tmp_path, registry)
+    plane = ControlPlane(tmp_path)
+
+    response = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T2")
+
+    assert response["kind"] == "blocked"
+    blocked = plane.store.get_blocked_transitions("camp:test")
+    assert len(blocked) >= 1
+    assert blocked[0]["feature_id"] == "feat:control.missing-wiring"
+
+
+def test_control_plane_scopes_campaign_to_feature_ids(tmp_path: Path) -> None:
+    registry = _registry(tmp_path, t1_ready=False, t2_ready=False)
+    second = _registry(tmp_path, t1_ready=False, t2_ready=False)["features"][0]
+    assert isinstance(second, dict)
+    second["id"] = "feat:control.worker-b"
+    second["claim_ids"] = ["clm:control.worker.t0", "clm:control.worker.t1", "clm:control.worker.t2"]
+    second["lease_roots"] = ["tests/control", ".ssot/evidence/control/worker"]
+    registry["features"].append(second)
+    _write_registry(tmp_path, registry)
+    plane = ControlPlane(tmp_path)
+
+    response = plane.claim_next_maturation_slice(
+        worker_id="worker-01",
+        campaign_id="camp:scoped",
+        target_tier="T2",
+        feature_ids=["feat:control.worker-b"],
+    )
+
+    assert response["kind"] == "lease_granted"
+    assert response["lease"]["feature_id"] == "feat:control.worker-b"
+    status = plane.get_campaign_status("camp:scoped", target_tier="T2")
+    assert status["summary"]["incomplete_count"] == 1
+
+
+def test_control_plane_caps_blocker_discovery_per_claim(tmp_path: Path) -> None:
+    registry = _registry_missing_target_claim(tmp_path)
+    second = _registry_missing_target_claim(tmp_path)["features"][0]
+    assert isinstance(second, dict)
+    second["id"] = "feat:control.missing-wiring-b"
+    second["claim_ids"] = ["clm:control.worker.t2"]
+    second["lease_roots"] = [".ssot/evidence/control/missing-wiring-b"]
+    registry["features"].append(second)
+    _write_registry(tmp_path, registry)
+    plane = ControlPlane(tmp_path)
+
+    response = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T3", max_blockers_per_claim=1)
+
+    assert response["kind"] == "blocked"
+    assert len(response["blocked_in_call"]) == 1
+    assert len(plane.store.get_blocked_transitions("camp:test")) == 1
+
+
+def test_control_plane_auto_scaffolds_missing_target_claim_wiring(tmp_path: Path) -> None:
+    _write_registry(tmp_path, _registry_missing_target_claim(tmp_path))
+    plane = ControlPlane(tmp_path)
+
+    response = plane.claim_next_maturation_slice(
+        worker_id="worker-01",
+        campaign_id="camp:test",
+        target_tier="T2",
+        auto_scaffold=True,
+    )
+
+    assert response["kind"] == "lease_granted"
+    assert response["lease"]["feature_id"] == "feat:control.missing-wiring"
+    context = plane.get_slice_context(response["lease"]["lease_id"])
+    assert any(claim["tier"] == "T1" for claim in context["claims"])
+    assert (tmp_path / ".ssot" / "evidence" / "control.missing-wiring" / "t1.json").exists()
+
+
+def test_repair_blocked_transition_scaffolds_and_resolves(tmp_path: Path) -> None:
+    _write_registry(tmp_path, _registry_missing_target_claim(tmp_path))
+    plane = ControlPlane(tmp_path)
+    blocked = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T2")
+    blocked_id = blocked["blocked_transitions"][0]["blocked_id"]
+
+    repaired = plane.repair_blocked_transition(blocked_id=blocked_id)
+
+    assert repaired["passed"] is True
+    assert repaired["blocked_transition"]["status"] == "resolved"
+    retry = plane.claim_next_maturation_slice(worker_id="worker-02", campaign_id="camp:test", target_tier="T2")
+    assert retry["kind"] == "lease_granted"
 
 
 def test_control_plane_complete_slice_happy_path_records_gate_and_events(tmp_path: Path) -> None:

@@ -23,6 +23,11 @@ def register_worker(subparsers: argparse._SubParsersAction) -> None:
     claim.add_argument("--target-tier", default="T2", choices=["T0", "T1", "T2", "T3", "T4"])
     claim.add_argument("--os-user", default=None)
     claim.add_argument("--ttl-seconds", type=int, default=1800)
+    claim.add_argument("--feature-ids", nargs="*", default=None)
+    claim.add_argument("--profile-ids", nargs="*", default=None)
+    claim.add_argument("--boundary-ids", nargs="*", default=None)
+    claim.add_argument("--max-blockers-per-claim", type=int, default=5)
+    claim.add_argument("--auto-scaffold", action="store_true")
     claim.set_defaults(func=run_claim_next)
 
     renew = worker_sub.add_parser("renew", help="Renew an active lease.")
@@ -68,6 +73,11 @@ def run_claim_next(args: argparse.Namespace) -> dict[str, object]:
         target_tier=args.target_tier,
         os_user=args.os_user,
         ttl_seconds=args.ttl_seconds,
+        feature_ids=args.feature_ids,
+        profile_ids=args.profile_ids,
+        boundary_ids=args.boundary_ids,
+        max_blockers_per_claim=args.max_blockers_per_claim,
+        auto_scaffold=args.auto_scaffold,
     )
 
 

@@ -15,8 +15,9 @@ from ssot_registry.control.models import (
     STOP_CURRENT_WORK,
     WORK_MAY_BE_AVAILABLE,
 )
+from ssot_registry.control.scaffold import scaffold_target_claim_wiring
 from ssot_registry.guards.completion import evaluate_completion_guard
-from ssot_registry.maturation.selector import campaign_completion, next_maturation_slice, registry_content_hash
+from ssot_registry.maturation.selector import campaign_completion, next_maturation_slice, registry_content_hash, slice_actionability
 from ssot_registry.util.time import utc_now_iso
 
 from .sqlite_store import ControlStore
@@ -24,6 +25,28 @@ from .sqlite_store import ControlStore
 
 def _future_iso(seconds: int) -> str:
     return (datetime.now(timezone.utc).replace(microsecond=0) + timedelta(seconds=seconds)).isoformat().replace("+00:00", "Z")
+
+
+def _is_structural_block_reason(reason: str) -> bool:
+    normalized = reason.lower()
+    return any(
+        marker in normalized
+        for marker in (
+            "missing target-tier claim",
+            "missing target tier claim",
+            "no linked",
+            "lease forbids registry",
+            "registry edits",
+            "registry wiring",
+            "claim wiring",
+        )
+    )
+
+
+def _as_string_list(value: object) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, str) and item.strip()]
 
 
 class ControlPlane:
@@ -38,6 +61,51 @@ class ControlPlane:
         _registry_path, _repo_root, registry = load_registry(self.repo_root)
         return registry
 
+    def _resolve_scope_feature_ids(
+        self,
+        registry: dict[str, Any],
+        *,
+        feature_ids: list[str] | None = None,
+        profile_ids: list[str] | None = None,
+        boundary_ids: list[str] | None = None,
+        campaign: dict[str, Any] | None = None,
+    ) -> set[str] | None:
+        metadata = campaign.get("metadata") if isinstance(campaign, dict) else {}
+        metadata = metadata if isinstance(metadata, dict) else {}
+        requested_features = feature_ids if feature_ids is not None else _as_string_list(metadata.get("feature_ids"))
+        requested_profiles = profile_ids if profile_ids is not None else _as_string_list(metadata.get("profile_ids"))
+        requested_boundaries = boundary_ids if boundary_ids is not None else _as_string_list(metadata.get("boundary_ids"))
+        if not requested_features and not requested_profiles and not requested_boundaries:
+            return None
+
+        features = {row["id"]: row for row in registry.get("features", []) if isinstance(row, dict) and isinstance(row.get("id"), str)}
+        profiles = {row["id"]: row for row in registry.get("profiles", []) if isinstance(row, dict) and isinstance(row.get("id"), str)}
+        boundaries = {row["id"]: row for row in registry.get("boundaries", []) if isinstance(row, dict) and isinstance(row.get("id"), str)}
+        resolved: set[str] = {feature_id for feature_id in requested_features if feature_id in features}
+
+        def add_profile(profile_id: str, seen: set[str] | None = None) -> None:
+            seen = seen or set()
+            if profile_id in seen:
+                return
+            seen.add(profile_id)
+            profile = profiles.get(profile_id)
+            if not profile:
+                return
+            resolved.update(feature_id for feature_id in _as_string_list(profile.get("feature_ids")) if feature_id in features)
+            for child_profile_id in _as_string_list(profile.get("profile_ids")):
+                add_profile(child_profile_id, seen)
+
+        for profile_id in requested_profiles:
+            add_profile(profile_id)
+        for boundary_id in requested_boundaries:
+            boundary = boundaries.get(boundary_id)
+            if not boundary:
+                continue
+            resolved.update(feature_id for feature_id in _as_string_list(boundary.get("feature_ids")) if feature_id in features)
+            for profile_id in _as_string_list(boundary.get("profile_ids")):
+                add_profile(profile_id)
+        return resolved
+
     def register_worker(self, worker_id: str, os_user: str | None = None) -> dict[str, Any]:
         worker = self.store.register_worker(worker_id, os_user=os_user)
         self.store.emit_event("worker_registered", worker_id=worker_id, payload=worker)
@@ -51,20 +119,104 @@ class ControlPlane:
         target_tier: str = "T2",
         os_user: str | None = None,
         ttl_seconds: int = 1800,
+        feature_ids: list[str] | None = None,
+        profile_ids: list[str] | None = None,
+        boundary_ids: list[str] | None = None,
+        max_blockers_per_claim: int = 5,
+        auto_scaffold: bool = False,
     ) -> dict[str, Any]:
         registry = self._registry()
         self.store.register_worker(worker_id, os_user=os_user)
-        self.store.ensure_campaign(campaign_id, target_tier)
-        active_roots = [row["path"] for row in self.store.active_path_leases()]
-        selected = next_maturation_slice(registry, target_tier=target_tier, repo_root=self.repo_root, active_path_roots=active_roots)
+        metadata = {
+            key: value
+            for key, value in {
+                "feature_ids": feature_ids,
+                "profile_ids": profile_ids,
+                "boundary_ids": boundary_ids,
+            }.items()
+            if value is not None
+        }
+        campaign_row = self.store.ensure_campaign(campaign_id, target_tier, metadata=metadata or None)
+        scope_feature_ids = self._resolve_scope_feature_ids(
+            registry,
+            feature_ids=feature_ids,
+            profile_ids=profile_ids,
+            boundary_ids=boundary_ids,
+            campaign=campaign_row,
+        )
+        selected: dict[str, Any] | None = None
+        blocked_in_call: list[dict[str, Any]] = []
+        scaffolded_in_call: list[dict[str, Any]] = []
+        while True:
+            active_roots = [row["path"] for row in self.store.active_path_leases()]
+            blocked = self.store.get_blocked_transitions(campaign_id)
+            selected = next_maturation_slice(
+                registry,
+                target_tier=target_tier,
+                repo_root=self.repo_root,
+                active_path_roots=active_roots,
+                blocked_transitions=blocked,
+                scope_feature_ids=scope_feature_ids,
+            )
+            if selected is None:
+                break
+            actionability = slice_actionability(registry, selected, repo_root=self.repo_root)
+            if actionability["passed"]:
+                break
+            if auto_scaffold and actionability.get("reason") == "missing_target_tier_claim_wiring":
+                scaffold = scaffold_target_claim_wiring(self.repo_root, selected["feature_id"], selected["to_tier"])
+                scaffolded_in_call.append(scaffold)
+                if scaffold.get("passed"):
+                    self.store.emit_event(
+                        "registry_scaffolded",
+                        campaign_id=campaign_id,
+                        worker_id=worker_id,
+                        severity=EVENT_INFO,
+                        recommended_action=REFRESH_CONTEXT,
+                        payload=scaffold,
+                    )
+                    registry = self._registry()
+                    continue
+            blocked_transition = self.store.record_blocked_transition(
+                campaign_id=campaign_id,
+                feature_id=selected["feature_id"],
+                from_tier=selected["from_tier"],
+                to_tier=selected["to_tier"],
+                reason=str(actionability["reason"]),
+                failures=[str(item) for item in actionability.get("failures", [])],
+            )
+            blocked_in_call.append(blocked_transition)
+            self.store.emit_event(
+                "maturation_transition_blocked",
+                campaign_id=campaign_id,
+                worker_id=worker_id,
+                severity=EVENT_WARN,
+                recommended_action="operator_repair_required",
+                payload={"selected": selected, "actionability": actionability, "blocked_transition": blocked_transition},
+            )
+            if len(blocked_in_call) >= max(1, int(max_blockers_per_claim)):
+                selected = None
+                break
+
         status = self.store.campaign_status(campaign_id)
         completion = campaign_completion(
             registry,
             target_tier=target_tier,
             repo_root=self.repo_root,
             active_lease_count=status["active_lease_count"],
+            scope_feature_ids=scope_feature_ids,
         )
         if selected is None:
+            open_blocked = self.store.get_blocked_transitions(campaign_id)
+            if open_blocked:
+                return {
+                    "passed": False,
+                    "kind": "blocked",
+                    "campaign": completion,
+                    "blocked_transitions": open_blocked,
+                    "blocked_in_call": blocked_in_call,
+                    "scaffolded_in_call": scaffolded_in_call,
+                }
             if completion["complete"]:
                 self.store.mark_campaign_complete(campaign_id)
                 return {"passed": True, "kind": "campaign_complete", "campaign": completion}
@@ -140,14 +292,24 @@ class ControlPlane:
 
     def abandon_slice(self, *, worker_id: str, lease_id: str, fencing_token: int, reason: str) -> dict[str, Any]:
         lease = self.store.abandon_lease(lease_id, worker_id, fencing_token, reason)
+        blocked_transition = None
+        if _is_structural_block_reason(reason):
+            blocked_transition = self.store.record_blocked_transition(
+                campaign_id=lease["campaign_id"],
+                feature_id=lease["feature_id"],
+                from_tier=lease["from_tier"],
+                to_tier=lease["to_tier"],
+                reason="worker_reported_structural_blocker",
+                failures=[reason],
+            )
         self.store.emit_event(
             "maturation_lease_abandoned",
             campaign_id=lease["campaign_id"],
             worker_id=worker_id,
             lease_id=lease_id,
             severity=EVENT_WARN,
-            recommended_action=WORK_MAY_BE_AVAILABLE,
-            payload={"reason": reason, "feature_id": lease["feature_id"]},
+            recommended_action="operator_repair_required" if blocked_transition else WORK_MAY_BE_AVAILABLE,
+            payload={"reason": reason, "feature_id": lease["feature_id"], "blocked_transition": blocked_transition},
         )
         return {"passed": True, "lease": lease}
 
@@ -213,13 +375,55 @@ class ControlPlane:
     def get_campaign_status(self, campaign_id: str, target_tier: str = "T2") -> dict[str, Any]:
         registry = self._registry()
         status = self.store.campaign_status(campaign_id)
+        blockers = self.store.get_blocked_transitions(campaign_id)
+        scope_feature_ids = self._resolve_scope_feature_ids(registry, campaign=status.get("campaign"))
         completion = campaign_completion(
             registry,
             target_tier=target_tier,
             repo_root=self.repo_root,
             active_lease_count=status["active_lease_count"],
+            scope_feature_ids=scope_feature_ids,
         )
-        return {"passed": True, **status, "completion": completion}
+        summary = {
+            "complete": completion["complete"],
+            "target_tier": completion["target_tier"],
+            "incomplete_count": len(completion["incomplete"]),
+            "out_of_bounds_count": len(completion["out_of_bounds"]),
+            "active_lease_count": completion["active_lease_count"],
+            "blocked_transition_count": len(blockers),
+        }
+        incomplete_preview = completion["incomplete"][:25]
+        return {
+            "passed": True,
+            **status,
+            "summary": summary,
+            "completion": {**completion, "incomplete": incomplete_preview, "incomplete_truncated": len(completion["incomplete"]) > len(incomplete_preview)},
+            "blocked_transitions": blockers,
+        }
+
+    def scaffold_target_claim_wiring(self, *, feature_id: str, target_tier: str = "T1") -> dict[str, Any]:
+        result = scaffold_target_claim_wiring(self.repo_root, feature_id, target_tier)
+        if result.get("passed"):
+            self.notify_registry_updated(payload={"source": "ssot-mcp", "tool": "scaffold_target_claim_wiring", "feature_id": feature_id, "target_tier": target_tier})
+        return result
+
+    def repair_blocked_transition(self, *, blocked_id: str) -> dict[str, Any]:
+        blockers = self.store.get_blocked_transitions(status="open")
+        blocker = next((item for item in blockers if item.get("blocked_id") == blocked_id), None)
+        if blocker is None:
+            raise ValueError(f"unknown open blocked transition: {blocked_id}")
+        scaffold = self.scaffold_target_claim_wiring(feature_id=blocker["feature_id"], target_tier=blocker["to_tier"])
+        if not scaffold.get("passed"):
+            return {"passed": False, "blocked_transition": blocker, "scaffold": scaffold}
+        resolved = self.store.resolve_blocked_transition(blocked_id, reason="registry_scaffolded")
+        self.store.emit_event(
+            "maturation_transition_repaired",
+            campaign_id=resolved.get("campaign_id"),
+            severity=EVENT_INFO,
+            recommended_action=WORK_MAY_BE_AVAILABLE,
+            payload={"blocked_transition": resolved, "scaffold": scaffold},
+        )
+        return {"passed": True, "blocked_transition": resolved, "scaffold": scaffold}
 
     def get_worker_events(
         self,

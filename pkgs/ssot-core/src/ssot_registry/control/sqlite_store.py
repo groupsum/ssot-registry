@@ -159,6 +159,23 @@ class ControlStore:
                     created_at TEXT NOT NULL
                 );
 
+                CREATE TABLE IF NOT EXISTS blocked_transitions (
+                    blocked_id TEXT PRIMARY KEY,
+                    campaign_id TEXT NOT NULL,
+                    feature_id TEXT NOT NULL,
+                    from_tier TEXT NOT NULL,
+                    to_tier TEXT NOT NULL,
+                    reason TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    failures_json TEXT NOT NULL DEFAULT '[]',
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+
+                CREATE UNIQUE INDEX IF NOT EXISTS idx_blocked_transition_open
+                ON blocked_transitions(campaign_id, feature_id, from_tier, to_tier)
+                WHERE status = 'open';
+
                 CREATE TABLE IF NOT EXISTS tier_gate_reports (
                     report_id TEXT PRIMARY KEY,
                     lease_id TEXT,
@@ -195,14 +212,19 @@ class ControlStore:
     def ensure_campaign(self, campaign_id: str, target_tier: str, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
         self.initialize()
         now = utc_now_iso()
+        metadata_payload = metadata or {}
         with self.connect() as conn:
             conn.execute(
                 """
                 INSERT INTO campaigns(campaign_id, target_tier, status, created_at, metadata_json)
                 VALUES (?, ?, 'active', ?, ?)
-                ON CONFLICT(campaign_id) DO NOTHING
+                ON CONFLICT(campaign_id) DO UPDATE SET
+                    metadata_json = CASE
+                        WHEN excluded.metadata_json = '{}' THEN campaigns.metadata_json
+                        ELSE excluded.metadata_json
+                    END
                 """,
-                (campaign_id, target_tier, now, _json_dumps(metadata or {})),
+                (campaign_id, target_tier, now, _json_dumps(metadata_payload)),
             )
             return _row_to_dict(conn.execute("SELECT * FROM campaigns WHERE campaign_id = ?", (campaign_id,)).fetchone()) or {}
 
@@ -499,6 +521,71 @@ class ControlStore:
                 rows = conn.execute("SELECT * FROM conflicts WHERE status = ? ORDER BY created_at", (status,)).fetchall()
             return [_row_to_dict(row) or {} for row in rows]
 
+    def record_blocked_transition(
+        self,
+        *,
+        campaign_id: str,
+        feature_id: str,
+        from_tier: str,
+        to_tier: str,
+        reason: str,
+        failures: list[str],
+    ) -> dict[str, Any]:
+        self.initialize()
+        blocked_id = f"blk:{uuid4().hex}"
+        now = utc_now_iso()
+        with self.connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO blocked_transitions(
+                    blocked_id, campaign_id, feature_id, from_tier, to_tier, reason,
+                    status, failures_json, created_at, updated_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, 'open', ?, ?, ?)
+                ON CONFLICT(campaign_id, feature_id, from_tier, to_tier)
+                WHERE status = 'open'
+                DO UPDATE SET
+                    reason = excluded.reason,
+                    failures_json = excluded.failures_json,
+                    updated_at = excluded.updated_at
+                """,
+                (blocked_id, campaign_id, feature_id, from_tier, to_tier, reason, _json_dumps(failures), now, now),
+            )
+            row = conn.execute(
+                """
+                SELECT * FROM blocked_transitions
+                WHERE campaign_id = ? AND feature_id = ? AND from_tier = ? AND to_tier = ? AND status = 'open'
+                """,
+                (campaign_id, feature_id, from_tier, to_tier),
+            ).fetchone()
+            return _row_to_dict(row) or {}
+
+    def get_blocked_transitions(self, campaign_id: str | None = None, status: str | None = "open") -> list[dict[str, Any]]:
+        self.initialize()
+        clauses: list[str] = []
+        params: list[Any] = []
+        if campaign_id is not None:
+            clauses.append("campaign_id = ?")
+            params.append(campaign_id)
+        if status is not None:
+            clauses.append("status = ?")
+            params.append(status)
+        where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+        with self.connect() as conn:
+            rows = conn.execute(f"SELECT * FROM blocked_transitions {where} ORDER BY updated_at, blocked_id", params).fetchall()
+            return [_row_to_dict(row) or {} for row in rows]
+
+    def resolve_blocked_transition(self, blocked_id: str, reason: str = "repaired") -> dict[str, Any]:
+        self.initialize()
+        now = utc_now_iso()
+        with self.connect() as conn:
+            conn.execute(
+                "UPDATE blocked_transitions SET status = 'resolved', reason = ?, updated_at = ? WHERE blocked_id = ?",
+                (reason, now, blocked_id),
+            )
+            row = conn.execute("SELECT * FROM blocked_transitions WHERE blocked_id = ?", (blocked_id,)).fetchone()
+            return _row_to_dict(row) or {}
+
     def record_gate_report(
         self,
         *,
@@ -541,12 +628,17 @@ class ControlStore:
                 "SELECT status, COUNT(*) AS count FROM maturation_leases WHERE campaign_id = ? GROUP BY status",
                 (campaign_id,),
             ).fetchall()
+            blocked_count = conn.execute(
+                "SELECT COUNT(*) FROM blocked_transitions WHERE campaign_id = ? AND status = 'open'",
+                (campaign_id,),
+            ).fetchone()[0]
             counts = {row["status"]: row["count"] for row in lease_rows}
             active = sum(counts.get(status, 0) for status in OPEN_LEASE_STATUSES)
             return {
                 "campaign_id": campaign_id,
                 "campaign": campaign,
                 "lease_counts": counts,
+                "blocked_transition_count": int(blocked_count),
                 "active_lease_count": active,
             }
 

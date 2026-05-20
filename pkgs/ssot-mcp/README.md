@@ -23,3 +23,32 @@ ssot-mcp --transport stdio --repo-mode explicit
 
 See [Codex MCP configuration](../../docs/coordination/codex-mcp.md) for Codex
 `config.toml` examples.
+
+## Registry write authority
+
+Workers must not hand-edit `.ssot/registry.json`. When a worker needs SSOT
+entity changes, it asks `ssot-mcp` to perform the mutation through one of the
+registry tools:
+
+- `get_blocked_transitions`
+- `scaffold_target_claim_wiring`
+- `repair_blocked_transition`
+- `registry_entity_get`
+- `registry_entity_list`
+- `registry_entity_search`
+- `registry_entity_upsert`
+- `registry_entity_delete`
+- `registry_entity_link`
+- `registry_entity_unlink`
+- `run_ssot_cli`
+
+The structured entity tools use the same core registry mutation APIs as the
+CLI, validate the registry before saving, and emit `registry_updated` events.
+`run_ssot_cli` delegates to the repo-local CLI parser in-process for command
+coverage that is not yet exposed as a dedicated MCP tool.
+
+Campaign claims can also be scoped instead of running over every active
+in-bounds feature. `claim_next_maturation_slice` accepts `feature_ids`,
+`profile_ids`, and `boundary_ids`; it caps blocker discovery with
+`max_blockers_per_claim`; and `auto_scaffold=true` lets `ssot-mcp` attempt
+target-tier claim/test/evidence scaffolding before returning a blocked result.
