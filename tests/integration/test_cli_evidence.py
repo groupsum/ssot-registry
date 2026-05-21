@@ -61,6 +61,43 @@ class CliEvidenceSurfaceTests(unittest.TestCase):
         )
         self.assertEqual(update.returncode, 0, update.stderr)
 
+        release_context = repo / "release-context.json"
+        release_context.write_text(
+            json.dumps(
+                {
+                    "release_id": "rel:cli.generated",
+                    "boundary_ids": ["bnd:cli.generated"],
+                    "verification_report_result": "passed",
+                    "blocking_issue_result": "none",
+                    "blocking_risk_result": "none",
+                }
+            ),
+            encoding="utf-8",
+        )
+        metadata_update = run_cli(
+            "evidence",
+            "update",
+            str(repo),
+            "--id",
+            "evd:t2.cli.generated.bundle",
+            "--robustness-dimensions",
+            "negative_cases",
+            "concurrency",
+            "--source-evidence-ids",
+            "evd:t1.cli.generated.bundle",
+            "--release-context-file",
+            str(release_context),
+        )
+        self.assertEqual(metadata_update.returncode, 0, metadata_update.stderr)
+
+        metadata_get = run_cli("evidence", "get", str(repo), "--id", "evd:t2.cli.generated.bundle")
+        self.assertEqual(metadata_get.returncode, 0, metadata_get.stderr)
+        metadata_payload = json.loads(metadata_get.stdout)
+        self.assertEqual(metadata_payload["robustness_dimensions"], ["negative_cases", "concurrency"])
+        self.assertEqual(metadata_payload["source_evidence_ids"], ["evd:t1.cli.generated.bundle"])
+        self.assertEqual(metadata_payload["release_context"]["release_id"], "rel:cli.generated")
+        self.assertEqual(metadata_payload["release_context"]["boundary_ids"], ["bnd:cli.generated"])
+
         verify = run_cli("evidence", "verify", str(repo), "--evidence-id", "evd:t2.cli.generated.bundle")
         self.assertEqual(verify.returncode, 1, verify.stderr)
         self.assertIn("below linked claim tier", verify.stdout)

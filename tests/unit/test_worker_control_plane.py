@@ -356,7 +356,8 @@ def test_structural_abandon_records_blocked_transition(tmp_path: Path) -> None:
     assert blocked[0]["feature_id"] == "feat:control.worker"
     assert blocked[0]["reason"] == "worker_reported_structural_blocker"
     retry = plane.claim_next_maturation_slice(worker_id="worker-02", campaign_id="camp:test")
-    assert retry["kind"] == "blocked"
+    assert retry["kind"] == "lease_granted"
+    assert plane.store.get_blocked_transitions("camp:test") == []
 
 
 def test_control_plane_blocks_non_actionable_missing_target_claim_without_lease(tmp_path: Path) -> None:
@@ -533,6 +534,36 @@ def test_repair_blocked_transition_scaffolds_and_resolves(tmp_path: Path) -> Non
     assert repaired["blocked_transition"]["status"] == "resolved"
     retry = plane.claim_next_maturation_slice(worker_id="worker-02", campaign_id="camp:test", target_tier="T2")
     assert retry["kind"] == "lease_granted"
+
+
+def test_direct_scaffold_resolves_matching_open_blockers_and_unblocks_claims(tmp_path: Path) -> None:
+    _write_registry(tmp_path, _registry_missing_target_claim(tmp_path))
+    plane = ControlPlane(tmp_path)
+    blocked = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T2", auto_scaffold=False)
+
+    assert blocked["kind"] == "blocked"
+    scaffold = plane.scaffold_target_claim_wiring(feature_id="feat:control.missing-wiring", target_tier="T1")
+
+    assert scaffold["passed"] is True
+    assert scaffold["resolved_blocked_transition_count"] == 1
+    retry = plane.claim_next_maturation_slice(worker_id="worker-02", campaign_id="camp:test", target_tier="T2")
+    assert retry["kind"] == "lease_granted"
+
+
+def test_repair_blocked_transition_returns_already_resolved_rows_without_error(tmp_path: Path) -> None:
+    _write_registry(tmp_path, _registry_missing_target_claim(tmp_path))
+    plane = ControlPlane(tmp_path)
+    blocked = plane.claim_next_maturation_slice(worker_id="worker-01", campaign_id="camp:test", target_tier="T2", auto_scaffold=False)
+    blocked_id = blocked["blocked_transitions"][0]["blocked_id"]
+
+    scaffold = plane.scaffold_target_claim_wiring(feature_id="feat:control.missing-wiring", target_tier="T1")
+    assert scaffold["passed"] is True
+
+    repaired = plane.repair_blocked_transition(blocked_id=blocked_id)
+
+    assert repaired["passed"] is True
+    assert repaired["already_resolved"] is True
+    assert repaired["blocked_transition"]["status"] == "resolved"
 
 
 def test_repair_blocked_transitions_bulk_repairs_scoped_blockers(tmp_path: Path) -> None:

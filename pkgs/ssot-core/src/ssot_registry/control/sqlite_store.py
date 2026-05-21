@@ -575,6 +575,20 @@ class ControlStore:
             rows = conn.execute(f"SELECT * FROM blocked_transitions {where} ORDER BY updated_at, blocked_id", params).fetchall()
             return [_row_to_dict(row) or {} for row in rows]
 
+    def get_blocked_transition(self, blocked_id: str, *, conn: sqlite3.Connection | None = None) -> dict[str, Any] | None:
+        close_conn = False
+        if conn is None:
+            self.initialize()
+            conn = sqlite3.connect(self.db_path)
+            conn.row_factory = sqlite3.Row
+            close_conn = True
+        try:
+            row = conn.execute("SELECT * FROM blocked_transitions WHERE blocked_id = ?", (blocked_id,)).fetchone()
+            return _row_to_dict(row)
+        finally:
+            if close_conn:
+                conn.close()
+
     def resolve_blocked_transition(self, blocked_id: str, reason: str = "repaired") -> dict[str, Any]:
         self.initialize()
         now = utc_now_iso()
@@ -585,6 +599,44 @@ class ControlStore:
             )
             row = conn.execute("SELECT * FROM blocked_transitions WHERE blocked_id = ?", (blocked_id,)).fetchone()
             return _row_to_dict(row) or {}
+
+    def resolve_matching_blocked_transitions(
+        self,
+        *,
+        feature_id: str,
+        to_tier: str | None = None,
+        reason: str = "repaired",
+        campaign_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        self.initialize()
+        now = utc_now_iso()
+        clauses = ["feature_id = ?", "status = 'open'"]
+        params: list[Any] = [feature_id]
+        if to_tier is not None:
+            clauses.append("to_tier = ?")
+            params.append(to_tier)
+        if campaign_id is not None:
+            clauses.append("campaign_id = ?")
+            params.append(campaign_id)
+        where = " AND ".join(clauses)
+        select_clauses = ["feature_id = ?", "status = 'resolved'"]
+        select_params: list[Any] = [feature_id]
+        if to_tier is not None:
+            select_clauses.append("to_tier = ?")
+            select_params.append(to_tier)
+        if campaign_id is not None:
+            select_clauses.append("campaign_id = ?")
+            select_params.append(campaign_id)
+        with self.connect() as conn:
+            conn.execute(
+                f"UPDATE blocked_transitions SET status = 'resolved', reason = ?, updated_at = ? WHERE {where}",
+                (reason, now, *params),
+            )
+            rows = conn.execute(
+                f"SELECT * FROM blocked_transitions WHERE {' AND '.join(select_clauses)} ORDER BY updated_at, blocked_id",
+                select_params,
+            ).fetchall()
+            return [_row_to_dict(row) or {} for row in rows]
 
     def record_gate_report(
         self,

@@ -19,6 +19,8 @@ except ImportError:
     orjson = None
 
 DEFAULT_REGISTRY_LOCK_TTL_SECONDS = 300
+DEFAULT_REPLACE_RETRY_ATTEMPTS = 5
+DEFAULT_REPLACE_RETRY_DELAY_SECONDS = 0.05
 
 
 def _utc_epoch_seconds() -> float:
@@ -27,6 +29,29 @@ def _utc_epoch_seconds() -> float:
 
 def registry_lock_path(registry_path: str | Path) -> Path:
     return Path(registry_path).with_name(f"{Path(registry_path).name}.lock")
+
+
+def _is_transient_replace_error(exc: OSError) -> bool:
+    winerror = getattr(exc, "winerror", None)
+    return winerror in {5, 32}
+
+
+def _replace_with_retry(source: str, target: Path) -> None:
+    last_error: OSError | None = None
+    for attempt in range(DEFAULT_REPLACE_RETRY_ATTEMPTS):
+        try:
+            os.replace(source, target)
+            return
+        except OSError as exc:
+            last_error = exc
+            if not _is_transient_replace_error(exc) or attempt + 1 >= DEFAULT_REPLACE_RETRY_ATTEMPTS:
+                break
+            time.sleep(DEFAULT_REPLACE_RETRY_DELAY_SECONDS * (attempt + 1))
+    if last_error is None:
+        raise RegistryLockError(f"Atomic registry replace failed for {target}")
+    raise RegistryLockError(
+        f"Atomic registry replace failed for {target} after {DEFAULT_REPLACE_RETRY_ATTEMPTS} attempts: {last_error}"
+    ) from last_error
 
 
 def _read_lock_metadata(lock_path: Path) -> dict[str, Any]:
@@ -134,7 +159,7 @@ def save_registry_json_locked(registry_path: str | Path, registry: dict[str, obj
                 temp_file.write(payload)
                 temp_file.flush()
                 os.fsync(temp_file.fileno())
-            os.replace(temp_name, target)
+            _replace_with_retry(temp_name, target)
         finally:
             if temp_name is not None:
                 temp_path = Path(temp_name)

@@ -8,6 +8,49 @@ from tests.helpers import run_cli, temp_repo_from_fixture
 
 
 class CliFeatureTests(unittest.TestCase):
+    def test_feature_create_auto_scaffolds_proof_graph(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+
+        create = run_cli(
+            "feature",
+            "create",
+            str(repo),
+            "--id",
+            "feat:cli.scaffolded",
+            "--title",
+            "CLI scaffolded feature",
+            "--description",
+            "generated scaffold graph",
+            "--implementation-status",
+            "partial",
+            "--horizon",
+            "current",
+            "--claim-tier",
+            "T2",
+            "--auto-scaffold-proof-graph",
+        )
+        self.assertEqual(create.returncode, 0, create.stderr)
+        payload = json.loads(create.stdout)
+        self.assertTrue(payload["passed"])
+        self.assertEqual(payload["entity"]["id"], "feat:cli.scaffolded")
+        self.assertEqual(
+            payload["scaffolded"]["claim_ids"],
+            ["clm:cli.scaffolded.t0", "clm:cli.scaffolded.t1", "clm:cli.scaffolded.t2"],
+        )
+        self.assertEqual(payload["scaffolded"]["test_id"], "tst:pytest.cli.scaffolded.proof-graph")
+        self.assertEqual(payload["scaffolded"]["evidence_id"], "evd:t2.cli.scaffolded.proof-graph")
+        self.assertTrue((repo / payload["scaffolded"]["test_path"]).exists())
+        self.assertTrue((repo / payload["scaffolded"]["evidence_path"]).exists())
+
+        feature_payload = json.loads(run_cli("feature", "get", str(repo), "--id", "feat:cli.scaffolded").stdout)
+        self.assertEqual(
+            feature_payload["claim_ids"],
+            ["clm:cli.scaffolded.t0", "clm:cli.scaffolded.t1", "clm:cli.scaffolded.t2"],
+        )
+        self.assertEqual(feature_payload["test_ids"], ["tst:pytest.cli.scaffolded.proof-graph"])
+
     def test_feature_surface(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)

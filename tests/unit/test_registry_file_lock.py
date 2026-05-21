@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -104,12 +105,35 @@ class RegistryFileLockTests(unittest.TestCase):
             registry_path.write_text(stable_json_dumps(original), encoding="utf-8")
 
             with patch("ssot_registry.util.registry_lock.os.replace", side_effect=OSError("replace failed")):
-                with self.assertRaises(OSError):
+                with self.assertRaisesRegex(RegistryLockError, "Atomic registry replace failed"):
                     save_registry_json_locked(registry_path, {"schema_version": "0.3.0", "repo": {"id": "repo:new"}})
 
             self.assertEqual(load_json(registry_path), original)
             self.assertFalse(registry_lock_path(registry_path).exists())
             self.assertEqual(list(registry_path.parent.glob(".registry.json.*.tmp")), [])
+
+    def test_atomic_registry_write_retries_transient_windows_replace_error(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            registry_path = Path(temp_dir) / ".ssot" / "registry.json"
+            registry_path.parent.mkdir(parents=True)
+            registry_path.write_text(stable_json_dumps({"schema_version": "0.3.0", "repo": {"id": "repo:old"}}), encoding="utf-8")
+            original_replace = os.replace
+
+            attempts = {"count": 0}
+
+            def flaky_replace(source: str, target: Path) -> None:
+                attempts["count"] += 1
+                if attempts["count"] == 1:
+                    error = PermissionError("access denied")
+                    error.winerror = 5  # type: ignore[attr-defined]
+                    raise error
+                original_replace(source, target)
+
+            with patch("ssot_registry.util.registry_lock.os.replace", side_effect=flaky_replace):
+                save_registry_json_locked(registry_path, {"schema_version": "0.3.0", "repo": {"id": "repo:new"}})
+
+            self.assertEqual(attempts["count"], 2)
+            self.assertEqual(load_json(registry_path)["repo"]["id"], "repo:new")
 
     def test_production_registry_writes_route_through_save_registry(self) -> None:
         production_root = PROJECT_ROOT / "pkgs" / "ssot-core" / "src" / "ssot_registry" / "api"

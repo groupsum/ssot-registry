@@ -13,6 +13,7 @@ from ssot_contracts.generated.python.enums import (
 from ssot_registry.api import (
     add_feature_children,
     create_entity,
+    create_feature_with_scaffolded_proof_graph,
     delete_entity,
     get_entity,
     link_entities,
@@ -70,6 +71,12 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids that verify the feature.")
     create.add_argument("--requires", nargs="*", default=[], help="Passing prerequisite feature ids; not a parent/leaf composition link.")
     create.add_argument("--parent-feature-ids", nargs="*", default=[], help="Inventory parent feature ids; composition only, never a passing prerequisite.")
+    add_optional_bool_argument(
+        create,
+        "--auto-scaffold-proof-graph",
+        default=False,
+        help_text="Create a minimally valid linked claim, test, and evidence scaffold for this feature in the same transaction.",
+    )
     create.set_defaults(func=run_create)
 
     get = feature_sub.add_parser("get", help="Show one feature.", description="Fetch a single feature record by id.")
@@ -227,6 +234,8 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "requires": args.requires,
         "parent_feature_ids": args.parent_feature_ids,
     }
+    if args.auto_scaffold_proof_graph:
+        return create_feature_with_scaffolded_proof_graph(args.path, row)
     return create_entity(args.path, "features", row)
 
 

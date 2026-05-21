@@ -17,7 +17,17 @@ from ssot_registry.control.models import (
 )
 from ssot_registry.control.scaffold import scaffold_target_claim_wiring
 from ssot_registry.guards.completion import evaluate_completion_guard
-from ssot_registry.maturation.selector import DEFAULT_FEATURE_LIMIT, campaign_completion, next_maturation_slice, normalize_feature_limit, registry_content_hash, slice_actionability
+from ssot_registry.model.enums import CLAIM_TIER_RANK
+from ssot_registry.maturation.selector import (
+    DEFAULT_FEATURE_LIMIT,
+    campaign_completion,
+    current_verified_tier,
+    derive_path_roots,
+    next_maturation_slice,
+    normalize_feature_limit,
+    registry_content_hash,
+    slice_actionability,
+)
 from ssot_registry.util.time import utc_now_iso
 
 from .sqlite_store import ControlStore
@@ -140,6 +150,40 @@ def _filter_blocked_transitions_for_scope(
     return [item for item in blocked_transitions if str(item.get("feature_id")) in scope_feature_ids]
 
 
+def _blocked_transition_is_satisfied(
+    registry: dict[str, Any],
+    blocker: dict[str, Any],
+    *,
+    repo_root: Path,
+) -> bool:
+    feature_id = str(blocker.get("feature_id", ""))
+    to_tier = str(blocker.get("to_tier", ""))
+    if not feature_id or not to_tier:
+        return False
+    features = {
+        row["id"]: row
+        for row in registry.get("features", [])
+        if isinstance(row, dict) and isinstance(row.get("id"), str)
+    }
+    feature = features.get(feature_id)
+    if feature is None:
+        return False
+    current = current_verified_tier(registry, feature, repo_root=repo_root)
+    if current in CLAIM_TIER_RANK and to_tier in CLAIM_TIER_RANK and CLAIM_TIER_RANK[current] >= CLAIM_TIER_RANK[to_tier]:
+        return True
+    actionability = slice_actionability(
+        registry,
+        {
+            "feature_id": feature_id,
+            "from_tier": blocker.get("from_tier", "T0"),
+            "to_tier": to_tier,
+            "path_roots": derive_path_roots(feature),
+        },
+        repo_root=repo_root,
+    )
+    return bool(actionability.get("passed"))
+
+
 class ControlPlane:
     """Core service used by CLI, MCP, and tests for pull-worker coordination."""
 
@@ -197,6 +241,27 @@ class ControlPlane:
                 add_profile(profile_id)
         return resolved
 
+    def _reconcile_open_blockers(
+        self,
+        registry: dict[str, Any],
+        *,
+        campaign_id: str,
+        scope_feature_ids: set[str] | None,
+    ) -> list[dict[str, Any]]:
+        blockers = _filter_blocked_transitions_for_scope(
+            self.store.get_blocked_transitions(campaign_id=campaign_id, status="open"),
+            scope_feature_ids,
+        )
+        resolved: list[dict[str, Any]] = []
+        for blocker in blockers:
+            if _blocked_transition_is_satisfied(registry, blocker, repo_root=self.repo_root):
+                resolved_row = self.store.resolve_blocked_transition(
+                    str(blocker["blocked_id"]),
+                    reason="registry_state_now_satisfies_transition",
+                )
+                resolved.append(resolved_row)
+        return resolved
+
     def register_worker(self, worker_id: str, os_user: str | None = None) -> dict[str, Any]:
         worker = self.store.register_worker(worker_id, os_user=os_user)
         self.store.emit_event("worker_registered", worker_id=worker_id, payload=worker)
@@ -241,7 +306,9 @@ class ControlPlane:
         selected: dict[str, Any] | None = None
         blocked_in_call: list[dict[str, Any]] = []
         scaffolded_in_call: list[dict[str, Any]] = []
+        auto_scaffold_attempts: set[tuple[str, str, str]] = set()
         while True:
+            self._reconcile_open_blockers(registry, campaign_id=campaign_id, scope_feature_ids=scope_feature_ids)
             active_roots = [row["path"] for row in self.store.active_path_leases()]
             blocked = _filter_blocked_transitions_for_scope(self.store.get_blocked_transitions(campaign_id), scope_feature_ids)
             selected = next_maturation_slice(
@@ -258,7 +325,13 @@ class ControlPlane:
             actionability = slice_actionability(registry, selected, repo_root=self.repo_root)
             if actionability["passed"]:
                 break
-            if auto_scaffold and actionability.get("reason") == "missing_target_tier_claim_wiring":
+            attempt_key = (str(selected["feature_id"]), str(selected["from_tier"]), str(selected["to_tier"]))
+            if (
+                auto_scaffold
+                and actionability.get("reason") == "missing_target_tier_claim_wiring"
+                and attempt_key not in auto_scaffold_attempts
+            ):
+                auto_scaffold_attempts.add(attempt_key)
                 scaffold = scaffold_target_claim_wiring(self.repo_root, selected["feature_id"], selected["to_tier"])
                 scaffolded_in_call.append(scaffold)
                 if scaffold.get("passed"):
@@ -517,18 +590,28 @@ class ControlPlane:
     def scaffold_target_claim_wiring(self, *, feature_id: str, target_tier: str = "T1") -> dict[str, Any]:
         result = scaffold_target_claim_wiring(self.repo_root, feature_id, target_tier)
         if result.get("passed"):
+            resolved = self.store.resolve_matching_blocked_transitions(
+                feature_id=feature_id,
+                to_tier=target_tier,
+                reason="registry_scaffolded",
+            )
+            result["resolved_blocked_transitions"] = resolved
+            result["resolved_blocked_transition_count"] = len(resolved)
             self.notify_registry_updated(payload={"source": "ssot-mcp", "tool": "scaffold_target_claim_wiring", "feature_id": feature_id, "target_tier": target_tier})
         return result
 
     def repair_blocked_transition(self, *, blocked_id: str) -> dict[str, Any]:
-        blockers = self.store.get_blocked_transitions(status="open")
-        blocker = next((item for item in blockers if item.get("blocked_id") == blocked_id), None)
+        blocker = self.store.get_blocked_transition(blocked_id)
         if blocker is None:
-            raise ValueError(f"unknown open blocked transition: {blocked_id}")
+            raise ValueError(f"unknown blocked transition: {blocked_id}")
+        if blocker.get("status") != "open":
+            return {"passed": True, "blocked_transition": blocker, "already_resolved": True}
         scaffold = self.scaffold_target_claim_wiring(feature_id=blocker["feature_id"], target_tier=blocker["to_tier"])
         if not scaffold.get("passed"):
             return {"passed": False, "blocked_transition": blocker, "scaffold": scaffold}
-        resolved = self.store.resolve_blocked_transition(blocked_id, reason="registry_scaffolded")
+        resolved = self.store.get_blocked_transition(blocked_id) or blocker
+        if resolved.get("status") == "open":
+            resolved = self.store.resolve_blocked_transition(blocked_id, reason="registry_scaffolded")
         self.store.emit_event(
             "maturation_transition_repaired",
             campaign_id=resolved.get("campaign_id"),

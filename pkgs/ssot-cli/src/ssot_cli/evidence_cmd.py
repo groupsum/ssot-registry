@@ -13,7 +13,15 @@ from ssot_registry.api import (
     update_entity,
     verify_evidence_rows,
 )
-from ssot_cli.common import add_ids_argument, add_origin_argument, add_path_argument, collect_list_fields, compact_dict, load_text_argument
+from ssot_cli.common import (
+    add_ids_argument,
+    add_origin_argument,
+    add_path_argument,
+    collect_list_fields,
+    compact_dict,
+    load_json_object_argument,
+    load_text_argument,
+)
 
 
 _LINK_MAPPING = {
@@ -43,6 +51,10 @@ def register_evidence(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--evidence-path", dest="evidence_path", required=True, help="Repository-relative location of the evidence artifact.")
     create.add_argument("--claim-ids", nargs="*", default=[], help="Claim ids supported by the evidence.")
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids associated with the evidence.")
+    create.add_argument("--robustness-dimensions", nargs="*", default=None, help="Declared robustness dimensions supported by this evidence.")
+    create.add_argument("--source-evidence-ids", nargs="*", default=None, help="Lower-tier evidence ids that this evidence extends or hardens.")
+    create.add_argument("--release-context-json", default=None, help="Inline JSON object describing release and boundary context for T3 evidence.")
+    create.add_argument("--release-context-file", default=None, help="Path to a JSON file containing release and boundary context for T3 evidence.")
     create.set_defaults(func=run_create)
 
     get = evidence_sub.add_parser("get", help="Show one evidence row.", description="Fetch a single evidence record by id.")
@@ -67,6 +79,10 @@ def register_evidence(subparsers: argparse._SubParsersAction) -> None:
     update.add_argument("--body-file", default=None, help="Path to a UTF-8 text file containing the replacement evidence body.")
     add_origin_argument(update, choices=sorted(ASSURANCE_ORIGINS), default=None)
     update.add_argument("--evidence-path", dest="evidence_path", default=None, help="Updated repository-relative path to the artifact.")
+    update.add_argument("--robustness-dimensions", nargs="*", default=None, help="Replacement robustness dimensions for the evidence.")
+    update.add_argument("--source-evidence-ids", nargs="*", default=None, help="Replacement source evidence ids for the evidence.")
+    update.add_argument("--release-context-json", default=None, help="Replacement inline JSON object describing release and boundary context.")
+    update.add_argument("--release-context-file", default=None, help="Path to a JSON file containing replacement release and boundary context.")
     update.set_defaults(func=run_update)
 
     delete = evidence_sub.add_parser("delete", help="Delete an evidence row.", description="Remove an evidence record from the registry.")
@@ -103,6 +119,11 @@ def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
 
 def run_create(args: argparse.Namespace) -> dict[str, object]:
     body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="evidence")
+    release_context = load_json_object_argument(
+        inline_value=args.release_context_json,
+        file_value=args.release_context_file,
+        label="evidence release context",
+    )
     row = {
         "id": args.id,
         "title": args.title,
@@ -114,6 +135,9 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "path": args.evidence_path,
         "claim_ids": args.claim_ids,
         "test_ids": args.test_ids,
+        "robustness_dimensions": args.robustness_dimensions,
+        "source_evidence_ids": args.source_evidence_ids,
+        "release_context": release_context,
     }
     return create_entity(args.path, "evidence", row)
 
@@ -128,6 +152,11 @@ def run_list(args: argparse.Namespace) -> dict[str, object]:
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
     body = load_text_argument(inline_value=args.body, file_value=args.body_file, label="evidence")
+    release_context = load_json_object_argument(
+        inline_value=args.release_context_json,
+        file_value=args.release_context_file,
+        label="evidence release context",
+    )
     changes = compact_dict(
         {
             "title": args.title,
@@ -137,6 +166,9 @@ def run_update(args: argparse.Namespace) -> dict[str, object]:
             "body": body,
             "origin": args.origin,
             "path": args.evidence_path,
+            "robustness_dimensions": args.robustness_dimensions,
+            "source_evidence_ids": args.source_evidence_ids,
+            "release_context": release_context,
         }
     )
     if not changes:

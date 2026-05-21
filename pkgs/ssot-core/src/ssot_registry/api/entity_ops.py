@@ -4,9 +4,10 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
-from ssot_registry.model.enums import ASSURANCE_ENTITY_SECTIONS, ASSURANCE_ORIGINS, REF_FIELD_TARGETS
+from ssot_registry.model.enums import ASSURANCE_ENTITY_SECTIONS, ASSURANCE_ORIGINS, CLAIM_TIER_RANK, REF_FIELD_TARGETS
 from ssot_registry.model.registry import normalize_repo_kind
 from ssot_registry.util.errors import ValidationError
+from ssot_registry.util.jsonio import stable_json_dumps
 
 from .load import load_registry
 from .save import save_registry
@@ -189,6 +190,148 @@ def _validate_and_save(registry_path: Path, repo_root: Path, registry: dict[str,
     return {
         "validation": report,
         "automation": run_repo_automation(repo_root),
+    }
+
+
+def _safe_slug(entity_id: str) -> str:
+    return entity_id.split(":", 1)[-1].replace("/", ".").replace(" ", "-").lower()
+
+
+def _tier_sequence(target_tier: str) -> list[str]:
+    if target_tier not in CLAIM_TIER_RANK:
+        raise ValueError(f"Unsupported claim tier: {target_tier}")
+    return [tier for tier, _rank in sorted(CLAIM_TIER_RANK.items(), key=lambda item: item[1]) if CLAIM_TIER_RANK[tier] <= CLAIM_TIER_RANK[target_tier]]
+
+
+def _ensure_scaffold_file(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not path.exists():
+        path.write_text(content, encoding="utf-8")
+
+
+def create_feature_with_scaffolded_proof_graph(path: str | Path, row: dict[str, Any]) -> dict[str, Any]:
+    registry_path, repo_root, registry = load_registry(path)
+    entity_id = row.get("id")
+    if not isinstance(entity_id, str):
+        raise ValueError("feature row must include a string id")
+    if entity_id in _row_lookup(registry, "features"):
+        raise ValueError(f"Feature already exists: {entity_id}")
+
+    candidate = deepcopy(row)
+    _ensure_assurance_origin(registry, "features", candidate)
+    candidate.setdefault("parent_feature_ids", [])
+    _normalize_feature_parent_ids(candidate)
+    for field_name in LINKABLE_FIELDS["features"]:
+        if field_name in candidate and isinstance(candidate[field_name], list):
+            candidate[field_name] = _dedupe_preserve(candidate[field_name])
+    _validate_assurance_origin_mutation(registry, "features", candidate)
+
+    plan = candidate.get("plan") if isinstance(candidate.get("plan"), dict) else {}
+    target_tier = str(plan.get("target_claim_tier") or "T1")
+    tiers = _tier_sequence(target_tier)
+    slug = _safe_slug(entity_id)
+    test_id = f"tst:pytest.{slug}.proof-graph"
+    evidence_id = f"evd:{target_tier.lower()}.{slug}.proof-graph"
+    test_path = f"tests/ssot_scaffold/test_{slug.replace('.', '_').replace('-', '_')}_proof_graph.py"
+    evidence_path = f".ssot/evidence/{slug}/proof-graph-{target_tier.lower()}.json"
+    claim_ids = [f"clm:{slug}.{tier.lower()}" for tier in tiers]
+
+    claims: list[dict[str, Any]] = []
+    for index, tier in enumerate(tiers):
+        claim_ids_in_chain = claim_ids[: index + 1]
+        claim = {
+            "id": claim_ids[index],
+            "title": f"{candidate['title']} {tier} claim",
+            "status": "declared" if tier == "T0" else "proposed",
+            "tier": tier,
+            "kind": "runtime",
+            "description": f"{tier} scaffold claim for {entity_id}.",
+            "origin": candidate["origin"],
+            "feature_ids": [entity_id],
+            "test_ids": [test_id],
+            "evidence_ids": [evidence_id],
+            "depends_on_claim_ids": claim_ids_in_chain[:-1],
+        }
+        claims.append(claim)
+
+    test_row = {
+        "id": test_id,
+        "title": f"{candidate['title']} proof-graph scaffold test",
+        "body": f"Planned scaffold test for {entity_id}.",
+        "origin": candidate["origin"],
+        "status": "planned",
+        "kind": "pytest",
+        "path": test_path,
+        "feature_ids": [entity_id],
+        "claim_ids": claim_ids,
+        "evidence_ids": [evidence_id],
+        "execution": {
+            "argv": ["python", "-m", "pytest", test_path, "-q"],
+            "cwd": ".",
+            "env": {},
+            "mode": "command",
+            "success": {"expected": 0, "type": "exit_code"},
+            "timeout_seconds": 600,
+        },
+    }
+    evidence_row = {
+        "id": evidence_id,
+        "title": f"{candidate['title']} proof-graph scaffold evidence",
+        "status": "planned",
+        "kind": "scaffold",
+        "tier": target_tier,
+        "body": f"Planned scaffold evidence for {entity_id}.",
+        "origin": candidate["origin"],
+        "path": evidence_path,
+        "claim_ids": claim_ids,
+        "test_ids": [test_id],
+    }
+
+    candidate["claim_ids"] = _dedupe_preserve([*claim_ids, *_ensure_list_field(candidate, "claim_ids")])
+    candidate["test_ids"] = _dedupe_preserve([test_id, *_ensure_list_field(candidate, "test_ids")])
+    registry["features"].append(candidate)
+    registry.setdefault("claims", []).extend(claims)
+    registry.setdefault("tests", []).append(test_row)
+    registry.setdefault("evidence", []).append(evidence_row)
+
+    for created in claims:
+        _sync_reciprocals_for_row(registry, "claims", created)
+    _sync_reciprocals_for_row(registry, "tests", test_row)
+    _sync_reciprocals_for_row(registry, "evidence", evidence_row)
+    _sync_reciprocals_for_row(registry, "features", candidate)
+
+    _ensure_scaffold_file(
+        repo_root / test_path,
+        "def test_ssot_scaffold_placeholder():\n    assert True\n",
+    )
+    _ensure_scaffold_file(
+        repo_root / evidence_path,
+        stable_json_dumps(
+            {
+                "schema_version": "ssot.evidence.scaffold.v1",
+                "feature_id": entity_id,
+                "claim_ids": claim_ids,
+                "test_id": test_id,
+                "target_tier": target_tier,
+                "status": "planned",
+            }
+        ),
+    )
+
+    mutation = _validate_and_save(registry_path, repo_root, registry, f"creating feature {entity_id} with scaffolded proof graph")
+    return {
+        "passed": True,
+        "registry_path": registry_path.as_posix(),
+        "section": "features",
+        "entity": candidate,
+        "scaffolded": {
+            "claim_ids": claim_ids,
+            "test_id": test_id,
+            "evidence_id": evidence_id,
+            "test_path": test_path,
+            "evidence_path": evidence_path,
+        },
+        **mutation,
     }
 
 
