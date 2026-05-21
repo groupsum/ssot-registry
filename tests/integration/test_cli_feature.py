@@ -326,6 +326,109 @@ class CliFeatureTests(unittest.TestCase):
         self.assertEqual(delete.returncode, 0, delete.stderr)
         self.assertTrue(json.loads(delete.stdout)["passed"])
 
+    def test_feature_certify_proof_graph_flow(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+
+        for feature_id, title in (
+            ("feat:cli.proof-graph-one", "CLI proof graph one"),
+            ("feat:cli.proof-graph-two", "CLI proof graph two"),
+        ):
+            create = run_cli(
+                "feature",
+                "create",
+                str(repo),
+                "--id",
+                feature_id,
+                "--title",
+                title,
+                "--description",
+                "scaffold for certification flow",
+                "--implementation-status",
+                "absent",
+                "--horizon",
+                "next",
+                "--claim-tier",
+                "T3",
+                "--auto-scaffold-proof-graph",
+            )
+            self.assertEqual(create.returncode, 0, create.stderr)
+            payload = json.loads(create.stdout)
+            test_path = repo / payload["scaffolded"]["test_path"]
+            test_path.write_text(
+                "def test_ssot_scaffold_placeholder():\n    assert True\n",
+                encoding="utf-8",
+            )
+
+        certify = run_cli(
+            "feature",
+            "certify-proof-graph",
+            str(repo),
+            "--ids",
+            "feat:cli.proof-graph-one",
+            "feat:cli.proof-graph-two",
+            "--boundary-id",
+            "bnd:cli.proof-graph",
+            "--boundary-title",
+            "CLI proof graph boundary",
+            "--release-id",
+            "rel:cli.proof-graph",
+            "--release-version",
+            "9.9.9",
+            "--robustness-dimensions",
+            "negative_cases",
+            "state_transitions",
+            "--write-report",
+            "--promote",
+            "--publish",
+        )
+        self.assertEqual(certify.returncode, 0, certify.stderr)
+        payload = json.loads(certify.stdout)
+        self.assertTrue(payload["passed"], payload)
+        self.assertEqual(payload["boundary_id"], "bnd:cli.proof-graph")
+        self.assertEqual(payload["release_id"], "rel:cli.proof-graph")
+        self.assertEqual(payload["test_run"]["summary"]["failed"], 0)
+        self.assertTrue((repo / ".ssot" / "reports" / "certification.report.json").exists())
+        self.assertTrue((repo / ".ssot" / "releases" / "rel__cli.proof-graph" / "release.snapshot.json").exists())
+        self.assertTrue((repo / ".ssot" / "releases" / "rel__cli.proof-graph" / "published.snapshot.json").exists())
+
+        registry = json.loads((repo / ".ssot" / "registry.json").read_text(encoding="utf-8"))
+        features = {row["id"]: row for row in registry["features"]}
+        claims = {row["id"]: row for row in registry["claims"]}
+        evidence = {row["id"]: row for row in registry["evidence"]}
+        releases = {row["id"]: row for row in registry["releases"]}
+        boundaries = {row["id"]: row for row in registry["boundaries"]}
+
+        self.assertTrue(boundaries["bnd:cli.proof-graph"]["frozen"])
+        self.assertEqual(releases["rel:cli.proof-graph"]["status"], "published")
+        self.assertEqual(registry["program"]["active_boundary_id"], "bnd:cli.proof-graph")
+        self.assertEqual(registry["program"]["active_release_id"], "rel:cli.proof-graph")
+
+        for feature_id in ("feat:cli.proof-graph-one", "feat:cli.proof-graph-two"):
+            self.assertEqual(features[feature_id]["implementation_status"], "implemented")
+            self.assertEqual(features[feature_id]["plan"]["horizon"], "current")
+            slug = feature_id.split(":", 1)[-1]
+            t0_claim = claims[f"clm:{slug}.t0"]
+            t1_claim = claims[f"clm:{slug}.t1"]
+            t3_claim = claims[f"clm:{slug}.t3"]
+            self.assertEqual(t0_claim["status"], "certified")
+            self.assertEqual(t1_claim["status"], "certified")
+            self.assertEqual(t3_claim["status"], "published")
+
+            t1_evidence = evidence[f"evd:t1.{slug}.proof-graph-source"]
+            t3_evidence = evidence[f"evd:t3.{slug}.proof-graph"]
+            self.assertEqual(t1_evidence["status"], "passed")
+            self.assertEqual(t3_evidence["status"], "passed")
+            self.assertEqual(t3_evidence["source_evidence_ids"], [t1_evidence["id"]])
+            self.assertEqual(t3_evidence["release_context"]["release_id"], "rel:cli.proof-graph")
+            self.assertEqual(t3_evidence["release_context"]["boundary_ids"], ["bnd:cli.proof-graph"])
+            self.assertEqual(t3_evidence["release_context"]["verification_report_result"], "certified")
+            self.assertEqual(t3_evidence["release_context"]["blocking_issue_result"], "clear")
+            self.assertEqual(t3_evidence["release_context"]["blocking_risk_result"], "clear")
+            self.assertTrue((repo / t1_evidence["path"]).exists())
+            self.assertTrue((repo / t3_evidence["path"]).exists())
+
 
 if __name__ == "__main__":
     unittest.main()

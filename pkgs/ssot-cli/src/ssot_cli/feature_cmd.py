@@ -12,6 +12,7 @@ from ssot_contracts.generated.python.enums import (
 )
 from ssot_registry.api import (
     add_feature_children,
+    certify_feature_proof_graphs,
     create_entity,
     create_feature_with_scaffolded_proof_graph,
     delete_entity,
@@ -78,6 +79,28 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
         help_text="Create a minimally valid linked claim, test, and evidence scaffold for this feature in the same transaction.",
     )
     create.set_defaults(func=run_create)
+
+    certify_graph = feature_sub.add_parser(
+        "certify-proof-graph",
+        help="Execute proof-graph delivery and certification closure for features.",
+        description="Run linked tests, materialize source and T3 evidence, add the features to a boundary, create or update a release, certify it, and optionally promote or publish it.",
+    )
+    add_path_argument(certify_graph)
+    certify_graph.add_argument("--ids", nargs="+", required=True, help="Feature ids to drive through proof-graph certification closure.")
+    certify_graph.add_argument("--boundary-id", required=True, help="Boundary id to create or update for the selected features.")
+    certify_graph.add_argument("--boundary-title", required=True, help="Boundary title to use when creating the boundary.")
+    certify_graph.add_argument("--release-id", required=True, help="Release id to create or update for the selected features.")
+    certify_graph.add_argument("--release-version", required=True, help="Release version string to record on the release.")
+    certify_graph.add_argument(
+        "--robustness-dimensions",
+        nargs="+",
+        required=True,
+        help="Robustness dimensions to stamp into the T3 evidence rows.",
+    )
+    certify_graph.add_argument("--write-report", action="store_true", help="Write the certification report artifact.")
+    certify_graph.add_argument("--promote", action="store_true", help="Promote the certified release after certification succeeds.")
+    certify_graph.add_argument("--publish", action="store_true", help="Publish the release after certification and promotion succeed.")
+    certify_graph.set_defaults(func=run_certify_proof_graph)
 
     get = feature_sub.add_parser("get", help="Show one feature.", description="Fetch a single feature record by id.")
     add_path_argument(get)
@@ -237,6 +260,21 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
     if args.auto_scaffold_proof_graph:
         return create_feature_with_scaffolded_proof_graph(args.path, row)
     return create_entity(args.path, "features", row)
+
+
+def run_certify_proof_graph(args: argparse.Namespace) -> dict[str, object]:
+    return certify_feature_proof_graphs(
+        args.path,
+        feature_ids=args.ids,
+        boundary_id=args.boundary_id,
+        boundary_title=args.boundary_title,
+        release_id=args.release_id,
+        release_version=args.release_version,
+        robustness_dimensions=args.robustness_dimensions,
+        write_report=args.write_report,
+        promote=args.promote,
+        publish=args.publish,
+    )
 
 
 def run_get(args: argparse.Namespace) -> dict[str, object]:

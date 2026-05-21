@@ -61,6 +61,7 @@ from .load import load_registry
 from .plan import plan_features, plan_issues
 from .packs import inspect_pack, preflight_pack, sync_pack
 from .origin import sync_origin_assurance_rows
+from .proof_graph import certify_feature_proof_graphs
 from .registry import export_registry
 from .release import certify_release, promote_release, publish_release, revoke_release
 from .save import save_registry, save_registry_unchecked
@@ -125,6 +126,7 @@ __all__ = [
     "preflight_pack",
     "sync_pack",
     "sync_origin_assurance_rows",
+    "certify_feature_proof_graphs",
     "set_feature_lifecycle",
     "build_artifact_manifest",
     "build_local_evidence_bundle",

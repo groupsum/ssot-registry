@@ -256,6 +256,17 @@
       "--evidence-id"
     ],
     "feature": [],
+    "feature certify-proof-graph": [
+      "--boundary-id",
+      "--boundary-title",
+      "--ids",
+      "--promote",
+      "--publish",
+      "--release-id",
+      "--release-version",
+      "--robustness-dimensions",
+      "--write-report"
+    ],
     "feature children": [],
     "feature children add": [
       "--child-ids",

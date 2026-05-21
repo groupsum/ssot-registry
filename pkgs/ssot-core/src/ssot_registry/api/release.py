@@ -31,6 +31,44 @@ def _release_boundaries(release: dict[str, object], boundary_lookup: dict[str, d
     return [boundary_lookup[boundary_id] for boundary_id in release_boundary_ids(release)]
 
 
+def _propagate_release_certification_feedback(
+    registry: dict[str, object],
+    *,
+    release_id: str,
+) -> None:
+    release_lookup = _entity_lookup(registry, "releases")
+    claim_lookup = _entity_lookup(registry, "claims")
+    evidence_lookup = _entity_lookup(registry, "evidence")
+    release = release_lookup[release_id]
+    boundary_ids = release_boundary_ids(release)
+    boundary_id = boundary_ids[0] if boundary_ids else None
+    release_evidence_ids = set(release.get("evidence_ids", []))
+    for claim_id in release.get("claim_ids", []):
+        claim = claim_lookup.get(claim_id)
+        if claim is None:
+            continue
+        release_evidence_ids.update(claim.get("evidence_ids", []))
+
+    for evidence_id in sorted(release_evidence_ids):
+        evidence = evidence_lookup.get(evidence_id)
+        if evidence is None:
+            continue
+        release_context = evidence.get("release_context")
+        if not isinstance(release_context, dict):
+            release_context = {}
+        release_context.update(
+            {
+                "release_id": release_id,
+                "boundary_id": boundary_id,
+                "boundary_ids": boundary_ids,
+                "verification_report_result": "certified",
+                "blocking_issue_result": "clear",
+                "blocking_risk_result": "clear",
+            }
+        )
+        evidence["release_context"] = release_context
+
+
 def certify_release(path: str | Path, release_id: str | None = None, write_report: bool = False) -> dict[str, object]:
     registry_path, repo_root, registry = load_registry(path)
     preflight = validate_registry(registry_path)
@@ -54,6 +92,7 @@ def certify_release(path: str | Path, release_id: str | None = None, write_repor
     for claim_id in release.get("claim_ids", []):
         if claim_id in claims and CLAIM_STATUS_RANK[claims[claim_id]["status"]] < CLAIM_STATUS_RANK["certified"]:
             claims[claim_id]["status"] = "certified"
+    _propagate_release_certification_feedback(registry, release_id=selected_release_id)
 
     postflight = validate_registry_document(registry, registry_path, repo_root)
     if not postflight["passed"]:
