@@ -1,0 +1,1 @@
+{"claim_ids":["clm:ssot-mcp.cli-surface-drift-guard.t0","clm:ssot-mcp.cli-surface-drift-guard.t1","clm:ssot-mcp.cli-surface-drift-guard.t2"],"feature_id":"feat:ssot-mcp.cli-surface-drift-guard","schema_version":"ssot.evidence.scaffold.v1","status":"planned","target_tier":"T2","test_id":"tst:pytest.ssot-mcp.cli-surface-drift-guard.proof-graph"}

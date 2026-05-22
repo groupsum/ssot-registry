@@ -1,0 +1,1 @@
+{"claim_ids":["clm:ssot-mcp.cli-command-path-tool-parity.t0","clm:ssot-mcp.cli-command-path-tool-parity.t1","clm:ssot-mcp.cli-command-path-tool-parity.t2"],"feature_id":"feat:ssot-mcp.cli-command-path-tool-parity","schema_version":"ssot.evidence.scaffold.v1","status":"planned","target_tier":"T2","test_id":"tst:pytest.ssot-mcp.cli-command-path-tool-parity.proof-graph"}

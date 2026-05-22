@@ -1,0 +1,1 @@
+{"claim_ids":["clm:ssot-mcp.cli-command-flag-parity.t0","clm:ssot-mcp.cli-command-flag-parity.t1","clm:ssot-mcp.cli-command-flag-parity.t2"],"feature_id":"feat:ssot-mcp.cli-command-flag-parity","schema_version":"ssot.evidence.scaffold.v1","status":"planned","target_tier":"T2","test_id":"tst:pytest.ssot-mcp.cli-command-flag-parity.proof-graph"}
