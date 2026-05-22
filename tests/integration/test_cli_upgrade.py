@@ -60,6 +60,27 @@ class CliUpgradeTests(unittest.TestCase):
             self.assertEqual(payload["schema_migrations"], [])
             self.assertFalse(payload["changed"])
 
+    def test_upgrade_refreshes_tooling_version_on_current_schema(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+        registry_path = repo / ".ssot" / "registry.json"
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+        registry["tooling"]["ssot_registry_version"] = "0.2.10"
+        registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
+
+        result = run_cli("upgrade", str(repo), "--target-version", __version__)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertTrue(payload["passed"])
+        self.assertTrue(payload["changed"])
+        self.assertEqual(payload["from_version"], "0.2.10")
+        self.assertEqual(payload["to_version"], __version__)
+
+        upgraded_registry = json.loads(registry_path.read_text(encoding="utf-8"))
+        self.assertEqual(upgraded_registry["tooling"]["ssot_registry_version"], __version__)
+        self.assertEqual(upgraded_registry["tooling"]["last_upgraded_from_version"], "0.2.10")
+
     def test_upgrade_migrates_v10_repo_to_current_schema(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)

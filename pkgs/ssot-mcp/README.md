@@ -90,8 +90,9 @@ Workers and MCP clients should not hand-edit `.ssot/registry.json`. When a clien
 - `registry_entity_unlink`
 - `get_ssot_cli_surface`
 - `run_ssot_cli`
+- mirrored `ssot_cli__*` tools for each live CLI command path
 
-The structured entity tools use the same core registry mutation APIs as the CLI, validate before saving, and emit `registry_updated` events. `run_ssot_cli` delegates to the repo-local CLI parser in process and supports global flags, help/version requests, commands, subcommands, command flags, and subcommand flags as argv tokens.
+The structured entity tools use the same core registry mutation APIs as the CLI, validate before saving, and emit `registry_updated` events. `get_ssot_cli_surface` exposes the live parser inventory, `run_ssot_cli` remains the generic delegation fallback, and `ssot-mcp` also registers mirrored `ssot_cli__*` MCP tools for every current CLI command path. Together they keep the CLI and MCP surfaces aligned across global flags, help/version requests, commands, subcommands, command flags, and subcommand flags.
 
 ## Pull-worker campaign model
 

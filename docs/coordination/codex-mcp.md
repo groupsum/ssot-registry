@@ -78,16 +78,20 @@ scaffolding or repair, the worker should call `ssot-mcp` registry tools:
 - `registry_entity_unlink`
 - `get_ssot_cli_surface`
 - `run_ssot_cli`
+- mirrored `ssot_cli__*` tools for each live CLI command path
 
 Use the structured tools for normal feature, claim, test, evidence, issue,
 risk, boundary, profile, and release CRUD. Use `run_ssot_cli` when a registry
 operation is already available as a CLI command but does not yet have a
-dedicated MCP tool. `run_ssot_cli` accepts argv tokens after `ssot-registry`,
-including global flags, commands, command flags, subcommands, and subcommand
-flags. Workers can call `get_ssot_cli_surface` to discover the live global
-flags, top-level commands, command paths, and flags by command path. Help,
-version, and invalid-argument parser exits are returned as normal tool results
-instead of closing the MCP transport.
+dedicated structured MCP tool. `run_ssot_cli` accepts argv tokens after
+`ssot-registry`, including global flags, commands, command flags, subcommands,
+and subcommand flags. `ssot-mcp` also registers mirrored `ssot_cli__*` tools
+for each live CLI command path; those tools accept `global_args` for root flags
+and `args` for path-local flags and positionals. Workers can call
+`get_ssot_cli_surface` to discover the live global flags, top-level commands,
+command paths, flags by command path, and the exact MCP tool name mapped to
+each path. Help, version, and invalid-argument parser exits are returned as
+normal tool results instead of closing the MCP transport.
 
 ## Campaign Scope And Repair
 

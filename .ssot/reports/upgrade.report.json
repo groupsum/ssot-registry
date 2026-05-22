@@ -1,1 +1,1 @@
-{"changed":false,"document_migration":null,"from_schema_version":"0.4.0","from_version":"0.2.10","migrations":[],"passed":true,"registry_path":".ssot/registry.json","renamed_specs":[],"schema_migrations":[],"sync":null,"to_schema_version":"0.4.0","to_version":"0.2.17"}
+{"changed":true,"document_migration":null,"from_schema_version":"0.7.0","from_version":"0.2.10","migrations":[],"passed":true,"registry_path":".ssot/registry.json","renamed_specs":[],"schema_migrations":[],"sync":null,"to_schema_version":"0.7.0","to_version":"0.2.20"}

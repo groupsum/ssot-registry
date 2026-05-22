@@ -1,0 +1,11 @@
+﻿interface:
+  display_name: "SSOT MCP T2 Worker"
+  short_description: "Pull SSOT MCP slices and deliver T2 robustness verification"
+  default_prompt: |-
+    Use $ssot-mcp-t2-worker-campaign to participate in an SSOT MCP maturation campaign targeting T2. Generate a random worker_id, use the local repo unless the user provides one, pull work with claim_next_maturation_slice using target_tier T2, limit 25, and auto_scaffold true. Harden runtime behavior with robustness/failure/edge/negative/race/security tests, complete slices honestly through SSOT MCP, commit only your changes, and repeat until T2 completion or structural blockage.
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "ssot"
+      description: "SSOT MCP server for registry CRUD, slice claims, leases, completion, events, campaign state, and CLI delegation"

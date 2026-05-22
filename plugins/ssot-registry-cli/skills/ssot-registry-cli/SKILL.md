@@ -16,6 +16,7 @@ This plugin is centered on the CLI exposed by the PyPI-published `ssot-registry`
 - CRUD-style document and entity operations for `adr`, `spec`, `feature`, `profile`, `test`, `issue`, `claim`, `evidence`, `risk`, `boundary`, and `release`
 - Automated status convergence with `registry sync-statuses`
 - Export flows for `graph export` and `registry export`
+- SSOT MCP worker-campaign routing for pull-lease maturation work targeting `T1`, `T2`, or `T3`
 
 ## Skill routing table
 
@@ -42,6 +43,10 @@ Use these focused skills by default:
   - Boundary: `$ssot-boundary`
   - Release: `$ssot-release`
 - Cross-entity read wrappers: `$ssot-entity-get`, `$ssot-entity-list`, `$ssot-entity-review`, `$ssot-entity-analyze`
+- SSOT MCP worker campaigns:
+  - T1 direct verification slices: `$ssot-mcp-t1-worker-campaign`
+  - T2 robustness verification slices: `$ssot-mcp-t2-worker-campaign`
+  - T3 certification-closure slices: `$ssot-mcp-t3-worker-campaign`
 - Multi-phase lifecycle orchestration: `$ssot-e2e-change-orchestrator` or `$ssot-e2e-portable-lifecycle`
 
 ## Command selection

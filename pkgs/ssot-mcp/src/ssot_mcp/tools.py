@@ -25,6 +25,7 @@ from ssot_registry.control.service import ControlPlane
 
 _PINNED_REPO: Path | None = None
 _CLI_LOCK = RLock()
+MCP_CLI_ROOT_TOOL_NAME = "ssot_cli__root"
 
 
 def configure_repo(repo: str | Path | None) -> None:
@@ -137,6 +138,17 @@ def _cli_surface() -> dict[str, Any]:
         "global_flags": _option_flags(parser),
         "flags_by_path": {key: flags_by_path[key] for key in sorted(flags_by_path)},
     }
+
+
+def mcp_cli_tool_name_for_path(path: str) -> str:
+    tokens = [token.strip().lower().replace("-", "_") for token in path.split() if token.strip()]
+    if not tokens:
+        return MCP_CLI_ROOT_TOOL_NAME
+    return "ssot_cli__" + "__".join(tokens)
+
+
+def _mcp_cli_tool_map(surface: dict[str, Any]) -> dict[str, str]:
+    return {path: mcp_cli_tool_name_for_path(path) for path in surface["subcommand_paths"]}
 
 
 def _is_cli_metadata_request(args: list[str]) -> bool:
@@ -283,7 +295,12 @@ def get_ssot_cli_surface(repo: str | None = None) -> dict[str, Any]:
     if repo is not None or _PINNED_REPO is not None:
         _resolve_repo_for_cli(repo, ["--help"])
     surface = _cli_surface()
-    return {"passed": True, **surface}
+    return {
+        "passed": True,
+        **surface,
+        "root_tool_name": MCP_CLI_ROOT_TOOL_NAME,
+        "tool_name_by_path": _mcp_cli_tool_map(surface),
+    }
 
 
 def get_blocked_transitions(repo: str | None = None, campaign_id: str | None = None, status: str | None = "open") -> dict[str, Any]:

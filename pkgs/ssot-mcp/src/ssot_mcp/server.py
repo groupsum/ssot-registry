@@ -6,6 +6,56 @@ from typing import Any
 from . import resources, tools
 
 
+def _make_cli_mirror_tool(path: str):
+    prefix = path.split()
+
+    def cli_mirror_tool(
+        repo: str | None = None,
+        global_args: list[str] | None = None,
+        args: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Run one fixed ssot-registry command path through MCP.
+
+        `global_args` are inserted before the fixed command path so callers can
+        supply root-level flags such as `--output-format`.
+        `args` are appended after the fixed command path for command and
+        subcommand flags plus positional arguments.
+        """
+
+        argv: list[str] = []
+        if global_args:
+            argv.extend(global_args)
+        argv.extend(prefix)
+        if args:
+            argv.extend(args)
+        return tools.run_ssot_cli(repo=repo, args=argv)
+
+    cli_mirror_tool.__name__ = tools.mcp_cli_tool_name_for_path(path)
+    return cli_mirror_tool
+
+
+def _register_cli_mirror_tools(mcp: Any) -> None:
+    surface = tools.get_ssot_cli_surface()
+    mcp.tool(
+        name=tools.MCP_CLI_ROOT_TOOL_NAME,
+        title="ssot-registry root",
+        description="Mirror of the root ssot-registry CLI surface through MCP. Pass argv tokens after `ssot-registry` in `args`.",
+    )(tools.run_ssot_cli)
+
+    for path in surface["subcommand_paths"]:
+        flags = surface["flags_by_path"].get(path, [])
+        flags_text = ", ".join(f"`{flag}`" for flag in flags) if flags else "none"
+        mcp.tool(
+            name=surface["tool_name_by_path"][path],
+            title=f"ssot-registry {path}",
+            description=(
+                f"Mirror of `ssot-registry {path}` through MCP. "
+                f"Supported path-local flags: {flags_text}. "
+                "Pass root/global flags in `global_args` and path-local flags or positionals in `args`."
+            ),
+        )(_make_cli_mirror_tool(path))
+
+
 def build_server() -> Any:
     try:
         from mcp.server.fastmcp import FastMCP
@@ -36,6 +86,7 @@ def build_server() -> Any:
     mcp.tool()(tools.registry_entity_link)
     mcp.tool()(tools.registry_entity_unlink)
     mcp.tool()(tools.run_ssot_cli)
+    _register_cli_mirror_tools(mcp)
 
     mcp.resource("ssot://registry/{repo}")(resources.registry_resource)
     mcp.resource("ssot://campaign/{repo}/{campaign_id}")(resources.campaign_status_resource)

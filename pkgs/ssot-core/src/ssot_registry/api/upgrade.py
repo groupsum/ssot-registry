@@ -809,8 +809,9 @@ def upgrade_registry(
         )
 
     normalized_current = _normalize_current_registry(working)
+    tooling_version_drift = source_tooling_version != target_version
 
-    if not migrations and not sync_docs and not normalized_current:
+    if not migrations and not sync_docs and not normalized_current and not tooling_version_drift:
         report = validate_registry_document(working, registry_path, repo_root)
         if not report["passed"]:
             raise ValidationError("; ".join(report["failures"]))

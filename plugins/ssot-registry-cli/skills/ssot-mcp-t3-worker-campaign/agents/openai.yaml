@@ -1,0 +1,11 @@
+﻿interface:
+  display_name: "SSOT MCP T3 Worker"
+  short_description: "Pull SSOT MCP maturation slices and deliver T3 claim work"
+  default_prompt: |-
+    Use $ssot-mcp-t3-worker-campaign to participate in an SSOT MCP maturation campaign. Generate a random worker_id, use the local repo unless the user provides one, pull work with claim_next_maturation_slice targeting T3 with limit 25 and auto_scaffold true, implement runtime and tests, complete slices honestly through SSOT MCP, commit only your changes, and repeat until campaign completion or structural blockage.
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "ssot"
+      description: "SSOT MCP server for registry CRUD, slice claims, leases, completion, events, campaign state, and CLI delegation"
