@@ -30,6 +30,7 @@ supported-python = ">=3.10,<3.15"
 [dependency-groups]
 dev = [
   "pytest>=8.3",
+  "swarmauri_vectorstore_git",
   "textual>=8.2.3",
 ]
 
