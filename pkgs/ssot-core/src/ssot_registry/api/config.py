@@ -24,6 +24,13 @@ _DEFAULT_CONFIG: dict[str, Any] = {
         "interactive": False,
         "fail_closed": True,
     },
+    "commands": {
+        "feature": {
+            "create": {
+                "auto_scaffold_proof_graph": True,
+            }
+        }
+    },
     "sync": {
         "docs": "manual",
         "templates": "manual",
@@ -50,6 +57,9 @@ _DEFAULT_CONFIG: dict[str, Any] = {
 _DEFAULT_TEMPLATE = """[policy]
 interactive = false
 fail_closed = true
+
+[commands.feature.create]
+auto_scaffold_proof_graph = true
 
 [sync]
 docs = "manual"
@@ -148,6 +158,11 @@ def validate_repo_config_payload(config: dict[str, Any]) -> dict[str, Any]:
     _expect_bool(policy, "interactive", prefix="policy")
     _expect_bool(policy, "fail_closed", prefix="policy")
 
+    commands = _expect_table(normalized, "commands")
+    feature_commands = _expect_table(commands, "feature")
+    feature_create = _expect_table(feature_commands, "create")
+    _expect_bool(feature_create, "auto_scaffold_proof_graph", prefix="commands.feature.create")
+
     sync = _expect_table(normalized, "sync")
     for field_name in ("docs", "templates", "upstream_packages"):
         _expect_choice(sync, field_name, _AUTOMATION_MODE_CHOICES, prefix="sync")
@@ -224,6 +239,17 @@ def validate_repo_config(path: str | Path) -> dict[str, Any]:
         "config_path": payload["config_path"],
         "config": payload["config"],
     }
+
+
+def resolve_feature_create_auto_scaffold(path: str | Path, explicit: bool | None) -> bool:
+    if explicit is not None:
+        return explicit
+    try:
+        payload = load_repo_config(path)
+    except FileNotFoundError:
+        return bool(_DEFAULT_CONFIG["commands"]["feature"]["create"]["auto_scaffold_proof_graph"])
+    feature_create = payload["config"]["commands"]["feature"]["create"]
+    return bool(feature_create["auto_scaffold_proof_graph"])
 
 
 def run_repo_automation(path: str | Path) -> dict[str, Any]:

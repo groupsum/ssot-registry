@@ -8,17 +8,19 @@ status: "draft"
 origin: "ssot-origin"
 decision_date: null
 tags: []
-summary: "This specification defines targeted scaffold repair. scaffold_target_claim_wiring SHALL compare baseline validation failures against post-repair validation failures. The repair MAY persist when no new validation failures are introduced, even if baseline validation remains dirty. Responses SHALL expose validation_clean, baseline_validation, validation, and new_validation_failures."
+summary: "This specification defines targeted scaffold repair. `scaffold_target_claim_wiring` SHALL compare baseline validation failures against post-repair validation failures. The repair MAY persist when no new validation failures are introduced, even if baseline validation remains dirty. Responses SHALL expose `validation_clean`, `baseline_validation`, `validation`, and `new_validation_failures`."
 supersedes: []
 superseded_by: []
 status_notes:
   -
-    status: "draft"
-    note: "Created to govern SSOT MCP scoped repair and worker maturation behavior."
     at: "2026-05-20T17:45:22Z"
+    note: "Created to govern SSOT MCP scoped repair and worker maturation behavior."
+    status: "draft"
 references: []
 body: |-
-  This specification defines targeted scaffold repair. scaffold_target_claim_wiring SHALL compare baseline validation failures against post-repair validation failures. The repair MAY persist when no new validation failures are introduced, even if baseline validation remains dirty. Responses SHALL expose validation_clean, baseline_validation, validation, and new_validation_failures.
+  This specification defines targeted scaffold repair. `scaffold_target_claim_wiring` SHALL compare baseline validation failures against post-repair validation failures. The repair MAY persist when no new validation failures are introduced, even if baseline validation remains dirty. Responses SHALL expose `validation_clean`, `baseline_validation`, `validation`, and `new_validation_failures`.
+  
+  The same scaffold semantics SHALL remain compatible with create-time proof-graph materialization. Repair-time scaffold and create-time scaffold may be reached through different command surfaces, but they SHALL produce proof-graph closure that obeys the same validation and no-new-failures discipline.
 spec_kind: "operational"
 adr_ids:
   - "adr:0632"

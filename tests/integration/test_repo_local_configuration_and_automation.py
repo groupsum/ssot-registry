@@ -12,6 +12,9 @@ def _automatic_config_text() -> str:
 interactive = false
 fail_closed = true
 
+[commands.feature.create]
+auto_scaffold_proof_graph = true
+
 [sync]
 docs = "automatic"
 templates = "manual"
@@ -82,6 +85,7 @@ class RepoLocalConfigurationAndAutomationTests(unittest.TestCase):
             show = run_cli("config", "show", str(repo))
             self.assertEqual(show.returncode, 0, show.stderr)
             show_payload = json.loads(show.stdout)
+            self.assertTrue(show_payload["config"]["commands"]["feature"]["create"]["auto_scaffold_proof_graph"])
             self.assertEqual(show_payload["config"]["sync"]["docs"], "manual")
             self.assertFalse(show_payload["config"]["generation"]["targets"]["graphs"])
 

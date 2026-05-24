@@ -1,20 +1,22 @@
-adr_ids:
-  - "adr:0524"
+schema_version: "0.7.0"
+kind: "spec"
+id: "spc:0526"
+number: 526
+slug: "ssot-conformance-scaffold-and-evidence-output"
+title: "SSOT conformance scaffold and evidence output"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "Contract: conformance scaffold operations shall discover profile obligations, compute missing feature and test rows, report dry-run plans, apply requested rows through SSOT APIs, preserve reciprocal links, and remain idempotent. Claim and evidence creation shall be explicit opt-in. Conformance evidence output shall be machine-readable and suitable for later registry sync-statuses and validation."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
 body: |-
   Contract: conformance scaffold operations shall discover profile obligations, compute missing feature and test rows, report dry-run plans, apply requested rows through SSOT APIs, preserve reciprocal links, and remain idempotent. Claim and evidence creation shall be explicit opt-in. Conformance evidence output shall be machine-readable and suitable for later registry sync-statuses and validation.
-decision_date: null
-id: "spc:0526"
-kind: "spec"
-number: 526
-origin: "ssot-core"
-references: []
-schema_version: "0.2.0"
-slug: "ssot-conformance-scaffold-and-evidence-output"
+  
+  The scaffold semantics defined here also govern the default proof-graph materialization path used by `feature create` when scaffold-first creation is enabled. Create-time scaffold and conformance scaffold SHALL preserve the same closure invariants, reciprocal-link expectations, validation discipline, and idempotency guarantees even when they are exposed through different command surfaces.
 spec_kind: "operational"
-status: "draft"
-status_notes: []
-summary: "Contract: conformance scaffold operations shall discover profile obligations, compute missing feature and test rows, report dry-run plans, apply requested rows through SSOT APIs, preserve reciprocal links, and remain idempotent. Claim and evidence creation shall be explicit opt-in. Conformance evidence output shall be machine-readable and suitable for later registry sync-statuses and validation."
-superseded_by: []
-supersedes: []
-tags: []
-title: "SSOT conformance scaffold and evidence output"
+adr_ids:
+  - "adr:0524"

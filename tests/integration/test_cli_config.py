@@ -12,6 +12,9 @@ def _automatic_config_text() -> str:
 interactive = false
 fail_closed = true
 
+[commands.feature.create]
+auto_scaffold_proof_graph = true
+
 [sync]
 docs = "automatic"
 templates = "manual"
@@ -51,6 +54,7 @@ class ConfigCliTests(unittest.TestCase):
             show = run_cli("config", "show", str(repo))
             self.assertEqual(show.returncode, 0, show.stderr)
             show_payload = json.loads(show.stdout)
+            self.assertTrue(show_payload["config"]["commands"]["feature"]["create"]["auto_scaffold_proof_graph"])
             self.assertEqual(show_payload["config"]["sync"]["docs"], "manual")
             self.assertFalse(show_payload["config"]["generation"]["targets"]["graphs"])
 
@@ -141,6 +145,93 @@ class ConfigCliTests(unittest.TestCase):
             )
             for output_path in graph_outputs:
                 self.assertTrue(Path(output_path).exists(), output_path)
+
+    def test_feature_create_uses_repo_local_scaffold_default_and_cli_override_precedence(self) -> None:
+        with workspace_tempdir() as temp_dir:
+            repo = Path(temp_dir) / "feature-create-config-repo"
+            repo.mkdir()
+
+            init = run_cli(
+                "init",
+                str(repo),
+                "--repo-id",
+                "repo:feature-create-config-repo",
+                "--repo-name",
+                "feature-create-config-repo",
+                "--version",
+                "1.0.0",
+            )
+            self.assertEqual(init.returncode, 0, init.stderr)
+
+            config_path = repo / ".ssot" / "ssot.toml"
+            config_path.write_text(
+                _automatic_config_text().replace("auto_scaffold_proof_graph = true", "auto_scaffold_proof_graph = false"),
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            disabled = run_cli(
+                "feature",
+                "create",
+                str(repo),
+                "--id",
+                "feat:config.default-off",
+                "--title",
+                "Config default off feature",
+                "--description",
+                "should fail closed without scaffold",
+                "--implementation-status",
+                "partial",
+                "--horizon",
+                "current",
+                "--claim-tier",
+                "T2",
+            )
+            self.assertEqual(disabled.returncode, 1)
+            self.assertIn("has no linked claims", disabled.stdout)
+
+            explicit_on = run_cli(
+                "feature",
+                "create",
+                str(repo),
+                "--id",
+                "feat:config.explicit-on",
+                "--title",
+                "Config explicit on feature",
+                "--description",
+                "explicit CLI enable overrides config disable",
+                "--implementation-status",
+                "partial",
+                "--horizon",
+                "current",
+                "--claim-tier",
+                "T2",
+                "--auto-scaffold-proof-graph",
+            )
+            self.assertEqual(explicit_on.returncode, 0, explicit_on.stderr)
+            self.assertIn("\"scaffolded\"", explicit_on.stdout)
+
+            config_path.write_text(_automatic_config_text(), encoding="utf-8", newline="\n")
+            explicit_off = run_cli(
+                "feature",
+                "create",
+                str(repo),
+                "--id",
+                "feat:config.explicit-off",
+                "--title",
+                "Config explicit off feature",
+                "--description",
+                "explicit CLI disable overrides config enable",
+                "--implementation-status",
+                "partial",
+                "--horizon",
+                "current",
+                "--claim-tier",
+                "T2",
+                "--no-auto-scaffold-proof-graph",
+            )
+            self.assertEqual(explicit_off.returncode, 1)
+            self.assertIn("has no linked claims", explicit_off.stdout)
 
 
 if __name__ == "__main__":

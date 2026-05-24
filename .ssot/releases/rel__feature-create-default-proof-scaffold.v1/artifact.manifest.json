@@ -1,0 +1,1 @@
+{"artifacts":[{"id":"registry","kind":"registry","media_type":"application/json","path":".ssot/registry.json","sha256":"cd435f50e942fa72ac445d927fddd67abc0012e14f1ece6f0c47eef50968a9ef","size":1617145}],"kind":"output_artifact_manifest","release_id":"rel:feature-create-default-proof-scaffold.v1"}

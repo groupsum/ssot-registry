@@ -21,6 +21,7 @@ from ssot_registry.api import (
     list_feature_children,
     list_entities,
     plan_features,
+    resolve_feature_create_auto_scaffold,
     remove_feature_children,
     set_feature_lifecycle,
     set_feature_parents,
@@ -75,7 +76,7 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     add_optional_bool_argument(
         create,
         "--auto-scaffold-proof-graph",
-        default=False,
+        default=None,
         help_text="Create a minimally valid linked claim, test, and evidence scaffold for this feature in the same transaction.",
     )
     create.set_defaults(func=run_create)
@@ -257,7 +258,7 @@ def run_create(args: argparse.Namespace) -> dict[str, object]:
         "requires": args.requires,
         "parent_feature_ids": args.parent_feature_ids,
     }
-    if args.auto_scaffold_proof_graph:
+    if resolve_feature_create_auto_scaffold(args.path, args.auto_scaffold_proof_graph):
         return create_feature_with_scaffolded_proof_graph(args.path, row)
     return create_entity(args.path, "features", row)
 

@@ -1,6 +1,6 @@
 from .boundary import freeze_boundary
 from .claims import evaluate_claims
-from .config import ensure_repo_config, load_repo_config, run_repo_automation, validate_repo_config
+from .config import ensure_repo_config, load_repo_config, resolve_feature_create_auto_scaffold, run_repo_automation, validate_repo_config
 from .documents import (
     create_document,
     create_document_reservation,
@@ -79,6 +79,7 @@ __all__ = [
     "ensure_repo_config",
     "load_repo_config",
     "validate_repo_config",
+    "resolve_feature_create_auto_scaffold",
     "run_repo_automation",
     "create_document",
     "get_document",

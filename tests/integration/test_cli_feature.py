@@ -8,7 +8,7 @@ from tests.helpers import run_cli, temp_repo_from_fixture
 
 
 class CliFeatureTests(unittest.TestCase):
-    def test_feature_create_auto_scaffolds_proof_graph(self) -> None:
+    def test_feature_create_auto_scaffolds_proof_graph_by_default(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)
         repo = Path(temp_dir.name) / "repo"
@@ -29,7 +29,6 @@ class CliFeatureTests(unittest.TestCase):
             "current",
             "--claim-tier",
             "T2",
-            "--auto-scaffold-proof-graph",
         )
         self.assertEqual(create.returncode, 0, create.stderr)
         payload = json.loads(create.stdout)
@@ -50,6 +49,57 @@ class CliFeatureTests(unittest.TestCase):
             ["clm:cli.scaffolded.t0", "clm:cli.scaffolded.t1", "clm:cli.scaffolded.t2"],
         )
         self.assertEqual(feature_payload["test_ids"], ["tst:pytest.cli.scaffolded.proof-graph"])
+
+    def test_feature_create_cli_override_can_disable_default_scaffold(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+
+        create = run_cli(
+            "feature",
+            "create",
+            str(repo),
+            "--id",
+            "feat:cli.no-scaffold",
+            "--title",
+            "CLI no scaffold feature",
+            "--description",
+            "current feature without scaffold should fail closed",
+            "--implementation-status",
+            "partial",
+            "--horizon",
+            "current",
+            "--claim-tier",
+            "T2",
+            "--no-auto-scaffold-proof-graph",
+        )
+        self.assertNotEqual(create.returncode, 0)
+        self.assertIn("has no linked claims", create.stdout)
+        self.assertIn("has no linked tests", create.stdout)
+
+    def test_non_targeted_inventory_feature_can_explicitly_opt_out_of_scaffold(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+
+        create = run_cli(
+            "feature",
+            "create",
+            str(repo),
+            "--id",
+            "feat:cli.inventory-parent",
+            "--title",
+            "CLI inventory parent",
+            "--description",
+            "inventory-only umbrella parent",
+            "--parent-feature-ids",
+            "feat:rfc.9000.connection-migration",
+            "--no-auto-scaffold-proof-graph",
+        )
+        self.assertEqual(create.returncode, 0, create.stderr)
+        payload = json.loads(create.stdout)
+        self.assertEqual(payload["entity"]["claim_ids"], [])
+        self.assertEqual(payload["entity"]["test_ids"], [])
 
     def test_feature_surface(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
@@ -78,6 +128,7 @@ class CliFeatureTests(unittest.TestCase):
             "feat:rfc.9000.connection-migration",
             "--parent-feature-ids",
             "feat:rfc.9000.connection-migration",
+            "--no-auto-scaffold-proof-graph",
         )
         self.assertEqual(create.returncode, 0, create.stderr)
         self.assertTrue(json.loads(create.stdout)["passed"])
@@ -288,6 +339,7 @@ class CliFeatureTests(unittest.TestCase):
             "tolerated",
             "--note",
             "Partial incidental support is tracked but not release-targeted.",
+            "--no-auto-scaffold-proof-graph",
         )
         self.assertEqual(out_of_bounds.returncode, 0, out_of_bounds.stderr)
         out_of_bounds_payload = json.loads(out_of_bounds.stdout)

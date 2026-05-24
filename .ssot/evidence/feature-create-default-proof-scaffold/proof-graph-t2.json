@@ -1,0 +1,1 @@
+{"claim_ids":["clm:feature-create-default-proof-scaffold.t0","clm:feature-create-default-proof-scaffold.t1","clm:feature-create-default-proof-scaffold.t2"],"feature_id":"feat:feature-create-default-proof-scaffold","schema_version":"ssot.evidence.scaffold.v1","status":"planned","target_tier":"T2","test_id":"tst:pytest.feature-create-default-proof-scaffold.proof-graph"}

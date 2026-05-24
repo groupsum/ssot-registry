@@ -1,4 +1,4 @@
-schema_version: "0.3.0"
+schema_version: "0.7.0"
 kind: "adr"
 id: "adr:0528"
 number: 528
@@ -20,6 +20,8 @@ body: |-
   
   `.ssot/registry.json` is canonical registry truth. It must not become an overloaded store for operator policy. Policy and truth must remain separate so registry semantics stay stable and automation settings stay explicit.
   
+  Feature creation now has a policy-sensitive default: proof-graph scaffolding should happen implicitly for new feature rows unless the repository or the operator explicitly disables it for a specific use case such as inventory-only umbrella parents.
+  
   ## Decision
   
   `ssot-registry` shall support one repo-local TOML configuration file as the authoritative policy surface for repository-local SSOT behavior.
@@ -31,6 +33,8 @@ body: |-
   - shall support explicit command defaults, automation defaults, output defaults, and optional coordination settings
   - shall not overwrite an existing file unless the operator explicitly requests replacement
   
+  The config surface shall be allowed to carry feature-creation defaults, including command-scoped policy for proof-graph scaffolding. At minimum, repositories may define a default equivalent to `feature create --auto-scaffold-proof-graph`, and may also define narrower overrides for inventory-only or operator-specific workflows.
+  
   Precedence shall be:
   1. explicit CLI inputs
   2. command-scoped config values
@@ -41,4 +45,4 @@ body: |-
   
   ## Consequences
   
-  Repositories gain a durable, reviewable policy surface for SSOT behavior. CLI commands can share one configuration source while `.ssot/registry.json` remains the canonical registry. Validation and automation decisions become inspectable and testable.
+  Repositories gain a durable, reviewable policy surface for SSOT behavior. CLI commands can share one configuration source while `.ssot/registry.json` remains the canonical registry. Validation and automation decisions become inspectable and testable, including the default scaffold behavior for new feature creation.

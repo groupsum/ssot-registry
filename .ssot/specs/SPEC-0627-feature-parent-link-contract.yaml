@@ -1,4 +1,4 @@
-schema_version: "0.6.0"
+schema_version: "0.7.0"
 kind: "spec"
 id: "spc:0627"
 number: 627
@@ -13,9 +13,9 @@ supersedes: []
 superseded_by: []
 status_notes:
   -
-    status: "accepted"
-    note: "Accepted with ADR-0627 to separate inventory composition from prerequisite gating."
     at: "2026-05-19T22:26:45Z"
+    note: "Accepted with ADR-0627 to separate inventory composition from prerequisite gating."
+    status: "accepted"
 references: []
 body: |-
   ## Feature Row Contract
@@ -31,6 +31,8 @@ body: |-
   Validation and migration SHALL deduplicate and sort parent_feature_ids for deterministic output. Normal validation SHALL reject malformed values.
   
   Status synchronization, feature implementation evaluation, profile evaluation, boundary freeze, release certification, promotion, and publication SHALL ignore parent_feature_ids unless a later accepted ADR and SPEC define an explicit aggregate policy.
+  
+  Default proof-graph scaffolding for `feature create` SHALL NOT treat parent links as readiness edges and SHALL NOT infer that a row is non-targeted merely because it references or is referenced by `parent_feature_ids`. Disabling create-time scaffold for inventory-only umbrella rows is an explicit command or config choice.
 spec_kind: "normative"
 adr_ids:
   - "adr:0627"

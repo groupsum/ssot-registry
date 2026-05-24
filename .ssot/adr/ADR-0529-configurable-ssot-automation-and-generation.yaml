@@ -1,4 +1,4 @@
-schema_version: "0.3.0"
+schema_version: "0.7.0"
 kind: "adr"
 id: "adr:0529"
 number: 529
@@ -23,6 +23,8 @@ body: |-
   
   These are related but not identical surfaces. Explicit commands are operator-driven. Automatic behavior is policy-driven.
   
+  Feature creation now also needs a policy-driven default path. The system already provides scaffold flows and repair flows, but downstream operators commonly encounter strict `feature create` before they discover those supporting flows. A configurable default that materializes proof-graph closure during `feature create` is automatic behavior in the same sense as other governed generation actions.
+  
   ## Decision
   
   `ssot-registry` shall treat explicit command execution and config-driven automatic execution as separate but related surfaces.
@@ -37,6 +39,8 @@ body: |-
   Automatic execution is configurable behavior, not a mandatory default. Repositories may choose manual-only operation, mixed operation, or automatic operation for supported actions.
   
   Automatic execution shall be policy-controlled through repo-local config, while explicit invocation shall remain available regardless of config defaults unless explicitly prohibited by future policy.
+  
+  Default proof-graph scaffolding during `feature create` is one of the supported automatic behaviors. Repositories may keep the built-in scaffold-first default, may restate it explicitly in repo-local config, or may override it for narrow workflows such as inventory-only feature rows.
   
   ## Consequences
   
