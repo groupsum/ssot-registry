@@ -230,11 +230,14 @@ def create_feature_with_scaffolded_proof_graph(path: str | Path, row: dict[str, 
     target_tier = str(plan.get("target_claim_tier") or "T1")
     tiers = _tier_sequence(target_tier)
     slug = _safe_slug(entity_id)
-    test_id = f"tst:pytest.{slug}.proof-graph"
     evidence_id = f"evd:{target_tier.lower()}.{slug}.proof-graph"
-    test_path = f"tests/ssot_scaffold/test_{slug.replace('.', '_').replace('-', '_')}_proof_graph.py"
     evidence_path = f".ssot/evidence/{slug}/proof-graph-{target_tier.lower()}.json"
     claim_ids = [f"clm:{slug}.{tier.lower()}" for tier in tiers]
+    test_ids = [f"tst:pytest.{slug}.{tier.lower()}.proof-graph" for tier in tiers]
+    test_path_by_tier = {
+        tier: f"tests/ssot_scaffold/test_{slug.replace('.', '_').replace('-', '_')}_{tier.lower()}_proof_graph.py"
+        for tier in tiers
+    }
 
     claims: list[dict[str, Any]] = []
     for index, tier in enumerate(tiers):
@@ -248,32 +251,37 @@ def create_feature_with_scaffolded_proof_graph(path: str | Path, row: dict[str, 
             "description": f"{tier} scaffold claim for {entity_id}.",
             "origin": candidate["origin"],
             "feature_ids": [entity_id],
-            "test_ids": [test_id],
+            "test_ids": [test_ids[index]],
             "evidence_ids": [evidence_id],
             "depends_on_claim_ids": claim_ids_in_chain[:-1],
         }
         claims.append(claim)
 
-    test_row = {
-        "id": test_id,
-        "title": f"{candidate['title']} proof-graph scaffold test",
-        "body": f"Planned scaffold test for {entity_id}.",
-        "origin": candidate["origin"],
-        "status": "planned",
-        "kind": "pytest",
-        "path": test_path,
-        "feature_ids": [entity_id],
-        "claim_ids": claim_ids,
-        "evidence_ids": [evidence_id],
-        "execution": {
-            "argv": ["python", "-m", "pytest", test_path, "-q"],
-            "cwd": ".",
-            "env": {},
-            "mode": "command",
-            "success": {"expected": 0, "type": "exit_code"},
-            "timeout_seconds": 600,
-        },
-    }
+    test_rows: list[dict[str, Any]] = []
+    for index, tier in enumerate(tiers):
+        test_path = test_path_by_tier[tier]
+        test_rows.append(
+            {
+                "id": test_ids[index],
+                "title": f"{candidate['title']} {tier} proof-graph scaffold test",
+                "body": f"Planned scaffold test for {entity_id} {tier} support.",
+                "origin": candidate["origin"],
+                "status": "planned",
+                "kind": "pytest",
+                "path": test_path,
+                "feature_ids": [entity_id],
+                "claim_ids": [claim_ids[index]],
+                "evidence_ids": [evidence_id],
+                "execution": {
+                    "argv": ["python", "-m", "pytest", test_path, "-q"],
+                    "cwd": ".",
+                    "env": {},
+                    "mode": "command",
+                    "success": {"expected": 0, "type": "exit_code"},
+                    "timeout_seconds": 600,
+                },
+            }
+        )
     evidence_row = {
         "id": evidence_id,
         "title": f"{candidate['title']} proof-graph scaffold evidence",
@@ -284,26 +292,28 @@ def create_feature_with_scaffolded_proof_graph(path: str | Path, row: dict[str, 
         "origin": candidate["origin"],
         "path": evidence_path,
         "claim_ids": claim_ids,
-        "test_ids": [test_id],
+        "test_ids": test_ids,
     }
 
     candidate["claim_ids"] = _dedupe_preserve([*claim_ids, *_ensure_list_field(candidate, "claim_ids")])
-    candidate["test_ids"] = _dedupe_preserve([test_id, *_ensure_list_field(candidate, "test_ids")])
+    candidate["test_ids"] = _dedupe_preserve([*test_ids, *_ensure_list_field(candidate, "test_ids")])
     registry["features"].append(candidate)
     registry.setdefault("claims", []).extend(claims)
-    registry.setdefault("tests", []).append(test_row)
+    registry.setdefault("tests", []).extend(test_rows)
     registry.setdefault("evidence", []).append(evidence_row)
 
     for created in claims:
         _sync_reciprocals_for_row(registry, "claims", created)
-    _sync_reciprocals_for_row(registry, "tests", test_row)
+    for created in test_rows:
+        _sync_reciprocals_for_row(registry, "tests", created)
     _sync_reciprocals_for_row(registry, "evidence", evidence_row)
     _sync_reciprocals_for_row(registry, "features", candidate)
 
-    _ensure_scaffold_file(
-        repo_root / test_path,
-        "def test_ssot_scaffold_placeholder():\n    assert True\n",
-    )
+    for test_path in test_path_by_tier.values():
+        _ensure_scaffold_file(
+            repo_root / test_path,
+            "def test_ssot_scaffold_placeholder():\n    assert True\n",
+        )
     _ensure_scaffold_file(
         repo_root / evidence_path,
         stable_json_dumps(
@@ -311,7 +321,7 @@ def create_feature_with_scaffolded_proof_graph(path: str | Path, row: dict[str, 
                 "schema_version": "ssot.evidence.scaffold.v1",
                 "feature_id": entity_id,
                 "claim_ids": claim_ids,
-                "test_id": test_id,
+                "test_ids": test_ids,
                 "target_tier": target_tier,
                 "status": "planned",
             }
@@ -326,9 +336,11 @@ def create_feature_with_scaffolded_proof_graph(path: str | Path, row: dict[str, 
         "entity": candidate,
         "scaffolded": {
             "claim_ids": claim_ids,
-            "test_id": test_id,
+            "test_id": test_ids[-1],
+            "test_ids": test_ids,
             "evidence_id": evidence_id,
-            "test_path": test_path,
+            "test_path": test_path_by_tier[tiers[-1]],
+            "test_paths": [test_path_by_tier[tier] for tier in tiers],
             "evidence_path": evidence_path,
         },
         **mutation,

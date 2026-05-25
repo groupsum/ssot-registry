@@ -31,8 +31,14 @@ def test_feature_create_can_scaffold_a_valid_proof_graph() -> None:
         assert create.returncode == 0, create.stderr
         payload = json.loads(create.stdout)
         assert payload["passed"] is True
-        assert payload["scaffolded"]["test_id"] == "tst:pytest.cli.proof-graph-smoke.proof-graph"
-        assert (repo / payload["scaffolded"]["test_path"]).exists()
+        assert payload["scaffolded"]["test_id"] == "tst:pytest.cli.proof-graph-smoke.t2.proof-graph"
+        assert payload["scaffolded"]["test_ids"] == [
+            "tst:pytest.cli.proof-graph-smoke.t0.proof-graph",
+            "tst:pytest.cli.proof-graph-smoke.t1.proof-graph",
+            "tst:pytest.cli.proof-graph-smoke.t2.proof-graph",
+        ]
+        for test_path in payload["scaffolded"]["test_paths"]:
+            assert (repo / test_path).exists()
         assert (repo / payload["scaffolded"]["evidence_path"]).exists()
     finally:
         temp_dir.cleanup()

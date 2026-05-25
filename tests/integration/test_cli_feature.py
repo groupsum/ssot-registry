@@ -38,9 +38,19 @@ class CliFeatureTests(unittest.TestCase):
             payload["scaffolded"]["claim_ids"],
             ["clm:cli.scaffolded.t0", "clm:cli.scaffolded.t1", "clm:cli.scaffolded.t2"],
         )
-        self.assertEqual(payload["scaffolded"]["test_id"], "tst:pytest.cli.scaffolded.proof-graph")
+        self.assertEqual(payload["scaffolded"]["test_id"], "tst:pytest.cli.scaffolded.t2.proof-graph")
+        self.assertEqual(
+            payload["scaffolded"]["test_ids"],
+            [
+                "tst:pytest.cli.scaffolded.t0.proof-graph",
+                "tst:pytest.cli.scaffolded.t1.proof-graph",
+                "tst:pytest.cli.scaffolded.t2.proof-graph",
+            ],
+        )
         self.assertEqual(payload["scaffolded"]["evidence_id"], "evd:t2.cli.scaffolded.proof-graph")
         self.assertTrue((repo / payload["scaffolded"]["test_path"]).exists())
+        for test_path in payload["scaffolded"]["test_paths"]:
+            self.assertTrue((repo / test_path).exists())
         self.assertTrue((repo / payload["scaffolded"]["evidence_path"]).exists())
 
         feature_payload = json.loads(run_cli("feature", "get", str(repo), "--id", "feat:cli.scaffolded").stdout)
@@ -48,7 +58,14 @@ class CliFeatureTests(unittest.TestCase):
             feature_payload["claim_ids"],
             ["clm:cli.scaffolded.t0", "clm:cli.scaffolded.t1", "clm:cli.scaffolded.t2"],
         )
-        self.assertEqual(feature_payload["test_ids"], ["tst:pytest.cli.scaffolded.proof-graph"])
+        self.assertEqual(
+            feature_payload["test_ids"],
+            [
+                "tst:pytest.cli.scaffolded.t0.proof-graph",
+                "tst:pytest.cli.scaffolded.t1.proof-graph",
+                "tst:pytest.cli.scaffolded.t2.proof-graph",
+            ],
+        )
 
     def test_feature_create_cli_override_can_disable_default_scaffold(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
