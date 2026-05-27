@@ -602,7 +602,7 @@
     "title": "Feature parent link contract",
     "filename": "SPEC-0627-feature-parent-link-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0627-feature-parent-link-contract.yaml",
-    "sha256": "d92555fb654740f1146cef217282e505f4801babfd57a3889319a60227ae3b33",
+    "sha256": "6a48b3fe42433487657312d62bac6067de4b120fce1e16c92828023056b25d9f",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -630,7 +630,7 @@
     "title": "Feature parent CLI contract",
     "filename": "SPEC-0628-feature-parent-cli-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0628-feature-parent-cli-contract.yaml",
-    "sha256": "99693fd69ac1e9882cb721997ca8c28a20de7f0e8db6aa1f74392da290670063",
+    "sha256": "d0c715b100fba7641d94513dd67e0eb3df32b3a0724bab8431dc9f94f9ac0de0",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -655,10 +655,10 @@
     "id": "spc:0629",
     "number": 629,
     "slug": "ssot-mcp-cli-surface-contract",
-    "title": "SSOT MCP CLI surface contract",
+    "title": "SSOT MCP and CLI surface parity contract",
     "filename": "SPEC-0629-ssot-mcp-cli-surface-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0629-ssot-mcp-cli-surface-contract.yaml",
-    "sha256": "00d75a03c3b235d97e6a543bf3828ac8a0aa08d217fcdb3013e23490f99b4c66",
+    "sha256": "b14f800ff5e92ede8adc1608ff67a99dccce1aebf0c7829799eeee62d6ac2599",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -671,6 +671,11 @@
       {
         "at": "2026-05-20T16:21:38Z",
         "note": "Created to define full SSOT CLI delegation through ssot-mcp.",
+        "status": "draft"
+      },
+      {
+        "at": "2026-05-22T00:45:11Z",
+        "note": "Updated to require discoverable mirrored MCP CLI-path tools and parity drift enforcement.",
         "status": "draft"
       }
     ],
@@ -771,7 +776,7 @@
     "title": "Targeted scaffold repair contract",
     "filename": "SPEC-0633-targeted-scaffold-repair-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0633-targeted-scaffold-repair-contract.yaml",
-    "sha256": "82105e8e4ea6bb4be30a5d29db1d240b870213615c8b0b71b2cfecfd5367cbd9",
+    "sha256": "431eafa5fc9855cffa52ea104fc5e4844af43e0d9d9d68322088510b3fafa68b",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -789,7 +794,9 @@
     ],
     "kind": "operational",
     "adr_ids": [
-      "adr:0632"
+      "adr:0632",
+      "adr:0635",
+      "adr:0636"
     ]
   },
   {
@@ -842,6 +849,95 @@
     "kind": "operational",
     "adr_ids": [
       "adr:0633"
+    ]
+  },
+  {
+    "id": "spc:0636",
+    "number": 636,
+    "slug": "proof-graph-assurance-contract",
+    "title": "Proof Graph Assurance Contract",
+    "filename": "SPEC-0636-proof-graph-assurance-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0636-proof-graph-assurance-contract.yaml",
+    "sha256": "0782a59c693d0b1691dda7006dd0568b8b437ae88da0ef08cc43e35a7d3f683d",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.20",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-21T05:59:16Z",
+        "note": "Created to define the connected proof-graph contract and tier semantics.",
+        "status": "draft"
+      }
+    ],
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0634",
+      "adr:0635"
+    ]
+  },
+  {
+    "id": "spc:0637",
+    "number": 637,
+    "slug": "proof-graph-materialization-and-certification-flow",
+    "title": "Proof Graph Materialization And Certification Flow",
+    "filename": "SPEC-0637-proof-graph-materialization-and-certification-flow.yaml",
+    "target_path": ".ssot/specs/SPEC-0637-proof-graph-materialization-and-certification-flow.yaml",
+    "sha256": "6b5698dfad48a2bab8d15c2543accdbad93b2d4a51dd5674c10633ca77f80027",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.20",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-21T05:59:17Z",
+        "note": "Created to define supported CLI and MCP proof-graph operator flows.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0635"
+    ]
+  },
+  {
+    "id": "spc:0638",
+    "number": 638,
+    "slug": "feature-create-default-proof-scaffold-contract",
+    "title": "Feature create default proof scaffold contract",
+    "filename": "SPEC-0638-feature-create-default-proof-scaffold-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0638-feature-create-default-proof-scaffold-contract.yaml",
+    "sha256": "1eff7824bfed8add7b6386fa8b57042120ef341fcf12920dc2d325a8eed9b3e0",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.20",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-24T10:52:03Z",
+        "note": "Created to govern default proof-graph scaffolding during feature creation.",
+        "status": "draft"
+      }
+    ],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0528",
+      "adr:0529",
+      "adr:0601",
+      "adr:0627",
+      "adr:0636"
     ]
   }
 ]

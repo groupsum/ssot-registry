@@ -1,4 +1,4 @@
-schema_version: "0.6.0"
+schema_version: "0.7.0"
 kind: "spec"
 id: "spc:0628"
 number: 628
@@ -13,9 +13,9 @@ supersedes: []
 superseded_by: []
 status_notes:
   -
-    status: "accepted"
-    note: "Accepted with ADR-0627 to define bulk parent and child command behavior."
     at: "2026-05-19T22:26:59Z"
+    note: "Accepted with ADR-0627 to define bulk parent and child command behavior."
+    status: "accepted"
 references: []
 body: |-
   ## CLI Contract
@@ -34,6 +34,8 @@ body: |-
   Every bulk mutation SHALL resolve all referenced ids, apply changes in memory, deduplicate and sort parent ids, check missing references, self-parenting, and cycles, validate the full registry, and save once. If any row fails validation, the operation SHALL fail atomically without partial writes.
   
   CLI help and examples SHALL state that parent links are inventory composition only and SHALL NOT be used as a substitute for feature.requires prerequisite gates.
+  
+  CLI help and examples for `feature create` SHALL also state that proof-graph scaffolding is enabled by default, and that inventory-only umbrella creation is an explicit opt-out workflow via CLI override or repo-local config.
 spec_kind: "normative"
 adr_ids:
   - "adr:0627"

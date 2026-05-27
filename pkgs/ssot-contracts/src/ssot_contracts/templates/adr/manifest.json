@@ -24,7 +24,7 @@
     "title": "Features are the targetable units",
     "filename": "ADR-0601-features-are-targetable-units.yaml",
     "target_path": ".ssot/adr/ADR-0601-features-are-targetable-units.yaml",
-    "sha256": "dcdc25c25b8b957c0913efbb056ba1d0456b3f94111df8976e433d85dc8270b6",
+    "sha256": "68c5ec6b68a2ae0c8b2523ac388bded26b3865843ffbb27d120f696573a67e11",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -474,7 +474,7 @@
     "title": "Feature parent links are inventory composition",
     "filename": "ADR-0627-feature-parent-links-are-inventory-composition.yaml",
     "target_path": ".ssot/adr/ADR-0627-feature-parent-links-are-inventory-composition.yaml",
-    "sha256": "4a2e2987a5221e4718526ce9dc036bbd0fb43dbfb4a51b16eec04bb41b040462",
+    "sha256": "f737baf8e7ef3131d02c9bd74cf698894438e7136dcb77a488c40a9b9c138eda",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -495,10 +495,10 @@
     "id": "adr:0628",
     "number": 628,
     "slug": "ssot-mcp-cli-surface-delegation",
-    "title": "SSOT MCP delegates the complete CLI surface safely",
+    "title": "SSOT MCP and CLI surfaces stay in parity",
     "filename": "ADR-0628-ssot-mcp-cli-surface-delegation.yaml",
     "target_path": ".ssot/adr/ADR-0628-ssot-mcp-cli-surface-delegation.yaml",
-    "sha256": "a3ca30d0bd5e9685d4cf6c07ace4ea1b83f0f3970cd67d32178e14e7b46243e7",
+    "sha256": "6c1146e7081ff8a97c246311fef9239e3dad4c49492034f338e33b2b901c62e0",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -511,6 +511,11 @@
       {
         "at": "2026-05-20T16:21:19Z",
         "note": "Created to govern safe SSOT CLI delegation through ssot-mcp.",
+        "status": "draft"
+      },
+      {
+        "at": "2026-05-22T00:44:55Z",
+        "note": "Updated to require explicit CLI/MCP parity, mirrored MCP command-path tools, and drift enforcement.",
         "status": "draft"
       }
     ]
@@ -628,5 +633,77 @@
     "supersedes": [],
     "superseded_by": [],
     "status_notes": []
+  },
+  {
+    "id": "adr:0634",
+    "number": 634,
+    "slug": "proof-graph-canonical-assurance-unit",
+    "title": "Proof Graph Is The Canonical Assurance Unit",
+    "filename": "ADR-0634-proof-graph-canonical-assurance-unit.yaml",
+    "target_path": ".ssot/adr/ADR-0634-proof-graph-canonical-assurance-unit.yaml",
+    "sha256": "d79f4e08ac8fe11b736e737c822d973fd55b8de9dd3f87aad71a8c5ff71bd669",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.20",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-21T05:59:13Z",
+        "note": "Created to govern proof-graph-first assurance semantics after downstream MCP and certification closure work.",
+        "status": "draft"
+      }
+    ]
+  },
+  {
+    "id": "adr:0635",
+    "number": 635,
+    "slug": "proof-graph-materialization-and-certification-closure",
+    "title": "Proof Graph Materialization And Certification Closure",
+    "filename": "ADR-0635-proof-graph-materialization-and-certification-closure.yaml",
+    "target_path": ".ssot/adr/ADR-0635-proof-graph-materialization-and-certification-closure.yaml",
+    "sha256": "d228b642bc6c3c84e293c821c480099b5256e62a7048c73830a62d34c36e8012",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.20",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-21T05:59:14Z",
+        "note": "Created to govern operator materialization and higher-tier proof-graph closure flows.",
+        "status": "draft"
+      }
+    ]
+  },
+  {
+    "id": "adr:0636",
+    "number": 636,
+    "slug": "feature-create-defaults-to-proof-graph-scaffolding",
+    "title": "Feature create defaults to proof-graph scaffolding",
+    "filename": "ADR-0636-feature-create-defaults-to-proof-graph-scaffolding.yaml",
+    "target_path": ".ssot/adr/ADR-0636-feature-create-defaults-to-proof-graph-scaffolding.yaml",
+    "sha256": "81b2744237e8f72d62cabc1ebf695c7fe2d39dd639d1e65d192c8668293d72bf",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.20",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-05-24T10:51:51Z",
+        "note": "Created to govern scaffold-first feature creation defaults and explicit opt-out behavior.",
+        "status": "draft"
+      }
+    ]
   }
 ]
