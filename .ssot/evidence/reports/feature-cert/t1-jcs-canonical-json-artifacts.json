@@ -1,0 +1,1 @@
+{"feature_id":"feat:ssot.jcs-canonical-json-artifacts","scope":["JCS canonical serializer rejects non-canonical .ssot JSON","save_json writes deterministic RFC 8785-compatible JSON"],"status":"passed","test_path":"tests/unit/test_jcs_canonicalization.py","tier":"T1"}

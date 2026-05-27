@@ -1,0 +1,1 @@
+{"feature_id":"feat:ssot.conformance.extension-pack-shared-id-regression","scope":["extension packs with shared local document ids materialize as pack-scoped documents","features link to the intended pack-specific SPEC id"],"status":"passed","test_path":"tests/integration/test_cli_pack.py","tier":"T1"}
