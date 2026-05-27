@@ -13,9 +13,9 @@ supersedes: []
 superseded_by: []
 status_notes:
   -
-    status: "draft"
-    note: "Created to govern default proof-graph scaffolding during feature creation."
     at: "2026-05-24T10:52:03Z"
+    note: "Created to govern default proof-graph scaffolding during feature creation."
+    status: "draft"
 references: []
 body: |-
   ## Contract
@@ -39,8 +39,6 @@ body: |-
   Repeated scaffolded creation attempts against an unchanged target SHALL be idempotent or fail cleanly without duplicating stable rows.
 spec_kind: "operational"
 adr_ids:
-  - "adr:0528"
-  - "adr:0529"
   - "adr:0601"
   - "adr:0627"
   - "adr:0636"

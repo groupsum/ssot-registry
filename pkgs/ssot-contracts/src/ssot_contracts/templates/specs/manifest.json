@@ -915,7 +915,7 @@
     "title": "Feature create default proof scaffold contract",
     "filename": "SPEC-0638-feature-create-default-proof-scaffold-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0638-feature-create-default-proof-scaffold-contract.yaml",
-    "sha256": "1eff7824bfed8add7b6386fa8b57042120ef341fcf12920dc2d325a8eed9b3e0",
+    "sha256": "a21078a9495e4a3ea591d5c8cfcc09628021d6a6c5e228e426568ceb064c2078",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -933,8 +933,6 @@
     ],
     "kind": "operational",
     "adr_ids": [
-      "adr:0528",
-      "adr:0529",
       "adr:0601",
       "adr:0627",
       "adr:0636"

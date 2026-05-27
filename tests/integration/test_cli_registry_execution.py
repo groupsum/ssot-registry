@@ -157,6 +157,7 @@ class RegistryExecutionCliTests(unittest.TestCase):
                 "Spec run target feature",
                 "--spec-ids",
                 "spc:1000",
+                "--no-auto-scaffold-proof-graph",
             )
             self.assertEqual(feature.returncode, 0, feature.stderr)
 
@@ -312,6 +313,7 @@ class RegistryExecutionCliTests(unittest.TestCase):
             "feat:boundary.direct",
             "--title",
             "Boundary direct feature",
+            "--no-auto-scaffold-proof-graph",
         )
         self.assertEqual(feature.returncode, 0, feature.stderr)
 

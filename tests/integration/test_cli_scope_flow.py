@@ -63,6 +63,7 @@ class CliScopeFlowTests(unittest.TestCase):
             "spc:1000",
             "--claim-ids",
             "clm:rfc.9000.connection-migration.t3",
+            "--no-auto-scaffold-proof-graph",
         )
         self.assertEqual(feature_create.returncode, 0, feature_create.stderr)
         feature_payload = json.loads(feature_create.stdout)
