@@ -53,6 +53,9 @@ LINKABLE_FIELDS = {
 }
 
 SECTIONS = tuple(SECTION_LABELS)
+PARENT_AUDIT_TERMS = ("requires", "require", "required", "depends", "dependency", "prerequisite", "blocks", "blocked", "before")
+PARENT_AUDIT_TARGET_HORIZONS = {"current", "explicit"}
+PARENT_AUDIT_INCOMPLETE_STATUSES = {"absent", "partial"}
 
 
 def _row_lookup(registry: dict[str, Any], section: str) -> dict[str, dict[str, Any]]:
@@ -639,6 +642,112 @@ def list_feature_children(path: str | Path, parent_id: str) -> list[dict[str, An
         if isinstance(row, dict) and parent_id in row.get("parent_feature_ids", [])
     ]
     return sorted(rows, key=lambda row: row["id"])
+
+
+def _audit_text(row: dict[str, Any]) -> str:
+    return " ".join(str(row.get(field_name, "")) for field_name in ("id", "title", "description", "body")).lower()
+
+
+def audit_feature_parent_links(path: str | Path) -> dict[str, Any]:
+    registry_path, _repo_root, registry = load_registry(path)
+    feature_lookup = _row_lookup(registry, "features")
+    findings: list[dict[str, Any]] = []
+
+    for feature in sorted(feature_lookup.values(), key=lambda row: row["id"]):
+        feature_id = str(feature["id"])
+        parent_ids = feature.get("parent_feature_ids", [])
+        if not isinstance(parent_ids, list):
+            continue
+        for parent_id in sorted(dict.fromkeys(parent_ids)):
+            parent = feature_lookup.get(parent_id)
+            if parent is None:
+                continue
+
+            reasons: list[str] = []
+            feature_horizon = feature.get("plan", {}).get("horizon") if isinstance(feature.get("plan"), dict) else None
+            parent_status = parent.get("implementation_status")
+            if (feature_horizon in PARENT_AUDIT_TARGET_HORIZONS or feature.get("implementation_status") == "implemented") and (
+                parent_status in PARENT_AUDIT_INCOMPLETE_STATUSES
+            ):
+                reasons.append("targeted_or_implemented_child_has_incomplete_parent")
+
+            combined_text = f"{_audit_text(feature)} {_audit_text(parent)}"
+            matched_terms = [term for term in PARENT_AUDIT_TERMS if term in combined_text]
+            if matched_terms:
+                reasons.append(f"dependency_language:{','.join(matched_terms)}")
+
+            if not reasons:
+                continue
+
+            confidence = "high" if len(reasons) > 1 else "medium"
+            if reasons == [reason for reason in reasons if reason.startswith("dependency_language:")]:
+                confidence = "low"
+            findings.append(
+                {
+                    "feature_id": feature_id,
+                    "parent_feature_id": parent_id,
+                    "reason": reasons,
+                    "suggested_requires_edge": {"feature_id": feature_id, "requires": parent_id},
+                    "confidence": confidence,
+                }
+            )
+
+    return {
+        "passed": True,
+        "registry_path": registry_path.as_posix(),
+        "findings": findings,
+        "summary": {
+            "finding_count": len(findings),
+            "high_confidence_count": sum(1 for finding in findings if finding["confidence"] == "high"),
+            "medium_confidence_count": sum(1 for finding in findings if finding["confidence"] == "medium"),
+            "low_confidence_count": sum(1 for finding in findings if finding["confidence"] == "low"),
+        },
+    }
+
+
+def migrate_feature_parent_audit_edge(
+    path: str | Path,
+    feature_id: str,
+    parent_id: str,
+    *,
+    remove_parent_link: bool = False,
+) -> dict[str, Any]:
+    registry_path, repo_root, registry = load_registry(path)
+    feature_lookup = _row_lookup(registry, "features")
+    if feature_id not in feature_lookup:
+        raise ValueError(f"Unknown feature id: {feature_id}")
+    if parent_id not in feature_lookup:
+        raise ValueError(f"Unknown parent feature id: {parent_id}")
+
+    feature = feature_lookup[feature_id]
+    parent_ids = _ensure_list_field(feature, "parent_feature_ids")
+    if parent_id not in parent_ids:
+        raise ValueError(f"Feature {feature_id} does not have parent link {parent_id}")
+
+    requires = _ensure_list_field(feature, "requires")
+    added_requires = parent_id not in requires
+    if added_requires:
+        requires.append(parent_id)
+        feature["requires"] = _dedupe_preserve(requires)
+
+    removed_parent_link = False
+    if remove_parent_link:
+        feature["parent_feature_ids"] = _dedupe_sorted([value for value in parent_ids if value != parent_id])
+        removed_parent_link = True
+    else:
+        _normalize_feature_parent_ids(feature)
+
+    mutation = _validate_and_save(registry_path, repo_root, registry, "migrating feature parent audit edge")
+    return {
+        "passed": True,
+        "registry_path": registry_path.as_posix(),
+        "feature_id": feature_id,
+        "parent_feature_id": parent_id,
+        "added_requires": added_requires,
+        "removed_parent_link": removed_parent_link,
+        "entity": deepcopy(feature),
+        **mutation,
+    }
 
 
 def set_claim_tier(path: str | Path, claim_id: str, tier: str) -> dict[str, Any]:

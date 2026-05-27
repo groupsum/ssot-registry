@@ -290,6 +290,7 @@
       "--id",
       "--implementation-status",
       "--lifecycle-stage",
+      "--no-auto-scaffold-proof-graph",
       "--note",
       "--origin",
       "--out-of-bounds-disposition",
@@ -342,6 +343,11 @@
     "feature parent set": [
       "--ids",
       "--parent-ids"
+    ],
+    "feature parent-audit": [
+      "--feature-id",
+      "--parent-id",
+      "--remove-parent-link"
     ],
     "feature plan": [
       "--claim-tier",
@@ -920,6 +926,7 @@
     "evidence update",
     "evidence verify",
     "feature",
+    "feature certify-proof-graph",
     "feature children",
     "feature children add",
     "feature children list",
@@ -936,6 +943,7 @@
     "feature parent clear",
     "feature parent remove",
     "feature parent set",
+    "feature parent-audit",
     "feature plan",
     "feature unlink",
     "feature update",

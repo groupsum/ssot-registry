@@ -193,13 +193,13 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry conformance run` | `--dry-run`, `--evidence-output`, `--profiles` |
 | `ssot-registry conformance scaffold` | `--apply`, `--include-claims`, `--include-evidence`, `--profiles` |
 | `ssot-registry evidence` | none |
-| `ssot-registry evidence create` | `--body`, `--body-file`, `--claim-ids`, `--evidence-path`, `--id`, `--kind`, `--origin`, `--status`, `--test-ids`, `--tier`, `--title` |
+| `ssot-registry evidence create` | `--body`, `--body-file`, `--claim-ids`, `--evidence-path`, `--id`, `--kind`, `--origin`, `--release-context-file`, `--release-context-json`, `--robustness-dimensions`, `--source-evidence-ids`, `--status`, `--test-ids`, `--tier`, `--title` |
 | `ssot-registry evidence delete` | `--id` |
 | `ssot-registry evidence get` | `--id` |
 | `ssot-registry evidence link` | `--claim-ids`, `--id`, `--test-ids` |
 | `ssot-registry evidence list` | `--ids`, `--origin` |
 | `ssot-registry evidence unlink` | `--claim-ids`, `--id`, `--test-ids` |
-| `ssot-registry evidence update` | `--body`, `--body-file`, `--evidence-path`, `--id`, `--kind`, `--origin`, `--status`, `--tier`, `--title` |
+| `ssot-registry evidence update` | `--body`, `--body-file`, `--evidence-path`, `--id`, `--kind`, `--origin`, `--release-context-file`, `--release-context-json`, `--robustness-dimensions`, `--source-evidence-ids`, `--status`, `--tier`, `--title` |
 | `ssot-registry evidence verify` | `--evidence-id` |
 | `ssot-registry feature` | none |
 | `ssot-registry feature children` | none |
@@ -209,12 +209,14 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry feature create` | `--body`, `--body-file`, `--claim-ids`, `--claim-tier`, `--description`, `--horizon`, `--id`, `--implementation-status`, `--lifecycle-stage`, `--note`, `--origin`, `--out-of-bounds-disposition`, `--parent-feature-ids`, `--replacement-feature-id`, `--requires`, `--slot`, `--spec-ids`, `--target-lifecycle-stage`, `--test-ids`, `--title` |
 | `ssot-registry feature delete` | `--id` |
 | `ssot-registry feature get` | `--id` |
+| `ssot-registry feature certify-proof-graph` | `--boundary-id`, `--boundary-title`, `--ids`, `--promote`, `--publish`, `--release-id`, `--release-version`, `--robustness-dimensions`, `--write-report` |
 | `ssot-registry feature lifecycle` | none |
 | `ssot-registry feature lifecycle set` | `--effective-release-id`, `--ids`, `--note`, `--replacement-feature-id`, `--stage` |
 | `ssot-registry feature link` | `--claim-ids`, `--id`, `--requires`, `--spec-ids`, `--test-ids` |
 | `ssot-registry feature list` | `--ids`, `--origin` |
 | `ssot-registry feature parent` | none |
 | `ssot-registry feature parent add` | `--ids`, `--parent-ids` |
+| `ssot-registry feature parent-audit` | `--feature-id`, `--parent-id`, `--remove-parent-link` |
 | `ssot-registry feature parent clear` | `--ids` |
 | `ssot-registry feature parent remove` | `--ids`, `--parent-ids` |
 | `ssot-registry feature parent set` | `--ids`, `--parent-ids` |
@@ -489,7 +491,8 @@ Subcommands:
 
 - `create`, `get`, `list`, `update`, `delete`, `link`, `unlink`, `plan`
 - `parent add`, `parent set`, `parent remove`, `parent clear`
-- `children add`, `children remove`, `children list`
+- `parent-audit`
+- `children add` (deprecated), `children remove` (deprecated), `children list`
 - `lifecycle set`
 
 ```text
@@ -510,6 +513,7 @@ ssot-registry feature create [path]
   --test-ids [TEST_IDS ...]
   --requires [REQUIRES ...]
   --parent-feature-ids [PARENT_FEATURE_IDS ...]
+  `--auto-scaffold-proof-graph` | `--no-auto-scaffold-proof-graph`
 
 ssot-registry feature get [path]
   --id ID (required)
@@ -525,17 +529,28 @@ ssot-registry feature update [path]
 ssot-registry feature delete [path]
   --id ID (required)
 
+ssot-registry feature certify-proof-graph [path]
+  --ids IDS [IDS ...] (required)
+  --boundary-id BOUNDARY_ID (required)
+  --boundary-title BOUNDARY_TITLE (required)
+  --release-id RELEASE_ID (required)
+  --release-version RELEASE_VERSION (required)
+  --robustness-dimensions ROBUSTNESS_DIMENSIONS [ROBUSTNESS_DIMENSIONS ...] (required)
+  --write-report
+  --promote
+  --publish
+
 ssot-registry feature link [path]
   --id ID (required)
   --claim-ids [CLAIM_IDS ...]
   --test-ids [TEST_IDS ...]
-  --requires [REQUIRES ...]
+  --requires [REQUIRES ...]  # prerequisite feature ids enforced by release/profile gates
 
 ssot-registry feature unlink [path]
   --id ID (required)
   --claim-ids [CLAIM_IDS ...]
   --test-ids [TEST_IDS ...]
-  --requires [REQUIRES ...]
+  --requires [REQUIRES ...]  # prerequisite feature ids enforced by release/profile gates
 
 ssot-registry feature plan [path]
   --ids IDS [IDS ...] (required)
@@ -567,13 +582,23 @@ ssot-registry feature parent remove [path]
 ssot-registry feature parent clear [path]
   --ids IDS [IDS ...] (required)
 
+ssot-registry feature parent-audit [path]
+  --feature-id FEATURE_ID  # only with: parent-audit migrate
+  --parent-id PARENT_ID    # only with: parent-audit migrate
+  --remove-parent-link     # only with: parent-audit migrate
+
+ssot-registry feature parent-audit migrate [path]
+  --feature-id FEATURE_ID (required)
+  --parent-id PARENT_ID (required)
+  --remove-parent-link
+
 ssot-registry feature children add [path]
   --id ID (required)
-  --child-ids CHILD_IDS [CHILD_IDS ...] (required)
+  --child-ids CHILD_IDS [CHILD_IDS ...] (required, deprecated mutation surface)
 
 ssot-registry feature children remove [path]
   --id ID (required)
-  --child-ids CHILD_IDS [CHILD_IDS ...] (required)
+  --child-ids CHILD_IDS [CHILD_IDS ...] (required, deprecated mutation surface)
 
 ssot-registry feature children list [path]
   --id ID (required)
@@ -812,6 +837,10 @@ ssot-registry evidence create [path]
   --evidence-path EVIDENCE_PATH (required)
   --claim-ids [CLAIM_IDS ...]
   --test-ids [TEST_IDS ...]
+  --source-evidence-ids [SOURCE_EVIDENCE_IDS ...]
+  --robustness-dimensions [ROBUSTNESS_DIMENSIONS ...]
+  --release-context-json RELEASE_CONTEXT_JSON
+  --release-context-file RELEASE_CONTEXT_FILE
 
 ssot-registry evidence get [path]
   --id ID (required)
@@ -825,6 +854,10 @@ ssot-registry evidence update [path]
   --kind KIND
   --tier {T0,T1,T2,T3,T4}
   --evidence-path EVIDENCE_PATH
+  --source-evidence-ids [SOURCE_EVIDENCE_IDS ...]
+  --robustness-dimensions [ROBUSTNESS_DIMENSIONS ...]
+  --release-context-json RELEASE_CONTEXT_JSON
+  --release-context-file RELEASE_CONTEXT_FILE
 
 ssot-registry evidence delete [path]
   --id ID (required)

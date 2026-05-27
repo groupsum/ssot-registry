@@ -12,6 +12,7 @@ from ssot_contracts.generated.python.enums import (
 )
 from ssot_registry.api import (
     add_feature_children,
+    audit_feature_parent_links,
     certify_feature_proof_graphs,
     create_entity,
     create_feature_with_scaffolded_proof_graph,
@@ -20,6 +21,7 @@ from ssot_registry.api import (
     link_entities,
     list_feature_children,
     list_entities,
+    migrate_feature_parent_audit_edge,
     plan_features,
     resolve_feature_create_auto_scaffold,
     remove_feature_children,
@@ -71,7 +73,12 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     create.add_argument("--spec-ids", nargs="*", default=[], help="SPEC ids that define or constrain the feature.")
     create.add_argument("--claim-ids", nargs="*", default=[], help="Claim ids currently attached to the feature.")
     create.add_argument("--test-ids", nargs="*", default=[], help="Test ids that verify the feature.")
-    create.add_argument("--requires", nargs="*", default=[], help="Passing prerequisite feature ids; not a parent/leaf composition link.")
+    create.add_argument(
+        "--requires",
+        nargs="*",
+        default=[],
+        help="Prerequisite feature ids; release and profile gates require them to pass. Not a parent/leaf composition link.",
+    )
     create.add_argument("--parent-feature-ids", nargs="*", default=[], help="Inventory parent feature ids; composition only, never a passing prerequisite.")
     add_optional_bool_argument(
         create,
@@ -130,22 +137,26 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     delete.add_argument("--id", required=True, help="Feature id to delete.")
     delete.set_defaults(func=run_delete)
 
-    link = feature_sub.add_parser("link", help="Attach related records to a feature.", description="Add links from a feature to governing SPECs, claims, tests, or passing prerequisite features.")
+    link = feature_sub.add_parser("link", help="Attach related records to a feature.", description="Add links from a feature to governing SPECs, claims, tests, or prerequisite features enforced by release and profile gates.")
     add_path_argument(link)
     link.add_argument("--id", required=True, help="Feature id that should receive the links.")
     link.add_argument("--spec-ids", nargs="*", help="SPEC ids to attach.")
     link.add_argument("--claim-ids", nargs="*", help="Claim ids to attach.")
     link.add_argument("--test-ids", nargs="*", help="Test ids to attach.")
-    link.add_argument("--requires", nargs="*", help="Passing prerequisite feature ids to attach; not parent/leaf composition.")
+    link.add_argument(
+        "--requires",
+        nargs="*",
+        help="Prerequisite feature ids to attach; release and profile gates require them to pass. Not parent/leaf composition.",
+    )
     link.set_defaults(func=run_link)
 
-    unlink = feature_sub.add_parser("unlink", help="Remove related records from a feature.", description="Remove links from a feature to SPECs, claims, tests, or prerequisite features.")
+    unlink = feature_sub.add_parser("unlink", help="Remove related records from a feature.", description="Remove links from a feature to SPECs, claims, tests, or prerequisite features enforced by release and profile gates.")
     add_path_argument(unlink)
     unlink.add_argument("--id", required=True, help="Feature id whose links should be removed.")
     unlink.add_argument("--spec-ids", nargs="*", help="SPEC ids to detach.")
     unlink.add_argument("--claim-ids", nargs="*", help="Claim ids to detach.")
     unlink.add_argument("--test-ids", nargs="*", help="Test ids to detach.")
-    unlink.add_argument("--requires", nargs="*", help="Passing prerequisite feature ids to detach.")
+    unlink.add_argument("--requires", nargs="*", help="Prerequisite feature ids to detach; release and profile gates require them to pass.")
     unlink.set_defaults(func=run_unlink)
 
     plan = feature_sub.add_parser("plan", help="Set planned rollout targets.", description="Update feature planning fields such as horizon, target claim tier, and future lifecycle.")
@@ -184,41 +195,71 @@ def register_feature(subparsers: argparse._SubParsersAction) -> None:
     lifecycle_set.add_argument("--note", default=None, help="Lifecycle rationale or operator note.")
     lifecycle_set.set_defaults(func=run_lifecycle_set)
 
-    parent = feature_sub.add_parser("parent", help="Manage feature parent links.", description="Manage inventory composition links from one or more leaf features to one or more parent features.")
+    parent = feature_sub.add_parser(
+        "parent",
+        help="Manage feature parent links.",
+        description="Manage inventory composition links only; parent links are never prerequisites or release-readiness gates.",
+    )
     parent_sub = parent.add_subparsers(dest="feature_parent_command", required=True)
     for command_name, help_text in (
         ("add", "Add parent links to features."),
         ("set", "Replace parent links on features."),
         ("remove", "Remove parent links from features."),
     ):
-        command = parent_sub.add_parser(command_name, help=help_text)
+        command = parent_sub.add_parser(
+            command_name,
+            help=help_text,
+            description="Mutate inventory composition links only. Use feature link --requires for prerequisites.",
+        )
         add_path_argument(command)
         command.add_argument("--ids", nargs="+", required=True, help="Feature ids whose parent links should change.")
-        command.add_argument("--parent-ids", nargs="+", required=True, help="Parent feature ids to add, set, or remove.")
+        command.add_argument("--parent-ids", nargs="+", required=True, help="Inventory parent feature ids to add, set, or remove; never prerequisites.")
         command.set_defaults(func=run_parent, parent_mode=command_name)
-    parent_clear = parent_sub.add_parser("clear", help="Clear all parent links from features.")
+    parent_clear = parent_sub.add_parser("clear", help="Clear all parent links from features.", description="Clear inventory composition links only.")
     add_path_argument(parent_clear)
     parent_clear.add_argument("--ids", nargs="+", required=True, help="Feature ids whose parent links should be cleared.")
     parent_clear.set_defaults(func=run_parent, parent_mode="clear", parent_ids=[])
 
-    children = feature_sub.add_parser("children", help="Manage feature children.", description="Manage inventory child links by mutating each child feature's parent_feature_ids field.")
+    children = feature_sub.add_parser("children", help="Manage feature children.", description="Manage derived inventory child links by mutating each child feature's parent_feature_ids field; never prerequisites.")
     children_sub = children.add_subparsers(dest="feature_children_command", required=True)
-    children_add = children_sub.add_parser("add", help="Add child features to a parent feature.")
+    children_add = children_sub.add_parser("add", help="Deprecated: add child features to a parent feature.", description="Deprecated convenience mutation for inventory composition only. Use feature parent add for parent links and feature link --requires for prerequisites.")
     add_path_argument(children_add)
     children_add.add_argument("--id", required=True, help="Parent feature id.")
-    children_add.add_argument("--child-ids", nargs="+", required=True, help="Child feature ids to attach to the parent.")
+    children_add.add_argument("--child-ids", nargs="+", required=True, help="Deprecated: child feature ids to attach to the inventory parent.")
     children_add.set_defaults(func=run_children_add)
 
-    children_remove = children_sub.add_parser("remove", help="Remove child features from a parent feature.")
+    children_remove = children_sub.add_parser("remove", help="Deprecated: remove child features from a parent feature.", description="Deprecated convenience mutation for inventory composition only. Use feature parent remove for parent links and feature unlink --requires for prerequisites.")
     add_path_argument(children_remove)
     children_remove.add_argument("--id", required=True, help="Parent feature id.")
-    children_remove.add_argument("--child-ids", nargs="+", required=True, help="Child feature ids to detach from the parent.")
+    children_remove.add_argument("--child-ids", nargs="+", required=True, help="Deprecated: child feature ids to detach from the inventory parent.")
     children_remove.set_defaults(func=run_children_remove)
 
-    children_list = children_sub.add_parser("list", help="List child features for a parent feature.")
+    children_list = children_sub.add_parser("list", help="List child features for a parent feature.", description="List derived inventory children for a parent feature without mutating the registry.")
     add_path_argument(children_list)
     children_list.add_argument("--id", required=True, help="Parent feature id.")
     children_list.set_defaults(func=run_children_list)
+
+    parent_audit = feature_sub.add_parser(
+        "parent-audit",
+        help="Audit parent links that may be prerequisite workarounds.",
+        description="Report suspicious inventory parent links, or explicitly migrate one parent link into feature.requires.",
+    )
+    parent_audit.add_argument(
+        "path_or_command",
+        nargs="?",
+        default=".",
+        help="Repository path to audit, or the literal 'migrate' to run the opt-in migration helper.",
+    )
+    parent_audit.add_argument(
+        "path",
+        nargs="?",
+        default=None,
+        help="Repository path when using 'migrate'. Defaults to the current directory.",
+    )
+    parent_audit.add_argument("--feature-id", default=None, help="Feature id whose parent link should be migrated when using 'migrate'.")
+    parent_audit.add_argument("--parent-id", default=None, help="Parent feature id to add to requires when using 'migrate'.")
+    parent_audit.add_argument("--remove-parent-link", action="store_true", help="When using 'migrate', remove the parent_feature_ids link after adding requires.")
+    parent_audit.set_defaults(func=run_parent_audit)
 
 
 def _build_links(args: argparse.Namespace) -> dict[str, list[str]]:
@@ -351,4 +392,21 @@ def run_children_remove(args: argparse.Namespace) -> dict[str, object]:
 
 def run_children_list(args: argparse.Namespace) -> list[dict[str, object]]:
     return list_feature_children(args.path, args.id)
+
+
+def run_parent_audit(args: argparse.Namespace) -> dict[str, object]:
+    if args.path_or_command == "migrate":
+        if args.feature_id is None or args.parent_id is None:
+            raise ValueError("feature parent-audit migrate requires --feature-id and --parent-id")
+        return migrate_feature_parent_audit_edge(
+            args.path or ".",
+            args.feature_id,
+            args.parent_id,
+            remove_parent_link=args.remove_parent_link,
+        )
+    if args.path is not None:
+        raise ValueError("feature parent-audit accepts either <path> or migrate <path>")
+    if args.feature_id is not None or args.parent_id is not None or args.remove_parent_link:
+        raise ValueError("feature parent-audit migration flags require the migrate subcommand")
+    return audit_feature_parent_links(args.path_or_command)
 

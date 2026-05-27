@@ -6,7 +6,6 @@ from ssot_registry.guards.profile_requirements import evaluate_required_profile_
 
 
 IN_SCOPE_HORIZONS = {"current", "explicit"}
-TARGETED_OR_IMPLEMENTED_HORIZONS = {"current", "explicit", "next", "future"}
 
 
 def validate_coverage(index: dict[str, dict[str, dict[str, object]]], failures: list[str], warnings: list[str]) -> None:
@@ -28,11 +27,7 @@ def validate_coverage(index: dict[str, dict[str, dict[str, object]]], failures: 
             cycle_failures = [failure for failure in requirement_failures if "cycle detected" in failure.lower()]
             non_cycle_failures = [failure for failure in requirement_failures if failure not in cycle_failures]
             failures.extend(cycle_failures)
-            if non_cycle_failures:
-                if row.get("implementation_status") == "implemented" or horizon in TARGETED_OR_IMPLEMENTED_HORIZONS:
-                    failures.extend(non_cycle_failures)
-                else:
-                    warnings.extend(non_cycle_failures)
+            warnings.extend(non_cycle_failures)
 
     for test_id, row in index["tests"].items():
         if not row.get("feature_ids"):

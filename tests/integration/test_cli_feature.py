@@ -498,6 +498,90 @@ class CliFeatureTests(unittest.TestCase):
             self.assertTrue((repo / t1_evidence["path"]).exists())
             self.assertTrue((repo / t3_evidence["path"]).exists())
 
+    def test_feature_parent_audit_and_opt_in_migration_cli(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+
+        parent_create = run_cli(
+            "feature",
+            "create",
+            str(repo),
+            "--id",
+            "feat:cli.audit-parent",
+            "--title",
+            "CLI audit parent",
+            "--description",
+            "Prerequisite dependency before the child can pass.",
+            "--implementation-status",
+            "partial",
+            "--horizon",
+            "backlog",
+            "--no-auto-scaffold-proof-graph",
+        )
+        self.assertEqual(parent_create.returncode, 0, parent_create.stderr)
+
+        children_help = run_cli("feature", "children", "add", "--help")
+        self.assertEqual(children_help.returncode, 0, children_help.stderr)
+        self.assertIn("Deprecated", children_help.stdout)
+        self.assertIn("--child-ids", children_help.stdout)
+
+        children_add = run_cli(
+            "feature",
+            "children",
+            "add",
+            str(repo),
+            "--id",
+            "feat:cli.audit-parent",
+            "--child-ids",
+            "feat:rfc.9000.connection-migration",
+        )
+        self.assertEqual(children_add.returncode, 0, children_add.stderr)
+
+        children_list = run_cli("feature", "children", "list", str(repo), "--id", "feat:cli.audit-parent")
+        self.assertEqual(children_list.returncode, 0, children_list.stderr)
+        self.assertEqual([row["id"] for row in json.loads(children_list.stdout)], ["feat:rfc.9000.connection-migration"])
+
+        registry_before_audit = (repo / ".ssot" / "registry.json").read_text(encoding="utf-8")
+        audit = run_cli("feature", "parent-audit", str(repo))
+        self.assertEqual(audit.returncode, 0, audit.stderr)
+        self.assertEqual(registry_before_audit, (repo / ".ssot" / "registry.json").read_text(encoding="utf-8"))
+        audit_payload = json.loads(audit.stdout)
+        self.assertEqual(audit_payload["summary"]["finding_count"], 1)
+        self.assertEqual(audit_payload["findings"][0]["feature_id"], "feat:rfc.9000.connection-migration")
+        self.assertEqual(audit_payload["findings"][0]["parent_feature_id"], "feat:cli.audit-parent")
+
+        migrate_keep = run_cli(
+            "feature",
+            "parent-audit",
+            "migrate",
+            str(repo),
+            "--feature-id",
+            "feat:rfc.9000.connection-migration",
+            "--parent-id",
+            "feat:cli.audit-parent",
+        )
+        self.assertEqual(migrate_keep.returncode, 0, migrate_keep.stderr)
+        keep_payload = json.loads(migrate_keep.stdout)
+        self.assertIn("feat:cli.audit-parent", keep_payload["entity"]["requires"])
+        self.assertIn("feat:cli.audit-parent", keep_payload["entity"]["parent_feature_ids"])
+
+        migrate_remove = run_cli(
+            "feature",
+            "parent-audit",
+            "migrate",
+            str(repo),
+            "--feature-id",
+            "feat:rfc.9000.connection-migration",
+            "--parent-id",
+            "feat:cli.audit-parent",
+            "--remove-parent-link",
+        )
+        self.assertEqual(migrate_remove.returncode, 0, migrate_remove.stderr)
+        remove_payload = json.loads(migrate_remove.stdout)
+        self.assertIn("feat:cli.audit-parent", remove_payload["entity"]["requires"])
+        self.assertNotIn("feat:cli.audit-parent", remove_payload["entity"]["parent_feature_ids"])
+
 
 if __name__ == "__main__":
     unittest.main()

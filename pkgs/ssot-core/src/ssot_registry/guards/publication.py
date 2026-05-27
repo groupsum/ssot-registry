@@ -1,12 +1,22 @@
 from __future__ import annotations
 
+from copy import deepcopy
+
+from ssot_registry.guards.certification import evaluate_release_certification_guard
+
 
 def evaluate_release_publication_guard(
     registry: dict[str, object],
     index: dict[str, dict[str, dict[str, object]]],
     release_id: str,
 ) -> dict[str, object]:
-    failures: list[str] = []
+    certification_registry = deepcopy(registry)
+    certification_registry.setdefault("guard_policies", {}).setdefault("certification", {})[
+        "require_release_status_draft_or_candidate"
+    ] = False
+    certification = evaluate_release_certification_guard(certification_registry, index, release_id)
+    failures = list(certification["failures"])
+
     release = index["releases"].get(release_id)
     if release is None:
         return {
@@ -26,6 +36,6 @@ def evaluate_release_publication_guard(
     return {
         "release_id": release_id,
         "passed": not failures,
-        "failures": failures,
-        "warnings": [],
+        "failures": sorted(set(failures)),
+        "warnings": certification["warnings"],
     }
