@@ -6,6 +6,8 @@ import sys
 import unittest
 from pathlib import Path
 
+from packaging.version import Version
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -110,8 +112,10 @@ class ReleaseMetadataTests(unittest.TestCase):
     def test_pack_contracts_and_tui_compatibility_floors_track_current_versions(self) -> None:
         payload = json.loads(_run_release_metadata("show").stdout)
         pack_contracts_version = payload["packages"]["ssot-pack-contracts"]["version"]
+        registry_version = payload["packages"]["ssot-registry"]["version"]
         mcp_version = payload["packages"]["ssot-mcp"]["version"]
         tui_version = payload["packages"]["ssot-tui"]["version"]
+        self.assertLessEqual(Version(pack_contracts_version).release, Version(registry_version).release)
         self.assertEqual(
             payload["packages"]["ssot-core"]["dependencies"]["ssot-pack-contracts"],
             f"ssot-pack-contracts>={pack_contracts_version},<0.3.0",

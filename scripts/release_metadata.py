@@ -284,6 +284,16 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
         raise ValueError("Lockstep packages are not in version alignment.")
     core_version = next(iter(core_versions))
 
+    pack_contracts_version = packages["ssot-pack-contracts"]["version"]  # type: ignore[index]
+    registry_version = packages["ssot-registry"]["version"]  # type: ignore[index]
+    assert isinstance(pack_contracts_version, str)
+    assert isinstance(registry_version, str)
+    if Version(pack_contracts_version).release > Version(registry_version).release:
+        raise ValueError(
+            "ssot-pack-contracts must trail ssot-registry: "
+            f"pack-contracts {pack_contracts_version!r}, registry {registry_version!r}"
+        )
+
     dependency_specs = expected_dependency_specs(core_version)
     for package_name in CORE_PACKAGES[1:]:
         expectations = dependency_specs[package_name]

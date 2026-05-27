@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from packaging.version import Version
+
 from bump_pyproject_version import bump_version, read_project_version, write_project_version
 from release_metadata import CORE_PACKAGES, PACKAGE_INFOS, expected_dependency_specs, resolve_targets
 
@@ -96,7 +98,7 @@ def bump_train(train: str, bump_type: str, selected_packages: str | None) -> lis
             updated_files.append(registry_pyproject)
         if train == "all":
             for package_name in targets:
-                if package_name in (*CORE_PACKAGES, "ssot-registry"):
+                if package_name in (*CORE_PACKAGES, "ssot-pack-contracts", "ssot-registry"):
                     continue
                 pyproject_path = Path(PACKAGE_INFOS[package_name].project_path) / "pyproject.toml"
                 current_version = read_project_version(pyproject_path)
@@ -112,6 +114,13 @@ def bump_train(train: str, bump_type: str, selected_packages: str | None) -> lis
         pyproject_path = Path(PACKAGE_INFOS[package_name].project_path) / "pyproject.toml"
         current_version = read_project_version(pyproject_path)
         new_version = _next_version(current_version, bump_type)
+        if package_name == "ssot-pack-contracts":
+            registry_version = read_project_version(Path(PACKAGE_INFOS["ssot-registry"].project_path) / "pyproject.toml")
+            if Version(new_version).release > Version(registry_version).release:
+                raise ValueError(
+                    "ssot-pack-contracts must trail ssot-registry: "
+                    f"next pack-contracts {new_version!r}, registry {registry_version!r}"
+                )
         if _write_version_if_changed(pyproject_path, current_version, new_version):
             updated_files.append(pyproject_path)
     for path in sync_release_dependencies():
