@@ -112,7 +112,7 @@ jobs:
         run: uv python install ${{ matrix.python_version }}
 
       - name: Install workspace runtime
-        run: uv sync --python ${{ matrix.python_version }} --package ssot-registry
+        run: uv sync --python ${{ matrix.python_version }} --package ssot-registry --extra all
 
       - name: Run shared test suite once
         run: uv run --python ${{ matrix.python_version }} --package ssot-registry --no-sync python -m unittest discover -s tests -v
