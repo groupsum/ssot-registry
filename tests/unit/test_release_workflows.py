@@ -132,6 +132,19 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertNotIn("PYPI_API_TOKEN", workflow)
         self.assertNotIn("trusted-publishing never", workflow)
 
+    def test_pypi_simple_index_version_check_does_not_match_prereleases(self) -> None:
+        for filename in (
+            ".github/workflows/_publish-built-package.yml",
+            ".github/workflows/_package-publish.yml",
+            ".github/workflows/release.yml",
+            ".github/workflows/publish-ssot-mcp.yml",
+        ):
+            workflow = _read(filename)
+            self.assertIn("def filename_matches_version", workflow, filename)
+            self.assertIn('filename in {f"{prefix}.tar.gz", f"{prefix}.zip"}', workflow, filename)
+            self.assertIn('filename.startswith(f"{prefix}-") and filename.endswith(".whl")', workflow, filename)
+            self.assertNotIn("filename.startswith(prefix)", workflow, filename)
+
     def test_prepare_release_uses_package_aware_bump_script(self) -> None:
         workflow = _read(".github/workflows/prepare-release.yml")
         self.assertIn("- all", workflow)

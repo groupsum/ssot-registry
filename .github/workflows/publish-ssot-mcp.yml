@@ -166,9 +166,16 @@ jobs:
               return re.sub(r"[-_.]+", "_", name).lower()
 
 
+          def filename_matches_version(filename, package_name, version):
+              prefix = f"{distribution_prefix(package_name)}-{version}".lower()
+              return (
+                  filename in {f"{prefix}.tar.gz", f"{prefix}.zip"}
+                  or (filename.startswith(f"{prefix}-") and filename.endswith(".whl"))
+              )
+
+
           def simple_index_has_version(package_name, version):
               project = normalized_project_name(package_name)
-              prefix = f"{distribution_prefix(package_name)}-{version}".lower()
               url = f"https://pypi.org/simple/{project}/"
               try:
                   with urllib.request.urlopen(url, timeout=30) as response:
@@ -183,7 +190,7 @@ jobs:
               for href in parser.hrefs:
                   path = urlparse(href).path
                   filename = unquote(path.rsplit("/", 1)[-1]).lower()
-                  if filename.startswith(prefix):
+                  if filename_matches_version(filename, package_name, version):
                       return True
               return False
 
