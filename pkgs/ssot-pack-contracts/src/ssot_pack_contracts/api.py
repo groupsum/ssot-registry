@@ -18,6 +18,7 @@ METADATA_RESOURCE = "metadata.json"
 SUPPORTED_DOCUMENT_KINDS = {"adr": "adr", "adrs": "adr", "spec": "spec", "specs": "spec"}
 SHA256_PATTERN = re.compile(r"^[a-f0-9]{64}$")
 PACK_ID_PATTERN = re.compile(r"^pack:[a-z0-9][a-z0-9._-]*$")
+SEMVER_SCHEMA_VERSION_PATTERN = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 
 
 class PackContractError(ValueError):
@@ -311,6 +312,8 @@ def validate_pack_document_entry(entry: dict[str, Any], *, kind: str) -> PackDoc
     for field in ("slug", "title", "filename", "target_path", "origin", "reservation_owner", "minimum_schema_version", "introduced_in", "status"):
         if not isinstance(entry[field], str) or not entry[field].strip():
             raise InvalidPackManifestError(f"{entry.get('id', normalized_kind)} {field} must be a non-empty string")
+    if SEMVER_SCHEMA_VERSION_PATTERN.match(entry["minimum_schema_version"]) is None:
+        raise InvalidPackManifestError(f"{entry['id']} minimum_schema_version must be a semver string")
     if not isinstance(entry["immutable"], bool):
         raise InvalidPackManifestError(f"{entry['id']} immutable must be a boolean")
     for field in ("supersedes", "superseded_by", "status_notes"):

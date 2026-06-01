@@ -47,6 +47,9 @@ body: |-
   
   - Preflight validation SHALL run before downstream file mutation.
   - Conflicts across trusted catalogs SHALL fail closed unless explicitly resolved by policy.
+  - Schema compatibility preflight SHALL compare the target registry schema version against each manifest row's semver `minimum_schema_version` as a lower-bound check.
+  - Schema compatibility preflight SHALL NOT select per-document historical ADR or SPEC parsers from manifest minimums.
+  - Legacy integer registry schema values encountered during old migration paths SHALL compare deterministically against semver manifest minimums so migrations can fail or pass consistently.
   - Preflight output SHOULD report both the local document id and the source pack id for every collision.
   - A feature-to-SPEC reference SHALL NOT be considered resolved by a bare extension-pack `spc:*` id when multiple installed packs can publish the same local id.
 spec_kind: "normative"

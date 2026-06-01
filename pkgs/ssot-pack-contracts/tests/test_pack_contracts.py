@@ -185,6 +185,54 @@ class PackContractTests(unittest.TestCase):
         with self.assertRaises(InvalidPackManifestError):
             read_packaged_document_text(package_name, "adr", "ADR-5000-example-pack-adr.yaml")
 
+    def test_manifest_minimum_schema_version_must_be_semver_string(self) -> None:
+        invalid_values = [
+            4,
+            "",
+            "4",
+            "0.4",
+            "0.4.0-alpha",
+            " 0.4.0",
+        ]
+        for index, value in enumerate(invalid_values):
+            with self.subTest(value=value):
+                temp_dir = workspace_tempdir()
+                self.addCleanup(temp_dir.cleanup)
+                root = Path(temp_dir.name)
+                package_name = _write_pack(
+                    root,
+                    f"example_governance_pack_schema_{index}",
+                    dist_name=f"example-governance-pack-schema-{index}",
+                )
+                sys.path.insert(0, str(root))
+                self.addCleanup(sys.path.remove, str(root))
+                importlib.invalidate_caches()
+
+                manifest_path = root / package_name / "templates" / "adr" / "manifest.json"
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                manifest[0]["minimum_schema_version"] = value
+                manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+                with self.assertRaisesRegex(InvalidPackManifestError, "minimum_schema_version"):
+                    load_document_manifest(package_name, "adr")
+
+    def test_manifest_minimum_schema_version_is_required(self) -> None:
+        temp_dir = workspace_tempdir()
+        self.addCleanup(temp_dir.cleanup)
+        root = Path(temp_dir.name)
+        package_name = _write_pack(root, "example_governance_pack_missing_schema")
+        sys.path.insert(0, str(root))
+        self.addCleanup(sys.path.remove, str(root))
+        importlib.invalidate_caches()
+
+        manifest_path = root / package_name / "templates" / "adr" / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        del manifest[0]["minimum_schema_version"]
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+        with self.assertRaisesRegex(InvalidPackManifestError, "minimum_schema_version"):
+            load_document_manifest(package_name, "adr")
+
     def test_ambiguous_import_package_distribution_mapping_fails_closed(self) -> None:
         temp_dir = workspace_tempdir()
         self.addCleanup(temp_dir.cleanup)

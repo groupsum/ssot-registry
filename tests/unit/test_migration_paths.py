@@ -5,7 +5,7 @@ from pathlib import Path
 
 from ssot_registry.api import upgrade
 from ssot_registry.model.enums import SCHEMA_VERSION
-from ssot_registry.model.schema_version import LEGACY_SCHEMA_VERSIONS, SUPPORTED_SEMVER_SCHEMA_VERSIONS
+from ssot_registry.model.schema_version import LEGACY_SCHEMA_VERSIONS, SUPPORTED_SEMVER_SCHEMA_VERSIONS, schema_version_meets_minimum
 
 
 class MigrationPathTests(unittest.TestCase):
@@ -33,6 +33,11 @@ class MigrationPathTests(unittest.TestCase):
                     seen.add(current)
                     self.assertIn(current, path_by_source)
                     current = path_by_source[current]
+
+    def test_minimum_schema_check_accepts_semver_manifests_during_legacy_migrations(self) -> None:
+        self.assertTrue(schema_version_meets_minimum(4, "0.4.0"))
+        self.assertTrue(schema_version_meets_minimum(7, "0.4.0"))
+        self.assertFalse(schema_version_meets_minimum(4, "0.7.0"))
 
     def test_v0_5_to_v0_6_adds_claim_lineage_defaults_without_splitting_claims(self) -> None:
         registry = {

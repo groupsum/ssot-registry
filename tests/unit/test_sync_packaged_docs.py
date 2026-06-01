@@ -187,7 +187,7 @@ class SyncPackagedDocsTests(unittest.TestCase):
                         "origin": "ssot-origin",
                         "reservation_owner": "ssot-origin",
                         "immutable": True,
-                        "minimum_schema_version": 4,
+                        "minimum_schema_version": "0.4.0",
                         "introduced_in": "0.2.1",
                         "kind": "normative",
                         "adr_ids": [],

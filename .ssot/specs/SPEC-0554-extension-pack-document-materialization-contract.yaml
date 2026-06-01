@@ -87,6 +87,15 @@ body: |-
   
   The schema SHALL constrain `source_pack_id` to normalized `pack:*` identifiers. It SHALL constrain `source_document_kind` to the row's document kind and `source_document_id` to the source document id prefix for that kind.
   
+  Materialized ADR and SPEC rows SHALL remain normalized registry rows. They
+  SHALL NOT persist raw manifest payloads or manifest-specific compatibility
+  declarations such as `raw_manifest_row`, row-level `minimum_schema_version`,
+  or `source_minimum_schema_version`.
+
+  Pack sync MAY use manifest fields during preflight and materialization, but
+  the persisted row contract is limited to normalized document fields,
+  provenance fields, package version, and content hash metadata.
+
   This schema formalization SHALL be delivered through a schema version bump and migration when it changes the declared entity contract.
   
   ## Conformance Obligation

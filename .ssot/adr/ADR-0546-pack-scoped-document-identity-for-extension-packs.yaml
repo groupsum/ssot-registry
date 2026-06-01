@@ -29,12 +29,17 @@ body: |-
   Extension-pack ADR and SPEC identifiers are pack-local identifiers. A globally meaningful extension-pack document identity is the tuple `(pack_id, document_kind, local_document_id)`.
   
   Downstream registries SHALL NOT treat a bare extension-pack `adr:*` or `spc:*` id as globally authoritative when multiple packs may be present. Sync and resolution workflows SHALL either preserve the tuple explicitly as provenance or materialize documents into collision-safe local registry ids derived from the tuple.
-  
+
+  Materialized registry rows SHALL normalize provenance into explicit fields: `source_pack_id`, `source_package_name`, `source_document_kind`, and `source_document_id`. The normalized row MAY also carry package version and content hash metadata used by managed update policy.
+
+  Raw manifest persistence is intentionally out of scope. Materialized ADR and SPEC rows SHALL NOT persist `raw_manifest_row`, row-level `minimum_schema_version`, or `source_minimum_schema_version` as document-row metadata.
+
   Features continue to reference SPECs, not ADRs. ADR visibility remains derived through `feature.spec_ids -> spec.adr_ids`. A feature that is governed by a pack SPEC must reference a locally resolvable SPEC row whose provenance identifies the source pack and source pack-local SPEC id.
   
   ## Consequences
   
   - Pack manifests may keep local ADR/SPEC ids that are stable within the pack.
   - Pack sync must preserve `source_pack_id`, `source_document_kind`, and `source_document_id` or equivalent provenance on materialized document rows.
+  - Pack sync keeps provenance normalized and does not persist raw manifest payloads into registry ADR or SPEC rows.
   - Preflight must fail closed when bare ids collide and no collision-safe materialization or explicit pack-scoped reference policy is in effect.
   - Conformance must include a regression where two packs share local ADR/SPEC ids and features still resolve to the correct pack-specific SPEC and derived ADR.

@@ -44,6 +44,9 @@ class ContractsViewsCodegenTests(unittest.TestCase):
             self.assertIn("source_package_name", properties)
             self.assertIn("source_document_kind", properties)
             self.assertIn("source_document_id", properties)
+            self.assertNotIn("raw_manifest_row", properties)
+            self.assertNotIn("source_minimum_schema_version", properties)
+            self.assertNotIn("minimum_schema_version", properties)
 
     def test_codegen_emits_json_metadata_indexes(self) -> None:
         output_root = REPO_ROOT / ".tmp_test_runs" / "codegen-check"

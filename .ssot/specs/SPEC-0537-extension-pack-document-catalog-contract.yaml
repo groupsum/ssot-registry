@@ -38,10 +38,15 @@ body: |-
   
   - use deterministic ids, numbers, slugs, titles, and target paths
   - carry content hashes for the packaged document body
+  - carry `minimum_schema_version` as a strict semver string such as `"0.4.0"` or `"0.7.0"`
   - be immutable for a given published package artifact
   - preserve `origin: extension-pack` for external governance-pack documents
   - carry the catalog-specific `reservation_owner`
   - describe only ADR/SPEC documents in this phase
+
+  Manifest entries SHALL NOT use legacy integer schema minimums. The semver
+  minimum is a lower-bound compatibility declaration for materialization, not
+  permission to publish a historical ADR or SPEC document shape.
   
   ## Number Ownership
   

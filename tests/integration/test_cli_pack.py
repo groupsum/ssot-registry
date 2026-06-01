@@ -322,6 +322,9 @@ class CliPackTests(unittest.TestCase):
             self.assertEqual(spec["source_package_name"], "cli-governance-pack")
             self.assertEqual(spec["source_document_kind"], "spec")
             self.assertEqual(spec["source_document_id"], "spc:5000")
+            self.assertNotIn("raw_manifest_row", spec)
+            self.assertNotIn("source_minimum_schema_version", spec)
+            self.assertNotIn("minimum_schema_version", spec)
             self.assertTrue((repo / spec["path"]).exists())
 
             validate = _run_cli_with_package(root, "validate", str(repo))

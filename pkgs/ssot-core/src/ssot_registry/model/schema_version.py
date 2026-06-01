@@ -44,4 +44,10 @@ def schema_version_is_older(value: Any, current_schema_version: str) -> bool:
 
 
 def schema_version_meets_minimum(current_value: Any, minimum_value: Any) -> bool:
-    return schema_version_sort_key(current_value) >= schema_version_sort_key(minimum_value)
+    current_key = schema_version_sort_key(current_value)
+    minimum_key = schema_version_sort_key(minimum_value)
+    if isinstance(current_value, int) and is_semver_schema_version(minimum_value):
+        current_key = (1, 0, current_value, 0)
+    if is_semver_schema_version(current_value) and isinstance(minimum_value, int):
+        minimum_key = (1, 0, minimum_value, 0)
+    return current_key >= minimum_key
