@@ -9,6 +9,11 @@ Use this skill when the user asks to create features and tests and connect them.
 
 When ADRs, SPECs, and planning metadata are part of the same request, start with `$ssot-decision-to-scope` and then use this skill for the test-creation and reciprocal-linking half of the pre-freeze flow.
 
+## Command discipline
+
+- Do not spend turns rediscovering syntax with `--help` during normal SSOT work. Use the command surface and examples in this skill directly.
+- Pick one verified CLI rail for the repo (`ssot`, `ssot-registry`, `ssot-cli`, or `uv run ssot`) and reuse it consistently by substituting that rail into the examples below.
+- Only inspect parser or help text when the user explicitly asks about the CLI surface or when observed runtime behavior contradicts the command patterns documented here.
 ## Command surface
 
 - Features: `feature create|link|unlink|get|list`
@@ -29,6 +34,8 @@ When ADRs, SPECs, and planning metadata are part of the same request, start with
 - Treat feature-test work as creation plus bidirectional graph maintenance, not a single-row edit.
 - Prefer creating the feature and test in the same pass when the user requests new capability coverage.
 - Prefer explicit `--test-path` and `--kind` when creating tests so downstream evidence and release reports remain interpretable.
+- If the feature already carries lower-tier claims, keep them linked when adding a new higher-tier test and claim. Do not unlink `T0` or `T1` claims just because you are adding `T2` coverage.
+- When a higher assurance tier is requested, create the additional higher-tier claim/test/evidence rows and link them alongside the existing lower-tier proof graph.
 - When removing coverage, unlink before deleting the test row.
 - If one command already accepts related IDs at create time, use that to reduce follow-up mutations, then fill any missing reciprocal edges.
 - Stop at scoped feature/test coverage; freeze, implementation, and release proof remain later phases.
@@ -38,6 +45,7 @@ When ADRs, SPECs, and planning metadata are part of the same request, start with
 
 ```powershell
 ssot feature create . --id feat:demo.login --title "User login"
+ssot claim create . --id clm:demo.login.t1 --title "Login integration claim" --kind behavior --tier T1
 ssot test create . --id tst:demo.login.unit --title "Login unit" --kind unit --test-path tests/test_login.py
 ssot feature link . --id feat:demo.login --test-ids tst:demo.login.unit
 ssot test link . --id tst:demo.login.unit --feature-ids feat:demo.login --claim-ids clm:demo.login.t1 --evidence-ids evd:demo.login.pytest

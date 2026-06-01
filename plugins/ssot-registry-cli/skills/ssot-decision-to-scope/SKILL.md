@@ -7,6 +7,11 @@ description: Drive the early SSOT workflow from decision through governed scope 
 
 Use this skill for the pre-freeze planning phase. The output is a governed scope definition, not implementation.
 
+## Command discipline
+
+- Do not spend turns rediscovering syntax with `--help` during normal SSOT work. Use the command surface and examples in this skill directly.
+- Pick one verified CLI rail for the repo (`ssot`, `ssot-registry`, `ssot-cli`, or `uv run ssot`) and reuse it consistently by substituting that rail into the examples below.
+- Only inspect parser or help text when the user explicitly asks about the CLI surface or when observed runtime behavior contradicts the command patterns documented here.
 ## Goals
 
 - Create or update ADRs and SPECs that define the change.
@@ -28,6 +33,7 @@ Use this skill for the pre-freeze planning phase. The output is a governed scope
 - Do not freeze a boundary from this skill; hand off to `$ssot-scope-to-frozen-boundary`.
 - Treat this skill as the first half of a pre-freeze scoped flow when the user asks for ADR + SPEC + feature + test setup.
 - Require an explicit document-to-feature mapping in the response or links.
+- Treat `feature plan --claim-tier` as the target tier the feature should eventually satisfy, not as a signal to replace lower-tier claims during later proof work.
 - Prefer `ssot adr|spec create|update|sync` over editing files by hand.
 - If the request already includes freeze, implementation, migration, or release work, escalate to `$ssot-e2e-change-orchestrator`.
 

@@ -9,6 +9,11 @@ Use this skill when the user wants to operate on an SSOT repository through the 
 
 This plugin is centered on the CLI exposed by the PyPI-published `ssot-registry` distribution. The preferred execution path is the latest available CLI. Use a verified current global `ssot`/`ssot-registry` executable when present; otherwise create or refresh a repo-local `uv` environment with repo-local cache settings before invoking `uv run ssot ...`.
 
+## Command discipline
+
+- Do not spend turns rediscovering syntax with `--help` during normal SSOT work. Use the command surface and examples in this skill directly.
+- Pick one verified CLI rail for the repo (`ssot`, `ssot-registry`, `ssot-cli`, or `uv run ssot`) and reuse it consistently by substituting that rail into the examples below.
+- Only inspect parser or help text when the user explicitly asks about the CLI surface or when observed runtime behavior contradicts the command patterns documented here.
 ## What this skill covers
 
 - Repository initialization with `init`
@@ -54,7 +59,7 @@ Use these focused skills by default:
 - Prefer the latest verified CLI available on the machine. A current global `ssot ...` or `ssot-registry ...` rail is acceptable.
 - If the global rail is missing, stale, or unverified, use repo-local `uv run ssot ...` with repo-local cache settings.
 - Accept `ssot-registry ...` as a compatibility alias.
-- Treat `ssot-cli` as equivalent for help and parser inspection.
+- Treat `ssot-cli` as equivalent to `ssot` for command execution.
 
 ## Preferred command rails
 
@@ -62,7 +67,6 @@ First check whether a global CLI is already available and current enough for the
 
 ```powershell
 Get-Command ssot
-ssot validate --help
 ```
 
 Use Python package metadata to verify the installed `ssot-registry` version. The CLI does not expose a root `ssot --version` or `ssot-registry --version` command, so do not use version flags as a rail check. If the global executable fails with launcher, canonicalization, or parser-bootstrap errors, treat it as unavailable and use the repo-local `uv` rail.
@@ -75,7 +79,6 @@ $env:UV_LINK_MODE='copy'
 uv venv
 uv pip install --upgrade ssot-registry
 uv run python -c "import importlib.metadata as m; print(m.version('ssot-registry'))"
-uv run ssot --help
 ```
 
 This keeps execution inside the repository workspace while still exercising the published package from PyPI. Always set `UV_CACHE_DIR` before the first `uv` command on Windows when the user cache or launcher path has shown access errors.
@@ -101,7 +104,7 @@ python -m ssot_registry validate .
 
 On Windows PowerShell, build that value with `[IO.Path]::PathSeparator` if needed rather than hard-coding machine-local absolute paths.
 
-If you only need the CLI parser behavior, this fallback is sufficient and matches `tests/helpers.py`. This fallback is for maintainers debugging the source tree, not the default integration path.
+If you only need the source-tree execution path, this fallback is sufficient and matches `tests/helpers.py`. This fallback is for maintainers debugging the source tree, not the default integration path.
 
 ## Operating rules
 
@@ -125,7 +128,7 @@ $env:UV_CACHE_DIR='.tmp\uv-cache'
 $env:UV_LINK_MODE='copy'
 uv venv
 uv pip install --upgrade ssot-registry
-uv run ssot --help
+uv run python -c "import importlib.metadata as m; print(m.version('ssot-registry'))"
 ```
 
 ### Initialize a repository
@@ -179,4 +182,4 @@ uv run ssot release certify . --release-id rel:0.1.0 --write-report
 - Compatibility shim: `pkgs/ssot-registry/src/ssot_registry/cli/main.py`
 - Test harness for local execution: `tests/helpers.py`
 
-When help text and README examples disagree, trust the parser and current source over older prose.
+When README examples disagree with current source, trust the current source and the command patterns documented in these skills over older prose.

@@ -1,4 +1,4 @@
-﻿---
+---
 name: ssot-mcp-t1-worker-campaign
 description: Use when a Codex worker should participate in an SSOT MCP maturation campaign targeting T1, pull work leases through SSOT MCP, implement direct runtime behavior and project-controlled tests, complete slices honestly, and repeat until T1 completion or structural blockage.
 metadata:
@@ -9,6 +9,11 @@ metadata:
 
 Use this skill when a Codex worker should participate in an SSOT MCP maturation campaign targeting T1 direct project verification.
 
+## Command discipline
+
+- Do not spend turns rediscovering syntax with `--help` during normal SSOT work. Use the command surface and examples in this skill directly.
+- Pick one verified CLI rail for the repo (`ssot`, `ssot-registry`, `ssot-cli`, or `uv run ssot`) and reuse it consistently by substituting that rail into the examples below.
+- Only inspect parser or help text when the user explicitly asks about the CLI surface or when observed runtime behavior contradicts the command patterns documented here.
 ## Operating Model
 
 - Use the local repository for the current Codex session unless the user explicitly provides a different repo path.

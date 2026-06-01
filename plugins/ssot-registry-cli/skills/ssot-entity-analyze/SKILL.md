@@ -7,6 +7,11 @@ description: Analyze SSOT entities and their relationships across families using
 
 Use this skill when the user asks for cross-entity analysis rather than single-row inspection.
 
+## Command discipline
+
+- Do not spend turns rediscovering syntax with `--help` during normal SSOT work. Use the command surface and examples in this skill directly.
+- Pick one verified CLI rail for the repo (`ssot`, `ssot-registry`, `ssot-cli`, or `uv run ssot`) and reuse it consistently by substituting that rail into the examples below.
+- Only inspect parser or help text when the user explicitly asks about the CLI surface or when observed runtime behavior contradicts the command patterns documented here.
 ## Command surface
 
 - Family snapshots: `<entity> list`

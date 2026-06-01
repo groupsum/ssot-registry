@@ -7,6 +7,11 @@ description: Manage boundary entities with full CLI coverage, including scoped f
 
 Use this skill for boundary-only operations.
 
+## Command discipline
+
+- Do not spend turns rediscovering syntax with `--help` during normal SSOT work. Use the command surface and examples in this skill directly.
+- Pick one verified CLI rail for the repo (`ssot`, `ssot-registry`, `ssot-cli`, or `uv run ssot`) and reuse it consistently by substituting that rail into the examples below.
+- Only inspect parser or help text when the user explicitly asks about the CLI surface or when observed runtime behavior contradicts the command patterns documented here.
 ## Command surface
 
 - `boundary create|get|list|update|delete|add-feature|remove-feature|add-profile|remove-profile|freeze`

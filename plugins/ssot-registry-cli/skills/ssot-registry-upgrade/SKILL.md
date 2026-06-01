@@ -7,13 +7,17 @@ description: Upgrade a repository to the latest PyPI `ssot-registry`, run the CL
 
 Use this skill for one bounded workflow: run the latest available `ssot-registry` CLI, upgrade `.ssot/registry.json`, validate with the same CLI rail, and repair validation blockers until the registry passes or a concrete blocker remains.
 
+## Command discipline
+
+- Do not spend turns rediscovering syntax with `--help` during normal SSOT work. Use the command surface and examples in this skill directly.
+- Pick one verified CLI rail for the repo (`ssot`, `ssot-registry`, `ssot-cli`, or `uv run ssot`) and reuse it consistently by substituting that rail into the examples below.
+- Only inspect parser or help text when the user explicitly asks about the CLI surface or when observed runtime behavior contradicts the command patterns documented here.
 ## Command Surface
 
 Preferred global rail when already installed and current:
 
 ```powershell
 Get-Command ssot
-ssot validate --help
 ssot upgrade . --sync-docs --write-report
 ssot validate . --write-report
 ```

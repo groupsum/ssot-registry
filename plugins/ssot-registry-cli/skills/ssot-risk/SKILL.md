@@ -7,6 +7,11 @@ description: Manage risk entities with full CLI coverage, including linkage and 
 
 Use this skill for risk-only operations.
 
+## Command discipline
+
+- Do not spend turns rediscovering syntax with `--help` during normal SSOT work. Use the command surface and examples in this skill directly.
+- Pick one verified CLI rail for the repo (`ssot`, `ssot-registry`, `ssot-cli`, or `uv run ssot`) and reuse it consistently by substituting that rail into the examples below.
+- Only inspect parser or help text when the user explicitly asks about the CLI surface or when observed runtime behavior contradicts the command patterns documented here.
 ## Command surface
 
 - `risk create|get|list|update|delete|link|unlink|mitigate|accept|retire`

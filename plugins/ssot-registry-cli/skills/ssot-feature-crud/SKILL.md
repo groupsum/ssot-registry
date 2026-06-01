@@ -7,6 +7,11 @@ description: Create, inspect, update, delete, plan, link, unlink, and set lifecy
 
 Use this skill for feature-centered SSOT operations. Features are the targetable unit for planning, evaluation, and release scope, so keep their plan and lifecycle fields coherent with linked claims and tests.
 
+## Command discipline
+
+- Do not spend turns rediscovering syntax with `--help` during normal SSOT work. Use the command surface and examples in this skill directly.
+- Pick one verified CLI rail for the repo (`ssot`, `ssot-registry`, `ssot-cli`, or `uv run ssot`) and reuse it consistently by substituting that rail into the examples below.
+- Only inspect parser or help text when the user explicitly asks about the CLI surface or when observed runtime behavior contradicts the command patterns documented here.
 ## Command surface
 
 - `feature create|get|list|update|delete|link|unlink|plan|lifecycle set`
@@ -24,6 +29,9 @@ Use this skill for feature-centered SSOT operations. Features are the targetable
 
 - Distinguish planning from lifecycle: horizon answers when the feature is targeted; lifecycle answers its support state.
 - Prefer `feature plan` for roadmap changes and `feature lifecycle set` for policy/support changes.
+- `feature plan --claim-tier` records the target tier to reach; it does not instruct Codex to remove lower-tier claim links from the feature.
+- Promotion is additive: if a feature advances from `T0` to `T1` or `T1` to `T2`, keep the already-proven lower-tier claims linked and add the new higher-tier claim, tests, and evidence alongside them.
+- Only use `feature unlink` for mistaken, semantically obsolete, or intentionally retired graph edges, not as a side effect of claim-tier promotion.
 - When retiring a feature, supply `--replacement-feature-id` if there is a successor and keep the old feature rather than deleting it.
 - Prefer delete only for mistaken rows that should not remain in history.
 - If the user asks for ADR + SPEC + feature setup, escalate to `$ssot-decision-to-scope`.
@@ -36,6 +44,7 @@ Use this skill for feature-centered SSOT operations. Features are the targetable
 ssot feature create . --id feat:demo.login --title "User login"
 ssot feature plan . --ids feat:demo.login --horizon current --claim-tier T1 --target-lifecycle-stage active
 ssot feature lifecycle set . --ids feat:demo.login --stage active --note "Initial rollout"
+ssot feature link . --id feat:demo.login --claim-ids clm:demo.login.t0 --test-ids tst:demo.login.smoke
 ssot feature link . --id feat:demo.login --claim-ids clm:demo.login.t1 --test-ids tst:demo.login.unit
 ```
 

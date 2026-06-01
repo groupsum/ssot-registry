@@ -7,6 +7,11 @@ description: Get a single SSOT entity by ID across ADR, SPEC, feature, profile, 
 
 Use this skill when the user asks to fetch or inspect one specific entity. Prefer direct `get` calls before proposing edits.
 
+## Command discipline
+
+- Do not spend turns rediscovering syntax with `--help` during normal SSOT work. Use the command surface and examples in this skill directly.
+- Pick one verified CLI rail for the repo (`ssot`, `ssot-registry`, `ssot-cli`, or `uv run ssot`) and reuse it consistently by substituting that rail into the examples below.
+- Only inspect parser or help text when the user explicitly asks about the CLI surface or when observed runtime behavior contradicts the command patterns documented here.
 ## Command surface
 
 - `adr get`, `spec get`, `feature get`, `profile get`, `test get`, `issue get`, `claim get`, `evidence get`, `risk get`, `boundary get`, `release get`
