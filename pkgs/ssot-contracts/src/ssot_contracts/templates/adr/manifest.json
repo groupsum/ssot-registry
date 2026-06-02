@@ -705,5 +705,29 @@
         "status": "draft"
       }
     ]
+  },
+  {
+    "id": "adr:0637",
+    "number": 637,
+    "slug": "pack-schema-compatibility-is-forward-only",
+    "title": "Pack schema compatibility is forward-only",
+    "filename": "ADR-0637-pack-schema-compatibility-is-forward-only.yaml",
+    "target_path": ".ssot/adr/ADR-0637-pack-schema-compatibility-is-forward-only.yaml",
+    "sha256": "ba4dbf77b1d7b3eb21d0270c19c93c1761c2a28a0f07f9d17f1d97951a873b36",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.20",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-06-01T00:00:00Z",
+        "note": "Created to govern forward-only governance-pack schema compatibility.",
+        "status": "draft"
+      }
+    ]
   }
 ]

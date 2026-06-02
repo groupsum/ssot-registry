@@ -937,5 +937,34 @@
       "adr:0627",
       "adr:0636"
     ]
+  },
+  {
+    "id": "spc:0639",
+    "number": 639,
+    "slug": "forward-only-pack-schema-compatibility-contract",
+    "title": "Forward-only pack schema compatibility contract",
+    "filename": "SPEC-0639-forward-only-pack-schema-compatibility-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0639-forward-only-pack-schema-compatibility-contract.yaml",
+    "sha256": "fd21de4464ba7d3bc28db330a6bdb26ba961ae5e061fdbf849c72293307d6567",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.7.0",
+    "introduced_in": "0.2.20",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "at": "2026-06-01T00:00:00Z",
+        "note": "Created to specify forward-only governance-pack schema compatibility.",
+        "status": "draft"
+      }
+    ],
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0637",
+      "adr:0610"
+    ]
   }
 ]
