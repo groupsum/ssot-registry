@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ssot-mcp"
-version = "0.1.4.dev1"
+version = "0.1.4"
 description = "MCP server for optional SSOT pull-worker control-plane coordination."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
@@ -12,7 +12,7 @@ license = "Apache-2.0"
 authors = [{ name = "Jacob Stewart", email = "jacob@swarmauri.com" }]
 dependencies = [
   "mcp>=1.0",
-  "ssot-core>=0.2.22.dev1,<0.3.0",
+  "ssot-core>=0.2.22,<0.3.0",
 ]
 keywords = ["ssot", "mcp", "model-context-protocol", "codex", "workers", "leases", "control-plane", "registry", "developer-tools", "automation"]
 classifiers = [
