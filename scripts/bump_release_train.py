@@ -4,7 +4,13 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from packaging.version import Version
+try:
+    from packaging.version import Version
+except ModuleNotFoundError:  # pragma: no cover
+    try:
+        from setuptools._vendor.packaging.version import Version
+    except ModuleNotFoundError:  # pragma: no cover
+        from pip._vendor.packaging.version import Version
 
 from bump_pyproject_version import bump_version, read_project_version, write_project_version
 from release_metadata import CORE_PACKAGES, PACKAGE_INFOS, expected_dependency_specs, resolve_targets
