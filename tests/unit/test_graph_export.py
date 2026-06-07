@@ -4,7 +4,7 @@ import json
 import unittest
 from pathlib import Path
 
-from ssot_registry.api import export_graph
+from ssot_registry.api import export_graph, export_lineage_graph
 from ssot_registry.graph.export_dot import build_graph_dot
 from ssot_views.graph import build_graph_json
 from tests.helpers import temp_repo_from_fixture
@@ -31,6 +31,20 @@ class GraphExportTests(unittest.TestCase):
         dot_text = Path(result["output_path"]).read_text(encoding="utf-8")
         self.assertIn("digraph ssot_registry", dot_text)
         self.assertIn("feat:rfc.9000.connection-migration", dot_text)
+
+    def test_lineage_graph_export_html(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+        result = export_lineage_graph(repo)
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["format"], "html")
+        html = Path(result["output_path"]).read_text(encoding="utf-8")
+        self.assertIn("<title>SSOT Lineage Graph</title>", html)
+        self.assertIn("Top-down lineage", html)
+        self.assertIn("Focus", html)
+        self.assertIn("Deselect", html)
+        self.assertIn("feat:rfc.9000.connection-migration", html)
 
     def test_dot_export_escapes_newlines_in_ids(self) -> None:
         registry = {

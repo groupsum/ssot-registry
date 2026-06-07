@@ -1,17 +1,21 @@
-body: |-
-  The canonical registry is entity-centric JSON with explicit references. A graph export is derived from it.
-decision_date: null
-id: "adr:0004"
+schema_version: "0.7.0"
 kind: "adr"
+id: "adr:0004"
 number: 4
-origin: "ssot-core"
-references: []
-schema_version: "0.1.0"
 slug: "entity-centric-registry-derived-graph"
-status: "draft"
-status_notes: []
-summary: "The canonical registry is entity-centric JSON with explicit references. A graph export is derived from it."
-superseded_by: []
-supersedes: []
-tags: []
 title: "Entity-centric registry with a derived graph export"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "The canonical registry is entity-centric JSON with explicit references. Graph exports and interactive lineage HTML views are derived projections from that canonical registry; generated graph/view artifacts are non-canonical and may be regenerated from registry truth."
+supersedes: []
+superseded_by: []
+status_notes:
+  -
+    status: "draft"
+    note: "Document interactive lineage HTML as a derived non-canonical graph projection."
+    at: "2026-06-07T11:15:57Z"
+references: []
+body: |-
+  The canonical registry is entity-centric JSON with explicit references. Graph exports and interactive lineage HTML views are derived projections from that canonical registry; generated graph/view artifacts are non-canonical and may be regenerated from registry truth.

@@ -1,0 +1,20 @@
+schema_version: "0.7.0"
+kind: "spec"
+id: "spc:0599"
+number: 599
+slug: "interactive-lineage-graph-html-export"
+title: "Interactive lineage graph HTML export"
+status: "draft"
+origin: "ssot-core"
+decision_date: null
+tags: []
+summary: "The graph command SHALL support a self-contained HTML lineage export derived from the canonical registry graph. The view SHALL expose network and top-down lineage modes, node family filters, search, depth-limited focus traversal, node selection/deselection, fit-to-visible graph, and x/y stratification spacing controls. The generated HTML SHALL be a non-canonical projection and SHALL embed enough graph metadata for local offline review."
+supersedes: []
+superseded_by: []
+status_notes: []
+references: []
+body: |-
+  The graph command SHALL support a self-contained HTML lineage export derived from the canonical registry graph. The view SHALL expose network and top-down lineage modes, node family filters, search, depth-limited focus traversal, node selection/deselection, fit-to-visible graph, and x/y stratification spacing controls. The generated HTML SHALL be a non-canonical projection and SHALL embed enough graph metadata for local offline review.
+spec_kind: "operational"
+adr_ids:
+  - "adr:0004"

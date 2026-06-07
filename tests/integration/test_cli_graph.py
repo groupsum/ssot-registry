@@ -36,6 +36,15 @@ class CliGraphSurfaceTests(unittest.TestCase):
         dot_text = Path(json.loads(export_dot.stdout)["output_path"]).read_text(encoding="utf-8")
         self.assertIn("REQUIRES", dot_text)
 
+        lineage = run_cli("graph", "lineage", str(repo))
+        self.assertEqual(lineage.returncode, 0, lineage.stderr)
+        lineage_payload = json.loads(lineage.stdout)
+        self.assertEqual(lineage_payload["format"], "html")
+        html = Path(lineage_payload["output_path"]).read_text(encoding="utf-8")
+        self.assertIn("SSOT Lineage Graph", html)
+        self.assertIn("Top-down lineage", html)
+        self.assertIn("feat:graph.requires", html)
+
 
 if __name__ == "__main__":
     unittest.main()

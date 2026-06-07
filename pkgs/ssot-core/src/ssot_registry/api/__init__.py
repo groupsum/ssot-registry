@@ -49,7 +49,7 @@ from .entity_ops import (
 )
 from .profile_eval import evaluate_feature_passing, evaluate_profile, evaluate_profile_by_id, evaluate_profiles
 from .evidence import verify_evidence_rows
-from .graph import export_graph
+from .graph import export_graph, export_lineage_graph
 from .init import initialize_repo
 from .local_assurance import (
     build_artifact_manifest,
@@ -150,6 +150,7 @@ __all__ = [
     "publish_release",
     "revoke_release",
     "export_graph",
+    "export_lineage_graph",
     "export_registry",
     "sync_automated_statuses",
     "run_tests",
