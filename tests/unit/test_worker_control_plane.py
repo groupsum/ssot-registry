@@ -29,7 +29,7 @@ def _registry(tmp_path: Path, *, t1_ready: bool = False, t2_ready: bool = False)
     t1_evidence = ["evd:control.worker.t1"] if t1_ready else []
     t2_evidence = ["evd:control.worker.t2"] if t2_ready else []
     return {
-        "schema_version": "0.7.0",
+        "schema_version": "0.8.0",
         "repo": {"id": "repo:test", "name": "test", "version": "0.1.0", "kind": "repo-local"},
         "tooling": {"ssot_registry_version": "0.0.0", "initialized_with_version": "0.0.0", "last_upgraded_from_version": "0.0.0"},
         "paths": {
@@ -122,7 +122,7 @@ def _registry(tmp_path: Path, *, t1_ready: bool = False, t2_ready: bool = False)
             {
                 "id": "evd:control.worker.t1",
                 "title": "Worker T1 evidence",
-                "status": "passed",
+                "status": "passed" if t1_ready else "planned",
                 "kind": "pytest",
                 "tier": "T1",
                 "origin": "repo-local",
@@ -133,7 +133,7 @@ def _registry(tmp_path: Path, *, t1_ready: bool = False, t2_ready: bool = False)
             {
                 "id": "evd:control.worker.t2",
                 "title": "Worker T2 evidence",
-                "status": "passed",
+                "status": "passed" if t2_ready else "planned",
                 "kind": "pytest",
                 "tier": "T2",
                 "origin": "repo-local",

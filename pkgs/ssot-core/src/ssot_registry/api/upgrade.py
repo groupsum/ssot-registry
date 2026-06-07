@@ -41,6 +41,7 @@ SCHEMA_V0_3_0 = "0.3.0"
 SCHEMA_V0_4_0 = "0.4.0"
 SCHEMA_V0_5_0 = "0.5.0"
 SCHEMA_V0_6_0 = "0.6.0"
+SCHEMA_V0_7_0 = "0.7.0"
 MIGRATION_RELEASE_WINDOWS = {
     (3, 4): "0.1.x->0.2.1",
     (4, 5): "0.2.1->0.2.2",
@@ -55,7 +56,8 @@ MIGRATION_RELEASE_WINDOWS = {
     (SCHEMA_V0_3_0, SCHEMA_V0_4_0): "0.2.10->0.4.0",
     (SCHEMA_V0_4_0, SCHEMA_V0_5_0): "0.4.0->0.5.0",
     (SCHEMA_V0_5_0, SCHEMA_V0_6_0): "0.5.0->0.6.0",
-    (SCHEMA_V0_6_0, SCHEMA_VERSION): "0.6.0->0.7.0",
+    (SCHEMA_V0_6_0, SCHEMA_V0_7_0): "0.6.0->0.7.0",
+    (SCHEMA_V0_7_0, SCHEMA_VERSION): "0.7.0->0.8.0",
 }
 
 MIGRATION_PATHS = (
@@ -72,7 +74,8 @@ MIGRATION_PATHS = (
     (SCHEMA_V0_3_0, SCHEMA_V0_4_0, "migrate_v0_3_0_to_v0_4_0"),
     (SCHEMA_V0_4_0, SCHEMA_V0_5_0, "migrate_v0_4_0_to_v0_5_0"),
     (SCHEMA_V0_5_0, SCHEMA_V0_6_0, "migrate_v0_5_0_to_v0_6_0"),
-    (SCHEMA_V0_6_0, SCHEMA_VERSION, "migrate_v0_6_0_to_v0_7_0"),
+    (SCHEMA_V0_6_0, SCHEMA_V0_7_0, "migrate_v0_6_0_to_v0_7_0"),
+    (SCHEMA_V0_7_0, SCHEMA_VERSION, "migrate_v0_7_0_to_v0_8_0"),
 )
 
 
@@ -613,7 +616,7 @@ def migrate_v0_6_0_to_v0_7_0(
 ) -> dict[str, Any]:
     _ = repo_root, previous_version, target_version
     migrated = deepcopy(registry)
-    migrated["schema_version"] = SCHEMA_VERSION
+    migrated["schema_version"] = SCHEMA_V0_7_0
     for feature in migrated.get("features", []):
         if not isinstance(feature, dict):
             continue
@@ -622,6 +625,62 @@ def migrate_v0_6_0_to_v0_7_0(
             feature_id = feature.get("id", "<missing>")
             raise ValidationError(f"features.{feature_id}.parent_feature_ids must be a list of strings")
         feature["parent_feature_ids"] = sorted(dict.fromkeys(parent_feature_ids))
+    return migrated
+
+
+def _string_ids(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, str)]
+
+
+def migrate_v0_7_0_to_v0_8_0(
+    registry: dict[str, Any],
+    repo_root: Path,
+    *,
+    previous_version: str,
+    target_version: str,
+) -> dict[str, Any]:
+    _ = repo_root, previous_version, target_version
+    migrated = deepcopy(registry)
+    migrated["schema_version"] = SCHEMA_VERSION
+
+    evidence_by_id = {
+        row["id"]: row
+        for row in migrated.get("evidence", [])
+        if isinstance(row, dict) and isinstance(row.get("id"), str)
+    }
+
+    for claim in migrated.get("claims", []):
+        if not isinstance(claim, dict) or not isinstance(claim.get("id"), str):
+            continue
+        claim_id = claim["id"]
+        for evidence_id in _string_ids(claim.get("evidence_ids")):
+            evidence = evidence_by_id.get(evidence_id)
+            if evidence is None:
+                continue
+            evidence["claim_ids"] = sorted(dict.fromkeys([*_string_ids(evidence.get("claim_ids")), claim_id]))
+
+    for test in migrated.get("tests", []):
+        if not isinstance(test, dict) or not isinstance(test.get("id"), str):
+            continue
+        test_id = test["id"]
+        test_claim_ids = _string_ids(test.get("claim_ids"))
+        for evidence_id in _string_ids(test.get("evidence_ids")):
+            evidence = evidence_by_id.get(evidence_id)
+            if evidence is None:
+                continue
+            evidence["test_ids"] = sorted(dict.fromkeys([*_string_ids(evidence.get("test_ids")), test_id]))
+            evidence["claim_ids"] = sorted(
+                dict.fromkeys([*_string_ids(evidence.get("claim_ids")), *test_claim_ids])
+            )
+
+    for evidence in migrated.get("evidence", []):
+        if not isinstance(evidence, dict):
+            continue
+        evidence["claim_ids"] = sorted(dict.fromkeys(_string_ids(evidence.get("claim_ids"))))
+        evidence["test_ids"] = sorted(dict.fromkeys(_string_ids(evidence.get("test_ids"))))
+
     return migrated
 
 
@@ -801,11 +860,21 @@ def upgrade_registry(
             target_version=target_version,
         )
         schema_migrations.append("migrate_v0_6_0_to_v0_7_0")
-        migrations.append(_migration_window_label(SCHEMA_V0_6_0, SCHEMA_VERSION))
+        migrations.append(_migration_window_label(SCHEMA_V0_6_0, SCHEMA_V0_7_0))
+        source_schema = SCHEMA_V0_7_0
+    if source_schema == SCHEMA_V0_7_0:
+        working = migrate_v0_7_0_to_v0_8_0(
+            working,
+            repo_root,
+            previous_version=source_tooling_version,
+            target_version=target_version,
+        )
+        schema_migrations.append("migrate_v0_7_0_to_v0_8_0")
+        migrations.append(_migration_window_label(SCHEMA_V0_7_0, SCHEMA_VERSION))
         source_schema = SCHEMA_VERSION
     elif source_schema != SCHEMA_VERSION:
         raise RegistryError(
-            f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10, 0.1.0, 0.2.0, 0.3.0, 0.4.0, 0.5.0, 0.6.0 or {SCHEMA_VERSION}"
+            f"Unsupported registry schema_version {source_schema}; expected 3, 4, 5, 6, 7, 8, 9, 10, 0.1.0, 0.2.0, 0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.7.0 or {SCHEMA_VERSION}"
         )
 
     normalized_current = _normalize_current_registry(working)

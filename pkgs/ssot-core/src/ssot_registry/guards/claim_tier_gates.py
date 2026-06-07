@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
 from ssot_registry.model.enums import CLAIM_TIER_RANK
+from ssot_registry.proof_links import evidence_for_claim, producer_tests_for_claim
 
 
 ROBUSTNESS_DIMENSIONS = {
@@ -54,16 +56,15 @@ def _passed_evidence(
 ) -> list[dict[str, Any]]:
     return [
         evidence
-        for evidence_id in claim.get("evidence_ids", [])
-        if (evidence := index["evidence"].get(evidence_id)) is not None
-        and evidence.get("status") == "passed"
+        for evidence in evidence_for_claim(str(claim["id"]), index)
+        if evidence.get("status") == "passed"
         and CLAIM_TIER_RANK.get(str(evidence.get("tier")), -1) >= CLAIM_TIER_RANK[minimum_tier]
     ]
 
 
 def _linked_tests_passing(claim: dict[str, Any], index: dict[str, dict[str, dict[str, Any]]]) -> bool:
-    linked_tests = [index["tests"].get(test_id) for test_id in claim.get("test_ids", [])]
-    return bool(linked_tests) and all(test is not None and test.get("status") == "passing" for test in linked_tests)
+    linked_tests = producer_tests_for_claim(str(claim["id"]), index)
+    return bool(linked_tests) and all(test.get("status") == "passing" for test in linked_tests)
 
 
 def _evidence_paths_exist(evidence_rows: list[dict[str, Any]], repo_root: Path | None) -> bool:
@@ -160,16 +161,23 @@ def _t3_checks(
         and context.get("blocking_risk_result") in {None, "none", "passed", "clear"}
         for context in contexts
     )
+    certification_registry = deepcopy(registry)
+    certification_registry.setdefault("guard_policies", {}).setdefault("certification", {})[
+        "require_release_status_draft_or_candidate"
+    ] = False
     certification_reports = [
-        evaluate_release_certification_guard(registry, index, release_id)
+        evaluate_release_certification_guard(certification_registry, index, release_id)
         for release_id in release_ids
         if release_id in index["releases"]
     ]
+    certification_guard_passes = (
+        bool(certification_reports) and any(report["passed"] for report in certification_reports)
+    ) or (not certification_reports and report_context_passes)
     checks = {
         "t3_passed_release_evidence": bool(evidence_rows),
         "t3_release_context": bool(release_ids),
         "t3_boundary_context": bool(boundary_context),
-        "t3_release_certification_guard": report_context_passes or (bool(certification_reports) and any(report["passed"] for report in certification_reports)),
+        "t3_release_certification_guard": certification_guard_passes,
     }
     failures = [
         message
@@ -181,6 +189,9 @@ def _t3_checks(
         )
         if not checks[key]
     ]
+    for report in certification_reports:
+        if not report["passed"]:
+            failures.extend(str(failure) for failure in report.get("failures", []))
     return checks, failures
 
 

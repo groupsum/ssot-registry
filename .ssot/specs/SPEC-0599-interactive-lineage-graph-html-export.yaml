@@ -8,13 +8,27 @@ status: "draft"
 origin: "ssot-core"
 decision_date: null
 tags: []
-summary: "The graph command SHALL support a self-contained HTML lineage export derived from the canonical registry graph. The view SHALL expose network and top-down lineage modes, node family filters, search, depth-limited focus traversal, node selection/deselection, fit-to-visible graph, and x/y stratification spacing controls. The generated HTML SHALL be a non-canonical projection and SHALL embed enough graph metadata for local offline review."
+summary: "Scope"
 supersedes: []
 superseded_by: []
-status_notes: []
+status_notes:
+  -
+    status: "draft"
+    note: "Updated lineage export contract for evidence-centered proof paths."
+    at: "2026-06-07T13:06:45Z"
 references: []
 body: |-
-  The graph command SHALL support a self-contained HTML lineage export derived from the canonical registry graph. The view SHALL expose network and top-down lineage modes, node family filters, search, depth-limited focus traversal, node selection/deselection, fit-to-visible graph, and x/y stratification spacing controls. The generated HTML SHALL be a non-canonical projection and SHALL embed enough graph metadata for local offline review.
-spec_kind: "operational"
+  Scope
+  The graph command shall support a self-contained HTML lineage export derived from the canonical registry graph.
+  
+  Evidence-centered lineage
+  The lineage view shall expose evidence-centered proof paths. Claim lineage shall be rendered as `claim <- evidence <- test` when test-produced evidence exists. Feature assurance lineage shall be rendered as `feature -> claim <- evidence <- test`.
+  
+  The view may show derived test-to-claim verification edges for operator convenience, but those edges shall be labeled as derived from evidence links and shall not be presented as canonical proof authority.
+  
+  Diagnostics
+  The generated HTML shall expose diagnostics for evidence without supporting claim links, claims without supporting evidence, evidence producer gaps, and compatibility mirror mismatches. Generated lineage HTML remains a non-canonical projection and shall embed enough graph metadata for local offline review.
+spec_kind: "normative"
 adr_ids:
   - "adr:0004"
+  - "adr:0640"

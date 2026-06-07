@@ -96,6 +96,24 @@ def evaluate_release_certification_guard(
             if not covering_claims:
                 failures.append(f"Release {release_id} has no claim coverage for boundary feature {feature_id}")
 
+    if certification_policy.get("require_release_evidence_coverage_for_claims", True):
+        release_evidence_ids = set(release.get("evidence_ids", []))
+        release_evidence = [
+            index["evidence"][evidence_id]
+            for evidence_id in release_evidence_ids
+            if evidence_id in index["evidence"]
+        ]
+        for claim in release_claims:
+            claim_id = claim["id"]
+            covering_evidence = [
+                evidence
+                for evidence in release_evidence
+                if claim_id in evidence.get("claim_ids", [])
+                or evidence.get("id") in claim.get("evidence_ids", [])
+            ]
+            if not covering_evidence:
+                failures.append(f"Release {release_id} has no evidence coverage for claim {claim_id}")
+
     if certification_policy.get("require_feature_target_tiers_met", True):
         for feature_id in boundary_feature_ids:
             feature = index["features"].get(feature_id)

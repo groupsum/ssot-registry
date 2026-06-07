@@ -729,5 +729,29 @@
         "status": "draft"
       }
     ]
+  },
+  {
+    "id": "adr:0640",
+    "number": 640,
+    "slug": "evidence-owns-proof-linkage",
+    "title": "Evidence Owns Proof Linkage",
+    "filename": "ADR-0640-evidence-owns-proof-linkage.yaml",
+    "target_path": ".ssot/adr/ADR-0640-evidence-owns-proof-linkage.yaml",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.8.0",
+    "introduced_in": "0.2.22",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "status": "draft",
+        "note": "Created to govern evidence-centered proof authority for schema 0.8.0.",
+        "at": "2026-06-07T13:05:50Z"
+      }
+    ],
+    "sha256": "96d084d77996547e2a426761a68a7c73c838bb9a57cc8ff40ce690ecacc652b6"
   }
 ]

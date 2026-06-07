@@ -369,12 +369,14 @@ def certify_feature_proof_graphs(
     _save_checked(registry_path, repo_root, registry, "preparing proof-graph certification flow")
     freeze_result = freeze_boundary(repo_root, boundary_id=boundary_id)
     certification_result = certify_release(repo_root, release_id=release_id, write_report=write_report)
-    sync_after_certify = sync_automated_statuses(repo_root)
+    sync_after_certify = None
 
     if promote or publish:
         promote_release(repo_root, release_id=release_id)
     if publish:
         publish_release(repo_root, release_id=release_id)
+    if not (promote or publish):
+        sync_after_certify = sync_automated_statuses(repo_root)
     sync_after_publish = sync_automated_statuses(repo_root)
 
     _registry_path, repo_root, final_registry = load_registry(repo_root)

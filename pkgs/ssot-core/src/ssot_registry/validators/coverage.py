@@ -3,6 +3,7 @@ from __future__ import annotations
 from ssot_registry.api.profile_resolution import resolve_boundary_feature_ids
 from ssot_registry.guards.feature_requirements import evaluate_required_feature_failures
 from ssot_registry.guards.profile_requirements import evaluate_required_profile_failures
+from ssot_registry.proof_links import evidence_for_claim, producer_tests_for_claim
 
 
 IN_SCOPE_HORIZONS = {"current", "explicit"}
@@ -32,18 +33,22 @@ def validate_coverage(index: dict[str, dict[str, dict[str, object]]], failures: 
     for test_id, row in index["tests"].items():
         if not row.get("feature_ids"):
             warnings.append(f"tests.{test_id} has no linked features")
-        if not row.get("claim_ids"):
-            failures.append(f"tests.{test_id} has no linked claims")
         if not row.get("evidence_ids"):
             failures.append(f"tests.{test_id} has no linked evidence rows")
 
     for claim_id, row in index["claims"].items():
         if not row.get("feature_ids"):
             warnings.append(f"claims.{claim_id} has no linked features")
-        if not row.get("test_ids"):
-            warnings.append(f"claims.{claim_id} has no linked tests")
-        if not row.get("evidence_ids"):
+        if not producer_tests_for_claim(claim_id, index):
+            warnings.append(f"claims.{claim_id} has no evidence-linked tests")
+        if not evidence_for_claim(claim_id, index):
             warnings.append(f"claims.{claim_id} has no linked evidence")
+
+    for evidence_id, row in index["evidence"].items():
+        if not row.get("claim_ids"):
+            failures.append(f"evidence.{evidence_id} has no linked claims")
+        if not row.get("test_ids"):
+            warnings.append(f"evidence.{evidence_id} has no producer tests")
 
     for profile_id, profile in index["profiles"].items():
         from ssot_registry.api.profile_eval import evaluate_profile

@@ -34,6 +34,8 @@ def verify_evidence_rows(path: str | Path, evidence_id: str | None = None) -> di
             local_failures.append(f"Evidence path does not exist: {path_value}")
         if evidence["status"] != "passed":
             local_failures.append(f"Evidence {evidence['id']} status is {evidence['status']}, expected passed")
+        if not evidence.get("claim_ids"):
+            local_failures.append(f"Evidence {evidence['id']} has no linked claims")
         for test_id in evidence.get("test_ids", []):
             test = index["tests"].get(test_id)
             if test is None or test.get("status") != "passing":

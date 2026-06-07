@@ -8,14 +8,25 @@ status: "draft"
 origin: "ssot-core"
 decision_date: null
 tags: []
-summary: "The canonical registry is entity-centric JSON with explicit references. Graph exports and interactive lineage HTML views are derived projections from that canonical registry; generated graph/view artifacts are non-canonical and may be regenerated from registry truth."
+summary: "Summary"
 supersedes: []
 superseded_by: []
 status_notes:
   -
-    status: "draft"
-    note: "Document interactive lineage HTML as a derived non-canonical graph projection."
     at: "2026-06-07T11:15:57Z"
+    note: "Document interactive lineage HTML as a derived non-canonical graph projection."
+    status: "draft"
+  -
+    status: "draft"
+    note: "Updated to distinguish canonical evidence-centered proof edges from derived graph projection edges."
+    at: "2026-06-07T13:06:01Z"
 references: []
 body: |-
-  The canonical registry is entity-centric JSON with explicit references. Graph exports and interactive lineage HTML views are derived projections from that canonical registry; generated graph/view artifacts are non-canonical and may be regenerated from registry truth.
+  Summary
+  The canonical registry remains entity-centric JSON with explicit references. Graph exports, lineage views, DOT, SVG, and HTML are derived projections from canonical registry truth.
+  
+  Decision
+  Graph projections shall distinguish canonical registry relationships from derived convenience relationships. Evidence-centered proof lineage is projected from canonical evidence links: tests produce evidence, and evidence supports claims. Direct test-to-claim verification edges, when shown, are derived from the evidence path and shall be labeled as derived rather than treated as canonical proof authority.
+  
+  Implications
+  Graph exports may continue to include convenience edges for review, but the export metadata and lineage views shall make proof authority clear. Orphan evidence, claims without supporting evidence, and compatibility mirror mismatches shall be visible as graph diagnostics instead of being hidden by redundant triangle edges.

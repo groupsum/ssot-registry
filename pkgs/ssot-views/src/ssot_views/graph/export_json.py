@@ -9,7 +9,10 @@ def build_graph_json(registry: dict[str, object]) -> dict[str, object]:
 
     for section, kind in GRAPH_NODE_KIND.items():
         for row in registry.get(section, []):
-            nodes.append({"id": row["id"], "kind": kind})
+            node = {"id": row["id"], "kind": kind}
+            if row.get("title"):
+                node["title"] = row["title"]
+            nodes.append(node)
 
     for boundary in registry.get("boundaries", []):
         for feature_id in boundary.get("feature_ids", []):
@@ -60,14 +63,12 @@ def build_graph_json(registry: dict[str, object]) -> dict[str, object]:
     for claim in registry.get("claims", []):
         for feature_id in claim.get("feature_ids", []):
             edges.append({"type": "ASSERTS", "from": claim["id"], "to": feature_id})
-        for test_id in claim.get("test_ids", []):
-            edges.append({"type": "VERIFIES", "from": test_id, "to": claim["id"]})
-        for evidence_id in claim.get("evidence_ids", []):
-            edges.append({"type": "SUPPORTS", "from": evidence_id, "to": claim["id"]})
 
-    for test in registry.get("tests", []):
-        for evidence_id in test.get("evidence_ids", []):
-            edges.append({"type": "DERIVES_FROM", "from": evidence_id, "to": test["id"]})
+    for evidence in registry.get("evidence", []):
+        for test_id in evidence.get("test_ids", []):
+            edges.append({"type": "PRODUCES", "from": test_id, "to": evidence["id"]})
+        for claim_id in evidence.get("claim_ids", []):
+            edges.append({"type": "SUPPORTS", "from": evidence["id"], "to": claim_id})
 
     for issue in registry.get("issues", []):
         for section_key in ("feature_ids", "claim_ids", "test_ids", "evidence_ids", "risk_ids"):

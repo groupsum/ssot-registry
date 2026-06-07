@@ -96,13 +96,53 @@ class MigrationPathTests(unittest.TestCase):
             target_version="0.2.10",
         )
 
-        self.assertEqual(migrated["schema_version"], SCHEMA_VERSION)
+        self.assertEqual(migrated["schema_version"], upgrade.SCHEMA_V0_7_0)
         self.assertEqual(migrated["features"][0]["requires"], ["feat:example.prereq"])
         self.assertEqual(migrated["features"][0]["parent_feature_ids"], [])
         self.assertEqual(
             migrated["features"][1]["parent_feature_ids"],
             ["feat:example.other", "feat:example.parent"],
         )
+
+    def test_v0_7_to_v0_8_seeds_evidence_owned_links_from_legacy_mirrors(self) -> None:
+        registry = {
+            "schema_version": "0.7.0",
+            "claims": [
+                {
+                    "id": "clm:example.t1",
+                    "evidence_ids": ["evd:example"],
+                },
+                {
+                    "id": "clm:example.t2",
+                    "evidence_ids": [],
+                }
+            ],
+            "tests": [
+                {
+                    "id": "tst:example",
+                    "evidence_ids": ["evd:example"],
+                    "claim_ids": ["clm:example.t2"],
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "evd:example",
+                    "claim_ids": [],
+                    "test_ids": [],
+                }
+            ],
+        }
+
+        migrated = upgrade.migrate_v0_7_0_to_v0_8_0(
+            registry,
+            Path("."),
+            previous_version="0.2.10",
+            target_version="0.2.10",
+        )
+
+        self.assertEqual(migrated["schema_version"], SCHEMA_VERSION)
+        self.assertEqual(migrated["evidence"][0]["claim_ids"], ["clm:example.t1", "clm:example.t2"])
+        self.assertEqual(migrated["evidence"][0]["test_ids"], ["tst:example"])
 
 
 if __name__ == "__main__":

@@ -131,8 +131,5 @@ REF_FIELD_TARGETS = {
 BIDIRECTIONAL_LINKS = (
     ("features", "claim_ids", "claims", "feature_ids"),
     ("features", "test_ids", "tests", "feature_ids"),
-    ("claims", "test_ids", "tests", "claim_ids"),
-    ("claims", "evidence_ids", "evidence", "claim_ids"),
-    ("tests", "evidence_ids", "evidence", "test_ids"),
     ("issues", "risk_ids", "risks", "issue_ids"),
 )

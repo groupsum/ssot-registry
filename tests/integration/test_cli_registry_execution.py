@@ -4,6 +4,7 @@ import json
 import unittest
 from pathlib import Path
 
+from ssot_registry.util.jsonio import stable_json_dumps
 from tests.helpers import run_cli, temp_repo_from_fixture, workspace_tempdir
 
 
@@ -18,6 +19,60 @@ def _execution_json(test_path: str) -> str:
             "success": {"type": "exit_code", "expected": 0},
         }
     )
+
+
+def _wire_execution_fixture(
+    repo: Path,
+    *,
+    feature_id: str,
+    claim_id: str,
+    test_id: str,
+    evidence_id: str,
+    test_title: str,
+    test_path: str,
+    evidence_title: str,
+    evidence_path: str,
+) -> None:
+    registry_path = repo / ".ssot" / "registry.json"
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+
+    feature = next(row for row in registry["features"] if row["id"] == feature_id)
+    feature["implementation_status"] = "implemented"
+    feature["claim_ids"] = sorted(set(feature.get("claim_ids", [])) | {claim_id})
+    feature["test_ids"] = sorted(set(feature.get("test_ids", [])) | {test_id})
+
+    claim = next(row for row in registry["claims"] if row["id"] == claim_id)
+    claim["test_ids"] = sorted(set(claim.get("test_ids", [])) | {test_id})
+    claim["evidence_ids"] = sorted(set(claim.get("evidence_ids", [])) | {evidence_id})
+
+    registry["tests"].append(
+        {
+            "id": test_id,
+            "title": test_title,
+            "origin": "repo-local",
+            "status": "passing",
+            "kind": "pytest",
+            "path": test_path,
+            "feature_ids": [feature_id],
+            "claim_ids": [claim_id],
+            "evidence_ids": [evidence_id],
+            "execution": json.loads(_execution_json(test_path)),
+        }
+    )
+    registry["evidence"].append(
+        {
+            "id": evidence_id,
+            "title": evidence_title,
+            "origin": "repo-local",
+            "status": "passed",
+            "kind": "report",
+            "tier": "T1",
+            "path": evidence_path,
+            "claim_ids": [claim_id],
+            "test_ids": [test_id],
+        }
+    )
+    registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
 
 
 class RegistryExecutionCliTests(unittest.TestCase):
@@ -165,25 +220,6 @@ class RegistryExecutionCliTests(unittest.TestCase):
             evidence_artifact.parent.mkdir(parents=True, exist_ok=True)
             evidence_artifact.write_text("{}", encoding="utf-8")
 
-            evidence = run_cli(
-                "evidence",
-                "create",
-                str(repo),
-                "--id",
-                "evd:t1.spec.run-target",
-                "--title",
-                "Spec run target evidence",
-                "--status",
-                "passed",
-                "--kind",
-                "report",
-                "--tier",
-                "T1",
-                "--evidence-path",
-                ".ssot/evidence/spec-run-target.json",
-            )
-            self.assertEqual(evidence.returncode, 0, evidence.stderr)
-
             claim = run_cli(
                 "claim",
                 "create",
@@ -202,83 +238,20 @@ class RegistryExecutionCliTests(unittest.TestCase):
                 "Spec-linked execution claim.",
                 "--feature-ids",
                 "feat:spec.run-target",
-                "--evidence-ids",
-                "evd:t1.spec.run-target",
             )
             self.assertEqual(claim.returncode, 0, claim.stderr)
 
-            test_create = run_cli(
-                "test",
-                "create",
-                str(repo),
-                "--id",
-                "tst:pytest.spec.run-target",
-                "--title",
-                "Spec run target test",
-                "--status",
-                "passing",
-                "--kind",
-                "pytest",
-                "--test-path",
-                "tests/test_spec_run_target.py",
-                "--feature-ids",
-                "feat:spec.run-target",
-                "--claim-ids",
-                "clm:spec.run-target.t1",
-                "--evidence-ids",
-                "evd:t1.spec.run-target",
-                "--execution-json",
-                _execution_json("tests/test_spec_run_target.py"),
+            _wire_execution_fixture(
+                repo,
+                feature_id="feat:spec.run-target",
+                claim_id="clm:spec.run-target.t1",
+                test_id="tst:pytest.spec.run-target",
+                evidence_id="evd:t1.spec.run-target",
+                test_title="Spec run target test",
+                test_path="tests/test_spec_run_target.py",
+                evidence_title="Spec run target evidence",
+                evidence_path=".ssot/evidence/spec-run-target.json",
             )
-            self.assertEqual(test_create.returncode, 0, test_create.stderr)
-
-            feature_link = run_cli(
-                "feature",
-                "link",
-                str(repo),
-                "--id",
-                "feat:spec.run-target",
-                "--claim-ids",
-                "clm:spec.run-target.t1",
-                "--test-ids",
-                "tst:pytest.spec.run-target",
-            )
-            self.assertEqual(feature_link.returncode, 0, feature_link.stderr)
-
-            test_link = run_cli(
-                "test",
-                "link",
-                str(repo),
-                "--id",
-                "tst:pytest.spec.run-target",
-                "--claim-ids",
-                "clm:spec.run-target.t1",
-            )
-            self.assertEqual(test_link.returncode, 0, test_link.stderr)
-
-            claim_link = run_cli(
-                "claim",
-                "link",
-                str(repo),
-                "--id",
-                "clm:spec.run-target.t1",
-                "--test-ids",
-                "tst:pytest.spec.run-target",
-            )
-            self.assertEqual(claim_link.returncode, 0, claim_link.stderr)
-
-            evidence_link = run_cli(
-                "evidence",
-                "link",
-                str(repo),
-                "--id",
-                "evd:t1.spec.run-target",
-                "--claim-ids",
-                "clm:spec.run-target.t1",
-                "--test-ids",
-                "tst:pytest.spec.run-target",
-            )
-            self.assertEqual(evidence_link.returncode, 0, evidence_link.stderr)
 
             evidence_path = repo / ".ssot" / "evidence" / "runs" / "spec-run.json"
             result = run_cli(
@@ -321,25 +294,6 @@ class RegistryExecutionCliTests(unittest.TestCase):
         evidence_artifact.parent.mkdir(parents=True, exist_ok=True)
         evidence_artifact.write_text("{}", encoding="utf-8")
 
-        evidence = run_cli(
-            "evidence",
-            "create",
-            str(repo),
-            "--id",
-            "evd:t1.boundary.direct",
-            "--title",
-            "Boundary direct evidence",
-            "--status",
-            "passed",
-            "--kind",
-            "report",
-            "--tier",
-            "T1",
-            "--evidence-path",
-            ".ssot/evidence/boundary-direct.json",
-        )
-        self.assertEqual(evidence.returncode, 0, evidence.stderr)
-
         claim = run_cli(
             "claim",
             "create",
@@ -358,83 +312,20 @@ class RegistryExecutionCliTests(unittest.TestCase):
             "Boundary direct feature claim.",
             "--feature-ids",
             "feat:boundary.direct",
-            "--evidence-ids",
-            "evd:t1.boundary.direct",
         )
         self.assertEqual(claim.returncode, 0, claim.stderr)
 
-        test_create = run_cli(
-            "test",
-            "create",
-            str(repo),
-            "--id",
-            "tst:pytest.boundary.direct",
-            "--title",
-            "Boundary direct test",
-            "--status",
-            "passing",
-            "--kind",
-            "pytest",
-            "--test-path",
-            "tests/test_boundary_direct.py",
-            "--feature-ids",
-            "feat:boundary.direct",
-            "--claim-ids",
-            "clm:boundary.direct.t1",
-            "--evidence-ids",
-            "evd:t1.boundary.direct",
-            "--execution-json",
-            _execution_json("tests/test_boundary_direct.py"),
+        _wire_execution_fixture(
+            repo,
+            feature_id="feat:boundary.direct",
+            claim_id="clm:boundary.direct.t1",
+            test_id="tst:pytest.boundary.direct",
+            evidence_id="evd:t1.boundary.direct",
+            test_title="Boundary direct test",
+            test_path="tests/test_boundary_direct.py",
+            evidence_title="Boundary direct evidence",
+            evidence_path=".ssot/evidence/boundary-direct.json",
         )
-        self.assertEqual(test_create.returncode, 0, test_create.stderr)
-
-        feature_link = run_cli(
-            "feature",
-            "link",
-            str(repo),
-            "--id",
-            "feat:boundary.direct",
-            "--claim-ids",
-            "clm:boundary.direct.t1",
-            "--test-ids",
-            "tst:pytest.boundary.direct",
-        )
-        self.assertEqual(feature_link.returncode, 0, feature_link.stderr)
-
-        test_link = run_cli(
-            "test",
-            "link",
-            str(repo),
-            "--id",
-            "tst:pytest.boundary.direct",
-            "--claim-ids",
-            "clm:boundary.direct.t1",
-        )
-        self.assertEqual(test_link.returncode, 0, test_link.stderr)
-
-        claim_link = run_cli(
-            "claim",
-            "link",
-            str(repo),
-            "--id",
-            "clm:boundary.direct.t1",
-            "--test-ids",
-            "tst:pytest.boundary.direct",
-        )
-        self.assertEqual(claim_link.returncode, 0, claim_link.stderr)
-
-        evidence_link = run_cli(
-            "evidence",
-            "link",
-            str(repo),
-            "--id",
-            "evd:t1.boundary.direct",
-            "--claim-ids",
-            "clm:boundary.direct.t1",
-            "--test-ids",
-            "tst:pytest.boundary.direct",
-        )
-        self.assertEqual(evidence_link.returncode, 0, evidence_link.stderr)
 
         profile = run_cli(
             "profile",

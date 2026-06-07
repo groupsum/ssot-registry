@@ -251,13 +251,13 @@ def test_mcp_run_ssot_cli_upgrade_uses_current_runtime_and_syncs_docs() -> None:
     temp_dir = temp_repo_from_fixture("repo_valid")
     repo = Path(temp_dir.name) / "repo"
 
-    result = run_ssot_cli(repo=str(repo), args=["upgrade", "--target-version", "0.7.0", "--write-report"])
+    result = run_ssot_cli(repo=str(repo), args=["upgrade", "--target-version", "0.8.0", "--write-report"])
 
     assert result["passed"] is True
     assert result["exit_code"] == 0
-    assert result["args"] == ["upgrade", "--target-version", "0.7.0", "--write-report"]
+    assert result["args"] == ["upgrade", "--target-version", "0.8.0", "--write-report"]
     assert "--target-version" not in result["normalized_args"]
-    assert "0.7.0" not in result["normalized_args"]
+    assert "0.8.0" not in result["normalized_args"]
     assert "--sync-docs" in result["normalized_args"]
     assert any("currently running ssot-mcp binary/runtime" in warning for warning in result["warnings"])
     assert (repo / ".ssot" / "reports" / "upgrade.report.json").exists()

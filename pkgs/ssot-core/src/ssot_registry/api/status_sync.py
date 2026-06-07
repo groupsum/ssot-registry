@@ -111,10 +111,7 @@ def _sync_tests(registry: dict[str, Any], repo_root: Path) -> list[dict[str, obj
         test_id = test["id"]
         reason = "test path exists and linked evidence is passed"
         status = "passing"
-        if _is_planned_path(test.get("path"), "tests/planned/"):
-            status = "planned"
-            reason = "test path is a planned placeholder"
-        elif not (repo_root / test["path"]).exists():
+        if not (repo_root / test["path"]).exists():
             status = "planned"
             reason = "test path does not exist"
         elif _missing_refs(test, "feature_ids", index["features"]) or _missing_refs(test, "claim_ids", index["claims"]):
@@ -128,6 +125,9 @@ def _sync_tests(registry: dict[str, Any], repo_root: Path) -> list[dict[str, obj
             elif not linked_evidence:
                 status = "planned"
                 reason = "test has no linked evidence"
+            elif _is_planned_path(test.get("path"), "tests/planned/") and not any(evidence.get("status") == "passed" for evidence in linked_evidence):
+                status = "planned"
+                reason = "test path is a planned placeholder without passed linked evidence"
             elif any(evidence.get("status") in {"failed", "stale"} for evidence in linked_evidence):
                 status = "failing"
                 reason = "test has failed or stale linked evidence"
@@ -191,12 +191,32 @@ def _claim_support_status(
 def _sync_claims(registry: dict[str, Any], repo_root: Path) -> list[dict[str, object]]:
     index = _build_current_index(registry)
     changes: list[dict[str, object]] = []
+    release_claim_statuses: dict[str, str] = {}
+    for release in registry.get("releases", []):
+        release_status = release.get("status")
+        if release_status not in {"certified", "promoted", "published"}:
+            continue
+        for claim_id in release.get("claim_ids", []):
+            current = release_claim_statuses.get(claim_id)
+            if current is None or CLAIM_STATUS_RANK[release_status] > CLAIM_STATUS_RANK[current]:
+                release_claim_statuses[claim_id] = release_status
     for claim in registry.get("claims", []):
-        status, reason, tier_gate = _claim_support_status(registry, claim, index, repo_root)
+        release_status = release_claim_statuses.get(claim["id"])
+        if release_status is not None and claim.get("status") not in CLAIM_TERMINAL_STATUSES:
+            status = release_status
+            reason = "claim status is governed by a certified, promoted, or published release"
+            tier_gate = None
+        else:
+            status, reason, tier_gate = _claim_support_status(registry, claim, index, repo_root)
         guard = evaluate_claim_guard(claim, index, registry.get("guard_policies", {}))
-        if guard["passed"] and (tier_gate is None or tier_gate["passed"]):
+        if release_status is not None and claim.get("status") not in CLAIM_TERMINAL_STATUSES:
+            pass
+        elif guard["passed"] and (tier_gate is None or tier_gate["passed"]):
             current = str(claim.get("status"))
-            status = current if current in CLAIM_RELEASE_STATUSES else "certified"
+            if release_status is not None:
+                status = release_status
+            else:
+                status = current if current in CLAIM_RELEASE_STATUSES else "certified"
             reason = "claim support passes closure guards and tier gate passes"
         elif guard["passed"] and tier_gate is not None and not tier_gate["passed"]:
             status = "asserted"

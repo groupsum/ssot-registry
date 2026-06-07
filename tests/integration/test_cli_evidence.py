@@ -118,7 +118,8 @@ class CliEvidenceSurfaceTests(unittest.TestCase):
         self.assertTrue(json.loads(verify_pass.stdout)["passed"])
 
         unlink = run_cli("evidence", "unlink", str(repo), "--id", "evd:t2.cli.generated.bundle", "--claim-ids", "clm:rfc.9000.connection-migration.t3")
-        self.assertEqual(unlink.returncode, 0, unlink.stderr)
+        self.assertEqual(unlink.returncode, 1, unlink.stderr)
+        self.assertIn("has no linked claims", unlink.stdout)
 
         relink = run_cli("evidence", "link", str(repo), "--id", "evd:t2.cli.generated.bundle", "--claim-ids", "clm:rfc.9000.connection-migration.t3")
         self.assertEqual(relink.returncode, 0, relink.stderr)

@@ -966,5 +966,36 @@
       "adr:0637",
       "adr:0610"
     ]
+  },
+  {
+    "id": "spc:0640",
+    "number": 640,
+    "slug": "evidence-centered-proof-link-contract",
+    "title": "Evidence Centered Proof Link Contract",
+    "filename": "SPEC-0640-evidence-centered-proof-link-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0640-evidence-centered-proof-link-contract.yaml",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.8.0",
+    "introduced_in": "0.2.22",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [
+      {
+        "status": "draft",
+        "note": "Created to define schema 0.8.0 evidence-centered proof link semantics.",
+        "at": "2026-06-07T13:06:35Z"
+      }
+    ],
+    "kind": "normative",
+    "adr_ids": [
+      "adr:0640",
+      "adr:0634",
+      "adr:0635",
+      "adr:0603"
+    ],
+    "sha256": "4cbe1b58e2099b456f84ab99c0e44d6af563a07407bb10296c1b0ec3c411c504"
   }
 ]

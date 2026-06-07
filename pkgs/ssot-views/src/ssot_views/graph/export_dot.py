@@ -12,7 +12,8 @@ def build_graph_dot(registry: dict[str, object]) -> str:
     lines = ["digraph ssot_registry {"]
     for node in graph["nodes"]:
         node_id = _dot_escape(node["id"])
-        label = _dot_escape(f'{node["id"]}\\n({node["kind"]})')
+        title = node.get("title") or node["id"]
+        label = _dot_escape(f'{title}\\n{node["id"]}\\n({node["kind"]})')
         lines.append(f'  "{node_id}" [label="{label}"];')
     for edge in graph["edges"]:
         edge_from = _dot_escape(edge["from"])

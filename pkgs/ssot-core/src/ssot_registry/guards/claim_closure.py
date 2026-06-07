@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ssot_registry.guards.feature_requirements import evaluate_required_feature_failures
 from ssot_registry.model.enums import CLAIM_STATUS_RANK, CLAIM_TIER_RANK
+from ssot_registry.proof_links import evidence_for_claim, producer_tests_for_claim
 
 
 def _dependency_closure_contains(
@@ -52,8 +53,8 @@ def evaluate_claim_guard(
     checks: dict[str, bool] = {}
 
     linked_features = [index["features"][feature_id] for feature_id in claim.get("feature_ids", []) if feature_id in index["features"]]
-    linked_tests = [index["tests"][test_id] for test_id in claim.get("test_ids", []) if test_id in index["tests"]]
-    linked_evidence = [index["evidence"][evidence_id] for evidence_id in claim.get("evidence_ids", []) if evidence_id in index["evidence"]]
+    linked_evidence = evidence_for_claim(str(claim["id"]), index)
+    linked_tests = producer_tests_for_claim(str(claim["id"]), index)
 
     require_implemented_features = bool(guard_policies.get("claim_closure", {}).get("require_implemented_features", True))
     if require_implemented_features:

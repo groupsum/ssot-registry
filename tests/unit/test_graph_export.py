@@ -20,6 +20,8 @@ class GraphExportTests(unittest.TestCase):
         payload = json.loads(Path(result["output_path"]).read_text(encoding="utf-8"))
         node_ids = {node["id"] for node in payload["nodes"]}
         self.assertIn("feat:rfc.9000.connection-migration", node_ids)
+        feature_node = next(node for node in payload["nodes"] if node["id"] == "feat:rfc.9000.connection-migration")
+        self.assertEqual(feature_node["title"], "RFC 9000 connection migration")
         self.assertTrue(any(edge["type"] == "ASSERTS" for edge in payload["edges"]))
 
     def test_graph_export_dot(self) -> None:
@@ -136,6 +138,28 @@ class GraphExportTests(unittest.TestCase):
         graph = build_graph_json(registry)
         self.assertIn({"type": "USES_BOUNDARY", "from": "rel:demo", "to": "bnd:a"}, graph["edges"])
         self.assertIn({"type": "USES_BOUNDARY", "from": "rel:demo", "to": "bnd:b"}, graph["edges"])
+
+    def test_graph_export_uses_evidence_centered_proof_edges(self) -> None:
+        registry = {
+            "features": [{"id": "feat:demo", "title": "Demo"}],
+            "specs": [],
+            "adrs": [],
+            "tests": [{"id": "tst:demo", "title": "Demo test", "evidence_ids": ["evd:demo"], "claim_ids": []}],
+            "claims": [{"id": "clm:demo", "title": "Demo claim", "test_ids": [], "evidence_ids": []}],
+            "evidence": [{"id": "evd:demo", "title": "Demo evidence", "test_ids": ["tst:demo"], "claim_ids": ["clm:demo"]}],
+            "issues": [],
+            "risks": [],
+            "boundaries": [],
+            "releases": [],
+            "profiles": [],
+        }
+
+        graph = build_graph_json(registry)
+
+        self.assertIn({"type": "PRODUCES", "from": "tst:demo", "to": "evd:demo"}, graph["edges"])
+        self.assertIn({"type": "SUPPORTS", "from": "evd:demo", "to": "clm:demo"}, graph["edges"])
+        self.assertNotIn({"type": "VERIFIES", "from": "tst:demo", "to": "clm:demo"}, graph["edges"])
+        self.assertNotIn({"type": "DERIVES_FROM", "from": "evd:demo", "to": "tst:demo"}, graph["edges"])
 
 
 if __name__ == "__main__":
