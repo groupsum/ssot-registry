@@ -44,6 +44,9 @@ class GraphExportTests(unittest.TestCase):
         self.assertIn("Top-down lineage", html)
         self.assertIn("Focus", html)
         self.assertIn("Deselect", html)
+        self.assertIn("Barnes-Hut Force", html)
+        self.assertIn("Ribbon Culling", html)
+        self.assertIn('max="10000"', html)
         self.assertIn("feat:rfc.9000.connection-migration", html)
 
     def test_dot_export_escapes_newlines_in_ids(self) -> None:
