@@ -40,10 +40,23 @@ class CliGraphSurfaceTests(unittest.TestCase):
         self.assertEqual(lineage.returncode, 0, lineage.stderr)
         lineage_payload = json.loads(lineage.stdout)
         self.assertEqual(lineage_payload["format"], "html")
+        self.assertFalse(lineage_payload["opened"])
         html = Path(lineage_payload["output_path"]).read_text(encoding="utf-8")
         self.assertIn("SSOT Lineage Graph", html)
         self.assertIn("Top-down lineage", html)
         self.assertIn("feat:graph.requires", html)
+
+    def test_lineage_rejects_directory_output(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+
+        lineage = run_cli("graph", "lineage", str(repo), "--output", str(repo))
+
+        self.assertNotEqual(lineage.returncode, 0)
+        payload = json.loads(lineage.stdout)
+        self.assertFalse(payload["passed"])
+        self.assertIn("must be a file, not a directory", payload["error"])
 
 
 if __name__ == "__main__":

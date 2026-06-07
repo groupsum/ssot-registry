@@ -1,4 +1,4 @@
-schema_version: "0.7.0"
+schema_version: "0.8.0"
 kind: "spec"
 id: "spc:0599"
 number: 599
@@ -13,9 +13,13 @@ supersedes: []
 superseded_by: []
 status_notes:
   -
-    status: "draft"
-    note: "Updated lineage export contract for evidence-centered proof paths."
     at: "2026-06-07T13:06:45Z"
+    note: "Updated lineage export contract for evidence-centered proof paths."
+    status: "draft"
+  -
+    status: "draft"
+    note: "Add interactive viewer parity requirements for lineage graph controls."
+    at: "2026-06-07T22:19:06Z"
 references: []
 body: |-
   Scope
@@ -25,6 +29,9 @@ body: |-
   The lineage view shall expose evidence-centered proof paths. Claim lineage shall be rendered as `claim <- evidence <- test` when test-produced evidence exists. Feature assurance lineage shall be rendered as `feature -> claim <- evidence <- test`.
   
   The view may show derived test-to-claim verification edges for operator convenience, but those edges shall be labeled as derived from evidence links and shall not be presented as canonical proof authority.
+  
+  Interactive viewer parity
+  The generated HTML shall expose selected-node details, connected edges, a visible family legend, package or repository context, visible graph edges, x-axis and y-axis lineage spacing controls, maximum hop-depth traversal, zoom controls, select/deselect behavior, draggable visible nodes, selected-node ego focus, and PNG/SVG snapshot export.
   
   Diagnostics
   The generated HTML shall expose diagnostics for evidence without supporting claim links, claims without supporting evidence, evidence producer gaps, and compatibility mirror mismatches. Generated lineage HTML remains a non-canonical projection and shall embed enough graph metadata for local offline review.

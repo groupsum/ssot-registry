@@ -225,6 +225,7 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry feature update` | `--body`, `--body-file`, `--description`, `--id`, `--implementation-status`, `--origin`, `--title` |
 | `ssot-registry graph` | none |
 | `ssot-registry graph export` | `--format`, `--output` |
+| `ssot-registry graph lineage` | `--open`, `--output` |
 | `ssot-registry init` | `--force`, `--repo-id`, `--repo-name`, `--version` |
 | `ssot-registry issue` | none |
 | `ssot-registry issue close` | `--id` |
@@ -1054,12 +1055,16 @@ ssot-registry release revoke [path]
 
 Subcommands:
 
-- `export`, `sync-statuses`
+- `export`, `lineage`
 
 ```text
 ssot-registry graph export [path]
   --format {json,dot,png,svg} (required)
   --output OUTPUT
+
+ssot-registry graph lineage [path]
+  --output OUTPUT
+  --open
 ```
 
 ### `registry`

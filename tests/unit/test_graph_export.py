@@ -49,6 +49,14 @@ class GraphExportTests(unittest.TestCase):
         self.assertIn("Barnes-Hut Force", html)
         self.assertIn("Ribbon Culling", html)
         self.assertIn('max="10000"', html)
+        self.assertIn("Selected Node", html)
+        self.assertIn("Connected Edges", html)
+        self.assertIn("Legend", html)
+        self.assertIn("zoomIn", html)
+        self.assertIn("exportPng", html)
+        self.assertIn("exportSvg", html)
+        self.assertIn("dragNodeId", html)
+        self.assertIn("DATA.package", html)
         self.assertIn("feat:rfc.9000.connection-migration", html)
 
     def test_dot_export_escapes_newlines_in_ids(self) -> None:

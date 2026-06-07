@@ -378,6 +378,10 @@
       "--format",
       "--output"
     ],
+    "graph lineage": [
+      "--open",
+      "--output"
+    ],
     "init": [
       "--force",
       "--repo-id",
@@ -949,6 +953,7 @@
     "feature update",
     "graph",
     "graph export",
+    "graph lineage",
     "init",
     "issue",
     "issue close",
