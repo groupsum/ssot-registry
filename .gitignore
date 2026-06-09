@@ -26,3 +26,17 @@ desired-state/
 /.tigrstore_site/tigrbl_engine_tigrstore-0.1.0.dist-info
 /.tigrstore_site/bin
 /.tigrstore_site
+
+# Local generated caches and temporary package artifacts
+.tmp*/
+tmp/
+.uv-cache*/
+.uv-python*/
+.venv*/
+.venv-gitvs*/
+generation_examples/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+target/
