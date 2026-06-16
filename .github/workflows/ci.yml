@@ -169,3 +169,45 @@ jobs:
         run: |
           . .venv-release-smoke/bin/activate
           python -c "import ssot_contracts, ssot_views, ssot_codegen, ssot_registry, ssot_conformance, ssot_cli, ssot_mcp"
+
+      - name: Verify ssot-core wheel includes lineage graph assets
+        run: |
+          . .venv-release-smoke/bin/activate
+          python - <<'PY'
+          from importlib.resources import files
+
+          root = files("ssot_registry.assets.lineage_graph")
+          for name in ("ssot-lineage-graph.js", "ssot-lineage-graph.css", "manifest.json"):
+              text = root.joinpath(name).read_text(encoding="utf-8")
+              if not text:
+                  raise SystemExit(f"missing vendored lineage graph asset: {name}")
+          PY
+
+  lineage-graph-npm:
+    name: Lineage Graph NPM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: packages/ssot-lineage-graph/package-lock.json
+
+      - name: Install lineage graph dependencies
+        run: npm ci
+        working-directory: packages/ssot-lineage-graph
+
+      - name: Test lineage graph package
+        run: npm test
+        working-directory: packages/ssot-lineage-graph
+
+      - name: Build lineage graph package
+        run: npm run build
+        working-directory: packages/ssot-lineage-graph
+
+      - name: Verify vendored lineage graph assets are current
+        run: git diff --exit-code -- pkgs/ssot-core/src/ssot_registry/assets/lineage_graph

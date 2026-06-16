@@ -13,7 +13,7 @@ except ModuleNotFoundError:  # pragma: no cover
         from pip._vendor.packaging.version import Version
 
 from bump_pyproject_version import bump_version, read_project_version, write_project_version
-from release_metadata import CORE_PACKAGES, PACKAGE_INFOS, expected_dependency_specs, resolve_targets
+from release_metadata import CORE_PACKAGES, NPM_PACKAGE_INFOS, PACKAGE_INFOS, expected_dependency_specs, resolve_npm_targets, resolve_targets
 
 try:
     import tomllib
@@ -63,6 +63,27 @@ def _write_version_if_changed(pyproject_path: Path, current_version: str, new_ve
     return True
 
 
+def _python_to_npm_version(version: str) -> str:
+    return version.replace(".dev", "-dev.")
+
+
+def _read_npm_version(package_json_path: Path) -> str:
+    import json
+
+    return json.loads(package_json_path.read_text(encoding="utf-8"))["version"]
+
+
+def _write_npm_version(package_json_path: Path, current_version: str, new_version: str) -> bool:
+    if current_version == new_version:
+        return False
+    content = package_json_path.read_text(encoding="utf-8")
+    updated = content.replace(f'"version": "{current_version}"', f'"version": "{new_version}"')
+    if updated == content:
+        raise RuntimeError(f"Failed to update npm version in {package_json_path}")
+    package_json_path.write_text(updated, encoding="utf-8")
+    return True
+
+
 def sync_release_dependencies() -> list[Path]:
     updated_files: list[Path] = []
     core_version = read_project_version(Path(PACKAGE_INFOS["ssot-contracts"].project_path) / "pyproject.toml")
@@ -88,6 +109,7 @@ def sync_release_dependencies() -> list[Path]:
 
 def bump_train(train: str, bump_type: str, selected_packages: str | None) -> list[Path]:
     targets = resolve_targets(train, selected_packages)
+    npm_targets = resolve_npm_targets(train, selected_packages)
     updated_files: list[Path] = []
     if train in {"core", "all"}:
         source_package = targets[0]
@@ -114,6 +136,22 @@ def bump_train(train: str, bump_type: str, selected_packages: str | None) -> lis
         for path in sync_release_dependencies():
             if path not in updated_files:
                 updated_files.append(path)
+        if npm_targets:
+            npm_version = _python_to_npm_version(new_version)
+            for package_name in npm_targets:
+                package_json = Path(NPM_PACKAGE_INFOS[package_name].project_path) / "package.json"
+                current = _read_npm_version(package_json)
+                if _write_npm_version(package_json, current, npm_version):
+                    updated_files.append(package_json)
+        return updated_files
+
+    if not targets and npm_targets:
+        for package_name in npm_targets:
+            package_json = Path(NPM_PACKAGE_INFOS[package_name].project_path) / "package.json"
+            current = _read_npm_version(package_json)
+            new_version = _next_version(current.replace("-dev.", ".dev"), bump_type)
+            if _write_npm_version(package_json, current, _python_to_npm_version(new_version)):
+                updated_files.append(package_json)
         return updated_files
 
     for package_name in targets:
@@ -132,6 +170,12 @@ def bump_train(train: str, bump_type: str, selected_packages: str | None) -> lis
     for path in sync_release_dependencies():
         if path not in updated_files:
             updated_files.append(path)
+    for package_name in npm_targets:
+        package_json = Path(NPM_PACKAGE_INFOS[package_name].project_path) / "package.json"
+        current = _read_npm_version(package_json)
+        new_version = _next_version(current.replace("-dev.", ".dev"), bump_type)
+        if _write_npm_version(package_json, current, _python_to_npm_version(new_version)):
+            updated_files.append(package_json)
     return updated_files
 
 
@@ -153,6 +197,7 @@ def main() -> int:
             "ssot-cli",
             "ssot-mcp",
             "ssot-tui",
+            "ssot-lineage-graph",
             "selected",
         ],
     )

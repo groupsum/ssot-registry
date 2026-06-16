@@ -40,7 +40,8 @@ RELEASE_ORDER = (
     "ssot-tui",
     "ssot-registry",
 )
-RELEASE_TRAINS = ("core", "all", *RELEASE_ORDER, "selected")
+NPM_RELEASE_ORDER = ("ssot-lineage-graph",)
+RELEASE_TRAINS = ("core", "all", *RELEASE_ORDER, *NPM_RELEASE_ORDER, "selected")
 
 
 def _load_root_pyproject() -> dict:
@@ -53,6 +54,14 @@ class PackageInfo:
     project_path: str
     workflow: str
     pypi_url: str
+
+
+@dataclass(frozen=True)
+class NpmPackageInfo:
+    name: str
+    package_name: str
+    project_path: str
+    npm_url: str
 
 
 PACKAGE_INFOS: dict[str, PackageInfo] = {
@@ -115,6 +124,15 @@ PACKAGE_INFOS: dict[str, PackageInfo] = {
         project_path="pkgs/ssot-tui",
         workflow="publish-ssot-tui.yml",
         pypi_url="https://pypi.org/p/ssot-tui",
+    ),
+}
+
+NPM_PACKAGE_INFOS: dict[str, NpmPackageInfo] = {
+    "ssot-lineage-graph": NpmPackageInfo(
+        name="ssot-lineage-graph",
+        package_name="@ssot-registry/lineage-graph",
+        project_path="packages/ssot-lineage-graph",
+        npm_url="https://www.npmjs.com/package/@ssot-registry/lineage-graph",
     ),
 }
 
@@ -233,11 +251,25 @@ def collect_metadata() -> dict[str, object]:
             "group": "lockstep" if package_name in LOCKSTEP_PACKAGES else "surface",
             "requires_python": pyproject["project"]["requires-python"],
         }
+    npm_packages: dict[str, dict[str, object]] = {}
+    for package_name, info in NPM_PACKAGE_INFOS.items():
+        package_json = json.loads((PROJECT_ROOT / info.project_path / "package.json").read_text(encoding="utf-8"))
+        version = package_json["version"]
+        npm_packages[package_name] = {
+            "name": package_name,
+            "package_name": info.package_name,
+            "project_path": info.project_path,
+            "npm_url": info.npm_url,
+            "version": version,
+            "tag": f"{info.package_name}@{version}",
+        }
     return {
         "release_order": list(RELEASE_ORDER),
+        "npm_release_order": list(NPM_RELEASE_ORDER),
         "core_packages": list(CORE_PACKAGES),
         "supported_python": supported_python_spec(),
         "packages": packages,
+        "npm_packages": npm_packages,
     }
 
 
@@ -248,6 +280,8 @@ def resolve_targets(train: str, selected_packages: str | None) -> list[str]:
         return list(RELEASE_ORDER)
     if train in PACKAGE_INFOS:
         return [train]
+    if train in NPM_PACKAGE_INFOS:
+        return []
     if train != "selected":
         raise ValueError(f"Unsupported release train: {train}")
     if not selected_packages:
@@ -255,7 +289,7 @@ def resolve_targets(train: str, selected_packages: str | None) -> list[str]:
     targets = [part.strip() for part in selected_packages.split(",") if part.strip()]
     if not targets:
         raise ValueError("selected release train requires at least one package")
-    unknown = [target for target in targets if target not in PACKAGE_INFOS]
+    unknown = [target for target in targets if target not in PACKAGE_INFOS and target not in NPM_PACKAGE_INFOS]
     if unknown:
         raise ValueError(f"Unknown package(s): {', '.join(unknown)}")
     seen: set[str] = set()
@@ -264,7 +298,30 @@ def resolve_targets(train: str, selected_packages: str | None) -> list[str]:
         if target in seen:
             continue
         seen.add(target)
-        deduped.append(target)
+        if target in PACKAGE_INFOS:
+            deduped.append(target)
+    return deduped
+
+
+def resolve_npm_targets(train: str, selected_packages: str | None) -> list[str]:
+    if train == "all":
+        return list(NPM_RELEASE_ORDER)
+    if train in NPM_PACKAGE_INFOS:
+        return [train]
+    if train != "selected":
+        return []
+    if not selected_packages:
+        raise ValueError("selected release train requires --packages")
+    targets = [part.strip() for part in selected_packages.split(",") if part.strip()]
+    unknown = [target for target in targets if target not in PACKAGE_INFOS and target not in NPM_PACKAGE_INFOS]
+    if unknown:
+        raise ValueError(f"Unknown package(s): {', '.join(unknown)}")
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for target in targets:
+        if target in NPM_PACKAGE_INFOS and target not in seen:
+            seen.add(target)
+            deduped.append(target)
     return deduped
 
 
@@ -273,6 +330,7 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
     packages = metadata["packages"]  # type: ignore[assignment]
     assert isinstance(packages, dict)
     targets = resolve_targets(train, selected_packages)
+    npm_targets = resolve_npm_targets(train, selected_packages)
     order_positions = {name: index for index, name in enumerate(RELEASE_ORDER)}
 
     ordered_targets = sorted(targets, key=order_positions.__getitem__)
@@ -351,6 +409,7 @@ def validate_train(train: str, selected_packages: str | None) -> dict[str, objec
 
     return {
         "targets": targets,
+        "npm_targets": npm_targets,
         "core_version": core_version,
     }
 
@@ -377,6 +436,10 @@ def main() -> int:
     targets_parser.add_argument("--train", required=True, choices=RELEASE_TRAINS)
     targets_parser.add_argument("--packages", help="Comma-separated package list for selected train.")
 
+    npm_targets_parser = subparsers.add_parser("npm-targets", help="Print npm release targets for a train.")
+    npm_targets_parser.add_argument("--train", required=True, choices=RELEASE_TRAINS)
+    npm_targets_parser.add_argument("--packages", help="Comma-separated package list for selected train.")
+
     validate_parser = subparsers.add_parser("validate-train", help="Validate release policy for a train.")
     validate_parser.add_argument("--train", required=True, choices=RELEASE_TRAINS)
     validate_parser.add_argument("--packages", help="Comma-separated package list for selected train.")
@@ -387,6 +450,7 @@ def main() -> int:
         payload = collect_metadata()
         if args.train:
             payload["selected_targets"] = resolve_targets(args.train, getattr(args, "packages", None))
+            payload["selected_npm_targets"] = resolve_npm_targets(args.train, getattr(args, "packages", None))
         _json_dump(payload)
         return 0
 
@@ -402,6 +466,10 @@ def main() -> int:
 
     if args.command == "targets":
         _json_dump(resolve_targets(args.train, args.packages))
+        return 0
+
+    if args.command == "npm-targets":
+        _json_dump(resolve_npm_targets(args.train, args.packages))
         return 0
 
     if args.command == "validate-train":

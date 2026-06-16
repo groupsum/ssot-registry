@@ -1,0 +1,39 @@
+{
+  "name": "@ssot-registry/lineage-graph",
+  "version": "0.2.24-dev.1",
+  "description": "Portable React viewer for SSOT lineage graph payloads.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/lineage-graph.cjs",
+  "module": "./dist/lineage-graph.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/lineage-graph.js",
+      "require": "./dist/lineage-graph.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json && npm run copy:vendor",
+    "copy:vendor": "node scripts/copy-vendored.mjs",
+    "test": "vitest run",
+    "verify:vendor": "npm run build && git diff --exit-code -- ../../pkgs/ssot-core/src/ssot_registry/assets/lineage_graph"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "5.2.0",
+    "typescript": "5.9.3",
+    "vite": "7.3.3",
+    "vitest": "3.2.4",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  }
+}

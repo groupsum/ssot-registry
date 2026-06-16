@@ -17,11 +17,12 @@ def test_lineage_html_large_graph_controls_are_exported() -> None:
         for expected in (
             "Barnes-Hut Force",
             "Force Cutoff",
-            'max="10000"',
+            "max:1e4",
             "Ribbon Culling",
-            "barnesRepulsion",
-            "cullRibbons",
-            "Exact O(n^2) force",
+            "visible nodes",
+            "visible edges",
+            "edgeWidth",
+            "edgeOpacity",
         ):
             assert expected in html
     finally:

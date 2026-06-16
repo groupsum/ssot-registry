@@ -21,6 +21,7 @@ on:
           - ssot-cli
           - ssot-mcp
           - ssot-tui
+          - ssot-lineage-graph
           - selected
       selected_packages:
         description: "Comma-separated package list when release_train=selected"
@@ -44,6 +45,11 @@ on:
         type: boolean
       publish_to_pypi:
         description: "Publish packages to PyPI when the release workflow runs"
+        required: true
+        default: false
+        type: boolean
+      publish_to_npm:
+        description: "Publish npm packages when the release workflow runs"
         required: true
         default: false
         type: boolean
@@ -106,5 +112,6 @@ jobs:
       ref_name: ${{ github.ref_name }}
       selected_packages: ${{ inputs.selected_packages }}
       publish_to_pypi: ${{ inputs.publish_to_pypi }}
+      publish_to_npm: ${{ inputs.publish_to_npm }}
       create_github_release: true
     secrets: inherit

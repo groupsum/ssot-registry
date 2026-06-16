@@ -1,0 +1,9 @@
+{
+  "name": "ssot-registry-workspace",
+  "private": true,
+  "scripts": {
+    "build:lineage-graph": "npm --prefix packages/ssot-lineage-graph run build",
+    "test:lineage-graph": "npm --prefix packages/ssot-lineage-graph test",
+    "verify:lineage-graph-vendor": "npm --prefix packages/ssot-lineage-graph run verify:vendor"
+  }
+}

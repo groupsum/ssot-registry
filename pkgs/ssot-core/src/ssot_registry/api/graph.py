@@ -5,6 +5,7 @@ import subprocess
 from pathlib import Path
 from collections import Counter
 import json
+from importlib.resources import files
 from typing import Any
 
 from ssot_views.graph import build_graph_dot, build_graph_json
@@ -27,6 +28,9 @@ _FAMILY_BY_PREFIX = {
     "spc": "Spec",
     "tst": "Test",
 }
+_LINEAGE_ASSET_PACKAGE = "ssot_registry.assets.lineage_graph"
+_LINEAGE_JS = "ssot-lineage-graph.js"
+_LINEAGE_CSS = "ssot-lineage-graph.css"
 
 
 def _family_from_id(entity_id: str) -> str:
@@ -111,6 +115,31 @@ def _lineage_payload(registry: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _read_lineage_asset(name: str) -> str:
+    return files(_LINEAGE_ASSET_PACKAGE).joinpath(name).read_text(encoding="utf-8")
+
+
+def _render_lineage_html(payload: dict[str, Any]) -> str:
+    css = _read_lineage_asset(_LINEAGE_CSS)
+    js = _read_lineage_asset(_LINEAGE_JS)
+    payload_json = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SSOT Lineage Graph</title>
+  <style>{css}</style>
+</head>
+<body>
+  <div id="ssot-lineage-root"></div>
+  <script>window.__SSOT_LINEAGE_PAYLOAD__={payload_json};</script>
+  <script>{js}</script>
+</body>
+</html>
+"""
+
+
 _LINEAGE_HTML_TEMPLATE = """<!doctype html>
 <html lang="en">
 <head>
@@ -156,6 +185,11 @@ _LINEAGE_HTML_TEMPLATE = """<!doctype html>
     .swatch { width:11px; height:11px; border-radius:50%; border:1px solid rgba(15,23,42,.2); flex:0 0 auto; }
     .edge-row { padding:7px 0; border-bottom:1px solid var(--line); font-size:12px; }
     .edge-row b { display:block; font-size:11px; color:var(--muted); }
+    .edge-row button { width:auto; min-height:26px; margin:3px 4px 0 0; padding:4px 7px; font-size:11px; }
+    .kv { display:grid; gap:6px; }
+    .kv-row { display:grid; grid-template-columns:96px minmax(0,1fr); gap:8px; padding:6px 0; border-bottom:1px solid var(--line); font-size:12px; }
+    .kv-key { color:var(--muted); font-weight:650; overflow:hidden; text-overflow:ellipsis; }
+    .kv-value { min-width:0; overflow-wrap:anywhere; }
     pre { white-space:pre-wrap; word-break:break-word; font-size:12px; line-height:1.45; margin:0; }
     @media (max-width: 980px) { .app { grid-template-columns:1fr; grid-template-rows:260px 1fr 240px; } aside, aside.detail { border:0; border-bottom:1px solid var(--line); } }
   </style>
@@ -197,10 +231,6 @@ _LINEAGE_HTML_TEMPLATE = """<!doctype html>
         <div class="families" id="families"></div>
       </section>
       <section class="section">
-        <h2>Legend</h2>
-        <div id="legend" class="legend"></div>
-      </section>
-      <section class="section">
         <h2>Results</h2>
         <div id="results"></div>
       </section>
@@ -210,9 +240,10 @@ _LINEAGE_HTML_TEMPLATE = """<!doctype html>
       <div class="toolbar"><button id="fit">Fit</button><button id="zoomIn">+</button><button id="zoomOut">-</button><button id="zoomReset">100%</button><button id="png">PNG</button><button id="svg">SVG</button><button id="focus" class="primary" disabled>Focus</button><button id="deselect" disabled>Deselect</button><span class="pill" id="visibleStats"></span></div>
     </main>
     <aside class="detail">
+      <section class="section"><h2>Legend</h2><div id="legend" class="legend"></div></section>
       <section class="section"><h2>Selected Node</h2><div id="selected" class="empty">Select a node for details. Use Focus to make it the lineage center.</div></section>
       <section class="section"><h2>Connected Edges</h2><div id="connectedEdges" class="empty">No selected node.</div></section>
-      <section class="section"><h2>Summary</h2><pre id="summary"></pre></section>
+      <section class="section"><h2>Summary</h2><div id="summary"></div></section>
     </aside>
   </div>
   <script>
@@ -226,11 +257,15 @@ _LINEAGE_HTML_TEMPLATE = """<!doctype html>
     const els = Object.fromEntries(["search","mode","edgeType","engine","ribbon","forceCutoff","engineReadout","depth","limit","xScale","yScale","families","legend","results","nodeCount","edgeCount","fit","zoomIn","zoomOut","zoomReset","png","svg","focus","deselect","visibleStats","selected","connectedEdges","summary","scaleReadout","showAll","hideAll","packageInfo"].map(id => [id, document.getElementById(id)]));
     let selectedId = null, centerId = null, visibleNodes = [], visibleEdges = [], tx = 0, ty = 0, zoom = 1, panning = false, dragNodeId = null, downNodeId = null, downWasSelected = false, moved = false, last = null;
     const familyState = new Map([...new Set(nodes.map(n => n.family))].sort().map(f => [f, true]));
-    els.nodeCount.textContent = DATA.summary.nodeCount; els.edgeCount.textContent = DATA.summary.edgeCount; els.summary.textContent = JSON.stringify(DATA.summary, null, 2);
+    els.nodeCount.textContent = DATA.summary.nodeCount; els.edgeCount.textContent = DATA.summary.edgeCount;
     els.packageInfo.textContent = [DATA.package?.name, DATA.package?.version, DATA.package?.kind].filter(Boolean).join(" · ") || DATA.package?.id || "Package context unavailable";
     for (const type of [...new Set(edges.map(e => e.type))].sort()) els.edgeType.append(new Option(type, type));
     function renderFamilies(){ els.families.innerHTML = ""; for (const [family, checked] of familyState) { const label = document.createElement("label"); label.innerHTML = `<input type="checkbox" ${checked ? "checked" : ""}> ${family}`; label.querySelector("input").onchange = e => { familyState.set(family, e.target.checked); update(); }; els.families.append(label); } }
     function renderLegend(){ els.legend.innerHTML = ""; for (const family of [...familyState.keys()]) { const row = document.createElement("div"); row.className = "legend-item"; row.innerHTML = `<span class="swatch" style="background:${colors[family] || "#475569"}"></span><span>${family}</span>`; els.legend.append(row); } }
+    function esc(value){ return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch])); }
+    function formatValue(value){ if (Array.isArray(value)) return value.length ? value.map(esc).join(", ") : "none"; if (value && typeof value === "object") return Object.entries(value).map(([k,v]) => `${esc(k)}: ${formatValue(v)}`).join("; "); return value === "" || value == null ? "none" : esc(value); }
+    function kvHtml(record, keys = null){ const entries = keys ? keys.map(k => [k, record?.[k]]) : Object.entries(record || {}); return `<div class="kv">${entries.map(([k,v]) => `<div class="kv-row"><div class="kv-key">${esc(k)}</div><div class="kv-value">${formatValue(v)}</div></div>`).join("")}</div>`; }
+    function renderSummary(){ els.summary.innerHTML = kvHtml(DATA.summary, ["nodeCount", "edgeCount", "families", "edgeTypes"]); }
     function scale(v){ return 10 ** Number(v); }
     function limit(){ return els.limit.value === "all" ? Infinity : Number(els.limit.value); }
     function neighbors(seeds, maxDepth){ const ids = new Set(seeds); const usedEdges = []; let frontier = new Set(seeds); const cap = maxDepth === "max" ? Infinity : Number(maxDepth); for (let d=0; d<cap && frontier.size; d++){ const next = new Set(); for (const e of edges){ if (els.edgeType.value && e.type !== els.edgeType.value) continue; const a = frontier.has(e.from), b = frontier.has(e.to); if (!a && !b) continue; usedEdges.push(e); for (const id of [e.from, e.to]) if (!ids.has(id)) { ids.add(id); next.add(id); } } frontier = next; if (cap === Infinity && ids.size === nodes.length) break; } return {ids, usedEdges}; }
@@ -238,22 +273,22 @@ _LINEAGE_HTML_TEMPLATE = """<!doctype html>
     function rank(n){ return ranks[n.family] ?? 99; }
     function layoutLineage(){ const groups = new Map(); for (const n of visibleNodes) { const r = rank(n); if (!groups.has(r)) groups.set(r, []); groups.get(r).push(n); } const xs = 210 * scale(els.xScale.value), ys = 90 * scale(els.yScale.value); for (const [r, group] of groups) { group.sort((a,b)=>a.id.localeCompare(b.id)); group.forEach((n,i)=>{ n.x = 80 + i * xs; n.y = 70 + r * ys; n.vx = n.vy = 0; }); } els.scaleReadout.textContent = `x ${scale(els.xScale.value).toFixed(2)}x / y ${scale(els.yScale.value).toFixed(2)}x`; }
     function layoutGrid(){ visibleNodes.forEach((n,i)=>{ if (!Number.isFinite(n.x) || !Number.isFinite(n.y)) { n.x=(i%120)*38; n.y=Math.floor(i/120)*38; } }); }
-    function update(shouldFit = true){ const found = neighbors(seeds(), centerId ? els.depth.value : "1"); const familyOk = n => familyState.get(n.family) !== false; visibleNodes = [...found.ids].map(id => byId.get(id)).filter(Boolean).filter(familyOk).slice(0, limit()); const set = new Set(visibleNodes.map(n => n.id)); visibleEdges = (centerId ? found.usedEdges : edges).filter(e => set.has(e.from) && set.has(e.to) && (!els.edgeType.value || e.type === els.edgeType.value)); visibleEdges = cullRibbons(visibleEdges); if (els.mode.value === "lineage") layoutLineage(); else layoutGrid(); renderResults(); renderSelected(); if (shouldFit) fit(); else draw(); }
+    function update(shouldFit = true){ const found = neighbors(seeds(), centerId ? els.depth.value : "1"); const familyOk = n => familyState.get(n.family) !== false || n.id === centerId || n.id === selectedId; visibleNodes = [...found.ids].map(id => byId.get(id)).filter(Boolean).filter(familyOk).slice(0, limit()); if (centerId && !visibleNodes.some(n => n.id === centerId) && byId.has(centerId)) visibleNodes.unshift(byId.get(centerId)); const set = new Set(visibleNodes.map(n => n.id)); visibleEdges = (centerId ? found.usedEdges : edges).filter(e => set.has(e.from) && set.has(e.to) && (!els.edgeType.value || e.type === els.edgeType.value)); visibleEdges = cullRibbons(visibleEdges); if (els.mode.value === "lineage") layoutLineage(); else layoutGrid(); renderResults(); renderSelected(); if (shouldFit) fit(); else draw(); }
     function engine(){ if (els.mode.value !== "network") return "lineage"; if (els.engine.value === "auto") return visibleNodes.length <= Number(els.forceCutoff.value) ? "barnes" : "grid"; if (els.engine.value === "exact" && visibleNodes.length > 2500) return "barnes"; return els.engine.value; }
     function tick(){ if (els.mode.value !== "network") return; const e = engine(); els.engineReadout.textContent = e === "barnes" ? `Barnes-Hut force active for ${visibleNodes.length} nodes; cutoff ${els.forceCutoff.value}` : e === "exact" ? `Exact O(n^2) force active for ${visibleNodes.length} nodes` : `Network engine: ${e}`; if (e === "grid") return; for (const edge of visibleEdges){ const a=byId.get(edge.from), b=byId.get(edge.to); if(!a||!b) continue; const dx=b.x-a.x, dy=b.y-a.y, dist=Math.hypot(dx,dy)||1, f=(dist-90)*.002; a.vx+=dx*f; a.vy+=dy*f; b.vx-=dx*f; b.vy-=dy*f; } if (e === "exact") exactRepulsion(); else barnesRepulsion(); for (const n of visibleNodes){ n.vx*=.85; n.vy*=.85; n.x+=n.vx; n.y+=n.vy; } }
     function exactRepulsion(){ for (let i=0;i<visibleNodes.length;i++){ const a=visibleNodes[i]; for (let j=i+1;j<visibleNodes.length;j++){ repelPair(a, visibleNodes[j]); } } }
     function repelPair(a,b){ const dx=b.x-a.x, dy=b.y-a.y, d2=dx*dx+dy*dy+1, f=Math.min(2, 900/d2); a.vx-=dx*f*.01; a.vy-=dy*f*.01; b.vx+=dx*f*.01; b.vy+=dy*f*.01; }
     function barnesRepulsion(){ if (!visibleNodes.length) return; const xs=visibleNodes.map(n=>n.x), ys=visibleNodes.map(n=>n.y); const minX=Math.min(...xs)-1, maxX=Math.max(...xs)+1, minY=Math.min(...ys)-1, maxY=Math.max(...ys)+1; const root={x:minX,y:minY,w:Math.max(maxX-minX,maxY-minY),m:0,cx:0,cy:0,kids:null,node:null}; const child=(q,i)=>({x:q.x+(i&1)*q.w/2,y:q.y+(i>>1)*q.w/2,w:q.w/2,m:0,cx:0,cy:0,kids:null,node:null}); const idx=(q,n)=>(n.x>q.x+q.w/2?1:0)+(n.y>q.y+q.w/2?2:0); function ins(q,n,d=0){ if(!q.node&&!q.kids){q.node=n;return;} if(!q.kids){q.kids=[0,1,2,3].map(i=>child(q,i)); const old=q.node; q.node=null; if(old) ins(q.kids[idx(q,old)],old,d+1); } if(d<32) ins(q.kids[idx(q,n)],n,d+1); } function acc(q){ if(q.kids){ for(const k of q.kids){ acc(k); q.m+=k.m; q.cx+=k.cx*k.m; q.cy+=k.cy*k.m; } if(q.m){q.cx/=q.m; q.cy/=q.m;} } else if(q.node){ q.m=1; q.cx=q.node.x; q.cy=q.node.y; } } for(const n of visibleNodes) ins(root,n); acc(root); function apply(q,n){ if(!q.m || q.node===n) return; const dx=q.cx-n.x, dy=q.cy-n.y, dist=Math.hypot(dx,dy)||1; if(!q.kids || q.w/dist < .7){ const f=Math.min(2, 900*q.m/(dist*dist)); n.vx-=dx*f*.01; n.vy-=dy*f*.01; } else q.kids.forEach(k=>apply(k,n)); } for(const n of visibleNodes) apply(root,n); }
     function cullRibbons(edgeList){ if (els.mode.value !== "lineage" || els.ribbon.value === "off") return edgeList; const cap = els.ribbon.value === "strong" ? 2 : 8; const counts = new Map(); return edgeList.filter(e => { const key = `${rank(byId.get(e.from))}:${rank(byId.get(e.to))}:${e.type}`; const n = counts.get(key) || 0; counts.set(key, n + 1); return n < cap; }); }
-    function fit(){ if (!visibleNodes.length) return; const w=c.clientWidth, h=c.clientHeight; const xs=visibleNodes.map(n=>n.x), ys=visibleNodes.map(n=>n.y); const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys); zoom=Math.min(w/(maxX-minX+220), h/(maxY-minY+220)); tx=(w-(minX+maxX)*zoom)/2; ty=(h-(minY+maxY)*zoom)/2; draw(); }
+    function fit(){ if (!visibleNodes.length) { zoom = 1; tx = 0; ty = 0; draw(); return; } const w=Math.max(1,c.clientWidth), h=Math.max(1,c.clientHeight); const finite = visibleNodes.filter(n => Number.isFinite(n.x) && Number.isFinite(n.y)); if (!finite.length) { visibleNodes.forEach((n,i)=>{ n.x=(i%80)*38; n.y=Math.floor(i/80)*38; }); return fit(); } const xs=finite.map(n=>n.x), ys=finite.map(n=>n.y); const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys); const nextZoom=Math.min(w/Math.max(1,maxX-minX+220), h/Math.max(1,maxY-minY+220)); zoom=Number.isFinite(nextZoom) && nextZoom > 0 ? Math.max(.02, Math.min(50, nextZoom)) : 1; tx=Number.isFinite(minX+maxX) ? (w-(minX+maxX)*zoom)/2 : 0; ty=Number.isFinite(minY+maxY) ? (h-(minY+maxY)*zoom)/2 : 0; draw(); }
     function screen(n){ return {x:n.x*zoom+tx, y:n.y*zoom+ty}; }
     function zoomAt(x,y,factor){ const wx=(x-tx)/zoom, wy=(y-ty)/zoom; zoom=Math.max(.02, Math.min(50, zoom*factor)); tx=x-wx*zoom; ty=y-wy*zoom; draw(); }
-    function draw(){ ctx.clearRect(0,0,c.clientWidth,c.clientHeight); for (const e of visibleEdges){ const a=byId.get(e.from), b=byId.get(e.to); if(!a||!b) continue; const A=screen(a), B=screen(b); ctx.lineWidth = selectedId && (e.from===selectedId || e.to===selectedId) ? 2.25 : 1.2; ctx.strokeStyle = selectedId && (e.from===selectedId || e.to===selectedId) ? "#111827" : "rgba(71,85,105,.62)"; ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.stroke(); } for (const n of visibleNodes){ const p=screen(n), active=n.id===selectedId; ctx.fillStyle=colors[n.family]||"#475569"; ctx.strokeStyle=active?"#111827":"#fff"; ctx.lineWidth=active?3:1.5; ctx.beginPath(); ctx.arc(p.x,p.y,active?8:6,0,Math.PI*2); ctx.fill(); ctx.stroke(); if (zoom > .45 && visibleNodes.length < 1200){ ctx.fillStyle="#111827"; ctx.font="11px system-ui"; ctx.fillText(n.id,p.x+9,p.y+4); } } els.visibleStats.textContent = `${visibleNodes.length} visible nodes / ${visibleEdges.length} visible edges · zoom ${(zoom * 100).toFixed(0)}%`; }
+    function draw(){ ctx.clearRect(0,0,c.clientWidth,c.clientHeight); for (const e of visibleEdges){ const a=byId.get(e.from), b=byId.get(e.to); if(!a||!b) continue; const A=screen(a), B=screen(b); if(!Number.isFinite(A.x+B.x+A.y+B.y)) continue; ctx.lineWidth = selectedId && (e.from===selectedId || e.to===selectedId) ? 2.75 : 1.6; ctx.strokeStyle = selectedId && (e.from===selectedId || e.to===selectedId) ? "#0f172a" : "rgba(30,41,59,.78)"; ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.stroke(); } for (const n of visibleNodes){ const p=screen(n), active=n.id===selectedId; if(!Number.isFinite(p.x+p.y)) continue; ctx.fillStyle=colors[n.family]||"#475569"; ctx.strokeStyle=active?"#111827":"#fff"; ctx.lineWidth=active?3:1.5; ctx.beginPath(); ctx.arc(p.x,p.y,active?8:6,0,Math.PI*2); ctx.fill(); ctx.stroke(); if (zoom > .45 && visibleNodes.length < 1200){ ctx.fillStyle="#111827"; ctx.font="11px system-ui"; ctx.fillText(n.id,p.x+9,p.y+4); } } const pct = Number.isFinite(zoom) ? (zoom * 100).toFixed(0) : "100"; els.visibleStats.textContent = `${visibleNodes.length} visible nodes / ${visibleEdges.length} visible edges - zoom ${pct}%`; }
     function resize(){ const r=c.getBoundingClientRect(); const dpr=window.devicePixelRatio||1; c.width=Math.max(1,Math.floor(r.width*dpr)); c.height=Math.max(1,Math.floor(r.height*dpr)); ctx.setTransform(dpr,0,0,dpr,0,0); fit(); }
     function pick(x,y){ let best=null, bd=14; for(const n of visibleNodes){ const p=screen(n), d=Math.hypot(p.x-x,p.y-y); if(d<bd){ best=n; bd=d; } } return best; }
     function renderResults(){ els.results.innerHTML=""; for (const n of visibleNodes.slice(0,80)){ const div=document.createElement("div"); div.className=`result ${n.id===selectedId?"active":""}`; div.innerHTML=`<b>${n.id}</b><span>${n.family} | degree ${n.degree||0}</span>`; div.onclick=()=>toggleSelected(n.id); els.results.append(div); } }
-    function renderSelected(){ const n=byId.get(selectedId); els.focus.disabled=!n; els.deselect.disabled=!n; els.selected.innerHTML = n ? `<pre>${JSON.stringify(n,null,2)}</pre>` : "Select a node for details. Use Focus to make it the lineage center."; renderConnectedEdges(); }
-    function renderConnectedEdges(){ if(!selectedId){ els.connectedEdges.textContent = "No selected node."; return; } const connected = edges.filter(e => e.from===selectedId || e.to===selectedId); if(!connected.length){ els.connectedEdges.textContent = "No connected edges."; return; } els.connectedEdges.innerHTML = connected.slice(0,120).map(e => `<div class="edge-row"><b>${e.type}</b>${e.from} -> ${e.to}</div>`).join("") + (connected.length > 120 ? `<div class="empty">${connected.length - 120} more edges hidden.</div>` : ""); }
+    function renderSelected(){ const n=byId.get(selectedId); els.focus.disabled=!n; els.deselect.disabled=!n; els.selected.className = n ? "" : "empty"; els.selected.innerHTML = n ? kvHtml(n, ["id", "family", "label", "status", "tier", "origin", "path", "degree"]) : "Select a node for details. Use Focus to make it the lineage center."; renderConnectedEdges(); }
+    function renderConnectedEdges(){ if(!selectedId){ els.connectedEdges.className = "empty"; els.connectedEdges.textContent = "No selected node."; return; } const connected = edges.filter(e => e.from===selectedId || e.to===selectedId); if(!connected.length){ els.connectedEdges.className = "empty"; els.connectedEdges.textContent = "No connected edges."; return; } els.connectedEdges.className = ""; els.connectedEdges.innerHTML = connected.slice(0,120).map((e,i) => `<div class="edge-row"><b>${esc(e.type)}</b>${esc(e.from)} -> ${esc(e.to)}<br><button data-edge="${i}" data-node="${esc(e.from)}">From</button><button data-edge="${i}" data-node="${esc(e.to)}">To</button><button data-edge="${i}" data-focus="${esc(e.from === selectedId ? e.to : e.from)}">Focus other</button></div>`).join("") + (connected.length > 120 ? `<div class="empty">${connected.length - 120} more edges hidden.</div>` : ""); els.connectedEdges.querySelectorAll("button[data-node]").forEach(btn => btn.onclick = () => setSelected(btn.dataset.node)); els.connectedEdges.querySelectorAll("button[data-focus]").forEach(btn => btn.onclick = () => { selectedId = btn.dataset.focus; centerId = selectedId; update(true); }); }
     function setSelected(id){ selectedId = id; renderResults(); renderSelected(); draw(); }
     function deselectNode(){ selectedId = null; renderResults(); renderSelected(); draw(); }
     function toggleSelected(id){ selectedId === id ? deselectNode() : setSelected(id); }
@@ -268,7 +303,7 @@ _LINEAGE_HTML_TEMPLATE = """<!doctype html>
     els.fit.onclick=fit; els.zoomIn.onclick=()=>zoomAt(c.clientWidth/2,c.clientHeight/2,1.25); els.zoomOut.onclick=()=>zoomAt(c.clientWidth/2,c.clientHeight/2,.8); els.zoomReset.onclick=()=>{ zoom=1; tx=c.clientWidth/2; ty=c.clientHeight/2; draw(); }; els.png.onclick=exportPng; els.svg.onclick=exportSvg; els.focus.onclick=()=>{ if(selectedId){ centerId=selectedId; update(true); } }; els.deselect.onclick=()=>deselectNode();
     els.showAll.onclick=()=>{ for(const f of familyState.keys()) familyState.set(f,true); renderFamilies(); update(); }; els.hideAll.onclick=()=>{ for(const f of familyState.keys()) familyState.set(f,false); renderFamilies(); update(); };
     function animate(){ tick(); draw(); requestAnimationFrame(animate); }
-    renderFamilies(); renderLegend(); resize(); update(); animate(); addEventListener("resize", resize);
+    renderFamilies(); renderLegend(); renderSummary(); resize(); update(); animate(); addEventListener("resize", resize);
   </script>
 </body>
 </html>
@@ -326,7 +361,7 @@ def export_lineage_graph(path: str | Path, output: str | None = None) -> dict[st
     if output_path.exists() and output_path.is_dir():
         raise ValueError(f"Lineage graph output path must be a file, not a directory: {output_path}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    html = _LINEAGE_HTML_TEMPLATE.replace("__PAYLOAD__", json.dumps(payload, separators=(",", ":")))
+    html = _render_lineage_html(payload)
     output_path.write_text(html, encoding="utf-8")
     return {
         "passed": True,
