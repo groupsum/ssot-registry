@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -76,14 +77,18 @@ def _sync_evidence(registry: dict[str, Any], repo_root: Path) -> list[dict[str, 
     changes: list[dict[str, object]] = []
     for evidence in registry.get("evidence", []):
         evidence_id = evidence["id"]
+        evidence_path = repo_root / evidence["path"]
         reason = "evidence artifact exists and linked claim tiers are satisfied"
         status = "passed"
         if _is_planned_path(evidence.get("path"), "/evidence/planned/"):
             status = "planned"
             reason = "evidence path is a planned placeholder"
-        elif not (repo_root / evidence["path"]).exists():
+        elif not evidence_path.exists():
             status = "planned"
             reason = "evidence artifact path does not exist"
+        elif _evidence_payload_failed(evidence_path):
+            status = "failed"
+            reason = "evidence artifact reports failed test outcomes"
         elif _missing_refs(evidence, "claim_ids", index["claims"]) or _missing_refs(evidence, "test_ids", index["tests"]):
             status = "collected"
             reason = "evidence artifact exists but has missing linked claims or tests"
@@ -102,6 +107,22 @@ def _sync_evidence(registry: dict[str, Any], repo_root: Path) -> list[dict[str, 
             changes.append(change)
             _apply(evidence, "status", status)
     return changes
+
+
+def _evidence_payload_failed(path: Path) -> bool:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        return False
+    if not isinstance(payload, dict):
+        return False
+    if payload.get("passed") is False:
+        return True
+    summary = payload.get("summary")
+    if isinstance(summary, dict) and isinstance(summary.get("failed"), int) and summary["failed"] > 0:
+        return True
+    cases = payload.get("cases")
+    return isinstance(cases, list) and any(isinstance(case, dict) and case.get("outcome") == "failed" for case in cases)
 
 
 def _sync_tests(registry: dict[str, Any], repo_root: Path) -> list[dict[str, object]]:

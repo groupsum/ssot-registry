@@ -300,6 +300,77 @@ class CliStatusSyncTests(unittest.TestCase):
         self.assertEqual(capped_feature["implementation_status"], "partial")
         self.assertEqual(passing_feature["implementation_status"], "implemented")
 
+    def test_registry_sync_statuses_reports_multiple_failed_evidence_rows_without_promotion(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+        registry_path = repo / ".ssot" / "registry.json"
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+
+        feature_ids = ["feat:status-sync.failed.alpha", "feat:status-sync.failed.beta"]
+        for feature_id in feature_ids:
+            self._append_feature_claim_ceiling_rows(repo, registry, feature_id=feature_id, claim_tiers=["T1"])
+            evidence_path = repo / f".ssot/evidence/reports/{feature_id.removeprefix('feat:').replace('.', '_')}.json"
+            evidence_path.write_text(
+                stable_json_dumps(
+                    {
+                        "kind": "ssot-conformance-evidence",
+                        "summary": {"failed": 1, "passed": 0, "skipped": 0, "total": 1},
+                        "cases": [{"outcome": "failed", "test_id": f"tst:{feature_id.removeprefix('feat:')}"}],
+                    }
+                ),
+                encoding="utf-8",
+            )
+        registry["profiles"].append(
+            {
+                "id": "prf:status-sync.failed",
+                "title": "Status sync failed evidence profile",
+                "description": "Profile used to verify failed evidence keeps status sync honest.",
+                "status": "active",
+                "kind": "certification",
+                "feature_ids": feature_ids,
+                "profile_ids": [],
+                "claim_tier": "T1",
+                "evaluation": {
+                    "mode": "all_features_must_pass",
+                    "allow_feature_override_tier": True,
+                },
+            }
+        )
+        registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
+
+        result = run_cli("registry", "sync-statuses", str(repo))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertTrue(payload["passed"], payload)
+        expected_changes = {
+            ("evidence", "evd:status-sync.failed.alpha", "failed"),
+            ("evidence", "evd:status-sync.failed.beta", "failed"),
+            ("tests", "tst:status-sync.failed.alpha", "failing"),
+            ("tests", "tst:status-sync.failed.beta", "failing"),
+            ("claims", "clm:status-sync.failed.alpha.t1.1", "blocked"),
+            ("claims", "clm:status-sync.failed.beta.t1.1", "blocked"),
+            ("features", "feat:status-sync.failed.alpha", "partial"),
+            ("features", "feat:status-sync.failed.beta", "partial"),
+            ("profiles", "prf:status-sync.failed", "draft"),
+        }
+        actual_changes = {(change["section"], change["id"], change["after"]) for change in payload["changes"]}
+        self.assertTrue(expected_changes.issubset(actual_changes), payload)
+
+        updated = json.loads(registry_path.read_text(encoding="utf-8"))
+        for feature_id in feature_ids:
+            suffix = feature_id.removeprefix("feat:")
+            evidence = next(row for row in updated["evidence"] if row["id"] == f"evd:{suffix}")
+            test = next(row for row in updated["tests"] if row["id"] == f"tst:{suffix}")
+            claim = next(row for row in updated["claims"] if row["id"] == f"clm:{suffix}.t1.1")
+            feature = next(row for row in updated["features"] if row["id"] == feature_id)
+            self.assertEqual(evidence["status"], "failed")
+            self.assertEqual(test["status"], "failing")
+            self.assertEqual(claim["status"], "blocked")
+            self.assertEqual(feature["implementation_status"], "partial")
+        profile = next(row for row in updated["profiles"] if row["id"] == "prf:status-sync.failed")
+        self.assertEqual(profile["status"], "draft")
+
     def test_registry_sync_statuses_blocks_label_only_t2_promotion(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)
