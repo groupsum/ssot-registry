@@ -20,11 +20,14 @@ Use this skill for claim-only operations.
 
 1. Inspect current claim support graph.
 2. Update claim metadata and links to features/tests/evidence.
-3. Evaluate claim support and adjust tier/status when policy requires explicit updates.
+3. Evaluate claim support.
+4. Adjust status with `claim set-status` when policy requires explicit lifecycle progression.
+5. Use `claim set-tier` only to check same-tier state; create a new higher-tier claim with `depends_on_claim_ids` for tier promotion.
 
 ## Operating rules
 
 - Keep claim status and tier separate: lifecycle maturity vs assurance strength.
+- Do not use `claim update` for `status` or `tier`; it is for mutable metadata such as title, kind, description, body, and origin.
 - Prefer evidence/test linkage plus evaluation before manual status escalation.
 - Do not repurpose a lower-tier claim row into a higher-tier claim when the lower-tier proof must remain visible. Create the new higher-tier claim row and link it alongside the existing lower-tier claims.
 - Promotion across tiers is additive: linking a `T2` claim to a feature does not justify unlinking its existing `T0` or `T1` claims.

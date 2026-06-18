@@ -1,6 +1,6 @@
 ---
 name: ssot-claim-evidence-linking
-description: Create, inspect, update, delete, evaluate, verify, link, and unlink claims and evidence, including their feature and test relationships. Use when Codex needs to connect claims to features, tests, and evidence, adjust claim status or tier, or verify whether proof chains are strong enough for release and certification workflows.
+description: Create, inspect, update, delete, evaluate, verify, link, and unlink claims and evidence, including their feature and test relationships. Use when Codex needs to connect claims to features, tests, and evidence, set claim status, check claim tier, create additive higher-tier claim promotion, or verify whether proof chains are strong enough for release and certification workflows.
 ---
 
 # SSOT Claim/Evidence Linking
@@ -29,6 +29,8 @@ Use this skill when the user is working on proof chains: what a feature claims, 
 ## Operating rules
 
 - Keep claim `status` and `tier` distinct; status is lifecycle progress, tier is proof strength.
+- Use `claim set-status` for claim status changes. Do not expect `claim update --status` to exist.
+- Use `claim set-tier` only for same-tier checks. Do not expect `claim update --tier` to exist.
 - Do not change a lower-tier claim into a higher-tier claim in place when each tier needs its own durable proof record. Create a distinct higher-tier claim and preserve the lower-tier claim.
 - Promotion is additive, not replacement: when linking `T1` or `T2` claims, keep existing lower-tier claims linked to the feature unless those links are wrong for reasons unrelated to tier progression.
 - Evidence should describe an artifact path the repo can actually carry or regenerate.
