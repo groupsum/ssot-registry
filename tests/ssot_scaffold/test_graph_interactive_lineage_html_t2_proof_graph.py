@@ -15,12 +15,13 @@ def test_lineage_html_large_graph_controls_are_exported() -> None:
         payload = json.loads(result.stdout)
         html = Path(payload["output_path"]).read_text(encoding="utf-8")
         for expected in (
-            "Barnes-Hut Force",
-            "Force Cutoff",
-            "max:1e4",
-            "Ribbon Culling",
-            "visible nodes",
-            "visible edges",
+            "Workspace Limits",
+            "Render Node Limit",
+            "Ego-Focus Hops Limit",
+            "Isolate Active Focus",
+            "line-flow-active",
+            "url(#arrow-incoming)",
+            "url(#arrow-outgoing)",
             "edgeWidth",
             "edgeOpacity",
         ):

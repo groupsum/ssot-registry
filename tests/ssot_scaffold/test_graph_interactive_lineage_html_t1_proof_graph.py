@@ -18,15 +18,15 @@ def test_lineage_html_cli_exposes_interactive_lineage_controls() -> None:
         assert payload["edge_count"] > 0
         html = Path(payload["output_path"]).read_text(encoding="utf-8")
         for expected in (
-            "Top-down lineage",
-            "Depth",
-            "Node Limit",
-            "X Scale",
-            "Y Scale",
-            "Show all",
-            "Hide all",
-            "Focus",
-            "Deselect",
+            "SSOT Lineage",
+            "Interactive Viewer",
+            "Connection Labels",
+            "Render Node Limit",
+            "Ego-Focus Hops Limit",
+            "Isolate Active Focus",
+            "Focus Node",
+            "Deselect Node",
+            "Export Payload JSON",
         ):
             assert expected in html
     finally:
