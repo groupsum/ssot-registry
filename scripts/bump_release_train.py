@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 try:
@@ -68,8 +69,6 @@ def _python_to_npm_version(version: str) -> str:
 
 
 def _read_npm_version(package_json_path: Path) -> str:
-    import json
-
     return json.loads(package_json_path.read_text(encoding="utf-8"))["version"]
 
 
@@ -82,6 +81,53 @@ def _write_npm_version(package_json_path: Path, current_version: str, new_versio
         raise RuntimeError(f"Failed to update npm version in {package_json_path}")
     package_json_path.write_text(updated, encoding="utf-8")
     return True
+
+
+def _write_npm_lock_version(package_lock_path: Path, new_version: str) -> bool:
+    if not package_lock_path.exists():
+        return False
+    payload = json.loads(package_lock_path.read_text(encoding="utf-8"))
+    changed = False
+    if payload.get("version") != new_version:
+        payload["version"] = new_version
+        changed = True
+    root_package = payload.get("packages", {}).get("")
+    if isinstance(root_package, dict) and root_package.get("version") != new_version:
+        root_package["version"] = new_version
+        changed = True
+    if changed:
+        package_lock_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    return changed
+
+
+def _write_lineage_graph_manifest_version(new_version: str) -> Path | None:
+    manifest_path = Path("pkgs/ssot-core/src/ssot_registry/assets/lineage_graph/manifest.json")
+    if not manifest_path.exists():
+        return None
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if payload.get("version") == new_version:
+        return None
+    payload["version"] = new_version
+    manifest_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    return manifest_path
+
+
+def _sync_npm_release_files(package_name: str, new_version: str) -> list[Path]:
+    package_path = Path(NPM_PACKAGE_INFOS[package_name].project_path)
+    updated_files: list[Path] = []
+    package_lock = package_path / "package-lock.json"
+    if _write_npm_lock_version(package_lock, new_version):
+        updated_files.append(package_lock)
+    if package_name == "ssot-lineage-graph":
+        manifest_path = _write_lineage_graph_manifest_version(new_version)
+        if manifest_path is not None:
+            updated_files.append(manifest_path)
+    return updated_files
+
+
+def _append_unique(paths: list[Path], path: Path) -> None:
+    if path not in paths:
+        paths.append(path)
 
 
 def sync_release_dependencies() -> list[Path]:
@@ -142,7 +188,9 @@ def bump_train(train: str, bump_type: str, selected_packages: str | None) -> lis
                 package_json = Path(NPM_PACKAGE_INFOS[package_name].project_path) / "package.json"
                 current = _read_npm_version(package_json)
                 if _write_npm_version(package_json, current, npm_version):
-                    updated_files.append(package_json)
+                    _append_unique(updated_files, package_json)
+                for path in _sync_npm_release_files(package_name, npm_version):
+                    _append_unique(updated_files, path)
         return updated_files
 
     if not targets and npm_targets:
@@ -150,8 +198,11 @@ def bump_train(train: str, bump_type: str, selected_packages: str | None) -> lis
             package_json = Path(NPM_PACKAGE_INFOS[package_name].project_path) / "package.json"
             current = _read_npm_version(package_json)
             new_version = _next_version(current.replace("-dev.", ".dev"), bump_type)
-            if _write_npm_version(package_json, current, _python_to_npm_version(new_version)):
-                updated_files.append(package_json)
+            npm_version = _python_to_npm_version(new_version)
+            if _write_npm_version(package_json, current, npm_version):
+                _append_unique(updated_files, package_json)
+            for path in _sync_npm_release_files(package_name, npm_version):
+                _append_unique(updated_files, path)
         return updated_files
 
     for package_name in targets:
@@ -174,8 +225,11 @@ def bump_train(train: str, bump_type: str, selected_packages: str | None) -> lis
         package_json = Path(NPM_PACKAGE_INFOS[package_name].project_path) / "package.json"
         current = _read_npm_version(package_json)
         new_version = _next_version(current.replace("-dev.", ".dev"), bump_type)
-        if _write_npm_version(package_json, current, _python_to_npm_version(new_version)):
-            updated_files.append(package_json)
+        npm_version = _python_to_npm_version(new_version)
+        if _write_npm_version(package_json, current, npm_version):
+            _append_unique(updated_files, package_json)
+        for path in _sync_npm_release_files(package_name, npm_version):
+            _append_unique(updated_files, path)
     return updated_files
 
 

@@ -1,6 +1,6 @@
 {
   "package": "@ssot-registry/lineage-graph",
-  "version": "0.2.25-dev.3",
+  "version": "0.2.25-dev.4",
   "js": "ssot-lineage-graph.js",
   "css": "ssot-lineage-graph.css"
 }
