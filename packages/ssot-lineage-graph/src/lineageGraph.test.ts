@@ -5,7 +5,13 @@ import { createStandaloneHtml } from "./html";
 import { LineageGraph } from "./LineageGraph";
 import { LineageGraphApp } from "./LineageGraphApp";
 import { applyForceLayoutStep, applyLineageLayout, normalizeNodes, resolveDepth } from "./layout";
+import {
+  computeDeterministicLayout as computeWorkspaceLayout,
+  computeGraphIndices as computeWorkspaceIndices,
+  hasCollapsedUpstreamAncestor,
+} from "./workspace/utils/graphHelpers";
 import type { LineagePayload } from "./types";
+import type { LineagePayload as WorkspaceLineagePayload } from "./workspace/types";
 
 const families = ["ADR", "Spec", "Feature", "Claim", "Test", "Evidence", "Boundary", "Profile", "Release", "Issue", "Risk"];
 
@@ -106,43 +112,33 @@ describe("viewer behavior contracts", () => {
     expect(source).not.toContain("[fit, canvasVersion");
   });
 
-  it("keeps results scrollable and both rails collapsible", () => {
+  it("routes the public app shell to the latest workspace implementation", () => {
     const app = readFileSync(new URL("./views/LineageGraphAppView.tsx", import.meta.url), "utf-8");
-    const section = readFileSync(new URL("./subcomponents/Section.tsx", import.meta.url), "utf-8");
-    const results = readFileSync(new URL("./components/ResultsList.tsx", import.meta.url), "utf-8");
-    const styles = readFileSync(new URL("./styles.css", import.meta.url), "utf-8");
-    expect(app).toContain("leftSidebarCollapsed");
-    expect(app).toContain("rightSidebarCollapsed");
-    expect(app).toContain("ssot-sidebar-toggle-left");
-    expect(app).toContain("ssot-sidebar-toggle-right");
-    expect(app).toContain("collapsible");
-    expect(results).toContain("ssot-results-list");
-    expect(section).toContain("<details");
-    expect(styles).toContain(".ssot-results-section");
-    expect(styles).toContain(".ssot-accordion-section");
-    expect(styles).toContain(".ssot-lineage-app-left-collapsed");
-    expect(styles).toContain(".ssot-lineage-app-right-collapsed");
+    const workspace = readFileSync(new URL("./workspace/components/LineageGraphApp.tsx", import.meta.url), "utf-8");
+    const sidebar = readFileSync(new URL("./workspace/components/LeftSidebar.tsx", import.meta.url), "utf-8");
+    const styles = readFileSync(new URL("./workspace/index.css", import.meta.url), "utf-8");
+    expect(app).toContain("WorkspaceLineageGraphApp");
+    expect(app).toContain("../workspace/index.css");
+    expect(workspace).toContain("showDocumentation = false");
+    expect(workspace).toContain("Export Payload JSON");
+    expect(workspace).not.toContain("https://cdn.tailwindcss.com");
+    expect(sidebar).toContain("registryOptions");
+    expect(sidebar).toContain('"Spec"');
+    expect(styles).toContain('@import "tailwindcss"');
+    expect(styles).not.toContain("fonts.googleapis");
   });
 
-  it("uses a selected-node card, right-side legend accordion, center zoom, and force controls", () => {
-    const app = readFileSync(new URL("./views/LineageGraphAppView.tsx", import.meta.url), "utf-8");
-    const selectedNode = readFileSync(new URL("./components/SelectedNodePanel.tsx", import.meta.url), "utf-8");
-    const controls = readFileSync(new URL("./components/ViewControls.tsx", import.meta.url), "utf-8");
-    const canvas = readFileSync(new URL("./components/LineageGraphCanvas.tsx", import.meta.url), "utf-8");
-    const styles = readFileSync(new URL("./styles.css", import.meta.url), "utf-8");
-    expect(selectedNode).toContain("ssot-selected-card");
-    expect(selectedNode).not.toContain("KeyValue");
-    expect(app.indexOf("rightSidebarClassName")).toBeLessThan(app.indexOf('title="Legend" collapsible'));
-    expect(app.indexOf("<PackageSummary")).toBeLessThan(app.indexOf('title="View" collapsible'));
-    expect(app).toContain('title="Families" collapsible');
-    expect(app).toContain('title="Results" className="ssot-results-section" collapsible');
-    expect(controls).toContain("Force Strength");
-    expect(controls).toContain("Repulsion");
-    expect(canvas).toContain("springStrength: options.forceStrength");
-    expect(canvas).toContain("repulsionStrength: options.repulsionStrength");
-    expect(canvas).toContain("const zoomBy");
-    expect(canvas).toContain("centerX - worldX * zoom");
-    expect(styles).toContain(".ssot-selected-card");
+  it("keeps the legacy canvas export while the workspace owns the forward UI", () => {
+    const readme = readFileSync(new URL("../README.md", import.meta.url), "utf-8");
+    const workspaceCanvas = readFileSync(new URL("./workspace/components/LineageGraphCanvas.tsx", import.meta.url), "utf-8");
+    const inspector = readFileSync(new URL("./workspace/components/RightInspector.tsx", import.meta.url), "utf-8");
+    expect(readme).toContain("`LineageGraphApp` is the forward path");
+    expect(readme).toContain("LineageGraph` canvas export remains available for compatibility");
+    expect(workspaceCanvas).toContain("onPointerDown={handleWorkspacePointerDown}");
+    expect(workspaceCanvas).toContain("onWheel={handleWheel}");
+    expect(workspaceCanvas).toContain("FAMILY_COLORS");
+    expect(inspector).toContain("Upstream Ancestors");
+    expect(inspector).toContain("Downstream Relations");
   });
 
   it("allows zooming below one percent for very large graph extents", () => {
@@ -150,5 +146,37 @@ describe("viewer behavior contracts", () => {
     expect(canvas).toContain("const MIN_ZOOM = 0.0001");
     expect(canvas).toContain("Math.max(MIN_ZOOM");
     expect(canvas).not.toContain("Math.max(0.02");
+  });
+
+  it("tiles dense workspace lanes instead of making skinny vertical ribbons", () => {
+    const graph: WorkspaceLineagePayload = {
+      nodes: Array.from({ length: 1376 }, (_, index) => ({
+        id: `clm:dense.${index}`,
+        family: "Claim",
+        label: `Claim ${index}`,
+      })),
+      edges: [],
+      summary: { nodeCount: 1376, edgeCount: 0 },
+    };
+    const indices = computeWorkspaceIndices(graph);
+    const positions = computeWorkspaceLayout(graph.nodes, indices.incoming, indices.outgoing, new Set(), 210, 90, 1100, 620, "lineage");
+    const xs = Object.values(positions).map((pos) => pos.x);
+    const ys = Object.values(positions).map((pos) => pos.y);
+    const width = Math.max(...xs) - Math.min(...xs);
+    const height = Math.max(...ys) - Math.min(...ys);
+
+    expect(width).toBeGreaterThan(1000);
+    expect(height).toBeLessThan(6000);
+  });
+
+  it("bounds collapsed-ancestor checks when registry lineage contains an incoming cycle", () => {
+    const incoming = new Map<string, string[]>([
+      ["adr:0641", ["feat:graph.lineage-html-open-flag"]],
+      ["feat:graph.lineage-html-open-flag", ["spec:lineage"]],
+      ["spec:lineage", ["adr:0641"]],
+    ]);
+
+    expect(hasCollapsedUpstreamAncestor("adr:0641", incoming, new Set())).toBe(false);
+    expect(hasCollapsedUpstreamAncestor("adr:0641", incoming, new Set(["spec:lineage"]))).toBe(true);
   });
 });

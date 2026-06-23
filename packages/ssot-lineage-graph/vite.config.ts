@@ -1,10 +1,11 @@
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig(({ mode }) => {
   const standalone = mode === "standalone";
   return {
-    plugins: [react()],
+    plugins: [react(), tailwindcss()],
     build: standalone
       ? {
           outDir: "dist/standalone",

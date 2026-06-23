@@ -13,7 +13,7 @@ export function createStandaloneHtml(payload: LineagePayload, options: Standalon
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${title}</title>
-  <style>${options.style || ""}</style>
+  <style>html,body,#${rootId}{width:100%;height:100%;margin:0}body{overflow:hidden}#${rootId}{min-height:100vh}${options.style || ""}</style>
 </head>
 <body>
   <div id="${rootId}"></div>

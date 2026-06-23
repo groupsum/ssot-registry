@@ -129,7 +129,7 @@ def _render_lineage_html(payload: dict[str, Any]) -> str:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SSOT Lineage Graph</title>
-  <style>{css}</style>
+  <style>html,body,#ssot-lineage-root{{width:100%;height:100%;margin:0}}body{{overflow:hidden}}#ssot-lineage-root{{min-height:100vh}}{css}</style>
 </head>
 <body>
   <div id="ssot-lineage-root"></div>

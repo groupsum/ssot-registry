@@ -43,7 +43,8 @@ class CliGraphSurfaceTests(unittest.TestCase):
         self.assertFalse(lineage_payload["opened"])
         html = Path(lineage_payload["output_path"]).read_text(encoding="utf-8")
         self.assertIn("SSOT Lineage Graph", html)
-        self.assertIn("Top-down lineage", html)
+        self.assertIn("Lineage View Modes", html)
+        self.assertIn("Export Payload JSON", html)
         self.assertIn("feat:graph.requires", html)
 
     def test_lineage_rejects_directory_output(self) -> None:

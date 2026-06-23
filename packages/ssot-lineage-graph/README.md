@@ -9,3 +9,7 @@ import { LineageGraphApp } from "@ssot-registry/lineage-graph";
 ```
 
 The package also exports `createStandaloneHtml(payload)`, which is used by the Python `ssot-registry graph lineage` command to emit an offline HTML artifact.
+
+`LineageGraphApp` is the forward path for new integrations. The lower-level
+`LineageGraph` canvas export remains available for compatibility with existing
+callers, but new work should use the workspace app shell.

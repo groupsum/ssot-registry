@@ -20,7 +20,7 @@ def _lineage_html() -> str:
 
 def test_lineage_selection_detail_contract() -> None:
     html = _lineage_html()
-    for expected in ("Selected Node", "Connected Edges", "Select a node for details", "Deselect", "ssot-kv-row"):
+    for expected in ("No Element Selected", "Click any circular node", "Upstream Ancestors", "Downstream Relations"):
         assert expected in html
     assert "JSON.stringify(n,null,2)" not in html
     assert "<pre id=\"summary\">" not in html
@@ -28,50 +28,52 @@ def test_lineage_selection_detail_contract() -> None:
 
 def test_lineage_legend_context_contract() -> None:
     html = _lineage_html()
-    for expected in ("Package context unavailable", "Legend", "ssot-legend", "ssot-lineage-app"):
+    for expected in ("SSOT Registry Scope", "Registry Index", "Lineage View Modes", "Interactive Viewer"):
         assert expected in html
-    assert html.index("SSOT Lineage Graph") < html.index("Legend")
+    assert "Canonical Core Registry" not in html
 
 
 def test_lineage_ego_focus_depth_contract() -> None:
     html = _lineage_html()
-    for expected in ("Maximum", "centerId", "1 hop", "2 hops", "3 hops", "Focus other"):
+    for expected in ("Network Force", "Lineage Flow", "Proof Chain", "Origins Mode", "Packs Lineage", "Release Board", "Validation"):
         assert expected in html
 
 
 def test_lineage_layout_scaling_contract() -> None:
     html = _lineage_html()
-    for expected in ("X Scale", "Y Scale", "210", "90", "Math.pow(10", "Number.isFinite"):
+    for expected in ("ADR Setup", "Specification", "Core Features", "Claims", "Verifications", "Certificates", "Releases"):
         assert expected in html
 
 
 def test_lineage_viewport_controls_contract() -> None:
     html = _lineage_html()
-    for expected in ("Fit", "100%", "zoom", "Number.isFinite", "PNG", "SVG"):
+    for expected in ("Zoom Out", "Zoom In", "Fit Viewport on Nodes", "Reset Zoom to 100%", "Toggle canvas color scheme"):
         assert expected in html
 
 
 def test_lineage_node_dragging_contract() -> None:
     html = _lineage_html()
-    for expected in ("nodeId", "moved", "pinned", "onMouseMove"):
+    for expected in ("Drag to place - Double-click to unpin", "Drag to reposition", "Unpin All Anchors", "Hide this node from view", "Show All"):
         assert expected in html
 
 
 def test_lineage_snapshot_export_contract() -> None:
     html = _lineage_html()
-    for expected in ("toDataURL", "image/png", "ssot-lineage-graph.svg", "image/svg+xml"):
+    for expected in ("Export Payload JSON", "Download the current lineage payload JSON", "_lineage_payload.json"):
         assert expected in html
+    assert "https://cdn.tailwindcss.com" not in html
+    assert "fonts.googleapis" not in html
 
 
 def test_lineage_edges_are_visible_and_navigable_contract() -> None:
     html = _lineage_html()
-    for expected in ("rgba(8,145,178", "Connected Edges", "Focus other", "From", "To"):
+    for expected in ("Upstream Ancestors", "Downstream Relations", "No incoming connections.", "No outgoing connections."):
         assert expected in html
 
 
 def test_lineage_summary_uses_key_value_rows_contract() -> None:
     html = _lineage_html()
-    for expected in ("Summary", "ssot-kv-row", "nodeCount", "edgeTypes"):
+    for expected in ("Origin Provenance", "Compliance status", "Schema: v", "Edges:"):
         assert expected in html
     assert '<pre id="summary">' not in html
     assert "JSON.stringify(DATA.summary" not in html

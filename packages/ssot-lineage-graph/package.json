@@ -21,19 +21,27 @@
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json && npm run copy:vendor",
     "copy:vendor": "node scripts/copy-vendored.mjs",
+    "perf": "tsx scripts/megascale-perf-test.ts",
     "test": "vitest run",
     "verify:vendor": "npm run build && git diff --exit-code -- ../../pkgs/ssot-core/src/ssot_registry/assets/lineage_graph"
+  },
+  "dependencies": {
+    "lucide-react": "0.546.0",
+    "motion": "12.23.24"
   },
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "4.1.14",
     "@vitejs/plugin-react": "5.2.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "tailwindcss": "4.1.14",
+    "tsx": "4.21.0",
     "typescript": "5.9.3",
     "vite": "7.3.3",
-    "vitest": "3.2.4",
-    "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "vitest": "3.2.4"
   }
 }
