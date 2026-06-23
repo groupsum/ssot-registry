@@ -1,6 +1,6 @@
 {
   "name": "@ssot-registry/lineage-graph",
-  "version": "0.2.25-dev.2",
+  "version": "0.2.25-dev.3",
   "description": "Portable React viewer for SSOT lineage graph payloads.",
   "license": "Apache-2.0",
   "type": "module",
