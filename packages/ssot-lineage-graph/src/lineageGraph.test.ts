@@ -179,4 +179,12 @@ describe("viewer behavior contracts", () => {
     expect(hasCollapsedUpstreamAncestor("adr:0641", incoming, new Set())).toBe(false);
     expect(hasCollapsedUpstreamAncestor("adr:0641", incoming, new Set(["spec:lineage"]))).toBe(true);
   });
+
+  it("keeps full edge context available when node limits cap rendered nodes", () => {
+    const workspace = readFileSync(new URL("./workspace/components/LineageGraphApp.tsx", import.meta.url), "utf-8");
+
+    expect(workspace).toContain("nodes: displayNodes");
+    expect(workspace).not.toContain("edges: payload.edges.filter");
+    expect(workspace).toContain("computeDeterministicLayout(\n        payload.nodes");
+  });
 });

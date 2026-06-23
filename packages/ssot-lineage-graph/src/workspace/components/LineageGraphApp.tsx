@@ -272,12 +272,9 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
   }, [filteredNodes, nodeLimit]);
 
   const displayPayload = useMemo(() => {
-    const displayNodeIds = new Set(displayNodes.map((node) => node.id));
-
     return {
       ...payload,
       nodes: displayNodes,
-      edges: payload.edges.filter((edge) => displayNodeIds.has(edge.from) && displayNodeIds.has(edge.to)),
     };
   }, [payload, displayNodes]);
 
@@ -423,7 +420,7 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
       // If isolateEgo is active, we hide all other nodes so deterministic layout packs focus nodes tightly
       const layoutHiddenNodeIds = new Set<string>(hiddenNodeIds);
       if (isolateEgo && appEgoNeighborhood) {
-        displayNodes.forEach(n => {
+        payload.nodes.forEach(n => {
           if (!appEgoNeighborhood.has(n.id)) {
             layoutHiddenNodeIds.add(n.id);
           }
@@ -431,7 +428,7 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
       }
 
       const nextPositions = computeDeterministicLayout(
-        displayNodes,
+        payload.nodes,
         indices.incoming,
         indices.outgoing,
         collapsedNodeIds,
@@ -447,7 +444,7 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
       // Initialize physics coordinates loop
       const layoutHiddenNodeIds = new Set<string>(hiddenNodeIds);
       if (isolateEgo && appEgoNeighborhood) {
-        displayNodes.forEach(n => {
+        payload.nodes.forEach(n => {
           if (!appEgoNeighborhood.has(n.id)) {
             layoutHiddenNodeIds.add(n.id);
           }
@@ -455,7 +452,7 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
       }
 
       const initialPositions = computeDeterministicLayout(
-        displayNodes,
+        payload.nodes,
         indices.incoming,
         indices.outgoing,
         collapsedNodeIds,
@@ -471,7 +468,6 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
   }, [
     viewMode,
     payload,
-    displayNodes,
     collapsedNodeIds,
     hiddenNodeIds,
     isolateEgo,
