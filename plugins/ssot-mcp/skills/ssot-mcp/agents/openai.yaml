@@ -1,0 +1,11 @@
+interface:
+  display_name: "SSOT MCP"
+  short_description: "Route work onto SSOT MCP campaigns, leases, and slice completion."
+  default_prompt: |-
+    Use $ssot-mcp when the task should stay on the SSOT MCP control plane. Route T1 work to $ssot-mcp-t1-worker-campaign, T2 work to $ssot-mcp-t2-worker-campaign, and T3 work to $ssot-mcp-t3-worker-campaign. Keep SSOT registry changes on MCP tools and do not hand-edit .ssot/registry.json.
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "ssot"
+      description: "SSOT MCP server for campaign state, maturity slices, leases, events, conflicts, completion, abandonment, and registry CRUD or CLI delegation"

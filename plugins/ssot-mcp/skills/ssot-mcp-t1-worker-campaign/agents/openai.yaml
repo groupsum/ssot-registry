@@ -1,0 +1,11 @@
+interface:
+  display_name: "SSOT MCP T1 Worker"
+  short_description: "Claim T1 slices and deliver direct verification honestly."
+  default_prompt: |-
+    Use $ssot-mcp-t1-worker-campaign to participate in an SSOT MCP maturation campaign targeting T1. Generate one worker_id, use the local repo unless the user provides one, claim work with target_tier T1, limit 25, and auto_scaffold true, implement direct runtime behavior plus repeatable project-controlled tests, and complete slices honestly through SSOT MCP.
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "ssot"
+      description: "SSOT MCP server for T1 slice claims, lease context, completion, abandonment, events, conflicts, and registry CRUD or CLI delegation"

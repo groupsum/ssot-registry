@@ -1,0 +1,48 @@
+{
+  "name": "ssot-mcp",
+  "version": "0.1.0",
+  "description": "Codex skills for SSOT MCP pull-worker campaigns, lease-driven maturity work, conflict-safe slice execution, and MCP-governed registry mutation workflows.",
+  "author": {
+    "name": "Swarmauri",
+    "email": "jacob@swarmauri.com",
+    "url": "https://github.com/groupsum/ssot-registry"
+  },
+  "homepage": "https://github.com/groupsum/ssot-registry/tree/main/plugins/ssot-mcp",
+  "repository": "https://github.com/groupsum/ssot-registry",
+  "license": "Apache-2.0",
+  "keywords": [
+    "ssot",
+    "mcp",
+    "campaign",
+    "worker",
+    "leases",
+    "maturation",
+    "claims",
+    "verification",
+    "codex",
+    "plugin"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "SSOT MCP",
+    "shortDescription": "Run SSOT MCP worker campaigns and lease-governed maturity work.",
+    "longDescription": "Provides Codex with dedicated SSOT MCP skills for pull-only worker campaigns, lease-aware slice execution, T1 direct verification, T2 robustness verification, and T3 certification-closure work. The plugin keeps registry changes on the MCP rail, prevents hand-editing of .ssot/registry.json, and emphasizes honest tier completion, conflict-safe path discipline, and complete_slice-based reporting.",
+    "developerName": "Swarmauri",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write",
+      "Code"
+    ],
+    "websiteURL": "https://github.com/groupsum/ssot-registry",
+    "privacyPolicyURL": "https://github.com/groupsum/ssot-registry",
+    "termsOfServiceURL": "https://github.com/groupsum/ssot-registry",
+    "defaultPrompt": [
+      "Use $ssot-mcp when the work should stay on the SSOT MCP rail instead of direct registry edits.",
+      "Use $ssot-mcp-t1-worker-campaign for direct project verification slices targeting T1.",
+      "Use $ssot-mcp-t2-worker-campaign or $ssot-mcp-t3-worker-campaign for higher-tier campaign slices."
+    ],
+    "brandColor": "#0F766E"
+  }
+}

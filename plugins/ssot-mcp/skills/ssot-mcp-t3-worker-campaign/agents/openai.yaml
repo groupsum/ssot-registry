@@ -1,0 +1,11 @@
+interface:
+  display_name: "SSOT MCP T3 Worker"
+  short_description: "Claim T3 slices and deliver certification-closure work honestly."
+  default_prompt: |-
+    Use $ssot-mcp-t3-worker-campaign to participate in an SSOT MCP maturation campaign targeting T3. Generate one worker_id, use the local repo unless the user provides one, claim work with target_tier T3, limit 25, and auto_scaffold true, deliver runtime, tests, and certification-closure evidence inside leased paths, and complete slices honestly through SSOT MCP.
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "ssot"
+      description: "SSOT MCP server for T3 slice claims, lease context, completion, abandonment, events, conflicts, and registry CRUD or CLI delegation"
