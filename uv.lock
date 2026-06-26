@@ -1530,7 +1530,7 @@ wheels = [
 
 [[package]]
 name = "ssot-cli"
-version = "0.1.18.dev1"
+version = "0.1.19.dev1"
 source = { editable = "pkgs/ssot-cli" }
 dependencies = [
     { name = "ssot-conformance" },
@@ -1551,7 +1551,7 @@ requires-dist = [
 
 [[package]]
 name = "ssot-codegen"
-version = "0.2.24.dev1"
+version = "0.2.25.dev1"
 source = { editable = "pkgs/ssot-codegen" }
 dependencies = [
     { name = "ssot-contracts" },
@@ -1568,7 +1568,7 @@ requires-dist = [
 
 [[package]]
 name = "ssot-conformance"
-version = "0.2.24.dev1"
+version = "0.2.25.dev1"
 source = { editable = "pkgs/ssot-conformance" }
 dependencies = [
     { name = "ssot-contracts" },
@@ -1585,7 +1585,7 @@ requires-dist = [
 
 [[package]]
 name = "ssot-contracts"
-version = "0.2.24.dev1"
+version = "0.2.25.dev1"
 source = { editable = "pkgs/ssot-contracts" }
 dependencies = [
     { name = "tomli", marker = "python_full_version < '3.11'" },
@@ -1596,7 +1596,7 @@ requires-dist = [{ name = "tomli", marker = "python_full_version < '3.11'", spec
 
 [[package]]
 name = "ssot-core"
-version = "0.2.24.dev1"
+version = "0.2.25.dev1"
 source = { editable = "pkgs/ssot-core" }
 dependencies = [
     { name = "orjson" },
@@ -1617,7 +1617,7 @@ requires-dist = [
 
 [[package]]
 name = "ssot-mcp"
-version = "0.1.6.dev1"
+version = "0.1.7.dev1"
 source = { editable = "pkgs/ssot-mcp" }
 dependencies = [
     { name = "mcp" },
@@ -1643,7 +1643,7 @@ requires-dist = [{ name = "tomli", marker = "python_full_version < '3.11'", spec
 
 [[package]]
 name = "ssot-registry"
-version = "0.2.24.dev1"
+version = "0.2.25.dev1"
 source = { editable = "pkgs/ssot-registry" }
 dependencies = [
     { name = "ssot-cli" },
@@ -1681,7 +1681,7 @@ provides-extras = ["mcp", "tui", "all"]
 
 [[package]]
 name = "ssot-tui"
-version = "0.1.18.dev1"
+version = "0.1.19.dev1"
 source = { editable = "pkgs/ssot-tui" }
 dependencies = [
     { name = "ssot-contracts" },
@@ -1700,7 +1700,7 @@ requires-dist = [
 
 [[package]]
 name = "ssot-views"
-version = "0.2.24.dev1"
+version = "0.2.25.dev1"
 source = { editable = "pkgs/ssot-views" }
 dependencies = [
     { name = "ssot-contracts" },
