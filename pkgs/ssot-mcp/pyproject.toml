@@ -39,6 +39,7 @@ classifiers = [
 Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-mcp"
 Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-mcp"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
+Discord = "https://discord.gg/mAjzxwSwRp"
 
 [project.scripts]
 ssot-mcp = "ssot_mcp.server:main"

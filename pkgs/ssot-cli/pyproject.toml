@@ -40,6 +40,7 @@ classifiers = [
 Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-cli"
 Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-cli"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
+Discord = "https://discord.gg/mAjzxwSwRp"
 
 [project.scripts]
 ssot = "ssot_cli.main:main"

@@ -42,6 +42,7 @@ ssot-codegen = "ssot_codegen.main:main"
 Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-codegen"
 Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-codegen"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
+Discord = "https://discord.gg/mAjzxwSwRp"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -38,6 +38,7 @@ classifiers = [
 Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-tui"
 Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-tui"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
+Discord = "https://discord.gg/mAjzxwSwRp"
 
 [project.scripts]
 ssot-tui = "ssot_tui.main:main"

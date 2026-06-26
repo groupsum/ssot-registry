@@ -58,3 +58,4 @@ all = ["ssot-mcp>=0.1.7.dev5,<0.2.0", "ssot-tui>=0.1.19.dev5,<0.2.0"]
 Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-registry"
 Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-registry"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
+Discord = "https://discord.gg/mAjzxwSwRp"

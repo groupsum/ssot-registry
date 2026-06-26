@@ -39,6 +39,7 @@ classifiers = [
 Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-conformance"
 Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-conformance"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
+Discord = "https://discord.gg/mAjzxwSwRp"
 
 [project.entry-points.pytest11]
 ssot-conformance = "ssot_conformance.plugin"

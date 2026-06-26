@@ -8,6 +8,7 @@
   <a href="https://pypi.org/project/ssot-contracts/"><img src="https://img.shields.io/pypi/pyversions/ssot-contracts?label=Python" alt="Supported Python versions" /></a>
   <a href="https://pepy.tech/project/ssot-contracts"><img src="https://static.pepy.tech/badge/ssot-contracts" alt="Downloads" /></a>
   <a href="https://hits.sh/github.com/groupsum/ssot-registry/"><img src="https://hits.sh/github.com/groupsum/ssot-registry.svg?style=flat-square" alt="Repository hits" /></a>
+  <a href="https://discord.gg/mAjzxwSwRp"><img src="https://img.shields.io/badge/Discord-join%20chat-5865F2?logo=discord&logoColor=white" alt="Discord" /></a>
 <!-- ssot-schema-badges:start -->
   <img src="https://img.shields.io/badge/schema_version-0.8.0-blue" alt="schema_version 0.8.0" />
   <img src="https://img.shields.io/badge/migration%20coverage-14%2F14-brightgreen" alt="Migration coverage 14/14" />

@@ -31,6 +31,7 @@ classifiers = [
 Homepage = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-pack-contracts"
 Repository = "https://github.com/groupsum/ssot-registry/tree/main/pkgs/ssot-pack-contracts"
 Issues = "https://github.com/groupsum/ssot-registry/issues"
+Discord = "https://discord.gg/mAjzxwSwRp"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
