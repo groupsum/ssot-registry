@@ -103,7 +103,7 @@ export interface LineageEdge {
   type?: string; // e.g., "implements", "verifies", "proves", "depends_on"
   label?: string;
   direction?: "forward" | "reverse" | "bidirectional";
-  status?: "active" | "planned" | "deprecated" | "stale" | "missing" | "invalid" | "unknown";
+  status?: "active" | "planned" | "deprecated" | "stale" | "missing" | "invalid" | "unknown" | string;
   originKind?: "direct" | "derived" | "inferred" | "generated" | "unknown" | string;
   strength?: number;
   tier?: string;
@@ -226,6 +226,7 @@ export interface Position {
   vy?: number;
   fx?: number | null;
   fy?: number | null;
+  iy?: number;
 }
 
 export type NodePositions = Record<string, Position>;

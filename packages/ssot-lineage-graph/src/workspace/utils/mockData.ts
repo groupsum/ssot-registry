@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -1096,7 +1096,7 @@ export function createMegaScaleRegistry(): LineagePayload {
   }
 
   // Define structured, highly connected backbones (90.5k edges total)
-
+  
   // 1. SPEC to ADR links (15k)
   for (let i = 1; i <= numSPEC; i++) {
     edges.push({

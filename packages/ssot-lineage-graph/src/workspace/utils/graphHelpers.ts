@@ -1,9 +1,9 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { LineagePayload, LineageNode, LineageEdge, OriginKind, Position, NodePositions, GraphViewMode } from "../types";
+import { LineagePayload, LineageNode, LineageEdge, NodePositions, GraphViewMode } from "../types";
 
 // Map lineage families to deterministic columns for hierarchical lineage mode
 export const FAMILY_LAYERS: Record<string, number> = {
@@ -16,7 +16,7 @@ export const FAMILY_LAYERS: Record<string, number> = {
   Evidence: 5,
   Release: 6,
   Boundary: 1, // Boundary groups with Spec/Feature columns
-  Profile: 1,
+  Profile: 1,  
   Risk: 3,     // Threatens Claim/Feature
   Issue: 4,    // Paired near Test/Release blockers
 };
@@ -191,7 +191,7 @@ export function computeDeterministicLayout(
   if (userHiddenIds) {
     userHiddenIds.forEach((id) => hiddenNodeIds.add(id));
   }
-
+  
   // BFS search to find all descendants of any collapsed node, and add them to hiddenNodeIds
   const queue = Array.from(collapsedIds);
   const visited = new Set<string>();
@@ -221,7 +221,7 @@ export function computeDeterministicLayout(
       }
     }
     if (hiddenNodeIds.has(node.id)) return;
-
+    
     const col = columnForNode(node, viewMode);
 
     if (!layerNodes[col]) layerNodes[col] = [];
@@ -246,7 +246,7 @@ export function computeDeterministicLayout(
       const targetRows = Math.max(12, Math.ceil(Math.sqrt(totalNodes) * 1.5));
       numSubCols = Math.min(maxSubCols, Math.max(4, Math.ceil(totalNodes / targetRows)));
     }
-
+    
     // Total rows we need
     const numRows = Math.ceil(totalNodes / numSubCols);
     const totalHeight = (numRows - 1) * scaleY;
@@ -257,13 +257,14 @@ export function computeDeterministicLayout(
     nodeIds.forEach((id, index) => {
       const subCol = index % numSubCols;
       const subRow = Math.floor(index / numSubCols);
-
+      
       // Center the grid of sub-columns perfectly inside the lane's main horizontal center
       const xOffset = (subCol - (numSubCols - 1) / 2) * subColWidth;
 
       positions[id] = {
         x: x + xOffset,
         y: startY + subRow * scaleY,
+        iy: startY + subRow * scaleY,
       };
     });
 
@@ -314,7 +315,7 @@ export function runForceSimulationStep(
     // Spatial grid partitioning
     const cellSize = 250;
     const grid = new Map<string, string[]>();
-
+    
     nodeKeys.forEach((id) => {
       const pos = nextPositions[id];
       if (!pos) return;
@@ -345,7 +346,7 @@ export function runForceSimulationStep(
 
           for (const idB of neighborIds) {
             if (idA === idB) continue;
-
+            
             // Avoid double calculating the force for symmetric pairs
             const pairKey = idA < idB ? `${idA}:${idB}` : `${idB}:${idA}`;
             if (processedPairs.has(pairKey)) continue;
@@ -467,19 +468,26 @@ export function runForceSimulationStep(
     if (viewMode === "flow-force") {
       const nodeObj = nodeMap.get(id);
       const col = nodeObj ? columnForNode(nodeObj) : 3;
-      // Setup horizontal alignments aligned to column scaleX (220 to match deterministic views)
-      const targetX = 60 + col * 220;
-
-      // Anchor columns at the poles (ADR at col 0, Release at col 6) with heavy weight
-      let kX = 0.28;
+      // Setup horizontal alignments aligned to column scaleX (210 to match deterministic views)
+      const targetX = 60 + col * 210;
+      
+      // Anchor columns heavily at the poles (ADR at col 0, Release at col 6)
       if (col === 0 || col === 6) {
-        kX = 0.85; // Anchored heavily at the left and right borders of the swimlanes
-      }
-      const xForce = (targetX - pos.x) * kX;
-      pos.vx = (pos.vx || 0) + xForce;
+        // Fast snap convergence pull: override pos.x and vx completely to heavily pull them to their pole
+        pos.x = pos.x * 0.05 + targetX * 0.95;
+        pos.vx = 0;
 
-      const yForce = (cy - pos.y) * 0.075; // Significantly heavier y-axis pull to keep nodes aligned near center x-axis line
-      pos.vy = (pos.vy || 0) + yForce;
+        // Anchor vertically to their initial deterministic Y coordinates (iy) to solve the pole vertical collapse issue
+        const targetY = pos.iy !== undefined ? pos.iy : cy;
+        pos.y = pos.y * 0.05 + targetY * 0.95;
+        pos.vy = 0;
+      } else {
+        const xForce = (targetX - pos.x) * 0.28;
+        pos.vx = (pos.vx || 0) + xForce;
+
+        const yForce = (cy - pos.y) * 0.075; // Significantly heavier y-axis pull to keep nodes aligned near center x-axis line
+        pos.vy = (pos.vy || 0) + yForce;
+      }
     } else {
       // Pull toward gravitational layout center
       const gdx = cx - pos.x;
@@ -498,8 +506,9 @@ export function runForceSimulationStep(
 
     // Boundary constraints: clip to prevent flying offviewport margins
     const margin = 40;
+    const maxX = viewMode === "flow-force" ? 1600 : width - margin;
     if (pos.x < margin) { pos.x = margin; pos.vx = 0; }
-    if (pos.x > width - margin) { pos.x = width - margin; pos.vx = 0; }
+    if (pos.x > maxX) { pos.x = maxX; pos.vx = 0; }
     if (pos.y < margin) { pos.y = margin; pos.vy = 0; }
     if (pos.y > height - margin) { pos.y = height - margin; pos.vy = 0; }
   });
@@ -520,16 +529,16 @@ export function generateSvgLinkCurve(
     const midX = (startX + endX) / 2;
     return `M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${endX} ${endY}`;
   }
-
+  
   // Standard direct line or slightly curved bezier line for network modes
   const dx = endX - startX;
   const dy = endY - startY;
   const dist = Math.sqrt(dx * dx + dy * dy);
-
+  
   if (dist < 40) {
     return `M ${startX} ${startY} L ${endX} ${endY}`;
   }
-
+  
   // Slight curvature for overlapping back-edges or neat networks
   const controlOffset = 25;
   const mx = (startX + endX) / 2 - (dy / dist) * controlOffset;

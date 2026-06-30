@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -7,30 +7,6 @@ import React, { useState } from "react";
 import { LineagePayload, LineageNode, GraphFilters, LineageFamily, OriginKind, GraphViewMode } from "../types";
 import { Search, Sliders, Layers, Network, Folder, Database, RefreshCcw, X, ShieldCheck, Package, Rocket, Activity, ChevronLeft, ChevronRight } from "lucide-react";
 import { FAMILY_COLORS } from "./LineageGraphCanvas";
-
-const BASE_FAMILIES: LineageFamily[] = [
-  "ADR",
-  "Spec",
-  "SPEC",
-  "Feature",
-  "Claim",
-  "Test",
-  "Evidence",
-  "Release",
-  "Boundary",
-  "Profile",
-  "Risk",
-  "Issue",
-];
-
-const BASE_ORIGIN_KINDS: OriginKind[] = [
-  "ssot-core",
-  "ssot-origin",
-  "repo-local",
-  "extension-pack",
-  "generated",
-  "unknown",
-];
 
 interface LeftSidebarProps {
   payload: LineagePayload;
@@ -82,26 +58,27 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
   onUpdateIsolateEgo,
 }) => {
   const [activeTab, setActiveTab] = useState<"search" | "filters" | "limits">("search");
-  const familyOptions = React.useMemo(
-    () => Array.from(new Set<LineageFamily>([...BASE_FAMILIES, ...payload.nodes.map((node) => node.family)])),
-    [payload.nodes],
-  );
-  const originKindOptions = React.useMemo(
-    () => Array.from(new Set<OriginKind>([...BASE_ORIGIN_KINDS, ...allOriginKinds])),
-    [allOriginKinds],
-  );
-  const activeRegistryLabel =
-    registryOptions.find((option) => option.key === selectedRegistryKey)?.label ||
-    payload.package?.name ||
-    selectedRegistryKey;
 
   // Reset all filters in one click
   const handleResetFilters = () => {
     onUpdateFilters({
       search: "",
-      families: new Set<LineageFamily>(familyOptions),
+      families: new Set<LineageFamily>([
+        "ADR",
+        "Spec",
+        "SPEC",
+        "Feature",
+        "Claim",
+        "Test",
+        "Evidence",
+        "Release",
+        "Boundary",
+        "Profile",
+        "Risk",
+        "Issue",
+      ]),
       statuses: new Set<string>(),
-      originKinds: new Set<OriginKind>(originKindOptions),
+      originKinds: new Set<OriginKind>(allOriginKinds),
       tiers: new Set<string>(),
       packs: new Set<string>(),
       validationStatuses: new Set<string>(),
@@ -186,14 +163,14 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
   const activeFilterCount = React.useMemo(() => {
     let count = 0;
     if (filters.search) count++;
-    if (filters.families.size < familyOptions.length) count += (familyOptions.length - filters.families.size);
-    if (filters.originKinds.size < originKindOptions.length) count += (originKindOptions.length - filters.originKinds.size);
+    if (filters.families.size < 10) count += (10 - filters.families.size);
+    if (filters.originKinds.size < 6) count += (6 - filters.originKinds.size);
     if (filters.tiers.size > 0) count += filters.tiers.size;
     if (filters.packs.size > 0) count += filters.packs.size;
     if (filters.validationStatuses.size > 0) count += filters.validationStatuses.size;
     if (filters.statuses.size > 0) count += filters.statuses.size;
     return count;
-  }, [filters, familyOptions, originKindOptions]);
+  }, [filters]);
 
   if (isCollapsed) {
     return (
@@ -210,14 +187,14 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
         <div className="w-6 border-b border-slate-100 my-1" />
 
         {/* Database registry switcher indicator (just static icon since it is narrow) */}
-        <div
+        <div 
           className="p-2 text-indigo-600 rounded-lg hover:bg-indigo-50/50 cursor-pointer transition relative group"
           onClick={onToggleCollapse}
-          title={`Active registry: ${activeRegistryLabel}. Click to expand and change.`}
+          title={`Active registry: ${selectedRegistryKey}. Click to expand and change.`}
         >
           <Database size={16} />
           <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded shadow opacity-0 pointer-events-none group-hover:opacity-100 transition duration-150 whitespace-nowrap z-50 font-sans">
-            Active Registry: {activeRegistryLabel}
+            Active Registry: {selectedRegistryKey}
           </div>
         </div>
 
@@ -295,21 +272,20 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
             <ChevronLeft size={16} />
           </button>
         </div>
-
+        
         <select
           value={selectedRegistryKey}
           onChange={(e) => onChangeRegistry(e.target.value)}
           className="w-full bg-white border border-slate-200 rounded-md py-1.5 px-2.5 text-xs text-slate-700 font-medium focus:ring-1 focus:ring-indigo-500 focus:outline-none"
         >
-          {registryOptions.length > 0 ? (
-            registryOptions.map((option) => (
-              <option key={option.key} value={option.key}>
-                {option.label}
-              </option>
-            ))
-          ) : (
-            <option value={selectedRegistryKey}>{activeRegistryLabel}</option>
-          )}
+          {(registryOptions.length > 0
+            ? registryOptions
+            : [{ key: selectedRegistryKey, label: selectedRegistryKey }]
+          ).map((option) => (
+            <option key={option.key} value={option.key}>
+              {option.label}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -518,7 +494,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
                 Entity Family Filters
               </h4>
               <div className="flex flex-wrap gap-1.5">
-                {familyOptions.map((fam) => {
+                {(["ADR", "Spec", "SPEC", "Feature", "Claim", "Test", "Evidence", "Release", "Boundary", "Profile", "Risk", "Issue"] as LineageFamily[]).map((fam) => {
                   const isChecked = filters.families.has(fam);
                   const colors = FAMILY_COLORS[fam];
                   return (
@@ -545,7 +521,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
                 Provenance Origin Kind
               </h4>
               <div className="space-y-1">
-                {originKindOptions.map((kind) => {
+                {allOriginKinds.map((kind) => {
                   const isChecked = filters.originKinds.has(kind);
                   return (
                     <label

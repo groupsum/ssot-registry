@@ -1,13 +1,13 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useState } from "react";
-import { BookOpen, Code, Play, CheckCircle, Copy, HelpCircle, FileJson, Cpu } from "lucide-react";
+import { BookOpen, Code, Play, CheckCircle, Copy, HelpCircle, FileJson, Cpu, Eye } from "lucide-react";
 
 export const StorybookDocs: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"api" | "stories" | "cli">("api");
+  const [activeTab, setActiveTab] = useState<"api" | "stories" | "cli" | "matrix">("matrix");
   const [copiedText, setCopiedText] = useState<string | null>(null);
 
   const triggerCopy = (code: string, label: string) => {
@@ -34,8 +34,8 @@ const payload: LineagePayload = {
 export default function App() {
   return (
     <div className="w-screen h-screen">
-      <LineageGraphApp
-        payload={payload}
+      <LineageGraphApp 
+        payload={payload} 
         defaultMode="lineage"
         theme="light"
       />
@@ -45,12 +45,12 @@ export default function App() {
 
   const pythonPayloadExample = `def _lineage_payload(self) -> dict:
     """
-    Python backend generator mapping active compliance records
+    Python backend generator mapping active compliance records 
     into standard LineagePayload JSON contracts.
     """
     nodes = []
     edges = []
-
+    
     # Trace ADRs, SPECs, Features, and releases to build proof chains
     for entity in self.registry.get_entities():
         nodes.append({
@@ -61,7 +61,7 @@ export default function App() {
             "originKind": "repo-local" if entity.is_local else "ssot-origin",
             "path": entity.relative_path
         })
-
+        
     for link in self.registry.get_links():
         edges.append({
             "from": link.source_id,
@@ -69,7 +69,7 @@ export default function App() {
             "type": link.relationship_type,
             "status": "active"
         })
-
+        
     return {
         "schemaVersion": "2.4.0",
         "generatedAt": "2026-06-21T22:20:00-07:00",
@@ -98,7 +98,15 @@ export default function App() {
         </p>
 
         {/* Tab switcher buttons under banner */}
-        <div className="flex bg-indigo-950/40 p-1 rounded-lg mt-6 max-w-md border border-indigo-800/40">
+        <div className="flex bg-indigo-950/40 p-1 rounded-lg mt-6 max-w-xl border border-indigo-800/40 overflow-x-auto whitespace-nowrap">
+          <button
+            onClick={() => setActiveTab("matrix")}
+            className={`flex-1 py-1.5 px-3 rounded text-xs font-semibold select-none transition ${
+              activeTab === "matrix" ? "bg-indigo-600 text-white shadow" : "text-indigo-200 hover:text-white"
+            }`}
+          >
+            UIX Interactivity Matrix
+          </button>
           <button
             onClick={() => setActiveTab("api")}
             className={`flex-1 py-1.5 px-3 rounded text-xs font-semibold select-none transition ${
@@ -126,7 +134,144 @@ export default function App() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto bg-white border border-slate-200 rounded-xl shadow-md p-6">
+      <div className="max-w-5xl mx-auto bg-white border border-slate-200 rounded-xl shadow-md p-6">
+        {activeTab === "matrix" && (
+          <div className="space-y-6 animate-fadeIn">
+            <div>
+              <h2 className="text-base font-bold text-slate-800 mb-1 flex items-center gap-1.5 border-b border-slate-100 pb-2">
+                <Eye size={18} className="text-indigo-600" /> Interaction & UIX State Behavior Matrix
+              </h2>
+              <p className="text-xs text-slate-500 leading-relaxed mt-2">
+                This specification matrix outlines the precise expected behavior of nodes, edges, and filtering layers in all visual interaction states.
+              </p>
+            </div>
+
+            <div className="overflow-x-auto border border-slate-200 rounded-xl">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200 font-sans text-[11px] font-bold text-slate-600">
+                    <th className="p-3.5 border-r border-slate-200 min-w-[140px]">Interactive State Configuration</th>
+                    <th className="p-3.5 border-r border-slate-200 min-w-[160px]">Node Highlighting (Focus Center)</th>
+                    <th className="p-3.5 border-r border-slate-200 min-w-[170px]">Ego-Neighborhood (Hops Highlight)</th>
+                    <th className="p-3.5 border-r border-slate-200 min-w-[170px]">Edge Visual Styling (Ribbons & Flows)</th>
+                    <th className="p-3.5 border-r border-slate-200 min-w-[160px]">Hops vs Node Limit Order</th>
+                    <th className="p-3.5 min-w-[140px]">Non-Neighborhood Isolation</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 text-[11.5px] leading-relaxed text-slate-600">
+                  <tr className="hover:bg-indigo-50/30 transition">
+                    <td className="p-3.5 border-r border-slate-200 font-bold bg-slate-50/50 text-indigo-700">
+                      Hovered Node
+                      <div className="text-[10px] text-slate-400 font-normal mt-0.5">Immediate cursor activation</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[10px] mb-1">Amber Ring</span>
+                      <div>Glow underlay, scales to 1.10x with high depth priority (<code className="font-mono text-[10px]">z-50</code>).</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-bold text-[10px] mb-1">Amber Border</span>
+                      <div>Hop neighbors show thin Amber border (<code className="font-mono text-[10px]">z-30</code>) and soft Amber backgrounds.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[10px] mb-1">Amber Ribbons & Dashes</span>
+                      <div>Direct and hop edges turn Amber with animated flow-dashes; other edges dimmed to 8%.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200 font-medium">
+                      <strong className="text-slate-700">Hops First, then Node Limit</strong>
+                      <div className="text-[10.5px] text-slate-500 mt-0.5">Applies hop limits first to ensure neighborhood remains complete, then crops by node limit.</div>
+                    </td>
+                    <td className="p-3.5">
+                      <strong className="text-slate-700">Dimmed to 25% / 8%</strong>
+                      <div className="text-[10.5px] text-slate-500 mt-0.5 font-sans">Non-neighborhood nodes and edges are heavily grayed-out but kept visible.</div>
+                    </td>
+                  </tr>
+
+                  <tr className="hover:bg-indigo-50/30 transition">
+                    <td className="p-3.5 border-r border-slate-200 font-bold bg-slate-50/50 text-indigo-700">
+                      Selected Node
+                      <div className="text-[10px] text-slate-400 font-normal mt-0.5">Explicit mouse click</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 font-bold text-[10px] mb-1">Indigo Ring</span>
+                      <div>Offset Indigo ring, scales to 1.05x (<code className="font-mono text-[10px]">z-45</code>) with medium depth.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold text-[10px] mb-1">Indigo Border</span>
+                      <div>Hop neighbors show thin Indigo border (<code className="font-mono text-[10px]">z-25</code>) and soft Indigo backgrounds.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 font-bold text-[10px] mb-1">Indigo Ribbons & Dashes</span>
+                      <div>Direct and hop edges turn Indigo with animated flow-dashes; other edges dimmed to 8%.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200 font-medium">
+                      <strong className="text-slate-700">Hops First, then Node Limit</strong>
+                      <div className="text-[10.5px] text-slate-500 mt-0.5">Applies hop limits first to ensure neighborhood remains complete, then crops by node limit.</div>
+                    </td>
+                    <td className="p-3.5">
+                      <strong className="text-slate-700">Dimmed to 25% / 8%</strong>
+                      <div className="text-[10.5px] text-slate-500 mt-0.5">Non-neighborhood nodes and edges are heavily grayed-out but kept visible.</div>
+                    </td>
+                  </tr>
+
+                  <tr className="hover:bg-indigo-50/30 transition">
+                    <td className="p-3.5 border-r border-slate-200 font-bold bg-slate-50/50 text-indigo-700">
+                      Focused Node
+                      <div className="text-[10px] text-slate-400 font-normal mt-0.5">Explicit double-click / search selection</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-teal-100 text-teal-800 font-bold text-[10px] mb-1">Teal Ring</span>
+                      <div>Offset Teal ring, scales to 1.05x (<code className="font-mono text-[10px]">z-40</code>) with standard depth.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-teal-50 text-teal-700 font-bold text-[10px] mb-1">Teal Border</span>
+                      <div>Hop neighbors show thin Teal border (<code className="font-mono text-[10px]">z-20</code>) and soft Teal backgrounds.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-cyan-100 text-cyan-800 font-bold text-[10px] mb-1">Directional Cyan / Pink</span>
+                      <div>Incoming direct edges turn Cyan; outgoing edges turn Pink. Hop edges turn Teal. Other edges dimmed to 8%.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200 font-medium">
+                      <strong className="text-slate-700">Hops First, then Node Limit</strong>
+                      <div className="text-[10.5px] text-slate-500 mt-0.5">Applies hop limits first to ensure neighborhood remains complete, then crops by node limit.</div>
+                    </td>
+                    <td className="p-3.5">
+                      <strong className="text-slate-700">Dimmed to 25% / 8%</strong>
+                      <div className="text-[10.5px] text-slate-500 mt-0.5">Non-neighborhood nodes and edges are heavily grayed-out but kept visible.</div>
+                    </td>
+                  </tr>
+
+                  <tr className="hover:bg-indigo-50/30 transition">
+                    <td className="p-3.5 border-r border-slate-200 font-bold bg-slate-50/50 text-indigo-700">
+                      Isolated Active Focus
+                      <div className="text-[10px] text-slate-400 font-normal mt-0.5">"Isolate focus hops" filter is turned ON</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-bold text-[10px] mb-1">Respective Active Ring</span>
+                      <div>Node keeps its respective color ring but is showcased against an empty canvas.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-bold text-[10px] mb-1 font-mono">Unchanged Neighbors</span>
+                      <div>Only neighbors within the hop limit remain in the viewport.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-bold text-[10px] mb-1 font-mono">Pristine Connections</span>
+                      <div>All edges not in the active neighborhood are filtered out. Only active connections are shown.</div>
+                    </td>
+                    <td className="p-3.5 border-r border-slate-200 font-medium">
+                      <strong className="text-slate-700">Hops First, then Node Limit</strong>
+                      <div className="text-[10.5px] text-slate-500 mt-0.5 font-bold text-indigo-600">Strictly enforced first</div>
+                    </td>
+                    <td className="p-3.5 bg-indigo-50/10 font-semibold text-rose-600">
+                      Completely Hidden
+                      <div className="text-[10px] text-slate-400 font-normal mt-0.5">All nodes outside the active ego neighborhood are completely filtered and hidden from the viewport.</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {activeTab === "api" && (
           <div className="space-y-6">
             <div>
@@ -257,7 +402,7 @@ export default function App() {
 
             <div className="space-y-4 text-xs text-slate-600">
               <p className="leading-relaxed">
-                The visual React package compiles directly to an inline static single-page viewer containing no external runtime CDN links or package dependencies.
+                The visual React package compiles directly to an inline static single-page viewer containing no external runtime CDN links or package dependencies. 
                 PyPI users invoke this build engine via the Python command-line utility to generate completely offline *.html assets.
               </p>
 

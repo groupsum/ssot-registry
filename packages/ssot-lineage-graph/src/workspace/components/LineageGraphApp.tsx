@@ -1,15 +1,15 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { LineagePayload, LineageNode, LineageEdge, GraphViewMode, GraphFilters, ViewSettings, LineageFamily, OriginKind, Position, NodePositions } from "../types";
+import { LineagePayload, LineageNode, LineageEdge, GraphViewMode, GraphFilters, ViewSettings, LineageFamily, OriginKind, NodePositions } from "../types";
 import { LeftSidebar } from "./LeftSidebar";
 import { LineageGraphCanvas } from "./LineageGraphCanvas";
 import { RightInspector } from "./RightInspector";
 import { computeDeterministicLayout, computeGraphIndices, hasCollapsedUpstreamAncestor, runForceSimulationStep } from "../utils/graphHelpers";
-import { Shield, Settings, Sliders, FileDown, BookOpen, Layers, Network, Zap, Eye, CheckCircle, EyeOff, X, Map as MapIcon } from "lucide-react";
+import { Settings, Sliders, FileDown, BookOpen, Layers, Zap, EyeOff, X, Map as MapIcon } from "lucide-react";
 import { StorybookDocs } from "./StorybookDocs";
 
 interface LineageGraphAppProps {
@@ -48,7 +48,7 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
   const [nodeLimit, setNodeLimit] = useState<number>(300);
   const [egoHops, setEgoHops] = useState<number>(1);
   const [isolateEgo, setIsolateEgo] = useState<boolean>(false);
-
+  
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
   const [focusHistory, setFocusHistory] = useState<string[]>([]);
   const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(new Set());
@@ -121,7 +121,7 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
 
   // Coordinates node positions state driven by layout math or physics simulation
   const [positions, setPositions] = useState<NodePositions>({});
-
+  
   // Real-time animation paint tickers
   const animationFrameRef = useRef<number | null>(null);
   const canvasWidth = 1100;
@@ -222,7 +222,7 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
         const matchesDesc = (node.description || "").toLowerCase().includes(query);
         const matchesPath = (node.path || "").toLowerCase().includes(query);
         const matchesTags = (node.tags || []).some((t) => t.toLowerCase().includes(query));
-
+        
         if (!matchesId && !matchesLabel && !matchesTitle && !matchesDesc && !matchesPath && !matchesTags) {
           return false;
         }
@@ -263,13 +263,64 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
     });
   }, [payload.nodes, filters]);
 
+  // Compute the ego neighborhood in the App context to align deterministic packings and filter display nodes
+  const appEgoNeighborhood = useMemo(() => {
+    const activeFocusNodeId = focusNodeId;
+    if (!activeFocusNodeId) return null;
+    const connected = new Set<string>([activeFocusNodeId]);
+    
+    let currentLevel = new Set<string>([activeFocusNodeId]);
+    const hops = egoHops || 1;
+    const filteredIdsSet = new Set<string>(filteredNodes.map((n) => n.id));
+    
+    for (let h = 0; h < hops; h++) {
+      const nextLevel = new Set<string>();
+      currentLevel.forEach((nodeId) => {
+        // Find visible neighbors (direct or bridged via hidden/filtered nodes)
+        const visitedInSearch = new Set<string>([nodeId]);
+        const queue: { id: string; d: number }[] = [{ id: nodeId, d: 0 }];
+        
+        while (queue.length > 0) {
+          const { id, d } = queue.shift()!;
+          const incoming = indices.incoming.get(id) || [];
+          const outgoing = indices.outgoing.get(id) || [];
+          const neighbors = [...incoming, ...outgoing];
+          
+          for (const neighbor of neighbors) {
+            if (visitedInSearch.has(neighbor)) continue;
+            visitedInSearch.add(neighbor);
+            
+            if (filteredIdsSet.has(neighbor) && !hiddenNodeIds.has(neighbor)) {
+              if (!connected.has(neighbor)) {
+                connected.add(neighbor);
+                nextLevel.add(neighbor);
+              }
+            } else {
+              // It's a hidden/filtered/collapsed node, bridge through it up to depth 3
+              if (d < 3) {
+                queue.push({ id: neighbor, d: d + 1 });
+              }
+            }
+          }
+        }
+      });
+      currentLevel = nextLevel;
+    }
+    
+    return connected;
+  }, [focusNodeId, selectedNodeId, egoHops, filteredNodes, hiddenNodeIds, indices]);
+
   // Compute active nodes being displayed on the canvas, honoring the nodeLimit
   const displayNodes = useMemo(() => {
-    if (nodeLimit && filteredNodes.length > nodeLimit) {
-      return filteredNodes.slice(0, nodeLimit);
+    let baseNodes = filteredNodes;
+    if (appEgoNeighborhood) {
+      baseNodes = filteredNodes.filter((node) => appEgoNeighborhood.has(node.id));
     }
-    return filteredNodes;
-  }, [filteredNodes, nodeLimit]);
+    if (nodeLimit && baseNodes.length > nodeLimit) {
+      return baseNodes.slice(0, nodeLimit);
+    }
+    return baseNodes;
+  }, [filteredNodes, appEgoNeighborhood, nodeLimit]);
 
   const displayPayload = useMemo(() => {
     return {
@@ -362,51 +413,7 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
     return new Set(rawFiltered.map(n => n.id));
   }, [displayNodes, hiddenNodeIds, collapsedNodeIds, indices]);
 
-  // Compute the ego neighborhood in the App context to align deterministic packings
-  const appEgoNeighborhood = useMemo(() => {
-    const activeFocusNodeId = focusNodeId || selectedNodeId;
-    if (!isolateEgo || !activeFocusNodeId) return null;
-    const connected = new Set<string>([activeFocusNodeId]);
 
-    let currentLevel = new Set<string>([activeFocusNodeId]);
-    const hops = egoHops || 1;
-
-    for (let h = 0; h < hops; h++) {
-      const nextLevel = new Set<string>();
-      currentLevel.forEach((nodeId) => {
-        // Find visible neighbors (direct or bridged via hidden/filtered nodes)
-        const visitedInSearch = new Set<string>([nodeId]);
-        const queue: { id: string; d: number }[] = [{ id: nodeId, d: 0 }];
-
-        while (queue.length > 0) {
-          const { id, d } = queue.shift()!;
-          const incoming = indices.incoming.get(id) || [];
-          const outgoing = indices.outgoing.get(id) || [];
-          const neighbors = [...incoming, ...outgoing];
-
-          for (const neighbor of neighbors) {
-            if (visitedInSearch.has(neighbor)) continue;
-            visitedInSearch.add(neighbor);
-
-            if (visibleUnderTree.has(neighbor)) {
-              if (!connected.has(neighbor)) {
-                connected.add(neighbor);
-                nextLevel.add(neighbor);
-              }
-            } else {
-              // It's a hidden/filtered/collapsed node, bridge through it up to depth 3
-              if (d < 3) {
-                queue.push({ id: neighbor, d: d + 1 });
-              }
-            }
-          }
-        }
-      });
-      currentLevel = nextLevel;
-    }
-
-    return connected;
-  }, [isolateEgo, focusNodeId, selectedNodeId, egoHops, visibleUnderTree, indices]);
 
   // Recalculate static deterministic layout positions upon filter/mode/active focus changes
   useEffect(() => {
@@ -480,7 +487,7 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
     if (viewMode === "network" || viewMode === "flow-force") {
       // If dataset is extremely large (MegaScale), bypass the live simulation loop entirely.
       // This keeps the user interface responsive and buttery smooth with static layouts, eliminating intermittent freezing.
-      if (payload.nodes.length > 1500) {
+      if (payload.nodes.length > 5000) {
         return;
       }
 
@@ -574,30 +581,30 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
 
         {/* Storybook / Workspace Tab toggler switches */}
         {showDocumentation && (
-          <div className="flex bg-slate-100 p-1 rounded-md border border-slate-200/50 text-xs font-medium">
-            <button
-              onClick={() => setActiveWorkspaceTab("workspace")}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded transition select-none ${
-                activeWorkspaceTab === "workspace"
-                  ? "bg-white text-slate-800 font-bold shadow-sm"
-                  : "text-slate-500 hover:text-slate-800"
-              }`}
-            >
-              <Layers size={13} />
-              <span>Interactive Graph</span>
-            </button>
-            <button
-              onClick={() => setActiveWorkspaceTab("storybook")}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded transition select-none ${
-                activeWorkspaceTab === "storybook"
-                  ? "bg-white text-slate-800 font-bold shadow-sm"
-                  : "text-slate-500 hover:text-slate-800"
-              }`}
-            >
-              <BookOpen size={13} />
-              <span>Storybook Docs</span>
-            </button>
-          </div>
+        <div className="flex bg-slate-100 p-1 rounded-md border border-slate-200/50 text-xs font-medium">
+          <button
+            onClick={() => setActiveWorkspaceTab("workspace")}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded transition select-none ${
+              activeWorkspaceTab === "workspace"
+                ? "bg-white text-slate-800 font-bold shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            <Layers size={13} />
+            <span>Interactive Graph</span>
+          </button>
+          <button
+            onClick={() => setActiveWorkspaceTab("storybook")}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded transition select-none ${
+              activeWorkspaceTab === "storybook"
+                ? "bg-white text-slate-800 font-bold shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            <BookOpen size={13} />
+            <span>Storybook Docs</span>
+          </button>
+        </div>
         )}
 
         {/* Upper Export toolbar button */}
@@ -723,11 +730,12 @@ export const LineageGraphApp: React.FC<LineageGraphAppProps> = ({
                 highlightedNodeIds={highlightedNodeIds}
                 customGroups={customGroups}
                 isolateEgo={isolateEgo}
+                filters={filters}
               />
 
               {/* Multi-Select Floating Actions Overlay Panel */}
               {selectedNodeIds.size > 1 && (
-                <div
+                <div 
                   id="multi-select-actions-bar"
                   className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur border border-slate-800 text-white px-5 py-3 rounded-full flex items-center gap-4 shadow-2xl z-50 transition-all duration-300"
                 >

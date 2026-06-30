@@ -1,15 +1,15 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import { useState, useEffect } from "react";
 import { LineageGraphApp } from "./components/LineageGraphApp";
-import {
-  mockCoreRegistry,
-  mockDriftRegistry,
-  createLargeRegistry,
-  createSuperLargeRegistry
+import { 
+  mockCoreRegistry, 
+  mockDriftRegistry, 
+  createLargeRegistry, 
+  createSuperLargeRegistry 
 } from "./utils/mockData";
 import { LineagePayload, LineageNode, LineageEdge } from "./types";
 import { computeGraphIndices } from "./utils/graphHelpers";
@@ -20,7 +20,7 @@ export default function App() {
   const [registryKey, setRegistryKey] = useState<string>("canonical");
   const [payload, setPayload] = useState<LineagePayload>(mockCoreRegistry);
   const [precomputedIndices, setPrecomputedIndices] = useState<any>(() => computeGraphIndices(mockCoreRegistry));
-
+  
   // Loading and progressive tracking states
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingStatus, setLoadingStatus] = useState<string>("");
@@ -95,7 +95,7 @@ export default function App() {
         setPayload(largeRegistry);
         setPrecomputedIndices(inds);
         setIsLoading(false);
-      }
+      } 
       else if (registryKey === "superLarge") {
         setLoadingStatus("Structuring HyperScale Stress Test dataset (1,300+ Nodes)...");
         setLoadingPercent(20);
@@ -113,7 +113,7 @@ export default function App() {
         setPayload(superLarge);
         setPrecomputedIndices(inds);
         setIsLoading(false);
-      }
+      } 
       else if (registryKey === "megaScale") {
         // High-Performance IndexedDB Offloading: Check cache first to avoid main-thread allocation and parsing lag!
         try {
@@ -371,7 +371,7 @@ export default function App() {
         // Step 7: Dense cross-dependency ties (generating remaining to hit exactly 1,000,000 edges)
         const targetEdgeCount = 1000000;
         const gap = targetEdgeCount - edges.length;
-
+        
         setLoadingStatus("Synthesizing non-linear dependency lattice mesh...");
         setLoadingPercent(60);
 
@@ -588,7 +588,7 @@ export default function App() {
       {isLoading ? (
         <div id="loader-overlay" className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/95 p-6 md:p-12 text-slate-100">
           <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 flex flex-col items-center">
-
+            
             <div className="relative mb-6">
               <div className="w-16 h-16 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin flex items-center justify-center" />
               <Database className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-400 animate-pulse" size={24} />
@@ -603,7 +603,7 @@ export default function App() {
 
             {/* Micro progress bar */}
             <div className="w-full bg-slate-850 h-2 bg-slate-800 rounded-full overflow-hidden mb-3 relative">
-              <div
+              <div 
                 className="h-full bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-400 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${loadingPercent}%` }}
               />

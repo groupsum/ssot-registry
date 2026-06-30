@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -30,17 +30,12 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
   onToggleCollapse,
 }) => {
   const [copySuccessText, setCopySuccessText] = React.useState<string | null>(null);
-  const nodeById = React.useMemo(() => {
-    const byId = new Map<string, LineageNode>();
-    payload.nodes.forEach((node) => byId.set(node.id, node));
-    return byId;
-  }, [payload.nodes]);
 
   // Parse matched node record
   const selectedNode = React.useMemo(() => {
     if (!selectedNodeId) return null;
-    return nodeById.get(selectedNodeId) || null;
-  }, [selectedNodeId, nodeById]);
+    return payload.nodes.find((n) => n.id === selectedNodeId) || null;
+  }, [selectedNodeId, payload.nodes]);
 
   // Find linked upstream/downstream connections
   const connections = React.useMemo(() => {
@@ -50,17 +45,17 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
 
     payload.edges.forEach((edge) => {
       if (edge.to === selectedNodeId) {
-        const fromNode = nodeById.get(edge.from);
+        const fromNode = payload.nodes.find((n) => n.id === edge.from);
         if (fromNode) incoming.push({ node: fromNode, edge });
       }
       if (edge.from === selectedNodeId) {
-        const toNode = nodeById.get(edge.to);
+        const toNode = payload.nodes.find((n) => n.id === edge.to);
         if (toNode) outgoing.push({ node: toNode, edge });
       }
     });
 
     return { incoming, outgoing };
-  }, [selectedNodeId, nodeById, payload.edges]);
+  }, [selectedNodeId, payload.nodes, payload.edges]);
 
   const triggerCopyText = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -85,7 +80,7 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
         {selectedNode ? (
           <div className="flex flex-col items-center gap-4 flex-1 w-full relative">
             {/* Family indicator dot */}
-            <div
+            <div 
               className={`w-3.5 h-3.5 rounded-full relative group cursor-pointer shadow-sm border border-slate-200 ${FAMILY_COLORS[selectedNode.family]?.bg || "bg-indigo-400"}`}
               onClick={onToggleCollapse}
             >
@@ -190,7 +185,7 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
         </div>
         <div className="flex items-center gap-1">
           <button
-            onClick={onToggleCollapse}
+            onClick={() => onSelectNode(null)}
             className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 rounded-lg transition"
             title="Collapse inspector"
           >
@@ -263,7 +258,7 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
               {selectedNode.status || "active"}
             </span>
           </div>
-
+          
           {selectedNode.tier && (
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-slate-400 font-medium">SLA Tier level</span>

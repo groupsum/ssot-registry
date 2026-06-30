@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -30,7 +30,7 @@ function openDB(): Promise<IDBDatabase> {
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
-
+      
       // Store overall metadata
       if (!db.objectStoreNames.contains("metadata")) {
         db.createObjectStore("metadata", { keyPath: "key" });
@@ -100,7 +100,7 @@ export async function saveDatasetToCache(
   const db = await openDB();
 
   onProgress?.("Serializing dataset structures for persistent storage...", 85);
-
+  
   // 1. Save metadata
   const meta: CachedDatasetMeta = {
     key,
@@ -123,7 +123,7 @@ export async function saveDatasetToCache(
 
   // Write all properties in a single write operation/transaction where possible
   onProgress?.("Writing nodes database tables...", 92);
-
+  
   // Save nodes in bulk or partition
   // For high performance, we can write nodes in a single chunk or multiple chunks. Let's do parts.
   const nodeChunkSize = 25000;
@@ -365,7 +365,7 @@ export async function clearDatasetCache(key: string): Promise<void> {
   const tx = db.transaction(["metadata", "nodes", "edges_chunks", "indices"], "readwrite");
   tx.objectStore("metadata").delete(key);
   tx.objectStore("indices").delete(key);
-
+  
   // Clear chunks
   const nodesStore = tx.objectStore("nodes");
   const nodeChunksCount = 5; // clean up to 5 chunks

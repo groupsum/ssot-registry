@@ -1,11 +1,11 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import { performance } from "perf_hooks";
 import { LineageNode, LineageEdge, LineageFamily, LineagePayload, Position } from "../src/types.js";
-import { computeGraphIndices, traceSubGraph } from "../src/workspace/utils/graphHelpers.js";
+import { computeGraphIndices, traceSubGraph } from "../src/utils/graphHelpers.js";
 
 // Beautiful terminal visual layout colors
 const RESET = "\x1b[0m";
@@ -37,7 +37,7 @@ interface TestSummary {
  */
 function generateMegascaleData(nodeCount: number, edgeCount: number): { nodes: LineageNode[]; edges: LineageEdge[] } {
   const families: LineageFamily[] = ["ADR", "SPEC", "Feature", "Claim", "Test", "Evidence", "Release", "Boundary", "Profile", "Risk", "Issue"];
-
+  
   console.log(`${GRAY}  Generating ${nodeCount.toLocaleString()} nodes...${RESET}`);
   const nodes: LineageNode[] = new Array(nodeCount);
   for (let i = 0; i < nodeCount; i++) {
@@ -62,7 +62,7 @@ function generateMegascaleData(nodeCount: number, edgeCount: number): { nodes: L
     // Connect nodes in proximity or progressive columns to represent realistic pipeline lineages
     const sourceIdx = i % nodeCount;
     // Create density by adding forward clusters
-    const targetOffset = 1 + (Math.floor(i / nodeCount) + (i % 23)) % 100;
+    const targetOffset = 1 + (Math.floor(i / nodeCount) + (i % 23)) % 100; 
     const targetIdx = (sourceIdx + targetOffset) % nodeCount;
 
     edges[i] = {
@@ -136,11 +136,11 @@ function printSummaryTable(summaries: TestSummary[]) {
     `${BOLD}${"BENCHMARK PHASE".padEnd(35)} | ${"AVERAGE TIME".padEnd(15)} | ${"THROUGHPUT (ops/sec)".padEnd(20)} | ${"MIN/MAX MS".padEnd(15)}${RESET}`
   );
   console.log(`${GRAY}-------------------------------------------------------------------------------------------${RESET}`);
-
+  
   summaries.forEach((s) => {
     const avgStr = `${s.averageMs.toFixed(3)} ms`;
-    const throughputStr = s.opsPerSecond >= 100000
-      ? "Ultra-Fast (>100k)"
+    const throughputStr = s.opsPerSecond >= 100000 
+      ? "Ultra-Fast (>100k)" 
       : `${s.opsPerSecond.toFixed(2)} ops/sec`;
     const minMaxStr = `${s.minMs.toFixed(2)}/${s.maxMs.toFixed(2)}`;
     console.log(
@@ -156,30 +156,30 @@ function runBenchmark() {
   const initialMemory = process.memoryUsage().heapUsed;
 
   // --- Phase 1: High Density Payload Gen ---
-  console.log(`[Phase 1/5] ${BOLD}Generating Synthetic Megascale Graph...${RESET}`);
+  console.log(`🚀 [Phase 1/5] ${BOLD}Generating Synthetic Megascale Graph...${RESET}`);
   const genStart = performance.now();
   const payload: LineagePayload = generateMegascaleData(STRESS_NODES_COUNT, STRESS_EDGES_COUNT);
   const genEnd = performance.now();
   const postGenMemory = process.memoryUsage().heapUsed;
 
   const genMemoryMb = (postGenMemory - initialMemory) / 1024 / 1024;
-  console.log(`   ${GREEN}[OK] Generation Finished in ${(genEnd - genStart).toFixed(2)} ms${RESET}`);
-  console.log(`   ${GREEN}[OK] Simulated Payload Active Heap Memory Growth: ${genMemoryMb.toFixed(2)} MB${RESET}\n`);
+  console.log(`   ${GREEN}✓ Generation Finished in ${(genEnd - genStart).toFixed(2)} ms${RESET}`);
+  console.log(`   ${GREEN}✓ Simulated Payload Active Heap Memory Growth: ${genMemoryMb.toFixed(2)} MB${RESET}\n`);
 
   // --- Phase 2: Index Construction Speed ---
-  console.log(`[Phase 2/5] ${BOLD}Benchmarking Index Map Construction (computeGraphIndices)...${RESET}`);
+  console.log(`🚀 [Phase 2/5] ${BOLD}Benchmarking Index Map Construction (computeGraphIndices)...${RESET}`);
   let primaryIndices: any = null;
   const indexSummary = benchmarkPhase("Index Compilation (computeGraphIndices)", () => {
     primaryIndices = computeGraphIndices(payload);
   });
-  console.log(`   ${GREEN}[OK] Average time: ${indexSummary.averageMs.toFixed(2)} ms (${indexSummary.opsPerSecond.toFixed(2)} ops/sec)${RESET}`);
+  console.log(`   ${GREEN}✓ Average time: ${indexSummary.averageMs.toFixed(2)} ms (${indexSummary.opsPerSecond.toFixed(2)} ops/sec)${RESET}`);
   console.log(`   ${GRAY}  - Compiled ${primaryIndices.nodeMap.size.toLocaleString()} nodes to Map lookups.${RESET}`);
   console.log(`   ${GRAY}  - Map indices size (outgoing/incoming): ${primaryIndices.outgoing.size.toLocaleString()} heads.${RESET}`);
 
   // --- Phase 3: Spatial Viewport Bounds Culling & Culling Rate ---
-  console.log(`\n[Phase 3/5] ${BOLD}Creating coordinate layouts & benchmarking Spatial Viewport culling...${RESET}`);
+  console.log(`\n🚀 [Phase 3/5] ${BOLD}Creating coordinate layouts & benchmarking Spatial Viewport culling...${RESET}`);
   const positions = generateMockPositions(payload.nodes);
-
+  
   // A typical viewport bounds search inside viewport (e.g. Canvas coordinate box)
   const bounds = {
     left: 2000,
@@ -200,11 +200,11 @@ function runBenchmark() {
       }
     }
   });
-  console.log(`   ${GREEN}[OK] Average Culling execution: ${cullSummary.averageMs.toFixed(3)} ms (${cullSummary.opsPerSecond.toFixed(1)} ops/sec)${RESET}`);
+  console.log(`   ${GREEN}✓ Average Culling execution: ${cullSummary.averageMs.toFixed(3)} ms (${cullSummary.opsPerSecond.toFixed(1)} ops/sec)${RESET}`);
 
   // --- Phase 4: Full Ancestry and Dependency Upstream/Downstream relative Traversals ---
-  console.log(`\n[Phase 4/5] ${BOLD}Benchmarking High-Throughput Sub-Graph Dependency Traversals...${RESET}`);
-
+  console.log(`\n🚀 [Phase 4/5] ${BOLD}Benchmarking High-Throughput Sub-Graph Dependency Traversals...${RESET}`);
+  
   // Pick some target nodes spread across the graph to trace their lineages
   const testNodeIds = ["node-5", "node-500", "node-12000", "node-45000", "node-85000"];
   const traversalSummary = benchmarkPhase("High-Throughput Sub-Graph Traversals", () => {
@@ -213,12 +213,12 @@ function runBenchmark() {
       traceSubGraph(id, primaryIndices.incoming, primaryIndices.outgoing, 4);
     });
   });
-  console.log(`   ${GREEN}[OK] Average Trace (5 separate nodes, depth=4): ${traversalSummary.averageMs.toFixed(3)} ms (${traversalSummary.opsPerSecond.toFixed(2)} ops/sec)${RESET}`);
+  console.log(`   ${GREEN}✓ Average Trace (5 separate nodes, depth=4): ${traversalSummary.averageMs.toFixed(3)} ms (${traversalSummary.opsPerSecond.toFixed(2)} ops/sec)${RESET}`);
 
   // --- Phase 5: Recursive Collapsed Ancestry Detection (O(Depth) Traversal for Visibility Check) ---
-  console.log(`\n[Phase 5/5] ${BOLD}Evaluating O(Depth) Recursive Collapsed Node Ancestry logic...${RESET}`);
+  console.log(`\n🚀 [Phase 5/5] ${BOLD}Evaluating O(Depth) Recursive Collapsed Node Ancestry logic...${RESET}`);
   const mockCollapsedSet = new Set(["node-0", "node-200", "node-5000", "node-20000", "node-50000"]);
-
+  
   // Check ancestral paths of nodes to check if any of their parents are collapsed (used by render pipelines)
   const hasCollapsedAncestorBenchmark = () => {
     let collapsedCheckHits = 0;
@@ -248,7 +248,7 @@ function runBenchmark() {
   const collapseSummary = benchmarkPhase("Recursive Dependency Parent Resolution checks", () => {
     hasCollapsedAncestorBenchmark();
   });
-  console.log(`   ${GREEN}[OK] Average Collapse Detection Resolution: ${collapseSummary.averageMs.toFixed(3)} ms (${collapseSummary.opsPerSecond.toFixed(2)} ops/sec)${RESET}`);
+  console.log(`   ${GREEN}✓ Average Collapse Detection Resolution: ${collapseSummary.averageMs.toFixed(3)} ms (${collapseSummary.opsPerSecond.toFixed(2)} ops/sec)${RESET}`);
 
   // Print pretty graphical summary table
   printSummaryTable([
@@ -259,7 +259,7 @@ function runBenchmark() {
   ]);
 
   // General evaluation verdict
-  console.log(`${BOLD}[VERDICT] SYSTEM STRESS ASSESSMENT:${RESET}`);
+  console.log(`${BOLD}🏆 SYSTEM STRESS ASSESSMENT VERDICT:${RESET}`);
   const overallAvg = indexSummary.averageMs + cullSummary.averageMs + traversalSummary.averageMs + collapseSummary.averageMs;
   if (overallAvg < 250) {
     console.log(`  ${BOLD}${GREEN}[HIGHLY CONVERSANT]${RESET} JavaScript heap and V8 compiler processed 100k nodes in under ${overallAvg.toFixed(1)}ms execution thread time! Highly responsive and capable of handling production payloads smoothly.`);
