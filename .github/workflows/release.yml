@@ -661,6 +661,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_API_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
