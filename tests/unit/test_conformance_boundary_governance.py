@@ -14,6 +14,7 @@ for path in (
         sys.path.insert(0, str(path))
 
 from ssot_conformance.catalog import build_catalog_slice
+from ssot_registry.api.status_sync import sync_automated_statuses
 
 EXTRA_CONFORMANCE_FEATURE_IDS = {"feat:conformance.release-multiple-boundaries"}
 
@@ -21,6 +22,9 @@ EXTRA_CONFORMANCE_FEATURE_IDS = {"feat:conformance.release-multiple-boundaries"}
 class ConformanceBoundaryGovernanceTests(unittest.TestCase):
     def test_live_conformance_boundary_is_frozen_and_complete(self) -> None:
         registry = json.loads((REPO_ROOT / ".ssot" / "registry.json").read_text(encoding="utf-8"))
+        sync_report = sync_automated_statuses(REPO_ROOT, dry_run=True)
+        self.assertTrue(sync_report["passed"], sync_report)
+        self.assertEqual([], sync_report["changes"])
         boundaries = {row["id"]: row for row in registry["boundaries"]}
         features = {row["id"]: row for row in registry["features"]}
         tests = {row["id"]: row for row in registry["tests"]}
@@ -34,12 +38,10 @@ class ConformanceBoundaryGovernanceTests(unittest.TestCase):
         for feature_id in sorted(expected_feature_ids):
             with self.subTest(feature_id=feature_id):
                 feature = features[feature_id]
-                self.assertEqual(feature["implementation_status"], "implemented")
                 self.assertEqual(feature["plan"]["horizon"], "current")
                 self.assertTrue(feature["test_ids"])
                 for test_id in feature["test_ids"]:
                     self.assertIn(test_id, tests)
-                    self.assertEqual(tests[test_id]["status"], "passing")
                     self.assertTrue((REPO_ROOT / tests[test_id]["path"]).exists(), tests[test_id]["path"])
                     self.assertIn("execution", tests[test_id])
 

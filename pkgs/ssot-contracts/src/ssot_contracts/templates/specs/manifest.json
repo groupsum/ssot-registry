@@ -6,7 +6,7 @@
     "title": "Registry core",
     "filename": "SPEC-0600-registry-core.yaml",
     "target_path": ".ssot/specs/SPEC-0600-registry-core.yaml",
-    "sha256": "c79f0b978890f6171499b54d52c57bb729aba326161f4082970078c4644a7eb5",
+    "sha256": "cefdcaf55ead3c0be3acfae6960df12ead00f04d928ea701ca040da9a5c5b6a6",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -25,7 +25,7 @@
     "title": "CLI",
     "filename": "SPEC-0601-cli.yaml",
     "target_path": ".ssot/specs/SPEC-0601-cli.yaml",
-    "sha256": "76877b7d828fb5afaed77ff6192b87c9c85b14bf52aef64e4266a05ddcc3d450",
+    "sha256": "9f3bdf578655d9ec8e40b6710fe1543a82c74c49527f6cce9c70862be31ed840",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -44,7 +44,7 @@
     "title": "Graph model",
     "filename": "SPEC-0602-graph-model.yaml",
     "target_path": ".ssot/specs/SPEC-0602-graph-model.yaml",
-    "sha256": "7f3cec23e9ef35987abed2425761403846ff12107f09275d208a34b18877691a",
+    "sha256": "b57c2b2a2b328829fe45828020f18d41ca360eee8cc2428aa48c45f5cea79842",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -63,7 +63,7 @@
     "title": "Feature lifecycle",
     "filename": "SPEC-0603-feature-lifecycle.yaml",
     "target_path": ".ssot/specs/SPEC-0603-feature-lifecycle.yaml",
-    "sha256": "95a2d80dfc288f98004c38fe7ae351fd2e9a34fa4c01a85438261e9dfb645a28",
+    "sha256": "41ed1fe9f7d2e8afd6be87dadc34347eae6f54225b989b518ba341955e5400fe",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -82,7 +82,7 @@
     "title": "Claim statuses",
     "filename": "SPEC-0604-claim-statuses.yaml",
     "target_path": ".ssot/specs/SPEC-0604-claim-statuses.yaml",
-    "sha256": "66c7c37854e0aba1c870ed540cc16f0731a0a02d20cf7dda32a5ae4c1485493e",
+    "sha256": "4660f8d811e04d057672c5385fa2c5256eaaf0fd93d5840625dd22ebccfc8249",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -101,7 +101,7 @@
     "title": "Claim tiers",
     "filename": "SPEC-0605-claim-tiers.yaml",
     "target_path": ".ssot/specs/SPEC-0605-claim-tiers.yaml",
-    "sha256": "701944adf0241f2a2500deef79865cb456d49c0d1294867c16babed16f6f55a3",
+    "sha256": "59ac79e739cb3a154a38909d08ab35a50869de2b38dba501631ffdb638dd6681",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -124,7 +124,7 @@
     "title": "Snapshots and reports",
     "filename": "SPEC-0606-snapshots-and-reports.yaml",
     "target_path": ".ssot/specs/SPEC-0606-snapshots-and-reports.yaml",
-    "sha256": "a5f248f3e87188e5b9581737897617e7037fd409329cf4e9c969e5796841af1b",
+    "sha256": "8a84bdc0ec0ab2fa90f2f4e1497fcacfffdc8c498c1b8a5aaa5c8adb4f3c9fb8",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -143,7 +143,7 @@
     "title": "Repository policy",
     "filename": "SPEC-0607-repo-policy.yaml",
     "target_path": ".ssot/specs/SPEC-0607-repo-policy.yaml",
-    "sha256": "eb9a8b0e31af1039fd50a68aee09852952841e0c41d409998b5666b019935d84",
+    "sha256": "ccc3234d7a8efa2e7aad673be750f2e3e1f061cb9e887c2616a8d23e133df436",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -162,7 +162,7 @@
     "title": "Gates and fences",
     "filename": "SPEC-0608-gates-and-fences.yaml",
     "target_path": ".ssot/specs/SPEC-0608-gates-and-fences.yaml",
-    "sha256": "beb4ef7c4c5b23b4e2584f48ebd76031a5a2912274a1f57d8e1c66dc4517a5e5",
+    "sha256": "94ff64f8b5aeab7c3a31dfc4388cc3f433fdf88058e8182f91dac8e2a1d5e077",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -185,7 +185,7 @@
     "title": "ID normalization",
     "filename": "SPEC-0609-id-normalization.yaml",
     "target_path": ".ssot/specs/SPEC-0609-id-normalization.yaml",
-    "sha256": "c455d87054c8bbf1b55c40a251fd9922f8e95f65eeabcf3e2987785e16854abc",
+    "sha256": "795d2d71e91a6392c4aa122aa1bab399c5b45d059269a799f5a3c64307796e65",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -204,7 +204,7 @@
     "title": "File tree",
     "filename": "SPEC-0610-file-tree.yaml",
     "target_path": ".ssot/specs/SPEC-0610-file-tree.yaml",
-    "sha256": "71a8e7258bc6e8c8d63845728be37b41436217384d27588eac7920315484c275",
+    "sha256": "570c867ab2cbfa06cb094ed13d71b47775a101b7e2eada97ab7d813e8adea557",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -223,7 +223,7 @@
     "title": "Planning horizons",
     "filename": "SPEC-0611-planning-horizons.yaml",
     "target_path": ".ssot/specs/SPEC-0611-planning-horizons.yaml",
-    "sha256": "3a8a981fc8d95929a7c937c718c166d4cce7ed4885b65708e0be1ef97e1b237c",
+    "sha256": "a95916cf43b4db66ee0f88803741d4bd14dd1b3d7e6f2de8ab49bc82d70366c8",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -242,7 +242,7 @@
     "title": "Python API",
     "filename": "SPEC-0612-python-api.yaml",
     "target_path": ".ssot/specs/SPEC-0612-python-api.yaml",
-    "sha256": "fd6a1047fa709d327ca7269a27c1a8b6f791e47f6142ec312f928ecc0cfe60d0",
+    "sha256": "4ab72deec24ec1f74fd8ef26bccd5e5ee0825d2ec470ff09df5dc4caae35546b",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -261,7 +261,7 @@
     "title": "SSOT path-length policy",
     "filename": "SPEC-0613-ssot-path-length-policy.yaml",
     "target_path": ".ssot/specs/SPEC-0613-ssot-path-length-policy.yaml",
-    "sha256": "02335c693367079a28bb0507d7e002b3648b7e5c1e1d07e028ee2a4387eb61b2",
+    "sha256": "48fdec83e006c58586b86a0ac3b54148aa0cb983dadb19f86b29ea8716a84076",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -280,7 +280,7 @@
     "title": "Profile evaluation and boundary resolution",
     "filename": "SPEC-0614-profile-evaluation-and-boundary-resolution.yaml",
     "target_path": ".ssot/specs/SPEC-0614-profile-evaluation-and-boundary-resolution.yaml",
-    "sha256": "7c54a7f2f79278e82a68662c958b0c51fa2329d797be17261c13958b38d27e1f",
+    "sha256": "afe2be935cd8918f4a37bcf2b5c0f77050a1081cc59ba3de393c0bdb11a17049",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -299,7 +299,7 @@
     "title": "Typed SPEC-to-ADR linking",
     "filename": "SPEC-0615-typed-spec-to-adr-linking.yaml",
     "target_path": ".ssot/specs/SPEC-0615-typed-spec-to-adr-linking.yaml",
-    "sha256": "9d87ea9bc60ac4b53994f60ed3df460d1420cf433740e0142cb99c0f881e83fc",
+    "sha256": "9dca08b7cab76e8b61384e8a4ef9d799f6fb638aeea0c2a1ca71ff25f2b00caf",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -321,7 +321,7 @@
     "title": "Out-of-bounds implementation disposition",
     "filename": "SPEC-0616-out-of-bounds-implementation-disposition.yaml",
     "target_path": ".ssot/specs/SPEC-0616-out-of-bounds-implementation-disposition.yaml",
-    "sha256": "30c7c4d6bd9d5f78fbaeb929bc52f97dec20e7dd29cbd544cf35e328619bf5a3",
+    "sha256": "88de032b9c4b7c3466001cfa39af1958d7948e8f30abd0484f28b53b97696734",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -343,7 +343,7 @@
     "title": "Feature implementation claim ceilings",
     "filename": "SPEC-0617-feature-implementation-claim-ceilings.yaml",
     "target_path": ".ssot/specs/SPEC-0617-feature-implementation-claim-ceilings.yaml",
-    "sha256": "bb254b8c05f2c113a42d25f6222d6e5cddaaa9dab5ad28ff904d99c02cb5147b",
+    "sha256": "b30790f63af7744f4066ee8c7050702d9af381174e81421d4ca378e19eee9be7",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -366,7 +366,7 @@
     "title": "Local Release Assurance Candidate Scope",
     "filename": "SPEC-0618-local-release-assurance-candidate-scope.yaml",
     "target_path": ".ssot/specs/SPEC-0618-local-release-assurance-candidate-scope.yaml",
-    "sha256": "1f56291a8f6cfe0c554fa6afb7c767f104a39c861c3a5888654fb6dd81faffda",
+    "sha256": "57013df83f5566d2aec6338684d2a1c8aa395325f80bf04d78912ddd398adafd",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -395,7 +395,7 @@
     "title": "Governed Source Snapshot Contract",
     "filename": "SPEC-0619-governed-source-snapshot-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0619-governed-source-snapshot-contract.yaml",
-    "sha256": "a24347c777cb78924c5e34ecee47cf115a1f567e5732a9a8aad76868b97ff38b",
+    "sha256": "03d2e478459ea4897ecb041f8f9fb4ddec343e2fbb8d6427845f21ab355cdd3e",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -424,7 +424,7 @@
     "title": "Local Evidence Bundle Contract",
     "filename": "SPEC-0620-local-evidence-bundle-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0620-local-evidence-bundle-contract.yaml",
-    "sha256": "8fb31bedeb0a2acebbc1455c2cbd40f15ed318cf848c7a4eadf38a85a1fbce55",
+    "sha256": "ed3d944aa41032fca20a84b0bc5d279ab119485e4083ff6334ac6602031a9009",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -453,7 +453,7 @@
     "title": "Output Artifact Manifest Contract",
     "filename": "SPEC-0621-output-artifact-manifest-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0621-output-artifact-manifest-contract.yaml",
-    "sha256": "b8af0f9cd37b930dc011bb4a916a80526a853c0f5643a9193e8606418e71f3ca",
+    "sha256": "2b4d3ce6a043a5ec473e101c1462bdf5eec3c487faf671b87fedd8727bbf2d2d",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -482,7 +482,7 @@
     "title": "Local Release Verification And Gate Contract",
     "filename": "SPEC-0622-local-release-verification-and-gate-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0622-local-release-verification-and-gate-contract.yaml",
-    "sha256": "a4f13a8dd9dfa97c448430cfdfd4f01478efd56a67beab81f277b4fc58f6fac8",
+    "sha256": "91a819c32671428471f67320a0e4a40b2ac58591faa031be808fbaee062f688d",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -513,7 +513,7 @@
     "title": "General rules of interpretation",
     "filename": "SPEC-0623-general-rules-of-interpretation.yaml",
     "target_path": ".ssot/specs/SPEC-0623-general-rules-of-interpretation.yaml",
-    "sha256": "26a356f57380b0d717e2f9f6effda2b0d17eef615530cfba2b3c314d10a3e7c7",
+    "sha256": "adf20a7da2fe7e01b5ba1f86e1092bae4ca9616bff6dad7a34b36b83d4e2869c",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -535,7 +535,7 @@
     "title": "SSOT definitions",
     "filename": "SPEC-0624-ssot-definitions.yaml",
     "target_path": ".ssot/specs/SPEC-0624-ssot-definitions.yaml",
-    "sha256": "c05d38e2d9a76463f1e01bd238acf21dc8e15a2bec2d94c4959572a06fe44d8b",
+    "sha256": "c5a54ad3b6fb9120221c44c8076ca2771140e8b0f2e6dade45ab5ef2a23b2c2d",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -557,7 +557,7 @@
     "title": "Claim Tier Gates",
     "filename": "SPEC-0625-claim-tier-gates.yaml",
     "target_path": ".ssot/specs/SPEC-0625-claim-tier-gates.yaml",
-    "sha256": "b5c184dc6536c2137921841ed7f1098f5131a8e4aa53c920baeb704b45782d39",
+    "sha256": "e2f61f08aa8a1feca23b31b0e078386889dc0510c5342d48b96221c5c495e38e",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -566,7 +566,13 @@
     "status": "draft",
     "supersedes": [],
     "superseded_by": [],
-    "status_notes": [],
+    "status_notes": [
+      {
+        "at": "2026-06-07T13:06:55Z",
+        "note": "Updated claim-tier gates to evaluate evidence-centered proof authority.",
+        "status": "draft"
+      }
+    ],
     "kind": "normative",
     "adr_ids": [
       "adr:0625",
@@ -580,7 +586,7 @@
     "title": "External Validation Evidence",
     "filename": "SPEC-0626-external-validation-evidence.yaml",
     "target_path": ".ssot/specs/SPEC-0626-external-validation-evidence.yaml",
-    "sha256": "2ba8a6fa6e29b7b41efac87c3a8e6a6210a37ae31f20749469bbbc81571faaff",
+    "sha256": "aab54e5187fe9d95e55d497d5a487ec346d3f741cb552370eb108ff49eba83b2",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -858,7 +864,7 @@
     "title": "Proof Graph Assurance Contract",
     "filename": "SPEC-0636-proof-graph-assurance-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0636-proof-graph-assurance-contract.yaml",
-    "sha256": "0782a59c693d0b1691dda7006dd0568b8b437ae88da0ef08cc43e35a7d3f683d",
+    "sha256": "dcf7155e558535eee38ed46a6b587484c31d71dc1d9c08c88655b2497f9f5809",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -872,12 +878,18 @@
         "at": "2026-05-21T05:59:16Z",
         "note": "Created to define the connected proof-graph contract and tier semantics.",
         "status": "draft"
+      },
+      {
+        "at": "2026-06-07T13:07:06Z",
+        "note": "Updated proof-graph assurance contract for evidence-owned proof linkage.",
+        "status": "draft"
       }
     ],
     "kind": "normative",
     "adr_ids": [
       "adr:0634",
-      "adr:0635"
+      "adr:0635",
+      "adr:0640"
     ]
   },
   {
@@ -887,7 +899,7 @@
     "title": "Proof Graph Materialization And Certification Flow",
     "filename": "SPEC-0637-proof-graph-materialization-and-certification-flow.yaml",
     "target_path": ".ssot/specs/SPEC-0637-proof-graph-materialization-and-certification-flow.yaml",
-    "sha256": "6b5698dfad48a2bab8d15c2543accdbad93b2d4a51dd5674c10633ca77f80027",
+    "sha256": "0fcf8e13486f2bacfafa838f65368d2166f331470344e50bf4c72f905178da11",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -901,11 +913,17 @@
         "at": "2026-05-21T05:59:17Z",
         "note": "Created to define supported CLI and MCP proof-graph operator flows.",
         "status": "draft"
+      },
+      {
+        "at": "2026-06-07T13:07:16Z",
+        "note": "Updated operator flow for evidence-centered proof graph materialization and repair.",
+        "status": "draft"
       }
     ],
     "kind": "operational",
     "adr_ids": [
-      "adr:0635"
+      "adr:0635",
+      "adr:0640"
     ]
   },
   {
@@ -915,7 +933,7 @@
     "title": "Feature create default proof scaffold contract",
     "filename": "SPEC-0638-feature-create-default-proof-scaffold-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0638-feature-create-default-proof-scaffold-contract.yaml",
-    "sha256": "a21078a9495e4a3ea591d5c8cfcc09628021d6a6c5e228e426568ceb064c2078",
+    "sha256": "1616c4ef5781acb65e8ac80680fd2b87843d712b704138383fccb6a02d0293aa",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -929,13 +947,17 @@
         "at": "2026-05-24T10:52:03Z",
         "note": "Created to govern default proof-graph scaffolding during feature creation.",
         "status": "draft"
+      },
+      {
+        "at": "2026-06-07T13:07:32Z",
+        "note": "Updated default proof scaffold shape for evidence-centered links.",
+        "status": "draft"
       }
     ],
     "kind": "operational",
     "adr_ids": [
-      "adr:0601",
-      "adr:0627",
-      "adr:0636"
+      "adr:0636",
+      "adr:0640"
     ]
   },
   {
@@ -974,6 +996,7 @@
     "title": "Evidence Centered Proof Link Contract",
     "filename": "SPEC-0640-evidence-centered-proof-link-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0640-evidence-centered-proof-link-contract.yaml",
+    "sha256": "7b721c48c9ba0d5bb4125b14462a0bb0ffe8130dd750007c9b6b06a0f92b1ece",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -984,9 +1007,9 @@
     "superseded_by": [],
     "status_notes": [
       {
-        "status": "draft",
+        "at": "2026-06-07T13:06:35Z",
         "note": "Created to define schema 0.8.0 evidence-centered proof link semantics.",
-        "at": "2026-06-07T13:06:35Z"
+        "status": "draft"
       }
     ],
     "kind": "normative",
@@ -994,8 +1017,29 @@
       "adr:0640",
       "adr:0634",
       "adr:0635",
-      "adr:0603"
-    ],
-    "sha256": "4cbe1b58e2099b456f84ab99c0e44d6af563a07407bb10296c1b0ec3c411c504"
+      "adr:0004"
+    ]
+  },
+  {
+    "id": "spc:0641",
+    "number": 641,
+    "slug": "lineage-graph-html-open-flag-contract",
+    "title": "Lineage graph HTML open flag contract",
+    "filename": "SPEC-0641-lineage-graph-html-open-flag-contract.yaml",
+    "target_path": ".ssot/specs/SPEC-0641-lineage-graph-html-open-flag-contract.yaml",
+    "sha256": "f9d65e955af98faea93abd2d755b4aae8bb68896f9b9ae0145983af7727983b6",
+    "origin": "ssot-origin",
+    "reservation_owner": "ssot-origin",
+    "immutable": true,
+    "minimum_schema_version": "0.8.0",
+    "introduced_in": "0.2.22",
+    "status": "draft",
+    "supersedes": [],
+    "superseded_by": [],
+    "status_notes": [],
+    "kind": "operational",
+    "adr_ids": [
+      "adr:0641"
+    ]
   }
 ]

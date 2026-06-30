@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -10,7 +12,7 @@ from tests.helpers import PROJECT_ROOT, workspace_tempdir
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
 import bump_release_train
-from release_metadata import PackageInfo
+from release_metadata import NpmPackageInfo, PackageInfo
 
 
 def _write_pyproject(path: Path, name: str, version: str, dependencies: list[str]) -> None:
@@ -30,6 +32,58 @@ def _write_pyproject(path: Path, name: str, version: str, dependencies: list[str
         ),
         encoding="utf-8",
     )
+
+
+def _write_npm_fixture(root: Path, version: str) -> dict[str, NpmPackageInfo]:
+    package_path = root / "packages" / "ssot-lineage-graph"
+    package_path.mkdir(parents=True, exist_ok=True)
+    (package_path / "package.json").write_text(
+        json.dumps(
+            {
+                "name": "@ssot-registry/lineage-graph",
+                "version": version,
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (package_path / "package-lock.json").write_text(
+        json.dumps(
+            {
+                "name": "@ssot-registry/lineage-graph",
+                "version": version,
+                "lockfileVersion": 3,
+                "packages": {"": {"name": "@ssot-registry/lineage-graph", "version": version}},
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    manifest_path = root / "pkgs" / "ssot-core" / "src" / "ssot_registry" / "assets" / "lineage_graph"
+    manifest_path.mkdir(parents=True, exist_ok=True)
+    (manifest_path / "manifest.json").write_text(
+        json.dumps(
+            {
+                "package": "@ssot-registry/lineage-graph",
+                "version": version,
+                "js": "ssot-lineage-graph.js",
+                "css": "ssot-lineage-graph.css",
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return {
+        "ssot-lineage-graph": NpmPackageInfo(
+            name="ssot-lineage-graph",
+            package_name="@ssot-registry/lineage-graph",
+            project_path=str(package_path),
+            npm_url="https://example.test/@ssot-registry/lineage-graph",
+        )
+    }
 
 
 class BumpReleaseTrainTests(unittest.TestCase):
@@ -75,9 +129,18 @@ class BumpReleaseTrainTests(unittest.TestCase):
                     workflow=f"publish-{package_name}.yml",
                     pypi_url=f"https://example.test/{package_name}",
                 )
+            npm_package_infos = _write_npm_fixture(root, "0.2.3")
 
-            with patch.object(bump_release_train, "PACKAGE_INFOS", package_infos):
-                changed = bump_release_train.bump_train("all", "finalize", None)
+            original_cwd = Path.cwd()
+            try:
+                os.chdir(root)
+                with (
+                    patch.object(bump_release_train, "PACKAGE_INFOS", package_infos),
+                    patch.object(bump_release_train, "NPM_PACKAGE_INFOS", npm_package_infos),
+                ):
+                    changed = bump_release_train.bump_train("all", "finalize", None)
+            finally:
+                os.chdir(original_cwd)
 
             self.assertEqual(changed, [])
             self.assertIn('version = "0.2.3"', (root / "ssot-contracts" / "pyproject.toml").read_text(encoding="utf-8"))
@@ -127,12 +190,21 @@ class BumpReleaseTrainTests(unittest.TestCase):
                     workflow=f"publish-{package_name}.yml",
                     pypi_url=f"https://example.test/{package_name}",
                 )
+            npm_package_infos = _write_npm_fixture(root, "0.2.3")
 
-            with patch.object(bump_release_train, "PACKAGE_INFOS", package_infos):
-                changed = bump_release_train.bump_train("all", "patch", None)
+            original_cwd = Path.cwd()
+            try:
+                os.chdir(root)
+                with (
+                    patch.object(bump_release_train, "PACKAGE_INFOS", package_infos),
+                    patch.object(bump_release_train, "NPM_PACKAGE_INFOS", npm_package_infos),
+                ):
+                    changed = bump_release_train.bump_train("all", "patch", None)
+            finally:
+                os.chdir(original_cwd)
 
             changed_paths = {path.as_posix() for path in changed}
-            self.assertEqual(len(changed_paths), 9)
+            self.assertEqual(len(changed_paths), 12)
 
             pack_contracts_text = (root / "ssot-pack-contracts" / "pyproject.toml").read_text(encoding="utf-8")
             views_text = (root / "ssot-views" / "pyproject.toml").read_text(encoding="utf-8")
@@ -173,6 +245,23 @@ class BumpReleaseTrainTests(unittest.TestCase):
             self.assertIn('version = "0.1.1.dev1"', tui_text)
             self.assertIn('ssot-contracts>=0.2.4.dev1,<0.3.0', tui_text)
             self.assertIn('ssot-core>=0.2.4.dev1,<0.3.0', tui_text)
+            self.assertIn(
+                '"version": "0.2.4-dev.1"',
+                (root / "packages" / "ssot-lineage-graph" / "package.json").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                '"version": "0.2.4-dev.1"',
+                (
+                    root
+                    / "pkgs"
+                    / "ssot-core"
+                    / "src"
+                    / "ssot_registry"
+                    / "assets"
+                    / "lineage_graph"
+                    / "manifest.json"
+                ).read_text(encoding="utf-8"),
+            )
 
     def test_pack_contracts_bump_cannot_lead_registry_release_number(self) -> None:
         with workspace_tempdir() as temp_dir:
