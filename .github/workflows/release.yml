@@ -229,6 +229,9 @@ jobs:
         run: npm run build
         working-directory: packages/ssot-lineage-graph
 
+      - name: Verify vendored lineage graph assets are current
+        run: git diff --exit-code -- pkgs/ssot-core/src/ssot_registry/assets/lineage_graph
+
       - name: Prepare npm distribution directory
         run: mkdir -p release-npm-dist
 

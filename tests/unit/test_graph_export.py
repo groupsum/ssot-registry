@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from ssot_registry.api import export_graph, export_lineage_graph
+from ssot_registry.api.graph import _lineage_payload
 from ssot_registry.graph.export_dot import build_graph_dot
 from ssot_views.graph import build_graph_json
 from tests.helpers import temp_repo_from_fixture
@@ -58,6 +59,54 @@ class GraphExportTests(unittest.TestCase):
         self.assertNotIn("<script src=", html)
         self.assertNotIn('<link rel="stylesheet"', html)
         self.assertNotIn('<link rel="modulepreload"', html)
+
+    def test_lineage_payload_matches_current_react_viewer_schema(self) -> None:
+        registry = {
+            "repo": {"id": "repo:demo", "name": "Demo", "version": "1.2.3", "repository_url": "https://example.invalid/repo"},
+            "schema_version": "1.0",
+            "features": [
+                {
+                    "id": "feat:demo",
+                    "title": "Demo feature",
+                    "description": "Feature description",
+                    "status": "active",
+                    "origin": "repo-local",
+                    "path": "src/demo.py",
+                    "tags": ["graph"],
+                    "pack_ids": ["pack:demo"],
+                    "plan": {"target_claim_tier": "T2"},
+                    "spec_ids": ["spc:demo"],
+                }
+            ],
+            "specs": [{"id": "spc:demo", "title": "Demo spec", "status": "active"}],
+            "claims": [],
+            "adrs": [],
+            "tests": [],
+            "evidence": [],
+            "issues": [],
+            "risks": [],
+            "boundaries": [],
+            "releases": [],
+            "profiles": [],
+        }
+
+        payload = _lineage_payload(registry)
+        feature = next(node for node in payload["nodes"] if node["id"] == "feat:demo")
+        edge = next(edge for edge in payload["edges"] if edge["from"] == "feat:demo" and edge["to"] == "spc:demo")
+
+        self.assertEqual(payload["schemaVersion"], "2")
+        self.assertEqual(payload["registry"]["schemaVersion"], "1.0")
+        self.assertEqual(payload["package"]["repositoryUrl"], "https://example.invalid/repo")
+        self.assertEqual(feature["title"], "Demo feature")
+        self.assertEqual(feature["description"], "Feature description")
+        self.assertEqual(feature["originKind"], "repo-local")
+        self.assertEqual(feature["source"]["path"], "src/demo.py")
+        self.assertEqual(feature["tags"], ["graph"])
+        self.assertEqual(feature["packs"], ["pack:demo"])
+        self.assertEqual(feature["proof"]["claimTier"], "T2")
+        self.assertEqual(feature["metrics"]["downstreamCount"], 1)
+        self.assertEqual(edge["status"], "active")
+        self.assertEqual(edge["originKind"], "direct")
 
     def test_dot_export_escapes_newlines_in_ids(self) -> None:
         registry = {
