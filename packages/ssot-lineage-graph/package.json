@@ -3,6 +3,11 @@
   "version": "0.2.25-dev.5",
   "description": "Portable React viewer for SSOT lineage graph payloads.",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/groupsum/ssot-registry",
+    "directory": "packages/ssot-lineage-graph"
+  },
   "type": "module",
   "main": "./dist/lineage-graph.cjs",
   "module": "./dist/lineage-graph.js",
