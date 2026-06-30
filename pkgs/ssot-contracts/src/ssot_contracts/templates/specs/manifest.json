@@ -996,7 +996,7 @@
     "title": "Evidence Centered Proof Link Contract",
     "filename": "SPEC-0640-evidence-centered-proof-link-contract.yaml",
     "target_path": ".ssot/specs/SPEC-0640-evidence-centered-proof-link-contract.yaml",
-    "sha256": "7b721c48c9ba0d5bb4125b14462a0bb0ffe8130dd750007c9b6b06a0f92b1ece",
+    "sha256": "b05f81758d6c76ff2d66a455a19a29781b60f00fe1483c975169764b736d407b",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
@@ -1016,8 +1016,7 @@
     "adr_ids": [
       "adr:0640",
       "adr:0634",
-      "adr:0635",
-      "adr:0004"
+      "adr:0635"
     ]
   },
   {
