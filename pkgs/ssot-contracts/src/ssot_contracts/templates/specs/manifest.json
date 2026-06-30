@@ -557,7 +557,7 @@
     "title": "Claim Tier Gates",
     "filename": "SPEC-0625-claim-tier-gates.yaml",
     "target_path": ".ssot/specs/SPEC-0625-claim-tier-gates.yaml",
-    "sha256": "e2f61f08aa8a1feca23b31b0e078386889dc0510c5342d48b96221c5c495e38e",
+    "sha256": "c839aa96ab3172f2904e9e3b7c36bfce2b6dfa9f134f69053465bfa399fea838",
     "origin": "ssot-origin",
     "reservation_owner": "ssot-origin",
     "immutable": true,
