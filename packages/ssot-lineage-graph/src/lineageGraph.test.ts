@@ -185,6 +185,6 @@ describe("viewer behavior contracts", () => {
 
     expect(workspace).toContain("nodes: displayNodes");
     expect(workspace).not.toContain("edges: payload.edges.filter");
-    expect(workspace).toContain("computeDeterministicLayout(\n        payload.nodes");
+    expect(workspace).toMatch(/computeDeterministicLayout\(\s+payload\.nodes/);
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "ssot-cli",
-  "version": "0.1.0",
+  "version": "0.1.0+codex.20260713050715",
   "description": "Operate SSOT repositories through a local uv virtual environment using the PyPI-published ssot-registry CLI aliases.",
   "author": {
     "name": "Swarmauri",
