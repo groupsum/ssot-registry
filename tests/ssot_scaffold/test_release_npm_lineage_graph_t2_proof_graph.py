@@ -17,5 +17,10 @@ def test_release_workflows_build_test_pack_and_publish_lineage_graph_npm_package
     assert "NODE_AUTH_TOKEN: ${{ secrets.NPM_API_TOKEN }}" not in release
     assert "id-token: write" in release
     assert "id-token: write" in prepare
+    assert "Check npm version availability" in release
+    assert "steps.npm_version.outputs.available == 'true'" in release
+    assert 'TAG="@ssot-registry/lineage-graph@$PACKAGE_VERSION"' in release
+    assert "gh release create" in release
+    assert "release-npm-dist/*.tgz" in release
     assert "publish_to_npm" in release
     assert "ssot-lineage-graph" in prepare

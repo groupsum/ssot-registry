@@ -662,7 +662,7 @@ jobs:
     if: ${{ always() && needs.build-npm-distributions.result == 'success' && contains(fromJSON(needs.validate.outputs.npm_targets), 'ssot-lineage-graph') }}
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     steps:
       - name: Checkout
@@ -685,7 +685,41 @@ jobs:
         run: npm run build
         working-directory: packages/ssot-lineage-graph
 
+      - name: Check npm version availability
+        id: npm_version
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "@ssot-registry/lineage-graph@$VERSION" version >/dev/null 2>&1; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: packages/ssot-lineage-graph
+
       - name: Publish lineage graph package to npm
-        if: ${{ inputs.publish_to_npm }}
+        if: ${{ inputs.publish_to_npm && steps.npm_version.outputs.available == 'true' }}
         run: npm publish --access public --provenance
         working-directory: packages/ssot-lineage-graph
+
+      - name: Download npm distribution
+        if: ${{ inputs.create_github_release }}
+        uses: actions/download-artifact@v6
+        with:
+          name: npm-distributions
+          path: release-npm-dist
+
+      - name: Create GitHub Release
+        if: ${{ inputs.create_github_release }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE_VERSION: ${{ steps.npm_version.outputs.version }}
+        run: |
+          TAG="@ssot-registry/lineage-graph@$PACKAGE_VERSION"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" release-npm-dist/*.tgz --clobber
+          else
+            gh release create "$TAG" release-npm-dist/*.tgz --target "${{ inputs.ref_name }}" --title "$TAG" --generate-notes
+          fi
