@@ -36,8 +36,8 @@ def scaffold_target_claim_wiring(repo_root: str | Path, feature_id: str, target_
     claim_id = f"clm:{slug}.{tier_slug}"
     test_id = f"tst:{slug}.{tier_slug}"
     evidence_id = f"evd:{slug}.{tier_slug}"
-    test_path = f"tests/ssot_scaffold/test_{slug.replace('.', '_').replace('-', '_')}_{tier_slug}.py"
-    evidence_path = f".ssot/evidence/{slug}/{tier_slug}.json"
+    test_path = f"tests/planned/test_{slug.replace('.', '_').replace('-', '_')}_{tier_slug}.py"
+    evidence_path = f".ssot/evidence/planned/{slug}/{tier_slug}.json"
 
     created: dict[str, list[str]] = {"claims": [], "tests": [], "evidence": [], "files": []}
 
@@ -68,7 +68,7 @@ def scaffold_target_claim_wiring(repo_root: str | Path, feature_id: str, target_
             {
                 "id": test_id,
                 "title": f"{feature.get('title', feature_id)} {target_tier} scaffold test",
-                "status": "passing",
+                "status": "planned",
                 "kind": "pytest",
                 "path": test_path,
                 "origin": feature.get("origin", "repo-local"),
@@ -112,7 +112,7 @@ def scaffold_target_claim_wiring(repo_root: str | Path, feature_id: str, target_
     if not test_file.exists():
         test_file.parent.mkdir(parents=True, exist_ok=True)
         test_file.write_text(
-            "def test_ssot_scaffold_placeholder():\n    assert True\n",
+            "import pytest\n\n\ndef test_ssot_scaffold_placeholder():\n    pytest.skip(\"planned SSOT proof scaffold\")\n",
             encoding="utf-8",
         )
         created["files"].append(test_path)

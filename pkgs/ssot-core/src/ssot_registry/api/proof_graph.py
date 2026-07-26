@@ -106,6 +106,55 @@ def _write_evidence_artifact(
     )
 
 
+def _remove_planned_scaffold_evidence(
+    registry: dict[str, Any],
+    feature: dict[str, Any],
+    claim_lookup: dict[str, dict[str, Any]],
+    test_lookup: dict[str, dict[str, Any]],
+    evidence_lookup: dict[str, dict[str, Any]],
+) -> None:
+    """Remove non-proof scaffolds once executable proof has passed."""
+
+    feature_claim_ids = set(feature.get("claim_ids", []))
+    feature_test_ids = set(feature.get("test_ids", []))
+    removed_ids = {
+        evidence_id
+        for evidence_id, evidence in evidence_lookup.items()
+        if evidence.get("kind") == "scaffold"
+        and evidence.get("status") == "planned"
+        and (
+            feature_claim_ids.intersection(evidence.get("claim_ids", []))
+            or feature_test_ids.intersection(evidence.get("test_ids", []))
+        )
+    }
+    if not removed_ids:
+        return
+
+    registry["evidence"] = [
+        evidence
+        for evidence in registry.get("evidence", [])
+        if evidence.get("id") not in removed_ids
+    ]
+    for evidence_id in removed_ids:
+        evidence_lookup.pop(evidence_id, None)
+    for claim_id in feature_claim_ids:
+        claim = claim_lookup.get(claim_id)
+        if claim is not None:
+            claim["evidence_ids"] = [
+                evidence_id
+                for evidence_id in _ensure_list(claim, "evidence_ids")
+                if evidence_id not in removed_ids
+            ]
+    for test_id in feature_test_ids:
+        test = test_lookup.get(test_id)
+        if test is not None:
+            test["evidence_ids"] = [
+                evidence_id
+                for evidence_id in _ensure_list(test, "evidence_ids")
+                if evidence_id not in removed_ids
+            ]
+
+
 def _ensure_t1_evidence_row(
     registry: dict[str, Any],
     feature: dict[str, Any],
@@ -132,15 +181,23 @@ def _ensure_t1_evidence_row(
         registry.setdefault("evidence", []).append(row)
         evidence_lookup[evidence_id] = row
 
-    t1_claim = _claim_for_tier(feature, claim_lookup, "T1")
-    assert t1_claim is not None
+    source_claims = [
+        claim
+        for claim in _claims_for_feature(feature, claim_lookup)
+        if CLAIM_TIER_RANK.get(str(claim.get("tier")), -1) <= CLAIM_TIER_RANK["T1"]
+    ]
+    assert _claim_for_tier(feature, claim_lookup, "T1") is not None
     row["status"] = "passed"
     row["kind"] = "bundle"
     row["tier"] = "T1"
-    row["claim_ids"] = _dedupe_preserve([t1_claim["id"], *_ensure_list(row, "claim_ids")])
+    row["claim_ids"] = _dedupe_preserve(
+        [claim["id"] for claim in source_claims] + _ensure_list(row, "claim_ids")
+    )
     row["test_ids"] = _dedupe_preserve([*linked_test_ids, *_ensure_list(row, "test_ids")])
-    _ensure_list(t1_claim, "evidence_ids")
-    t1_claim["evidence_ids"] = _dedupe_preserve([row["id"], *t1_claim["evidence_ids"]])
+    for claim in source_claims:
+        claim["evidence_ids"] = _dedupe_preserve(
+            [row["id"], *_ensure_list(claim, "evidence_ids")]
+        )
     for test_id in linked_test_ids:
         test = _row_lookup(registry, "tests")[test_id]
         test["evidence_ids"] = _dedupe_preserve([row["id"], *_ensure_list(test, "evidence_ids")])
@@ -159,7 +216,6 @@ def _ensure_t3_evidence_row(
     robustness_dimensions: list[str],
     source_evidence_id: str,
 ) -> dict[str, Any]:
-    release_claim = _release_claim_for_feature(feature, claim_lookup)
     slug = _safe_slug(str(feature["id"]))
     evidence_id = f"evd:t3.{slug}.proof-graph"
     row = evidence_lookup.get(evidence_id)
@@ -179,10 +235,17 @@ def _ensure_t3_evidence_row(
         registry.setdefault("evidence", []).append(row)
         evidence_lookup[evidence_id] = row
 
+    robustness_claims = [
+        claim
+        for claim in _claims_for_feature(feature, claim_lookup)
+        if CLAIM_TIER_RANK.get(str(claim.get("tier")), -1) >= CLAIM_TIER_RANK["T2"]
+    ]
     row["status"] = "passed"
     row["kind"] = "bundle"
     row["tier"] = "T3"
-    row["claim_ids"] = _dedupe_preserve([release_claim["id"], *_ensure_list(row, "claim_ids")])
+    row["claim_ids"] = _dedupe_preserve(
+        [claim["id"] for claim in robustness_claims] + _ensure_list(row, "claim_ids")
+    )
     row["test_ids"] = _dedupe_preserve([*linked_test_ids, *_ensure_list(row, "test_ids")])
     row["robustness_dimensions"] = list(dict.fromkeys(robustness_dimensions))
     row["source_evidence_ids"] = _dedupe_preserve([source_evidence_id, *_ensure_list(row, "source_evidence_ids")])
@@ -191,8 +254,10 @@ def _ensure_t3_evidence_row(
         "boundary_id": boundary_id,
         "boundary_ids": [boundary_id],
     }
-    _ensure_list(release_claim, "evidence_ids")
-    release_claim["evidence_ids"] = _dedupe_preserve([row["id"], *release_claim["evidence_ids"]])
+    for claim in robustness_claims:
+        claim["evidence_ids"] = _dedupe_preserve(
+            [row["id"], *_ensure_list(claim, "evidence_ids")]
+        )
     for test_id in linked_test_ids:
         test = _row_lookup(registry, "tests")[test_id]
         test["evidence_ids"] = _dedupe_preserve([row["id"], *_ensure_list(test, "evidence_ids")])
@@ -301,6 +366,17 @@ def certify_feature_proof_graphs(
     if not selected_test_ids:
         raise ValidationError("Proof-graph certification flow requires linked tests")
     selected_tests = [test_lookup[test_id] for test_id in selected_test_ids]
+    unresolved_tests = [
+        test["id"]
+        for test in selected_tests
+        if test.get("status") == "planned"
+        or str(test.get("path", "")).replace("\\", "/").startswith("tests/planned/")
+    ]
+    if unresolved_tests:
+        raise ValidationError(
+            "Proof-graph certification flow requires executable tests; unresolved planned tests: "
+            + ", ".join(unresolved_tests)
+        )
 
     test_run = run_resolved_test_rows(
         repo_root,
@@ -323,6 +399,13 @@ def certify_feature_proof_graphs(
         if plan.get("horizon") not in {"current", "explicit"}:
             plan["horizon"] = "current"
         linked_test_ids = [test_id for test_id in feature.get("test_ids", []) if test_id in test_lookup]
+        _remove_planned_scaffold_evidence(
+            registry,
+            feature,
+            claim_lookup,
+            test_lookup,
+            evidence_lookup,
+        )
         t1_evidence = _ensure_t1_evidence_row(registry, feature, claim_lookup, evidence_lookup, linked_test_ids)
         t3_evidence = _ensure_t3_evidence_row(
             registry,

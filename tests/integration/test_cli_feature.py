@@ -4,6 +4,8 @@ import json
 import unittest
 from pathlib import Path
 
+from ssot_registry.util.jsonio import stable_json_dumps
+
 from tests.helpers import run_cli, temp_repo_from_fixture
 
 
@@ -400,6 +402,7 @@ class CliFeatureTests(unittest.TestCase):
         self.addCleanup(temp_dir.cleanup)
         repo = Path(temp_dir.name) / "repo"
 
+        scaffold_payloads: list[dict[str, object]] = []
         for feature_id, title in (
             ("feat:cli.proof-graph-one", "CLI proof graph one"),
             ("feat:cli.proof-graph-two", "CLI proof graph two"),
@@ -423,12 +426,39 @@ class CliFeatureTests(unittest.TestCase):
                 "--auto-scaffold-proof-graph",
             )
             self.assertEqual(create.returncode, 0, create.stderr)
-            payload = json.loads(create.stdout)
-            test_path = repo / payload["scaffolded"]["test_path"]
-            test_path.write_text(
-                "def test_ssot_scaffold_placeholder():\n    assert True\n",
-                encoding="utf-8",
-            )
+            scaffold_payloads.append(json.loads(create.stdout))
+
+        registry_path = repo / ".ssot" / "registry.json"
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+        test_lookup = {row["id"]: row for row in registry["tests"]}
+        for scaffolded_payload in scaffold_payloads:
+            scaffolded = scaffolded_payload["scaffolded"]
+            for test_id, planned_path in zip(
+                scaffolded["test_ids"],
+                scaffolded["test_paths"],
+                strict=True,
+            ):
+                executable_path = planned_path.replace("tests/planned/", "tests/ssot_proof/")
+                target = repo / executable_path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(
+                    "def test_executable_proof():\n    assert 2 + 2 == 4\n",
+                    encoding="utf-8",
+                )
+                test = test_lookup[test_id]
+                test["status"] = "passing"
+                test["path"] = executable_path
+                test["execution"]["argv"] = [
+                    "python",
+                    "-m",
+                    "pytest",
+                    executable_path,
+                    "-q",
+                ]
+        registry_path.write_text(stable_json_dumps(registry), encoding="utf-8")
+
+        validation = run_cli("validate", str(repo))
+        self.assertEqual(validation.returncode, 0, validation.stderr or validation.stdout)
 
         certify = run_cli(
             "feature",
@@ -452,7 +482,7 @@ class CliFeatureTests(unittest.TestCase):
             "--promote",
             "--publish",
         )
-        self.assertEqual(certify.returncode, 0, certify.stderr)
+        self.assertEqual(certify.returncode, 0, certify.stderr or certify.stdout)
         payload = json.loads(certify.stdout)
         self.assertTrue(payload["passed"], payload)
         self.assertEqual(payload["boundary_id"], "bnd:cli.proof-graph")

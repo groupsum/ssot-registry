@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from ssot_registry.util.jsonio import stable_json_dumps
+
 from tests.helpers import run_cli, temp_repo_from_fixture
 
 
@@ -26,7 +27,12 @@ class CliStatusSyncTests(unittest.TestCase):
         (repo / test_path).write_text("def test_feature_claim_ceiling():\n    assert True\n", encoding="utf-8")
         evidence_target = repo / evidence_path
         evidence_target.parent.mkdir(parents=True, exist_ok=True)
-        evidence_target.write_text("{}", encoding="utf-8")
+        evidence_target.write_text(
+            stable_json_dumps(
+                {"passed": True, "summary": {"failed": 0, "passed": 1, "total": 1}}
+            ),
+            encoding="utf-8",
+        )
 
         registry["features"].append(
             {
@@ -248,6 +254,57 @@ class CliStatusSyncTests(unittest.TestCase):
         self.assertEqual(test["status"], "planned")
         self.assertEqual(evidence["status"], "planned")
 
+    def test_registry_sync_statuses_honors_planned_scaffold_payload(self) -> None:
+        temp_dir = temp_repo_from_fixture("repo_valid")
+        self.addCleanup(temp_dir.cleanup)
+        repo = Path(temp_dir.name) / "repo"
+
+        create = run_cli(
+            "feature",
+            "create",
+            str(repo),
+            "--id",
+            "feat:planned.payload",
+            "--title",
+            "Planned payload",
+            "--description",
+            "Generated proof scaffolds must not self-certify.",
+            "--implementation-status",
+            "partial",
+            "--horizon",
+            "current",
+            "--claim-tier",
+            "T2",
+        )
+        self.assertEqual(create.returncode, 0, create.stderr)
+        payload = json.loads(create.stdout)
+
+        dry_run = run_cli("registry", "sync-statuses", str(repo), "--dry-run")
+        self.assertEqual(dry_run.returncode, 0, dry_run.stderr)
+        changes = json.loads(dry_run.stdout)["changes"]
+        scaffold_ids = {
+            payload["scaffolded"]["evidence_id"],
+            *payload["scaffolded"]["test_ids"],
+        }
+        self.assertFalse(
+            any(
+                change["id"] in scaffold_ids
+                and change["after"] in {"passed", "passing", "certified"}
+                for change in changes
+            ),
+            changes,
+        )
+
+        evidence = json.loads(
+            (repo / payload["scaffolded"]["evidence_path"]).read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(evidence["status"], "planned")
+        for test_path in payload["scaffolded"]["test_paths"]:
+            content = (repo / test_path).read_text(encoding="utf-8")
+            self.assertIn("pytest.skip", content)
+            self.assertNotIn("assert True", content)
     def test_registry_sync_statuses_caps_t0_feature_at_partial(self) -> None:
         temp_dir = temp_repo_from_fixture("repo_valid")
         self.addCleanup(temp_dir.cleanup)

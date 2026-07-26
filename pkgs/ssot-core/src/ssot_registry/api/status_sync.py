@@ -78,7 +78,7 @@ def _sync_evidence(registry: dict[str, Any], repo_root: Path) -> list[dict[str, 
     for evidence in registry.get("evidence", []):
         evidence_id = evidence["id"]
         evidence_path = repo_root / evidence["path"]
-        reason = "evidence artifact exists and linked claim tiers are satisfied"
+        reason = "evidence artifact explicitly reports a successful outcome"
         status = "passed"
         if _is_planned_path(evidence.get("path"), "/evidence/planned/"):
             status = "planned"
@@ -86,7 +86,10 @@ def _sync_evidence(registry: dict[str, Any], repo_root: Path) -> list[dict[str, 
         elif not evidence_path.exists():
             status = "planned"
             reason = "evidence artifact path does not exist"
-        elif _evidence_payload_failed(evidence_path):
+        elif (outcome := _evidence_payload_outcome(evidence_path)) == "planned":
+            status = "planned"
+            reason = "evidence artifact explicitly remains planned"
+        elif outcome == "failed":
             status = "failed"
             reason = "evidence artifact reports failed test outcomes"
         elif _missing_refs(evidence, "claim_ids", index["claims"]) or _missing_refs(evidence, "test_ids", index["tests"]):
@@ -101,6 +104,9 @@ def _sync_evidence(registry: dict[str, Any], repo_root: Path) -> list[dict[str, 
             if tier_failures:
                 status = "collected"
                 reason = "evidence artifact exists but is below at least one linked claim tier"
+            elif outcome != "passed":
+                status = "collected"
+                reason = "evidence artifact exists without an explicit successful outcome"
 
         change = _change("evidence", evidence_id, "status", evidence.get("status"), status, reason)
         if change is not None:
@@ -109,21 +115,48 @@ def _sync_evidence(registry: dict[str, Any], repo_root: Path) -> list[dict[str, 
     return changes
 
 
-def _evidence_payload_failed(path: Path) -> bool:
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
-        return False
-    if not isinstance(payload, dict):
-        return False
-    if payload.get("passed") is False:
-        return True
-    summary = payload.get("summary")
-    if isinstance(summary, dict) and isinstance(summary.get("failed"), int) and summary["failed"] > 0:
-        return True
-    cases = payload.get("cases")
-    return isinstance(cases, list) and any(isinstance(case, dict) and case.get("outcome") == "failed" for case in cases)
+def _evidence_payload_outcome(path: Path) -> str:
+    """Return planned, passed, failed, or unknown for an evidence artifact.
 
+    File existence proves collection, not successful execution. Generated
+    scaffold artifacts therefore stay planned until a runner replaces them.
+    """
+
+    payload_path = path / "manifest.json" if path.is_dir() else path
+    try:
+        payload = json.loads(payload_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        return "unknown"
+    if not isinstance(payload, dict):
+        return "unknown"
+    declared_status = payload.get("status")
+    if declared_status in {"planned", "collected", "stale"}:
+        return "planned" if declared_status == "planned" else "unknown"
+    if declared_status == "failed" or payload.get("passed") is False:
+        return "failed"
+    if declared_status == "passed" or payload.get("passed") is True:
+        return "passed"
+    summary = payload.get("summary")
+    if isinstance(summary, dict):
+        failed = summary.get("failed")
+        if isinstance(failed, int) and failed > 0:
+            return "failed"
+        passed = summary.get("passed")
+        total = summary.get("total")
+        if isinstance(passed, int) and passed > 0 and (
+            not isinstance(total, int) or total > 0
+        ):
+            return "passed"
+    cases = payload.get("cases")
+    if isinstance(cases, list) and cases:
+        outcomes = [
+            case.get("outcome") for case in cases if isinstance(case, dict)
+        ]
+        if any(outcome == "failed" for outcome in outcomes):
+            return "failed"
+        if outcomes and all(outcome == "passed" for outcome in outcomes):
+            return "passed"
+    return "unknown"
 
 def _sync_tests(registry: dict[str, Any], repo_root: Path) -> list[dict[str, object]]:
     index = _build_current_index(registry)

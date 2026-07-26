@@ -234,11 +234,11 @@ def create_feature_with_scaffolded_proof_graph(path: str | Path, row: dict[str, 
     tiers = _tier_sequence(target_tier)
     slug = _safe_slug(entity_id)
     evidence_id = f"evd:{target_tier.lower()}.{slug}.proof-graph"
-    evidence_path = f".ssot/evidence/{slug}/proof-graph-{target_tier.lower()}.json"
+    evidence_path = f".ssot/evidence/planned/{slug}/proof-graph-{target_tier.lower()}.json"
     claim_ids = [f"clm:{slug}.{tier.lower()}" for tier in tiers]
     test_ids = [f"tst:pytest.{slug}.{tier.lower()}.proof-graph" for tier in tiers]
     test_path_by_tier = {
-        tier: f"tests/ssot_scaffold/test_{slug.replace('.', '_').replace('-', '_')}_{tier.lower()}_proof_graph.py"
+        tier: f"tests/planned/test_{slug.replace('.', '_').replace('-', '_')}_{tier.lower()}_proof_graph.py"
         for tier in tiers
     }
 
@@ -315,7 +315,7 @@ def create_feature_with_scaffolded_proof_graph(path: str | Path, row: dict[str, 
     for test_path in test_path_by_tier.values():
         _ensure_scaffold_file(
             repo_root / test_path,
-            "def test_ssot_scaffold_placeholder():\n    assert True\n",
+            "import pytest\n\n\ndef test_ssot_scaffold_placeholder():\n    pytest.skip(\"planned SSOT proof scaffold\")\n",
         )
     _ensure_scaffold_file(
         repo_root / evidence_path,
