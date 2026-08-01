@@ -70,6 +70,37 @@ class CliReleaseSurfaceTests(unittest.TestCase):
         ids = {row["id"] for row in list_payload}
         self.assertIn("rel:9.9.9", ids)
 
+        catalog_result = run_cli(
+            "release",
+            "catalog",
+            str(repo),
+            "--release-ids",
+            "rel:1.2.0",
+            "rel:9.9.9",
+        )
+        self.assertEqual(catalog_result.returncode, 0, catalog_result.stderr)
+        catalog_payload = json.loads(catalog_result.stdout)
+        self.assertEqual(catalog_payload["schema_version"], 1)
+        self.assertRegex(catalog_payload["catalog_digest"], r"^sha256:[a-f0-9]{64}$")
+        self.assertEqual(
+            [release["id"] for release in catalog_payload["releases"]],
+            ["rel:1.2.0", "rel:9.9.9"],
+        )
+        self.assertEqual(catalog_payload["releases"][0]["status"], "candidate")
+        self.assertEqual(catalog_payload["releases"][1]["status"], "draft")
+
+        status_gate = run_cli(
+            "release",
+            "catalog",
+            str(repo),
+            "--release-ids",
+            "rel:9.9.9",
+            "--require-status",
+            "published",
+        )
+        self.assertEqual(status_gate.returncode, 1)
+        self.assertIn("expected 'published'", json.loads(status_gate.stdout)["error"])
+
         update = run_cli(
             "release",
             "update",

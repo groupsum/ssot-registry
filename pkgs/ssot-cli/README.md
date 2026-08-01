@@ -268,6 +268,7 @@ Global flags: `--output-file`, `--output-format`, `--version`
 | `ssot-registry release add-boundary` | `--boundary-ids`, `--id` |
 | `ssot-registry release add-claim` | `--claim-ids`, `--id` |
 | `ssot-registry release add-evidence` | `--evidence-ids`, `--id` |
+| `ssot-registry release catalog` | `--release-ids`, `--require-status` |
 | `ssot-registry release certify` | `--release-id`, `--write-report` |
 | `ssot-registry release create` | `--body`, `--body-file`, `--boundary-id`, `--boundary-ids`, `--claim-ids`, `--evidence-ids`, `--id`, `--status`, `--version` |
 | `ssot-registry release delete` | `--id` |

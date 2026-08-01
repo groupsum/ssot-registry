@@ -569,6 +569,10 @@
       "--evidence-ids",
       "--id"
     ],
+    "release catalog": [
+      "--release-ids",
+      "--require-status"
+    ],
     "release certify": [
       "--release-id",
       "--write-report"
@@ -995,6 +999,7 @@
     "release add-boundary",
     "release add-claim",
     "release add-evidence",
+    "release catalog",
     "release certify",
     "release create",
     "release delete",
