@@ -1,8 +1,6 @@
 ﻿from __future__ import annotations
 
 import argparse
-import hashlib
-import json
 
 from ssot_registry.api import (
     add_release_claims,
@@ -55,21 +53,6 @@ def register_release(subparsers: argparse._SubParsersAction) -> None:
     add_path_argument(list_cmd)
     add_ids_argument(list_cmd, help_text="Release ids to include in the list output.")
     list_cmd.set_defaults(func=run_list)
-
-    catalog = release_sub.add_parser(
-        "catalog",
-        help="Project selected releases into a deterministic catalog.",
-        description="Emit a compact, digest-addressed release catalog for downstream generated artifacts and drift checks.",
-    )
-    add_path_argument(catalog)
-    catalog.add_argument("--release-ids", nargs="+", required=True, help="Release ids to project, in required dependency order.")
-    catalog.add_argument(
-        "--require-status",
-        choices=["draft", "candidate", "certified", "promoted", "published", "revoked"],
-        default=None,
-        help="Fail closed unless every selected release has this status.",
-    )
-    catalog.set_defaults(func=run_catalog)
 
     update = release_sub.add_parser("update", help="Edit release metadata.", description="Update mutable release fields without changing its claim or evidence membership lists.")
     add_path_argument(update)
@@ -181,45 +164,6 @@ def run_get(args: argparse.Namespace) -> dict[str, object]:
 
 def run_list(args: argparse.Namespace) -> dict[str, object]:
     return list_entities(args.path, "releases", ids=args.ids)
-
-
-def run_catalog(args: argparse.Namespace) -> dict[str, object]:
-    selected = list_entities(args.path, "releases", ids=args.release_ids)
-    by_id = {str(row["id"]): row for row in selected}
-    missing = [release_id for release_id in args.release_ids if release_id not in by_id]
-    if missing:
-        raise ValueError("Unknown release ids: " + ", ".join(missing))
-
-    releases: list[dict[str, object]] = []
-    for release_id in args.release_ids:
-        row = by_id[release_id]
-        status = str(row.get("status", ""))
-        if args.require_status is not None and status != args.require_status:
-            raise ValueError(
-                f"Release {release_id} has status {status!r}; expected {args.require_status!r}"
-            )
-        releases.append(
-            {
-                "boundary_ids": list(row.get("boundary_ids") or [row.get("boundary_id")]),
-                "claim_ids": list(row.get("claim_ids") or []),
-                "evidence_ids": list(row.get("evidence_ids") or []),
-                "id": release_id,
-                "status": status,
-                "version": str(row.get("version", "")),
-            }
-        )
-
-    unsigned: dict[str, object] = {"releases": releases, "schema_version": 1}
-    canonical = json.dumps(
-        unsigned,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        sort_keys=True,
-    ).encode("utf-8")
-    return {
-        "catalog_digest": "sha256:" + hashlib.sha256(canonical).hexdigest(),
-        **unsigned,
-    }
 
 
 def run_update(args: argparse.Namespace) -> dict[str, object]:
