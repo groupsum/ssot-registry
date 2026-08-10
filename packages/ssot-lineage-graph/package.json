@@ -1,5 +1,6 @@
 {
   "name": "@ssot-registry/lineage-graph",
+  "author": "Jacob Stewart <jacob@swarmauri.com>",
   "version": "0.2.26",
   "description": "Portable React viewer for SSOT lineage graph payloads.",
   "license": "Apache-2.0",

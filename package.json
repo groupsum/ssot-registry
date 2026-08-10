@@ -1,5 +1,6 @@
 {
   "name": "ssot-registry-workspace",
+  "author": "Jacob Stewart <jacob@swarmauri.com>",
   "private": true,
   "scripts": {
     "build:lineage-graph": "npm --prefix packages/ssot-lineage-graph run build",

@@ -2,6 +2,7 @@
 name = "registry_bench_rs"
 version = "0.1.0"
 edition = "2021"
+authors = ["Jacob Stewart <jacob@swarmauri.com>"]
 
 [lib]
 name = "registry_bench_rs"
