@@ -1,0 +1,83 @@
+name: CLI bug report
+description: Report a defect in the ssot CLI with enough detail for maintainers to reproduce it.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a CLI bug. The details below let maintainers reproduce the failure.
+
+  - type: input
+    id: command
+    attributes:
+      label: Exact command
+      description: The full command you ran, including every flag and argument.
+      placeholder: ssot boundary freeze . --boundary-id bnd:demo.v0
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: What you expected the command to do.
+      placeholder: The boundary should freeze and emit a snapshot.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: What actually happened, including any error output or exit code.
+      placeholder: The command exited non-zero and wrote no snapshot.
+    validations:
+      required: true
+
+  - type: textarea
+    id: ssot-versions
+    attributes:
+      label: SSOT package versions
+      description: Paste the output of `ssot --version`.
+      render: shell
+      placeholder: |
+        ssot package versions:
+        ssot-cli 0.1.20
+        ssot-core 0.2.7
+    validations:
+      required: true
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      description: The output of `python --version`.
+      placeholder: Python 3.12.7
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: OS name and version, including distro or WSL details.
+      placeholder: Ubuntu 24.04 / macOS 15 / Windows 11 (WSL2)
+    validations:
+      required: true
+
+  - type: textarea
+    id: minimal-reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Steps, fixture data, or a minimal script that reproduces the bug.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Anything else that helps diagnose the issue.
