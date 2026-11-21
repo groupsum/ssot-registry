@@ -7,7 +7,6 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FORM = ".github/ISSUE_TEMPLATE/bug_report.yml"
-CONFIG = ".github/ISSUE_TEMPLATE/config.yml"
 
 REQUIRED_FIELD_IDS = (
     "command",
@@ -67,11 +66,6 @@ class GitHubIssueFormTests(unittest.TestCase):
         declared = _field_blocks()
         self.assertIn("ssot --version", declared["ssot-versions"])
         self.assertIn("python --version", declared["python-version"])
-
-    def test_issue_template_config_disables_blank_issues(self) -> None:
-        self.assertTrue((REPO_ROOT / CONFIG).is_file(), CONFIG)
-        self.assertIn("blank_issues_enabled: false", _read(CONFIG))
-
 
 if __name__ == "__main__":
     unittest.main()

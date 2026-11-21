@@ -10,7 +10,7 @@ body:
     id: command
     attributes:
       label: Exact command
-      description: The full command you ran, including every flag and argument.
+      description: The command and flags you ran. Replace credentials, tokens, and other secrets with [REDACTED].
       placeholder: ssot boundary freeze . --boundary-id bnd:demo.v0
     validations:
       required: true
@@ -28,7 +28,7 @@ body:
     id: actual-behavior
     attributes:
       label: Actual behavior
-      description: What actually happened, including any error output or exit code.
+      description: What happened, including the exit code and relevant error output. Redact secrets and sensitive data from logs.
       placeholder: The command exited non-zero and wrote no snapshot.
     validations:
       required: true
@@ -68,7 +68,7 @@ body:
     id: minimal-reproduction
     attributes:
       label: Minimal reproduction
-      description: Steps, fixture data, or a minimal script that reproduces the bug.
+      description: Steps, sanitized fixture data, or a minimal script that reproduces the bug.
       placeholder: |
         1. ...
         2. ...
